@@ -1,7 +1,8 @@
 """Model calls, and the record of every call: model, where it ran, how much it read and wrote, what it cost.
 
 Prices are Meta Model API list prices (USD). Local calls cost nothing but are recorded the same way.
-SAM spend is also kept in a daily ledger, so a run refuses to start tracking past the day's budget.
+SAM and Muse Wonder spend is also kept in daily ledgers, so a run refuses to start a call that could
+take the day past its budget.
 """
 import base64
 import datetime
@@ -18,10 +19,13 @@ API = "https://api.meta.ai/v1/responses"
 OLLAMA = "http://127.0.0.1:11434/api/chat"
 GLIMMER = "muse-glimmer"
 SPARK = "muse-spark-1.3"
-PRICES = {SPARK: (1.25, 0.15, 4.25)}   # per 1M tokens: input, cached input, output
+WONDER = "muse-wonder-1.0"
+PRICES = {SPARK: (1.25, 0.15, 4.25), WONDER: (4.0, 0.20, 20.0)}   # per 1M tokens: input, cached input, output
 SAM_PER_FRAME = 0.20 / 1000
 SPEND = pathlib.Path.home() / "blinkflow-runs" / "sam-spend.jsonl"
 SAM_DAILY_BUDGET = float(os.environ.get("BLINKFLOW_SAM_BUDGET", "1.0"))
+WONDER_SPEND = pathlib.Path.home() / "blinkflow-runs" / "wonder-spend.jsonl"
+WONDER_DAILY_BUDGET = float(os.environ.get("BLINKFLOW_WONDER_BUDGET", "2.0"))
 
 
 def api_key():
@@ -51,31 +55,44 @@ class Ledger:
         doc = {"calls": self.calls, "total_cost_usd": round(sum(known), 5),
                "prices": {"sam-3.1": "$0.20 per 1000 frames",
                           SPARK: "$1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+                          WONDER: "$4.00 / 1M input, $0.20 / 1M cached input, $20.00 / 1M output",
                           GLIMMER: "local (Ollama on this PC), $0"}}
         pathlib.Path(path).write_text(json.dumps(doc, indent=1))
         return doc
 
 
-# ── SAM daily budget ─────────────────────────────────────────────────────────
-def sam_spent_today():
+# ── daily budgets ────────────────────────────────────────────────────────────
+def spent_today(path=SPEND):
     today = datetime.date.today().isoformat()
-    if not SPEND.exists():
+    if not path.exists():
         return 0.0
-    return sum(e["usd"] for e in map(json.loads, SPEND.read_text().splitlines()) if e["day"] == today)
+    return sum(e["usd"] for e in map(json.loads, path.read_text().splitlines()) if e["day"] == today)
+
+
+def reserve(path, usd, budget, knob, what):
+    """Refuse before spending past the day's budget; log the spend (or the most it can be) otherwise."""
+    spent = spent_today(path)
+    if spent + usd > budget:
+        raise RuntimeError(f"budget: ${spent:.3f} spent today, ${usd:.3f} more could pass ${budget:.2f} ({knob})")
+    path.parent.mkdir(exist_ok=True)
+    with path.open("a") as f:
+        f.write(json.dumps({"day": datetime.date.today().isoformat(), "t": time.time(), "usd": usd, "what": what}) + "\n")
+    return usd
+
+
+def settle(path, reserved, actual, what):
+    """Replace a worst-case reservation with what the call actually cost."""
+    with path.open("a") as f:
+        f.write(json.dumps({"day": datetime.date.today().isoformat(), "t": time.time(),
+                            "usd": actual - reserved, "what": "settle " + what}) + "\n")
+
+
+def sam_spent_today():
+    return spent_today(SPEND)
 
 
 def sam_reserve(frames, what):
-    """Refuse before spending past the day's budget; log the spend otherwise."""
-    usd = frames * SAM_PER_FRAME
-    spent = sam_spent_today()
-    if spent + usd > SAM_DAILY_BUDGET:
-        raise RuntimeError(f"SAM budget: ${spent:.3f} spent today, ${usd:.3f} more would pass "
-                           f"${SAM_DAILY_BUDGET:.2f} (BLINKFLOW_SAM_BUDGET)")
-    SPEND.parent.mkdir(exist_ok=True)
-    with SPEND.open("a") as f:
-        f.write(json.dumps({"day": datetime.date.today().isoformat(), "t": time.time(),
-                            "frames": frames, "usd": usd, "what": what}) + "\n")
-    return usd
+    return reserve(SPEND, frames * SAM_PER_FRAME, SAM_DAILY_BUDGET, "BLINKFLOW_SAM_BUDGET", what)
 
 
 # ── text + image models ──────────────────────────────────────────────────────
@@ -114,4 +131,58 @@ def spark(prompt, images, ledger, purpose, effort="low"):
                input_tokens=u.get("input_tokens"), output_tokens=u.get("output_tokens"))
     text = [c["text"] for o in d["output"] if o["type"] == "message" for c in o["content"]
             if c["type"] == "output_text"]
+    return "".join(text)
+
+
+def respond(model, content, ledger, purpose, effort="medium", schema=None, max_output=16000):
+    """One Responses API call with text and images (`content` as input_text / input_image parts),
+    streamed (long non-streaming calls end in HTTP 504). JSON reply, held to `schema` when given.
+    Muse Wonder first reserves the most the call can cost against its daily budget."""
+    pin, pcached, pout = PRICES[model]
+    if model == WONDER:
+        chars = sum(len(c.get("text", "")) for c in content)
+        images = sum(c["type"] == "input_image" for c in content)
+        worst = ((chars / 3 + 1600 * images) * pin + max_output * pout) / 1e6
+        reserve(WONDER_SPEND, worst, WONDER_DAILY_BUDGET, "BLINKFLOW_WONDER_BUDGET", purpose)
+    fmt = ({"type": "json_schema", "name": "reply", "schema": schema, "strict": True} if schema
+           else {"type": "json_object"})
+    body = {"model": model, "stream": True, "input": [{"type": "message", "role": "user", "content": content}],
+            "text": {"format": fmt}, "reasoning": {"effort": effort}, "max_output_tokens": max_output,
+            "prompt_cache_key": "blinkflow-diagnose"}
+    t, text, usage, status = time.time(), [], {}, "eof"
+    try:
+        with requests.post(API, json=body, stream=True, timeout=900,
+                           headers={"Authorization": "Bearer " + api_key()}) as r:
+            if r.status_code != 200:
+                raise RuntimeError(f"{model} HTTP {r.status_code}: {r.text[:500]}")
+            for line in r.iter_lines(decode_unicode=True):
+                if not line or not line.startswith("data:"):
+                    continue
+                payload = line[5:].strip()
+                if payload == "[DONE]":
+                    break
+                try:
+                    ev = json.loads(payload)
+                except json.JSONDecodeError:
+                    continue
+                kind = ev.get("type")
+                if kind == "response.output_text.delta":
+                    text.append(ev.get("delta", ""))
+                elif kind in ("response.completed", "response.incomplete", "response.failed"):
+                    usage, status = (ev.get("response") or {}).get("usage") or {}, kind.split(".")[1]
+                elif kind == "error":
+                    status = "error: " + json.dumps(ev)[:300]
+    finally:
+        cached = (usage.get("input_tokens_details") or {}).get("cached_tokens") or 0
+        cost = ((usage.get("input_tokens", 0) - cached) * pin + cached * pcached
+                + usage.get("output_tokens", 0) * pout) / 1e6
+        if model == WONDER and usage:     # no usage (call broke off): the worst case stays booked
+            settle(WONDER_SPEND, worst, cost, purpose)
+    ledger.add(model, "Meta Model API", purpose, time.time() - t, cost, effort=effort, status=status,
+               images=sum(c["type"] == "input_image" for c in content),
+               input_tokens=usage.get("input_tokens"), cached_input_tokens=cached,
+               output_tokens=usage.get("output_tokens"),
+               reasoning_tokens=(usage.get("output_tokens_details") or {}).get("reasoning_tokens"))
+    if status != "completed":
+        raise RuntimeError(f"{model} ended {status}: {''.join(text)[:300]!r}")
     return "".join(text)
