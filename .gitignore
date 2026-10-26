@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+*.env
+runs/
+footage/
+*.mp4
+*.mov
+*.jsonl.gz
