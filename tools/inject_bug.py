@@ -9,11 +9,15 @@ brain.toml and as config.py's default alike, so the two still agree. Each copy i
 one commit, with the target's own neutral identity and message, and every file has the same mtime.
 
 Which mutation lands in which copy, and its exact value, follow from a random seed written only to
-tools/.bugseal (git-ignored, mode 600). BlinkFlow never reads tools/. Nothing here prints the
+the set's seal (git-ignored, mode 600). BlinkFlow never reads tools/. Nothing here prints the
 mapping except `reveal`, which tools/bug_suite.py calls once the suite has run.
 
-    python3 tools/inject_bug.py draw [--force]     # new seed; copies in ~/blinkflow-runs/suite/b<N>/target
-    python3 tools/inject_bug.py reveal [LABEL ...]
+Two sets. `side` (the first suite, Oct 26): mutations around the side memory, all filmed at the box.
+`layers`: each mutation belongs to one layer of the brain and one scene of blinkflow.scenes built to
+test that layer (low objects, drops, stop threshold and direction, corridor, side memory).
+
+    python3 tools/inject_bug.py draw [--set layers] [--force]   # new seed; copies in <suite>/b<N>/target
+    python3 tools/inject_bug.py reveal [--set layers] [LABEL ...]
 """
 import argparse
 import io
@@ -30,11 +34,15 @@ HERE = pathlib.Path(__file__).resolve().parent
 SEAL = HERE / ".bugseal"
 SOURCE = pathlib.Path.home() / "duck-target"
 SUITE = pathlib.Path.home() / "blinkflow-runs" / "suite"
+SEAL_LAYERS = HERE / ".bugseal-layers"
+SUITE_LAYERS = pathlib.Path.home() / "blinkflow-runs" / "suite-layers"
 IDENTITY = ["-c", "user.name=duck-target", "-c", "user.email=duck-target@localhost"]
 MESSAGE = "microduck-brain snapshot"
 CONFIG = "src/microduck_brain/config.py"
 DEPTH = "src/microduck_brain/depth.py"
 HAZARDS = "src/microduck_brain/hazards.py"
+DEPTH_LOW = "out.append(LowObstacle(r, c, d, d * bx, d * by, ratio))"
+DEPTH_DROP = "out.append(DropZone(r, c, nominal * bx, nominal * by, no_target))"
 
 
 # ── edits ────────────────────────────────────────────────────────────────────
@@ -158,12 +166,61 @@ MUTATIONS = [
 ]
 
 
+def in_layer(layer, scene, m):
+    return {**m, "layer": layer, "scene": scene}
+
+
+# Each one was tried in its scene before the draw; stop threshold, direction and the doorway's corridor
+# gave no incident there in any variant tried (the wall view and the side memory both stop the robot),
+# and are drawn anyway so the validation reports them.
+LAYERED = [
+    in_layer("low objects", "low_cube", value_mutation(
+        "low-object margin too wide", "a low reading must be far shorter than the floor's to count, so a small "
+        "object reads as floor", "low", "range_margin", [0.35, 0.40, 0.45])),
+    in_layer("low objects", "low_cube", value_mutation(
+        "wall-foot margin too wide", "a low reading is taken for the foot of a wall that is far behind it",
+        "low", "wall_margin", [1.5, 2.0, 2.5])),
+    in_layer("low objects", "low_cube", code_mutation(
+        "low-object position swapped", "a low object's forward and lateral distances are swapped, so it lands "
+        "beside the corridor", DEPTH, DEPTH_LOW, "out.append(LowObstacle(r, c, d, d * by, d * bx, ratio))",
+        lambda v: "depth.low_obstacles: LowObstacle(..., d*by, d*bx, ...)")),
+    in_layer("drops", "ledge", value_mutation(
+        "drop check too short", "only zones whose floor is expected within a short range are checked for a "
+        "missing floor, i.e. none while standing", "drop", "max_expected", [0.20, 0.25, 0.30])),
+    in_layer("drops", "ledge", value_mutation(
+        "drop margin too wide", "a reading must be far longer than any plausible floor to count as a drop",
+        "drop", "range_margin", [0.5, 0.6, 0.7, 0.8])),
+    in_layer("drops", "ledge", code_mutation(
+        "drop position swapped", "a drop's forward and lateral distances are swapped, so it lands beside the "
+        "corridor", DEPTH, DEPTH_DROP, "out.append(DropZone(r, c, nominal * by, nominal * bx, no_target))",
+        lambda v: "depth.drop_zones: DropZone(..., nominal*by, nominal*bx, ...)")),
+    in_layer("stop threshold", "corner", value_mutation(
+        "stop distance too short", "the robot stops for a wall only when it is much closer",
+        "obstacle", "stop_distance", [0.12, 0.16])),
+    in_layer("direction", "corner", code_mutation(
+        "freer side inverted", "after a stop the robot turns towards the less free side",
+        DEPTH, 'return "left" if self.left_free > self.right_free else "right"',
+        'return "left" if self.left_free < self.right_free else "right"',
+        lambda v: "depth.View.freer_side: left when left_free < right_free")),
+    in_layer("corridor", "doorway", value_mutation(
+        "corridor too narrow (doorway)", "returns beside the body count as in the way only very close to the axis",
+        "obstacle", "corridor_half_width", [0.04, 0.05])),
+    in_layer("corridor", "box", value_mutation(
+        "corridor too narrow", "returns beside the body count as in the way only very close to the axis",
+        "obstacle", "corridor_half_width", [0.04, 0.05])),
+    in_layer("side memory", "box", value_mutation(
+        "side memory too short", "wall returns beside the body are forgotten almost at once (the target's own "
+        "bug, as the reference)", "obstacle", "side_memory_seconds", [0.05])),
+]
+SETS = {"side": (MUTATIONS, SEAL, SUITE), "layers": (LAYERED, SEAL_LAYERS, SUITE_LAYERS)}
+
+
 # ── the draw ─────────────────────────────────────────────────────────────────
-def plan(seed):
+def plan(seed, mutations=MUTATIONS):
     """[(label, mutation index, value)] in label order, all from the seed."""
     rng = random.Random(seed)
-    values = [rng.choice(m["choices"]) for m in MUTATIONS]
-    order = rng.sample(range(len(MUTATIONS)), len(MUTATIONS))
+    values = [rng.choice(m["choices"]) for m in mutations]
+    order = rng.sample(range(len(mutations)), len(mutations))
     return [(f"b{n}", i, values[i]) for n, i in enumerate(order, 1)]
 
 
@@ -187,36 +244,47 @@ def seal(root):
         subprocess.run(["git", *IDENTITY, *args], cwd=root, check=True, capture_output=True)
 
 
-def draw(force=False):
-    if SEAL.exists() and not force:
-        raise SystemExit(f"{SEAL} exists: a set is already drawn (--force draws a new one)")
-    if SUITE.exists():
-        shutil.rmtree(SUITE)
+def draw(force=False, name="side"):
+    mutations, seal_file, suite = SETS[name]
+    if seal_file.exists() and not force:
+        raise SystemExit(f"{seal_file} exists: a set is already drawn (--force draws a new one)")
+    if suite.exists():
+        shutil.rmtree(suite)
     seed = int.from_bytes(os.urandom(8), "big")
-    SEAL.write_text(json.dumps({"seed": seed}))
-    SEAL.chmod(0o600)
+    seal_file.write_text(json.dumps({"seed": seed}))
+    seal_file.chmod(0o600)
     labels = []
-    for label, i, v in plan(seed):
-        root = clean_base(SUITE / label / "target")
-        MUTATIONS[i]["apply"](root, v)
+    for label, i, v in plan(seed, mutations):
+        root = clean_base(suite / label / "target")
+        mutations[i]["apply"](root, v)
         seal(root)
         labels.append(label)
-    print(json.dumps({"drawn": labels, "suite": str(SUITE)}))
+    print(json.dumps({"drawn": labels, "suite": str(suite)}))
 
 
-def reveal(labels=None):
-    seed = json.loads(SEAL.read_text())["seed"]
+def scenes_of(name="layers"):
+    """{label: scene}: where each copy is filmed. The scorer needs it to run the incident; it says which
+    scene, not what was changed."""
+    mutations, seal_file, _ = SETS[name]
+    seed = json.loads(seal_file.read_text())["seed"]
+    return {label: mutations[i].get("scene", "box") for label, i, _ in plan(seed, mutations)}
+
+
+def reveal(labels=None, name="side"):
+    mutations, seal_file, suite = SETS[name]
+    seed = json.loads(seal_file.read_text())["seed"]
     out = {}
-    shutil.rmtree(SUITE / ".reveal", ignore_errors=True)
-    for label, i, v in plan(seed):
+    shutil.rmtree(suite / ".reveal", ignore_errors=True)
+    for label, i, v in plan(seed, mutations):
         if labels and label not in labels:
             continue
-        m = MUTATIONS[i]
-        root = clean_base(SUITE / ".reveal" / label)           # where it lands, measured on a fresh copy
+        m = mutations[i]
+        root = clean_base(suite / ".reveal" / label)           # where it lands, measured on a fresh copy
         where = m["apply"](root, v)
-        shutil.rmtree(SUITE / ".reveal")
+        shutil.rmtree(suite / ".reveal")
         out[label] = {"mutation": m["name"], "meaning": m["meaning"], "change": m["show"](v),
-                      "where": [{"file": f, "line": n} for f, n in where]}
+                      "where": [{"file": f, "line": n} for f, n in where],
+                      **({"layer": m["layer"], "scene": m["scene"]} if "layer" in m else {})}
     return out
 
 
@@ -227,11 +295,13 @@ def main():
     d.add_argument("--force", action="store_true")
     r = sub.add_parser("reveal")
     r.add_argument("labels", nargs="*")
+    for p in (d, r):
+        p.add_argument("--set", default="side", choices=SETS)
     a = ap.parse_args()
     if a.cmd == "draw":
-        draw(a.force)
+        draw(a.force, a.set)
     else:
-        print(json.dumps(reveal(a.labels), indent=1))
+        print(json.dumps(reveal(a.labels, a.set), indent=1))
 
 
 if __name__ == "__main__":
