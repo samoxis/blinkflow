@@ -1,0 +1,12 @@
+<!-- BlinkFlow scene `low_cube`, attached to Pollen Robotics' microduck_rl scene_demo.xml (see __init__.py).
+     A 7 cm orange cube just inside the office door, on the robot's path (the clean brain's trunk passes
+     y = 0.27-0.31 here). Too low for the wall rows: only the bottom rows of the depth sensor see it, and
+     only until the robot is about 45 cm away, so it tests the low-object layer and its memory. -->
+<mujoco model="bf_low_cube">
+  <worldbody>
+    <body name="bf_low_cube">
+      <geom name="bf_low_cube" type="box" size="0.035 0.035 0.035" pos="0.78 0.30 0.035"
+            rgba="1.0 0.45 0.0 1" contype="1" conaffinity="1"/>
+    </body>
+  </worldbody>
+</mujoco>

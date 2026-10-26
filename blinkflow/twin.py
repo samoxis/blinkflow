@@ -6,7 +6,8 @@ runs drift apart within two seconds. Here every event happens at a fixed simulat
 fixed order, so the same brain gives the same run, bit for bit, and a fix can be proven by replay.
 
 What is imported, not copied: the world, body, depth sensor and scenes from Pollen Robotics'
-`microduck_rl` (`mjlab_microduck.sim`), and the brain itself from the target directory.
+`microduck_rl` (`mjlab_microduck.sim`), and the brain itself from the target directory. The scene is
+one of blinkflow.scenes (Pollen's apartment plus one obstacle; default `box`, their demo box).
 What is re-stated here, from robotd's `control.rs` and `main.rs`: the per-tick controller — stand
 below a twist of 0.05, walk above; targets = home + scale x action (0.9 walk, 1.0 stand); gain 200
 walking, 160 standing; low-pass 0.7 legs, 0.5 head; command EMA 0.2; 500 ms deadman.
@@ -28,8 +29,10 @@ import time
 import mujoco
 import numpy as np
 import onnxruntime as ort
-from mjlab_microduck.sim.body_server import (HOME_POSE, JOINT_NAMES, MOUTH_INDEX, SCENES, Body,
-                                             World, gravity_in_trunk, pose_table)
+from mjlab_microduck.sim.body_server import (HOME_POSE, JOINT_NAMES, MOUTH_INDEX, Body, gravity_in_trunk,
+                                             pose_table)
+
+from . import scenes
 
 HOME = pathlib.Path.home()
 POLICIES = HOME / ".cache" / "duck-sim" / "policies" / "current"
@@ -92,6 +95,7 @@ def quat_of(mat):
 
 class Twin:
     def __init__(self, scene, brain_dir):
+        self.scene = scene
         sys.path.insert(0, str(pathlib.Path(brain_dir) / "src"))
         from microduck_brain import config as brain_config
         from microduck_brain.brain import Brain, Inputs
@@ -101,9 +105,9 @@ class Twin:
         self.cfg = brain_config.load(toml if toml.exists() else None)
         self.brain = Brain(self.cfg)
 
-        self.world = World(scene, 1)
+        self.world = scenes.world(scene)
         self.body = Body(self.world, 0)
-        _, trunk_z = pose_table(scene, "HOME")
+        _, trunk_z = pose_table(scenes.BASE, "HOME")
         self.body.place(None, trunk_z, offset_y=0.0)
         self.world.bodies.append(self.body)
         mujoco.mj_forward(self.world.model, self.world.data)
@@ -112,15 +116,20 @@ class Twin:
 
         m = self.world.model
         self.trunk_body = m.jnt_bodyid[mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_JOINT, "trunk_base_freejoint")]
-        self.box = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_GEOM, "demo_box")   # a world geom
         self.duck_geoms = {g for g in range(m.ngeom) if m.body_rootid[m.geom_bodyid[g]] == self.trunk_body}
+        names = {g: mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_GEOM, g) or f"geom{g}" for g in range(m.ngeom)}
+        self.obstacle = {g for g, n in names.items() if scenes.is_obstacle(scene, n)}
+        # Anything the duck may not touch: every other geom except what it walks on.
+        self.things = {g: n for g, n in names.items() if g not in self.duck_geoms and not scenes.is_ground(scene, n)}
 
         self.step_n = 0
         self.twist_target, self.twist_at = (0.0, 0.0, 0.0), -1e9
         self.twist = [0.0, 0.0, 0.0]
         self.frame, self.frame_at, self.frame_t = None, -1e9, 0.0
         self.states = []               # (t, state dict), last 64
-        self.contacts = []
+        self.contacts = []             # (t, duck body) with the scene's obstacle
+        self.touches = []              # (t, duck body, geom) with anything but the ground, first per geom
+        self.track = []                # (t, x, y, fallen), every brain tick
         self.tof_n = 0
 
     @property
@@ -170,9 +179,12 @@ class Twin:
             c = d.contact[i]
             g1, g2 = int(c.geom1), int(c.geom2)
             for duck, other in ((g1, g2), (g2, g1)):
-                if duck in self.duck_geoms and other == self.box:
+                if duck in self.duck_geoms and other in self.things:
                     name = mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_BODY, m.geom_bodyid[duck])
-                    self.contacts.append((round(self.t, 3), name))
+                    if other in self.obstacle:
+                        self.contacts.append((round(self.t, 3), name))
+                    if all(g != self.things[other] for _, _, g in self.touches):
+                        self.touches.append((round(self.t, 3), name, self.things[other]))
 
     def run(self, settle, seconds, recorder=None, on_frame=None):
         """`settle` s standing still, then `seconds` s of brain. Brain time 0 = end of settle."""
@@ -195,6 +207,8 @@ class Twin:
                     self.twist_target, self.twist_at = (0.0, 0.0, 0.0), self.t
                 if recorder is not None:
                     recorder.write(inp, cmd, self.brain.state_name)
+                st = self.states[-1][1]
+                self.track.append((round(self.t, 3), *st["odom"]["position"][:2], st["safety"]["fallen"]))
             if n % CONTROL_STEPS == 0:
                 target = self.twist_target if self.t - self.twist_at <= DEADMAN_S else (0.0, 0.0, 0.0)
                 self.twist = [e + CMD_ALPHA * (g - e) for e, g in zip(self.twist, target)]
@@ -247,7 +261,7 @@ class Video:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--brain", default=str(HOME / "duck-target"))
-    ap.add_argument("--scene", default=str(SCENES / "scene_demo.xml"))
+    ap.add_argument("--scene", default="box", help=f"one of {', '.join(scenes.NAMES)}")
     ap.add_argument("--settle", type=float, default=3.0)
     ap.add_argument("--seconds", type=float, default=12.0)
     ap.add_argument("--video", action="store_true", help="render the incident's fixed shot")
@@ -257,33 +271,43 @@ def main():
     brain = pathlib.Path(a.brain).expanduser()
     out = pathlib.Path(a.out) / time.strftime("%Y%m%d-%H%M%S")
     out.mkdir(parents=True)
-    twin = Twin(pathlib.Path(a.scene), brain)
+    if a.scene.endswith("scene_demo.xml"):        # replays of incidents recorded before named scenes
+        a.scene = "box"
+    twin = Twin(a.scene, brain)
     from microduck_brain.record import Recorder
     rec = Recorder(out / "run.jsonl.gz", {"config": str(brain / "brain.toml"), "twin": True})
     video = None
     if a.video:
-        # The fixed shot of camera/shots_incident.json, so twin frames frame the same thing.
-        video = Video(twin, out / "twin.mp4", pos=[1.2, 0.4088, 0.9657], look=[0.9, 0.34, 0.12], fov=30)
+        # The scene's fixed shot (for `box`, the live incident's camera/shots_incident.json).
+        video = Video(twin, out / "twin.mp4", **scenes.get(a.scene).camera)
     wall = time.time()
     brain_start = twin.run(a.settle, a.seconds, rec, video)
     rec.close()
     if video:
         video.close()
-    # Ground truth for the scorer only, like the live simulator's contacts-*.csv.
+    # Ground truth for the scorer only, like the live simulator's contacts-*.csv: contacts with the
+    # scene's obstacle; and in truth.json, the first touch of every other thing and the trunk's track.
     with open(out / "contacts.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["t_brain", "body"])
         for t, body in twin.contacts:
             w.writerow([f"{t - brain_start:.3f}", body])
+    fell = next((t for t, _, _, fallen in twin.track if fallen), None)
+    truth = {"scene": a.scene,
+             "touches": [{"t": round(t - brain_start, 3), "body": b, "geom": g} for t, b, g in twin.touches],
+             "fell_s": None if fell is None else round(fell - brain_start, 3),
+             "track": [[round(t - brain_start, 2), round(x, 3), round(y, 3), f] for t, x, y, f in twin.track]}
+    (out / "truth.json").write_text(json.dumps(truth))
     meta = {"brain": str(brain), "scene": a.scene, "settle": a.settle, "seconds": a.seconds,
             "record": str(out / "run.jsonl.gz"), "video": str(out / "twin.mp4") if video else None,
             "video_times": video.times if video else None, "brain_start_sim": brain_start,
             "wall_s": round(time.time() - wall, 2)}
     (out / "meta.json").write_text(json.dumps(meta))
     first = twin.contacts[0] if twin.contacts else None
-    print(json.dumps({"out": str(out), "wall_s": meta["wall_s"],
+    print(json.dumps({"out": str(out), "scene": a.scene, "wall_s": meta["wall_s"],
                       "first_contact_s": None if not first else round(first[0] - brain_start, 3),
-                      "body": None if not first else first[1]}))
+                      "body": None if not first else first[1], "touches": truth["touches"],
+                      "fell_s": truth["fell_s"]}))
 
 
 if __name__ == "__main__":

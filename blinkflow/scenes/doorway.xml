@@ -1,0 +1,14 @@
+<!-- BlinkFlow scene `doorway`, attached to Pollen Robotics' microduck_rl scene_demo.xml (see __init__.py).
+     A blue wall across the hall between the start and the office (x = 0.30), with a 0.40 m door at
+     y -0.10..0.30 where the robot walks. The robot is about 0.2 m wide and goes through: tests the
+     swept corridor, i.e. what counts as "in the way" beside the body. -->
+<mujoco model="bf_doorway">
+  <worldbody>
+    <body name="bf_doorway">
+      <geom name="bf_doorway_s" type="box" size="0.03 0.35 0.30" pos="0.30 -0.45 0.30"
+            rgba="0.15 0.35 0.95 1" contype="1" conaffinity="1"/>
+      <geom name="bf_doorway_n" type="box" size="0.03 0.30 0.30" pos="0.30 0.60 0.30"
+            rgba="0.15 0.35 0.95 1" contype="1" conaffinity="1"/>
+    </body>
+  </worldbody>
+</mujoco>

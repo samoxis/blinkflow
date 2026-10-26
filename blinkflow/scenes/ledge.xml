@@ -1,0 +1,40 @@
+<!-- BlinkFlow scene `ledge`, attached to Pollen Robotics' microduck_rl scene_demo.xml (see __init__.py).
+     A 12 cm step down just inside the office door, across the passage between the office cabinet and
+     the shelf: x 0.62-1.25, y 0.14-0.74, its floor and sides yellow. The loader removes Pollen's office
+     floor (`floor_e`) and its visual overlay (`floor_office`); the pieces below lay them again around
+     the hole, with the same materials. Tests the drop layer. -->
+<mujoco model="bf_ledge">
+  <worldbody>
+    <body name="bf_ledge">
+      <!-- floor_e again (x 0-4, y -3..3, top at z = 0), minus the hole -->
+      <geom name="bf_ledge_floor_w" type="box" size="0.31 3.00 0.005" pos="0.31 0 -0.005"
+            material="floor_main" contype="1" conaffinity="1"/>
+      <geom name="bf_ledge_floor_e" type="box" size="1.375 3.00 0.005" pos="2.625 0 -0.005"
+            material="floor_main" contype="1" conaffinity="1"/>
+      <geom name="bf_ledge_floor_s" type="box" size="0.315 1.57 0.005" pos="0.935 -1.43 -0.005"
+            material="floor_main" contype="1" conaffinity="1"/>
+      <geom name="bf_ledge_floor_n" type="box" size="0.315 1.13 0.005" pos="0.935 1.87 -0.005"
+            material="floor_main" contype="1" conaffinity="1"/>
+      <!-- floor_office again (visual, x 0.5-4, y -1..1), minus the hole -->
+      <geom name="bf_ledge_floor_ov_w" type="box" size="0.06 1.00 0.002" pos="0.56 0 0.002"
+            material="floor_office" contype="0" conaffinity="0"/>
+      <geom name="bf_ledge_floor_ov_e" type="box" size="1.375 1.00 0.002" pos="2.625 0 0.002"
+            material="floor_office" contype="0" conaffinity="0"/>
+      <geom name="bf_ledge_floor_ov_s" type="box" size="0.315 0.57 0.002" pos="0.935 -0.43 0.002"
+            material="floor_office" contype="0" conaffinity="0"/>
+      <geom name="bf_ledge_floor_ov_n" type="box" size="0.315 0.13 0.002" pos="0.935 0.87 0.002"
+            material="floor_office" contype="0" conaffinity="0"/>
+      <!-- the pit: floor 12 cm down, and its four sides -->
+      <geom name="bf_ledge_pit" type="box" size="0.315 0.30 0.01" pos="0.935 0.44 -0.13"
+            rgba="0.95 0.82 0.10 1" contype="1" conaffinity="1"/>
+      <geom name="bf_ledge_pit_side_w" type="box" size="0.005 0.30 0.06" pos="0.625 0.44 -0.06"
+            rgba="0.95 0.82 0.10 1" contype="1" conaffinity="1"/>
+      <geom name="bf_ledge_pit_side_e" type="box" size="0.005 0.30 0.06" pos="1.245 0.44 -0.06"
+            rgba="0.95 0.82 0.10 1" contype="1" conaffinity="1"/>
+      <geom name="bf_ledge_pit_side_s" type="box" size="0.315 0.005 0.06" pos="0.935 0.145 -0.06"
+            rgba="0.95 0.82 0.10 1" contype="1" conaffinity="1"/>
+      <geom name="bf_ledge_pit_side_n" type="box" size="0.315 0.005 0.06" pos="0.935 0.735 -0.06"
+            rgba="0.95 0.82 0.10 1" contype="1" conaffinity="1"/>
+    </body>
+  </worldbody>
+</mujoco>
