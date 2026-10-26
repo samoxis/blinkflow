@@ -5,7 +5,7 @@
 Ground truth, never read by the agent:
   live run  ~/blinkflow-runs/contacts-*.csv  (epoch, t_sim, body), matched to the run by time;
   twin run  contacts.csv next to the twin's meta.json  (t_brain, body).
-The difference is reported in frames of the clip (nearest frame to the true contact) and in seconds.
+Both readings (whole masks, base) are scored. The difference is reported in frames of the clip (nearest frame to the true contact) and in seconds.
 """
 import csv
 import glob
@@ -37,16 +37,16 @@ def score(evidence_path):
     ev = json.loads(pathlib.Path(evidence_path).read_text())
     snap = load_snapshot(ev["snapshot"])
     gt = truth(ev["snapshot"], snap)
-    seen = ev["first_contact"]
     out = {"evidence": str(evidence_path), "kind": ev["kind"], "names": [ev["names"]["robot"], ev["names"]["object"]],
-           "truth": gt and {"brain_s": round(gt[0], 3), "body": gt[1]},
-           "seen": seen and {"frame": seen["frame"], "brain_s": seen["brain_s"]}}
+           "truth": gt and {"brain_s": round(gt[0], 3), "body": gt[1]}}
     if gt:
         times = snap["brain_time"]
         out["truth"]["frame"] = min(range(len(times)), key=lambda i: abs(times[i] - gt[0]))
-    if gt and seen:
-        out["delta_frames"] = seen["frame"] - out["truth"]["frame"]
-        out["delta_s"] = round(seen["brain_s"] - gt[0], 3)
+    for reading, seen in ev["contacts"].items():
+        r = out[reading] = seen and {"frame": seen["frame"], "brain_s": seen["brain_s"]}
+        if gt and seen:
+            r["delta_frames"] = seen["frame"] - out["truth"]["frame"]
+            r["delta_s"] = round(seen["brain_s"] - gt[0], 3)
     return out
 
 

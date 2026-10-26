@@ -9,6 +9,7 @@ so text is buffered until a newline.
 """
 import base64
 import json
+import pathlib
 import re
 import time
 
@@ -68,6 +69,16 @@ def parse_line(line):
         found.append(Instance(rec.group(1), coords, (int(box["w"]), int(box["h"])), raster,
                               float(box["c"]) if "c" in box else None))
     return frame, found
+
+
+def load_raw(path):
+    """Per-frame instances from a reply saved by `track`, without calling the API again."""
+    per_frame = {}
+    for line in pathlib.Path(path).read_text().split("\n"):
+        parsed = parse_line(line)
+        if parsed:
+            per_frame[parsed[0]] = parsed[1]
+    return per_frame
 
 
 def track(clip, concept, frames, raw_path=None):
