@@ -8,3 +8,4 @@ footage/
 *.mp4
 *.mov
 *.jsonl.gz
+tools/.bugseal

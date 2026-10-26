@@ -16,12 +16,11 @@ import pathlib
 import subprocess
 import time
 
-from . import diagnose, see
+from . import TARGET, diagnose, see
 
 HOME = pathlib.Path.home()
 REPO = pathlib.Path(__file__).resolve().parent.parent
 RL_PYTHON = HOME / "microduck_rl" / ".venv" / "bin" / "python"   # the twin needs mujoco + onnxruntime
-TARGET = HOME / "duck-target"
 MIN_ROBOT_FRAMES = 10     # the robot must be found in at least this many frames for a verdict (the fixed
                           # shot sees it only near the object, ~70 of 520 frames in the incident)
 MIN_TRAVEL = 0.5          # ...and walk at least this fraction of the incident's distance

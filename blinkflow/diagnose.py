@@ -30,7 +30,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy import ndimage
 
-from . import models, sam, see
+from . import TARGET, models, sam, see
 
 BEFORE_S = 3.0           # log window before contact
 AFTER_S = 0.25
@@ -39,7 +39,6 @@ IMAGE_WIDTH = 960
 MODELS = {"wonder": models.WONDER, "spark": models.SPARK}
 EFFORT = "medium"
 MAX_OUTPUT = 12000
-TARGET_ROOT = pathlib.Path.home() / "duck-target"
 
 DESCRIBE_PROMPT = (
     "This is one frame from a fixed camera in a robot simulator, {label}. The {robot} is a small "
@@ -483,9 +482,9 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, c
         raise SystemExit("evidence.json has no first contact: nothing to diagnose")
     snap = see.load_snapshot(ev["snapshot"])
     meta = json.loads(pathlib.Path(ev["snapshot"]).read_text())
-    target = pathlib.Path(target or meta.get("brain") or TARGET_ROOT).expanduser().resolve()
-    if target != TARGET_ROOT.resolve():
-        raise SystemExit(f"refusing to read {target}: the only target is {TARGET_ROOT}")
+    target = pathlib.Path(target or meta.get("brain") or TARGET).expanduser().resolve()
+    if target != TARGET:
+        raise SystemExit(f"refusing to read {target}: the only target is {TARGET}")
 
     ledger = models.Ledger()
     frames = build_frames(evdir, ev, snap, ledger)

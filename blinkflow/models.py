@@ -23,9 +23,9 @@ WONDER = "muse-wonder-1.0"
 PRICES = {SPARK: (1.25, 0.15, 4.25), WONDER: (4.0, 0.20, 20.0)}   # per 1M tokens: input, cached input, output
 SAM_PER_FRAME = 0.20 / 1000
 SPEND = pathlib.Path.home() / "blinkflow-runs" / "sam-spend.jsonl"
-SAM_DAILY_BUDGET = float(os.environ.get("BLINKFLOW_SAM_BUDGET", "1.0"))
+SAM_DAILY_BUDGET = float(os.environ.get("BLINKFLOW_SAM_BUDGET", "5.0"))
 WONDER_SPEND = pathlib.Path.home() / "blinkflow-runs" / "wonder-spend.jsonl"
-WONDER_DAILY_BUDGET = float(os.environ.get("BLINKFLOW_WONDER_BUDGET", "2.0"))
+WONDER_DAILY_BUDGET = float(os.environ.get("BLINKFLOW_WONDER_BUDGET", "15.0"))
 
 
 def api_key():
@@ -155,6 +155,7 @@ def respond(model, content, ledger, purpose, effort="medium", schema=None, max_o
                            headers={"Authorization": "Bearer " + api_key()}) as r:
             if r.status_code != 200:
                 raise RuntimeError(f"{model} HTTP {r.status_code}: {r.text[:500]}")
+            r.encoding = "utf-8"            # text/event-stream has no charset; requests would assume latin-1
             for line in r.iter_lines(decode_unicode=True):
                 if not line or not line.startswith("data:"):
                     continue

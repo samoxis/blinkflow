@@ -13,7 +13,10 @@
      in place, and said so), and Muse Code tries again with what failed. At most 3 attempts;
   6. report.md and models.json (every model call of the whole run) in ~/blinkflow-runs/fixes/<stamp>/.
 
-    python3 -m blinkflow.fix <snapshot .json> [--evidence DIR] [--attempts 3] [--model MODEL]
+    python3 -m blinkflow.fix <snapshot .json> [--evidence DIR] [--attempts 3] [--model MODEL] [--out DIR]
+                                 [--compare N]
+
+The target is ~/duck-target, or the copy named by BLINKFLOW_TARGET.
 """
 import argparse
 import asyncio
@@ -26,10 +29,9 @@ import time
 from muse_code import (ApprovalDecisionInput, MuseClient, MuseClientSpawnOptions, SendUserTurnOptions,
                        StartSessionOptions)
 
-from . import diagnose, models, prove, see
+from . import TARGET, diagnose, models, prove, see
 
 HOME = pathlib.Path.home()
-TARGET = (HOME / "duck-target").resolve()
 RUNS = HOME / "blinkflow-runs" / "fixes"
 TURN_TIMEOUT = 900
 IDENTITY = ["-c", "user.name=BlinkFlow", "-c", "user.email=blinkflow@localhost"]
@@ -90,7 +92,10 @@ def change(base):
 
 # ── what Muse Code may do ────────────────────────────────────────────────────
 def inside(p):
-    q = pathlib.Path(p).expanduser()
+    try:
+        q = pathlib.Path(p).expanduser()
+    except RuntimeError:                    # "~name" for a user that does not exist here: not the target
+        return False
     q = (q if q.is_absolute() else TARGET / q).resolve()
     return q == TARGET or TARGET in q.parents
 
@@ -124,9 +129,18 @@ def is_edit(tool):
     return any(w in tool.lower() for w in EDIT_WORDS)
 
 
+def expands(p):
+    try:
+        pathlib.Path(p).expanduser()
+        return True
+    except RuntimeError:
+        return False
+
+
 def outside_refs(command):
     """Paths in a shell command that point outside the target (system directories aside)."""
-    refs = re.findall(r"(?<![\w.])((?:~|/)[^\s'\"|;&<>()]*)", command)
+    refs = re.findall(r"(?<![\w.*])((?:~|/)[^\s'\"|;&<>()]*)", command)
+    refs = [r for r in refs if not re.match(r"~[^/]", r) or expands(r)]   # "~0.3 m" in a heredoc is no path
     bad = [r for r in refs if not inside(r) and not r.startswith(SYSTEM_DIRS) and r not in ("/", "~")]
     if "microduck-brain" in command:
         bad.append("microduck-brain")
@@ -250,9 +264,9 @@ def stage(stages, name, t):
     stages.append({"stage": name, "seconds": round(time.time() - t, 1)})
 
 
-def fix(snapshot, evidence=None, attempts=3, model=None):
+def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
     snapshot = pathlib.Path(snapshot).expanduser().resolve()
-    run = RUNS / time.strftime("%Y%m%d-%H%M%S")
+    run = pathlib.Path(out).expanduser() if out else RUNS / time.strftime("%Y%m%d-%H%M%S")
     run.mkdir(parents=True)
     t0 = time.time()
     stages, ledger = [], models.Ledger()
@@ -268,7 +282,7 @@ def fix(snapshot, evidence=None, attempts=3, model=None):
     ev = json.loads((evdir / "evidence.json").read_text())
     t = time.time()
     if not (evdir / "diagnosis.json").exists():
-        diagnose.diagnose(evdir)
+        diagnose.diagnose(evdir, compare=compare)       # compare: N runs each of Wonder and Spark, Wonder's majority kept
         stage(stages, "understand (Glimmer key frames, Muse Wonder)", t)
     first_diag = json.loads((evdir / "diagnosis.json").read_text())
     names = (ev["names"]["robot"], ev["names"]["object"])
@@ -459,8 +473,11 @@ def main():
     ap.add_argument("--evidence", help="reuse this evidence dir (and its diagnosis) instead of seeing again")
     ap.add_argument("--attempts", type=int, default=3)
     ap.add_argument("--model", help="Muse Code's model (default: the host's)")
+    ap.add_argument("--out", help=f"run folder (default: {RUNS}/<stamp>)")
+    ap.add_argument("--compare", type=int, default=0, metavar="N",
+                    help="first diagnosis: N runs each of Muse Wonder and Muse Spark (Wonder's majority is used)")
     a = ap.parse_args()
-    done = fix(a.snapshot, a.evidence, a.attempts, a.model)
+    done = fix(a.snapshot, a.evidence, a.attempts, a.model, a.out, a.compare)
     print(json.dumps({"run": done["run"], "fixed": done["fixed"], "seconds": done["seconds"],
                       "attempts": [{"attempt": x["attempt"], "files": x["change"]["files"],
                                     "contact": (x["verdict"] or {}).get("contact"), "kept": x["kept"]}
