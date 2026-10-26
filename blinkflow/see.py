@@ -269,8 +269,9 @@ def draw(path, frame_rgb, robot_mask, object_mask, base_mask, names, series, con
     plt.close(fig)
 
 
-def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False):
-    """`reuse`: take the names and SAM replies of an earlier run in `out_dir` instead of new calls."""
+def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow=None):
+    """`reuse`: take the names and SAM replies of an earlier run in `out_dir` instead of new calls.
+    `follow`: (robot, object) names to track as given, no naming (a replay follows the incident's)."""
     snap = load_snapshot(snapshot_path)
     out = pathlib.Path(out_dir).expanduser()
     out.mkdir(parents=True, exist_ok=True)
@@ -302,11 +303,14 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False):
                                  "cost_usd": 0.0})
     else:
         images = [jpeg(str(shot), i) for i in picks]
-        (robot, nearest), namer, tried = name_objects(images, ledger, namers)
+        if follow:
+            (robot, nearest), namer, tried = follow, "incident", []
+        else:
+            (robot, nearest), namer, tried = name_objects(images, ledger, namers)
         with concurrent.futures.ThreadPoolExecutor(2) as pool:
             tr, to = pool.map(run, (robot, nearest), ("robot", "object"))
         trouble = object_trouble(to, size[0] * size[1], n)
-        if trouble and "spark" in namers and namer != "spark":
+        if trouble and not follow and "spark" in namers and namer != "spark":
             tried.append({"namer": "sam check", "rejected": f"{nearest!r}: {trouble}"})
             (_, nearest2), namer, more = name_objects(images, ledger, ("spark",))
             tried += more

@@ -287,13 +287,15 @@ def incident_text(ev, frames, table):
     return "\n".join(lines + ["", table])
 
 
-def content_for(code, ev, frames, table, evdir, control):
+def content_for(code, ev, frames, table, evdir, control, context=None):
     head = INSTRUCTIONS + "\n\n" + code
     if control:
         return [{"type": "input_text", "text": head},
                 {"type": "input_text", "text": f"INCIDENT. While walking in the simulator, the robot touched the "
                  f"{ev['names']['object']}. No video, measurements or log are available for this incident."}]
     parts = [{"type": "input_text", "text": head}, {"type": "input_text", "text": incident_text(ev, frames, table)}]
+    if context:
+        parts.append({"type": "input_text", "text": context})
     for k in frames:
         parts.append({"type": "input_text", "text": f"{k['tag']} ({k['label']}, t = {k['brain_s']:.3f} s):"})
         parts.append({"type": "input_image", "image_url": "data:image/jpeg;base64,"
@@ -471,7 +473,8 @@ def rescore(evdir):
     return report(evdir, ev, frames, target, results, main_model)
 
 
-def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None):
+def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, context=None):
+    """`context`: extra text sent after the incident (a replay with a fix in place says what it changed)."""
     evdir = pathlib.Path(evdir).expanduser()
     if evdir.name == "evidence.json":
         evdir = evdir.parent
@@ -489,7 +492,7 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None):
     table, tick_times = log_table(snap["record"], ev["first_contact"]["brain_s"], [k["brain_s"] for k in frames])
     files = target_files(target)
     code = code_text(files)
-    (evdir / "diagnosis-input.txt").write_text(incident_text(ev, frames, table))
+    (evdir / "diagnosis-input.txt").write_text(incident_text(ev, frames, table) + ("\n\n" + context if context else ""))
 
     plan = [(m, "evidence") for m in ([model] if not compare else ["wonder", "spark"])
             for _ in range(compare or runs)]
@@ -499,7 +502,7 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None):
         if m in blocked:
             results.append({"model": m, "mode": mode, "error": "skipped: daily budget reached"})
             continue
-        content = content_for(code, ev, frames, table, evdir, mode == "code-only")
+        content = content_for(code, ev, frames, table, evdir, mode == "code-only", context)
         try:
             r = ask(m, content, ledger, f"diagnose ({mode}, run {i + 1})", files, frames, tick_times)
         except RuntimeError as e:
