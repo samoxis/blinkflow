@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/icon.png" width="160" alt="BlinkFlow icon"></p>
+
 # BlinkFlow
 
 **The robot did something wrong? Just say what you saw.**
@@ -43,5 +45,8 @@ Existed before, used only as the test target, not part of this repo:
 Muse Code runs inside its sandbox. BlinkFlow approves only edits to the chosen target folder and refuses everything else. Every fix starts from a git commit and can be undone with one command.
 
 ## Credits and licence
+
+The icon was generated with Meta's Muse Image.
+
 
 Apache-2.0 (see `LICENSE`). Microduck and its simulation are by Pollen Robotics and Hugging Face, Apache-2.0. Code in this repository is written with AI coding assistants under the author's direction.
