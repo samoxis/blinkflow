@@ -36,7 +36,11 @@ CONTACT_PX = 2           # masks this close (or overlapping) count as touching
 BASE_TOL = 0.1           # the robot's feet may be this fraction of the base's thickness short of it
 REACH = 0.65             # any part: the robot's lowest point may be this many of its own heights short of
                          # the base (b10's jaw on the box read 0.5-0.8 on time; base runs unchanged)
-CLEAR_PX = 20            # the robot's height on screen is measured where it is this far from the object
+MAX_TILT = 60            # "down" from the faces may lean this far from the picture's vertical (the real
+                         # incidents' objects: 0-49 degrees, a pit's inner wall: 166 = 14 from straight up;
+                         # a tall block's side face beside its top: 95)
+SAME_OBJECT = 0.5        # an instance is the same still object when half of the smaller box is shared
+CLEAR_PX = 20           # the robot's height on screen is measured where it is this far from the object
 FALL_DROP = 0.6          # a fall, from pixels: the robot's top drops this many of its own heights...
 FALL_TURN = 35           # ...and its long axis turns this many degrees, both within FALL_S
 FALL_S = 0.5             # (b5-b7's falls into the pit: 0.8-1.4 heights and 65-90 deg; walking, turning,
@@ -216,6 +220,42 @@ def union(instances, size):
     return out
 
 
+def overlap(a, b):
+    """How much two boxes (x1, y1, x2, y2) overlap, as a share of the smaller one."""
+    w = min(a[2], b[2]) - max(a[0], b[0]) + 1
+    h = min(a[3], b[3]) - max(a[1], b[1]) + 1
+    if w <= 0 or h <= 0:
+        return 0.0
+    area = lambda r: (r[2] - r[0] + 1) * (r[3] - r[1] + 1)
+    return w * h / min(area(a), area(b))
+
+
+def objects(frames, n_frames):
+    """One name can match several things ("gray block": a block and a wall). The camera and the objects
+    stand still, so an object is a place on screen: each instance joins the object whose box it shares
+    (SAM's instance ids restart in every piece, so they cannot say which is which), never two instances
+    of one frame in the same object. Objects seen in too few frames to be a thing are dropped.
+    [{"box": first box, "frames": {frame: [instances]}}], most frames first."""
+    out = []
+    for f in sorted(frames):
+        used = set()
+        for inst in sorted(frames[f] or [], key=lambda i: -int(i.mask.sum())):
+            best = max((k for k in range(len(out)) if k not in used), default=None,
+                       key=lambda k: overlap(out[k]["box"], inst.box))
+            if best is None or overlap(out[best]["box"], inst.box) < SAME_OBJECT:
+                out.append({"box": tuple(int(x) for x in inst.box), "frames": {}})
+                best = len(out) - 1
+            used.add(best)
+            out[best]["frames"].setdefault(f, []).append(inst)
+    keep = [o for o in out if len(o["frames"]) >= max(3, 0.1 * n_frames)] or out
+    return sorted(keep, key=lambda o: -len(o["frames"]))
+
+
+def same_object(instances, box):
+    """The instances of one frame that are the object at `box` (see objects())."""
+    return [i for i in instances or [] if overlap(box, i.box) >= SAME_OBJECT]
+
+
 def bounds(mask):
     rows, cols = np.flatnonzero(mask.any(1)), np.flatnonzero(mask.any(0))
     return rows[0], rows[-1] + 1, cols[0], cols[-1] + 1
@@ -246,8 +286,9 @@ def base_of(mask, frame_rgb):
     A box seen from above shows a lit top face and a darker side face running from it towards the
     floor. The direction from the top face to the side face is "down" in the picture (`u`, as
     (dy, dx)); the base is the far end of the mask along `u`, as thick as the top face, narrowed by
-    how much the side face narrows towards the floor (perspective). Without two distinct faces,
-    `u` is straight down the picture and the base is the last tenth of the mask."""
+    how much the side face narrows towards the floor (perspective). Without two distinct faces, or
+    when the side face lies more than MAX_TILT beside the top one rather than under it (or, for a pit's
+    inner wall, over it), `u` is straight down the picture and the base is the last tenth of the mask."""
     ys, xs = np.nonzero(mask)
     pts = np.stack([ys, xs], 1).astype(float)
     lum = frame_rgb.astype(float).mean(2)
@@ -257,9 +298,17 @@ def base_of(mask, frame_rgb):
     if n > 1:
         top = labels == 1 + int(np.argmax(ndimage.sum(top, labels, range(1, n + 1))))
     side = mask & ~top
-    if hi - lo >= 15 and top.sum() >= 0.1 * mask.sum() and side.sum() >= 0.1 * mask.sum():
+    faces = hi - lo >= 15 and top.sum() >= 0.1 * mask.sum() and side.sum() >= 0.1 * mask.sum()
+    method = "no distinct faces: bottom tenth of the mask"
+    if faces:
         v = np.array(ndimage.center_of_mass(side)) - np.array(ndimage.center_of_mass(top))
         u = v / np.linalg.norm(v)
+        # The camera does not roll, so the world's down never runs sideways on screen: a side face
+        # beside the top face (a tall block seen from its corner) does not say where the floor is.
+        # Up the picture it can run: a pit's far inner wall shows above its rim.
+        faces = abs(u[0]) >= np.cos(np.radians(MAX_TILT))
+        method = "lit top face + side face" if faces else "side face beside the top: bottom tenth of the mask"
+    if faces:
         w = np.array([-u[1], u[0]])
         tp = np.stack(np.nonzero(top), 1).astype(float)
         spread = lambda p: float(np.percentile(p, 98) - np.percentile(p, 2))
@@ -267,12 +316,10 @@ def base_of(mask, frame_rgb):
         thick, width = spread(tp @ u), spread(tp @ w)
         end = s >= s.max() - 0.15 * thick
         thick *= min(1.0, spread((pts @ w)[end]) / width)
-        method = "lit top face + side face"
     else:
         u = np.array([1.0, 0.0])
         s = pts @ u
         thick = 0.1 * (s.max() - s.min())
-        method = "no distinct faces: bottom tenth of the mask"
     far = s.max() - thick
     footprint = np.zeros_like(mask)
     sel = s >= far
@@ -417,6 +464,54 @@ def draw(path, frame_rgb, robot_mask, object_mask, base_mask, names, series, con
     plt.close(fig)
 
 
+def measure(robot_frames, obj_frames, size, shot, start, snap):
+    """One still object against the robot, frame by frame: {base, series, contacts, height}."""
+    # The object stands still in a fixed shot: find its base once, on the frame where it is seen
+    # whole (largest mask among frames with the robot absent, or failing that, any frame).
+    seen_obj = {f: v for f, v in obj_frames.items() if v}
+    base = None
+    if seen_obj:
+        area = {f: sum(int(i.mask.sum()) for i in v) for f, v in seen_obj.items()}
+        alone = [f for f in seen_obj if not robot_frames.get(f)] or list(seen_obj)
+        f_base = max(alone, key=area.get)
+        base = base_of(union(seen_obj[f_base], size), rgb(shot, f_base))
+        base["frame"] = start + f_base
+
+    series = []
+    for f in sorted(seen_obj):
+        a = robot_frames.get(f)
+        if not a:
+            continue
+        ra = union(a, size)
+        i = start + f
+        p = {"frame": i, "shot_frame": f, "brain_s": round(snap["brain_time"][i], 3),
+             "gap_px": round(gap(ra, union(seen_obj[f], size)), 1)}
+        if base:
+            p["base_gap_px"] = round(gap(ra, base["mask"]), 1)
+            p["feet_depth_px"] = round(feet_depth(ra, base), 1)
+            p["robot_px"] = round(extent(ra, base["u"]), 1)
+        series.append(p)
+
+    # Three readings of "first contact". Whole masks: the two masks touch on screen. Base: they touch
+    # while the robot's feet have reached the depth of the object's base, so a robot passing behind
+    # a tall object (whose top hangs over its path on screen) does not count. Any part: only when the
+    # base sees nothing, they touch while the robot's lowest point is within REACH of its own height
+    # (measured where it stands clear of the object) of the base: a head can reach the object's side
+    # from there, a robot well behind it cannot. It is not the first reading because a leg on its way
+    # to the base passes through that band ~0.8 s early.
+    contacts = {"whole_mask": next((p for p in series if p["gap_px"] <= CONTACT_PX), None), "base": None, "body": None}
+    height = None
+    if base:
+        contacts["base"] = next((p for p in series if p["gap_px"] <= CONTACT_PX
+                                 and p["feet_depth_px"] >= -BASE_TOL * base["thickness"]), None)
+        clear = [p["robot_px"] for p in series if p["gap_px"] > CLEAR_PX]
+        height = float(np.median(clear)) if clear else None
+        if height and not contacts["base"]:
+            contacts["body"] = next((p for p in series if p["gap_px"] <= CONTACT_PX
+                                     and p["feet_depth_px"] >= -REACH * height), None)
+    return {"base": base, "series": series, "contacts": contacts, "height": height}
+
+
 def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow=None, said=None, tag=None):
     """`reuse`: take the names and SAM replies of an earlier run in `out_dir` instead of new calls.
     `follow`: (robot, object) names to track as given, no naming (a replay follows the incident's).
@@ -504,50 +599,21 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
     for f in out.glob("piece-*.mp4"):               # the replies are kept; the pieces are the shot again
         f.unlink()
 
-    # The object stands still in a fixed shot: find its base once, on the frame where it is seen
-    # whole (largest mask among frames with the robot absent, or failing that, any frame).
-    seen_obj = {f: v for f, v in to["frames"].items() if v}
-    base = None
-    if seen_obj:
-        area = {f: sum(int(i.mask.sum()) for i in v) for f, v in seen_obj.items()}
-        alone = [f for f in seen_obj if not tr["frames"].get(f)] or list(seen_obj)
-        f_base = max(alone, key=area.get)
-        base = base_of(union(seen_obj[f_base], size), rgb(str(shot), f_base))
-        base["frame"] = start + f_base
+    # One name can cover several still objects; each is measured on its own, with its own base, and
+    # never as a union of two things. The object the verdict is about is the one the robot touches first
+    # by the proof's reading, or failing that the one it comes closest to.
+    measured = [dict(o, **measure(tr["frames"], o["frames"], size, str(shot), start, snap)) for o in
+                objects(to["frames"], n)] or [dict(box=None, frames={}, **measure(tr["frames"], {}, size, str(shot), start, snap))]
 
-    series = []
-    for f in range(n):
-        a, b = tr["frames"].get(f), to["frames"].get(f)
-        if not a or not b:
-            continue
-        ra = union(a, size)
-        i = start + f
-        p = {"frame": i, "shot_frame": f, "brain_s": round(snap["brain_time"][i], 3),
-             "gap_px": round(gap(ra, union(b, size)), 1)}
-        if base:
-            p["base_gap_px"] = round(gap(ra, base["mask"]), 1)
-            p["feet_depth_px"] = round(feet_depth(ra, base), 1)
-            p["robot_px"] = round(extent(ra, base["u"]), 1)
-        series.append(p)
+    def first_by_proof(m):
+        c = m["contacts"]
+        return c["base"] or c["body"] if m["base"] else c["whole_mask"]
 
-    # Three readings of "first contact". Whole masks: the two masks touch on screen. Base: they touch
-    # while the robot's feet have reached the depth of the object's base, so a robot passing behind
-    # a tall object (whose top hangs over its path on screen) does not count. Any part: only when the
-    # base sees nothing, they touch while the robot's lowest point is within REACH of its own height
-    # (measured where it stands clear of the object) of the base: a head can reach the object's side
-    # from there, a robot well behind it cannot. It is not the first reading because a leg on its way
-    # to the base passes through that band ~0.8 s early.
-    contacts = {"whole_mask": next((p for p in series if p["gap_px"] <= CONTACT_PX), None), "base": None, "body": None}
-    height = None
-    if base:
-        contacts["base"] = next((p for p in series if p["gap_px"] <= CONTACT_PX
-                                 and p["feet_depth_px"] >= -BASE_TOL * base["thickness"]), None)
-        clear = [p["robot_px"] for p in series if p["gap_px"] > CLEAR_PX]
-        height = float(np.median(clear)) if clear else None
-        if height and not contacts["base"]:
-            contacts["body"] = next((p for p in series if p["gap_px"] <= CONTACT_PX
-                                     and p["feet_depth_px"] >= -REACH * height), None)
-
+    chosen = min(measured, key=lambda m: (first_by_proof(m) is None,
+                                           (first_by_proof(m) or {}).get("brain_s", 0),
+                                           min((p["gap_px"] for p in m["series"]), default=float("inf"))))
+    base, series, contacts, height = chosen["base"], chosen["series"], chosen["contacts"], chosen["height"]
+    obj_frames = chosen["frames"]
     ticks = brain_ticks(snap["record"])
     falls = {"pixels": fall_from_pixels(tr["frames"], size, n, times), "brain_log": fall_from_log(ticks, times)}
     seen = [c for c in falls.values() if c]
@@ -572,7 +638,7 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
     key = fall["first"] or first or closest
     frame_rgb = rgb(str(shot), key["shot_frame"] if key else n - 1)
     rm = union(tr["frames"].get(key["shot_frame"], []), size) if key else None
-    om = union(to["frames"].get(key["shot_frame"], []), size) if key else None
+    om = union(obj_frames.get(key["shot_frame"], []), size) if key else None
     draw(out / "evidence.png", frame_rgb, rm, om, base and base["mask"], names, series, contacts, snap["clock"],
          fall["first"])
 
@@ -585,6 +651,8 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
                          "frames_with_mask": sum(1 for v in t["frames"].values() if v),
                          "instances_max": max((len(v) for v in t["frames"].values()), default=0)}
                      for k, t in (("robot", tr), ("object", to))},
+        "object": {"box": chosen["box"], "frames": len(obj_frames), "objects_named": len(measured),
+                   "others": [{"box": m["box"], "frames": len(m["frames"])} for m in measured if m is not chosen]},
         "contact_px": CONTACT_PX,
         "base": base and {"method": base["method"], "from_frame": base["frame"],
                           "down": [round(float(x), 3) for x in base["u"]], "thickness_px": round(base["thickness"], 1),
@@ -608,6 +676,8 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
                 fall=fall["first"] and {k: fall["first"].get(k) for k in ("reading", "how", "frame", "shot_frame",
                                                                           "brain_s")},
                 closest=closest, frames_with_mask={k: v["frames_with_mask"] for k, v in evidence["tracking"].items()},
+                object_box=chosen["box"], objects_named=len(measured),
+                base=base and {k: base.get(k) for k in ("down", "thickness_px", "method")},
                 series=[[p["shot_frame"], p["brain_s"], p["gap_px"]] for p in series])
     return evidence
 
