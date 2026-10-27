@@ -10,7 +10,10 @@
      when the base never sees one, masks touching with the robot close enough to the base for any
      part of it (a head, an arm) to reach the object;
      both placed on the brain's clock and the wall clock, with the brain ticks around them;
-  5. writes evidence.json, evidence.png and models.json.
+  5. a fall: the robot's mask drops and tips over within half a second, or vanishes mid-frame for good
+     (pixels), or the brain logs one (its own log, which the user has anyway). The twin's own record of
+     a fall is never read here; it is the scorer's;
+  6. writes evidence.json, evidence.png and models.json.
 
     python -m blinkflow.see ~/blinkflow-runs/clips/<id>.json [--out DIR]
     python -m blinkflow.see ~/blinkflow-runs/twin/<stamp>/meta.json
@@ -33,15 +36,26 @@ BASE_TOL = 0.1           # the robot's feet may be this fraction of the base's t
 REACH = 0.65             # any part: the robot's lowest point may be this many of its own heights short of
                          # the base (b10's jaw on the box read 0.5-0.8 on time; base runs unchanged)
 CLEAR_PX = 20            # the robot's height on screen is measured where it is this far from the object
+FALL_DROP = 0.6          # a fall, from pixels: the robot's top drops this many of its own heights...
+FALL_TURN = 35           # ...and its long axis turns this many degrees, both within FALL_S
+FALL_S = 0.5             # (b5-b7's falls into the pit: 0.8-1.4 heights and 65-90 deg; walking, turning,
+                         # leaving the frame in 57 other shots: never both past 0.65 / 1 deg or 0.01 / 89 deg)
+GONE_S = 0.5             # or its mask vanishes for good, this long before the shot ends, away from the
+EDGE_PX = 10             # frame's edges and not shrinking (a robot walking out of view leaves at an edge)
 CUT_SCALE = (160, 125)
 SCENERY = ("wall", "floor", "ground", "background", "shadow", "sky", "ceiling", "grid", "tile", "room")
 
+HAZARD_WORDS = ("edge", "hole", "pit", "step", "steps", "stairs", "drop", "gap", "ledge", "trench", "ditch")
+
 NAMING_PROMPT = (
     "These are {n} frames, in time order, from one fixed camera shot of a robot simulator. "
-    "Name the objects as short noun phrases a segmentation model can search for: colour + object, "
-    "1-3 words (good: \"white robot\", \"purple box\"). Do not name the floor, walls, shadows or the "
-    "background. Say which phrase is the robot and which object is closest to the robot. "
-    "Reply only with JSON: {{\"objects\": [\"...\"], \"robot\": \"...\", \"nearest\": \"...\"}}")
+    "Name what a segmentation model should search for, as short noun phrases: colour + thing, 1-3 words "
+    "(good: \"white robot\", \"purple box\", \"yellow pit\"). Two kinds: objects standing on the floor, and "
+    "hazards in the floor itself that a walking robot could step or fall into: edges, holes, pits, steps, "
+    "drop-offs. Do not name the plain floor, walls, shadows or the background. Say which phrase is the robot, "
+    "which object or hazard is closest to the robot, and whether that one is an object or a hazard. "
+    "Reply only with JSON: {{\"objects\": [\"...\"], \"hazards\": [\"...\"], \"robot\": \"...\", "
+    "\"nearest\": \"...\", \"nearest_is\": \"object\" or \"hazard\"}}")
 
 
 # ── snapshot ─────────────────────────────────────────────────────────────────
@@ -104,20 +118,25 @@ def probe_size(clip):
 
 # ── naming ───────────────────────────────────────────────────────────────────
 def check_names(reply):
-    """Parsed reply -> (robot, nearest) or a reason they cannot be used."""
+    """Parsed reply -> ((robot, nearest), "object" or "hazard") or (None, a reason they cannot be used)."""
     try:
         d = json.loads(reply)
         robot, nearest = d["robot"].strip().lower(), d["nearest"].strip().lower()
+        hazards = [h.strip().lower() for h in d.get("hazards") or []]
     except (ValueError, KeyError, AttributeError, TypeError):
         return None, f"not the JSON asked for: {reply[:120]!r}"
     if not robot or not nearest or robot == nearest:
         return None, f"robot and nearest object must be two names: {robot!r}, {nearest!r}"
+    words = set(nearest.split())
+    kind = "hazard" if d.get("nearest_is") == "hazard" or nearest in hazards or words & set(HAZARD_WORDS) \
+        else "object"
     for name in (robot, nearest):
-        if any(w in name.split() for w in SCENERY):
+        # "floor edge" names a hazard; a plain "floor" or "wall" names nothing to track
+        if any(w in name.split() for w in SCENERY) and not (name == nearest and words & set(HAZARD_WORDS)):
             return None, f"{name!r} is scenery, not an object"
         if len(name.split()) > 4:
             return None, f"{name!r} is not a short noun phrase"
-    return (robot, nearest), None
+    return ((robot, nearest), kind), None
 
 
 def name_objects(images, ledger, namers=("glimmer", "spark")):
@@ -125,11 +144,11 @@ def name_objects(images, ledger, namers=("glimmer", "spark")):
     prompt = NAMING_PROMPT.format(n=len(images))
     for namer in namers:
         call = models.glimmer if namer == "glimmer" else models.spark
-        reply = call(prompt, images, ledger, "name the robot and the object nearest to it")
-        names, why = check_names(reply)
+        reply = call(prompt, images, ledger, "name the robot and the object or hazard nearest to it")
+        named, why = check_names(reply)
         tried.append({"namer": namer, "reply": reply, "rejected": why})
-        if names:
-            return names, namer, tried
+        if named:
+            return named, namer, tried
     raise RuntimeError(f"no usable object names: {tried}")
 
 
@@ -218,6 +237,61 @@ def extent(robot_mask, u):
     return float(np.percentile(s, 99) - np.percentile(s, 1))
 
 
+def shape(mask):
+    """Top and bottom (px), bounding box, long axis and elongation of a mask, or None if it is a speck."""
+    ys, xs = np.nonzero(mask)
+    if len(ys) < 20:
+        return None
+    vals, vecs = np.linalg.eigh(np.cov(np.stack([ys, xs]).astype(float)))
+    return {"top": float(np.percentile(ys, 1)), "bottom": float(np.percentile(ys, 99)),
+            "box": [int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())],
+            "axis": vecs[:, 1], "elong": float(np.sqrt(vals[1] / max(vals[0], 1e-9)))}
+
+
+def fall_from_pixels(robot_frames, size, n, times):
+    """First fall seen in the robot's mask: top dropping FALL_DROP of its height while its long axis
+    turns FALL_TURN, within FALL_S; or the mask gone for good mid-frame. `times`: brain s per shot frame."""
+    pts = [(f, times[f], sh) for f in range(n) if robot_frames.get(f)
+           for sh in [shape(union(robot_frames[f], size))] if sh]
+    for i, (f, s, a) in enumerate(pts):
+        prev = [p for _, t, p in pts[:i] if s - t <= 0.5]
+        if len(prev) < 5 or a["elong"] < 1.3:
+            continue
+        h = float(np.median([p["bottom"] - p["top"] for p in prev]))
+        drop = turn = 0.0
+        for g, t, b in pts[i + 1:]:
+            if t - s > FALL_S:
+                break
+            drop = max(drop, b["top"] - a["top"])
+            if b["elong"] >= 1.3:
+                turn = max(turn, float(np.degrees(np.arccos(min(1.0, abs(float(a["axis"] @ b["axis"])))))))
+            if drop >= FALL_DROP * h and turn >= FALL_TURN:
+                return {"reading": "pixels", "how": "dropped and tipped over", "shot_frame": g, "brain_s": round(t, 3),
+                        "from_shot_frame": f, "drop_px": round(drop, 1), "robot_px": round(h, 1),
+                        "turn_deg": round(turn, 1)}
+    if pts and times[n - 1] - times[pts[-1][0]] >= GONE_S:
+        f, s, last = pts[-1]
+        prev = [p for _, t, p in pts if s - 0.5 <= t < s]
+        x0, y0, x1, y1 = last["box"]
+        away = min(x0, y0, size[0] - 1 - x1, size[1] - 1 - y1) >= EDGE_PX
+        whole = len(prev) >= 5 and last["bottom"] - last["top"] >= 0.5 * np.median([p["bottom"] - p["top"] for p in prev])
+        if away and whole:
+            return {"reading": "pixels", "how": "vanished mid-frame", "shot_frame": min(f + 1, n - 1),
+                    "brain_s": round(times[min(f + 1, n - 1)], 3), "last_box": last["box"]}
+    return None
+
+
+def fall_from_log(ticks, times):
+    """First brain tick within the shot whose reason mentions a fall."""
+    for k in ticks:
+        why = (k["why"] or "").lower()
+        if times[0] <= k["t"] <= times[-1] and ("fall" in why or "fell" in why):
+            f = int(np.argmin([abs(t - k["t"]) for t in times]))
+            return {"reading": "brain log", "how": k["why"], "shot_frame": f, "brain_s": round(k["t"], 3),
+                    "brain_tick": k}
+    return None
+
+
 def brain_ticks(record):
     if not record or not pathlib.Path(record).exists():
         return []
@@ -242,7 +316,7 @@ def around(ticks, t, before=0.5, after=0.2):
 
 
 # ── output ───────────────────────────────────────────────────────────────────
-def draw(path, frame_rgb, robot_mask, object_mask, base_mask, names, series, contacts, clock):
+def draw(path, frame_rgb, robot_mask, object_mask, base_mask, names, series, contacts, clock, fall=None):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -260,6 +334,8 @@ def draw(path, frame_rgb, robot_mask, object_mask, base_mask, names, series, con
     shown = contacts.get("base") or contacts.get("body") or contacts.get("whole_mask")
     if shown:
         title += f"\nfirst contact: frame {shown['frame']}, {shown['brain_s']:.3f} s after the brain starts"
+    if fall:
+        title += f"\nfall ({fall['reading']}): frame {fall['frame']}, {fall['brain_s']:.3f} s after the brain starts"
     top.set_title(title, fontsize=11)
 
     t = [p["brain_s"] for p in series]
@@ -273,6 +349,8 @@ def draw(path, frame_rgb, robot_mask, object_mask, base_mask, names, series, con
         c = contacts.get(key)
         if c:
             bottom.axvline(c["brain_s"], color=colour, lw=1, label=f"{label}: frame {c['frame']}")
+    if fall:
+        bottom.axvline(fall["brain_s"], color="#111", lw=1.4, label=f"fall ({fall['reading']}): frame {fall['frame']}")
     bottom.set_ylim(-40, max(80, max((p["gap_px"] for p in series), default=0) * 1.05))
     bottom.set_xlabel(f"seconds after the brain's first tick ({clock} clock)")
     bottom.legend(fontsize=8, frameon=False, loc="upper right")
@@ -307,6 +385,7 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
     if reuse:
         before = json.loads((out / "evidence.json").read_text())
         robot, nearest = before["names"]["robot"], before["names"]["object"]
+        kind = before["names"].get("object_is", "object")
         namer, tried, trouble = before["names"]["named_by"], before["names"]["attempts"], before["names"]["object_warning"]
         tr, to = ({"concept": c, "frames": sam.load_raw(out / f"sam-{tag}.txt"), "status": before["tracking"][k]["status"]}
                   for c, tag, k in ((robot, "robot", "robot"), (nearest, "object", "object")))
@@ -317,18 +396,18 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
     else:
         images = [jpeg(str(shot), i) for i in picks]
         if follow:
-            (robot, nearest), namer, tried = follow, "incident", []
+            (robot, nearest), kind, namer, tried = follow, "as in the incident", "incident", []
         else:
-            (robot, nearest), namer, tried = name_objects(images, ledger, namers)
+            ((robot, nearest), kind), namer, tried = name_objects(images, ledger, namers)
         with concurrent.futures.ThreadPoolExecutor(2) as pool:
             tr, to = pool.map(run, (robot, nearest), ("robot", "object"))
         trouble = object_trouble(to, size[0] * size[1], n)
         if trouble and not follow and "spark" in namers and namer != "spark":
             tried.append({"namer": "sam check", "rejected": f"{nearest!r}: {trouble}"})
-            (_, nearest2), namer, more = name_objects(images, ledger, ("spark",))
+            ((_, nearest2), kind2), namer, more = name_objects(images, ledger, ("spark",))
             tried += more
             if nearest2 != nearest:
-                nearest = nearest2
+                nearest, kind = nearest2, kind2
                 to = run(nearest, "object")
                 trouble = object_trouble(to, size[0] * size[1], n)
     names = (robot, nearest)
@@ -378,6 +457,12 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
                                      and p["feet_depth_px"] >= -REACH * height), None)
 
     ticks = brain_ticks(snap["record"])
+    times = [snap["brain_time"][start + f] for f in range(n)]
+    falls = {"pixels": fall_from_pixels(tr["frames"], size, n, times), "brain_log": fall_from_log(ticks, times)}
+    seen = [c for c in falls.values() if c]
+    for c in seen:
+        c["frame"] = start + c["shot_frame"]
+    fall = {**falls, "first": min(seen, key=lambda c: c["brain_s"]) if seen else None}
     for key, hit in contacts.items():
         if not hit:
             continue
@@ -393,16 +478,17 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
     first = reading and contacts[reading]
     closest = min(series, key=lambda p: p["gap_px"]) if series else None
 
-    key = first or closest
+    key = fall["first"] or first or closest
     frame_rgb = rgb(str(shot), key["shot_frame"] if key else n - 1)
     rm = union(tr["frames"].get(key["shot_frame"], []), size) if key else None
     om = union(to["frames"].get(key["shot_frame"], []), size) if key else None
-    draw(out / "evidence.png", frame_rgb, rm, om, base and base["mask"], names, series, contacts, snap["clock"])
+    draw(out / "evidence.png", frame_rgb, rm, om, base and base["mask"], names, series, contacts, snap["clock"],
+         fall["first"])
 
     evidence = {
         "snapshot": snap["source"], "kind": snap["kind"], "clock": snap["clock"], "clip": snap["clip"],
         "shot": {"first_frame": start, "frames": n, "size": list(size), "naming_frames": [start + p for p in picks]},
-        "names": {"robot": robot, "object": nearest, "named_by": namer, "attempts": tried,
+        "names": {"robot": robot, "object": nearest, "object_is": kind, "named_by": namer, "attempts": tried,
                   "object_warning": trouble},
         "tracking": {k: {"concept": t["concept"], "status": t["status"],
                          "frames_with_mask": sum(1 for v in t["frames"].values() if v),
@@ -414,6 +500,8 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
                           "feet_tolerance_px": round(BASE_TOL * base["thickness"], 1),
                           "robot_height_px": height and round(height, 1),
                           "reach_px": height and round(REACH * height, 1)},
+        "incident": "fall" if fall["first"] else "contact",
+        "fall": fall,
         "first_contact": first and {"reading": reading, **first},
         "contacts": contacts,
         "closest": closest,
@@ -435,7 +523,8 @@ def main():
     out = a.out or p.parent / f"evidence-{p.stem if p.stem != 'meta' else 'twin'}"
     ev = see(p, out, (a.namer,) if a.namer else ("glimmer", "spark"), a.reuse)
     print(json.dumps({"out": str(out), "names": ev["names"]["robot"] + " / " + ev["names"]["object"],
-                      "named_by": ev["names"]["named_by"], "base": ev["base"],
+                      "named_by": ev["names"]["named_by"], "base": ev["base"], "incident": ev["incident"],
+                      "fall": ev["fall"]["first"] and {f: ev["fall"]["first"][f] for f in ("reading", "how", "frame", "brain_s")},
                       "contacts": {k: c and {f: c.get(f) for f in ("frame", "brain_s", "gap_px", "wall_time")}
                                    for k, c in ev["contacts"].items()}}, indent=1))
 
