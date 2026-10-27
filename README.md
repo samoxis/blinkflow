@@ -31,8 +31,8 @@ A local page that shows the loop live, one step at a time, with the model behind
 python3 -m blinkflow.console serve                # http://localhost:8777, follows the newest run
 python3 -m blinkflow.console report <run>/events.jsonl   # the same page as static files, for the report
 python3 -m blinkflow.console serve --film --speed 4 --events <run>/events.jsonl   # full screen at 1920x1080 on Windows, replayed at 4x
-python3 tools/teaser.py <run>/events.jsonl        # the 20 s teaser, filmed headless, subtitles from the run
-python3 tools/side_shot.py                        # the first touch from the side, slowed 4x (scorer side: twin truth)
+python3 tools/teaser.py <run>/events.jsonl        # the 20 s phone teaser, 16:9 and 1:1, filmed headless, subtitles from the run
+python3 tools/side_shot.py                        # the first touch, low from behind-right, slowed 4x, held 0.5 s; one clip per angle and a sheet (scorer side: twin truth)
 ```
 
 The clock counts machine time only: the seconds a person takes to answer "Fix it?" are shown apart and not counted.
