@@ -84,6 +84,11 @@ class Sidecar:
         (out / f"{meta['id']}.json").write_text(json.dumps(meta))
         return meta
 
+    def frame(self, width=448, skew=0.0):
+        """The newest frame: (epoch on the WSL clock, JPEG bytes). `skew` as from skew(), measured once."""
+        with urllib.request.urlopen(f"{self.base}/frame?width={width}", timeout=5) as r:
+            return float(r.headers["X-Frame-Epoch"]) - skew, r.read()
+
     def stop(self, close_window=False):
         req = urllib.request.Request(self.base + "/quit" + ("?close=1" if close_window else ""),
                                      method="POST")

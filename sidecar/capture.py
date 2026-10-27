@@ -9,6 +9,7 @@ Serves snapshots over HTTP so the agent in WSL can ask for "the last N seconds".
 GET /health                  -> state, capture rect, clock offset
 GET /snapshot?seconds=N      -> metadata of a new clip (optionally &end=<epoch>)
 GET /clip/<id>               -> the clip's mp4 bytes
+GET /frame?width=N           -> the newest frame as JPEG (epoch in X-Frame-Epoch), for the watcher
 POST /quit[?close=1]         -> stop ffmpeg and exit (optionally close the window)
 """
 import argparse
@@ -81,6 +82,7 @@ class Ring:
                "-g", str(FPS), "-bf", "0",
                "-f", "segment", "-segment_time", "1", "-segment_wrap", str(RING),
                "-segment_format", "mpegts",
+               "-segment_format_options", "flush_packets=1",   # /frame reads the open segment
                "-segment_list", os.path.join(self.dir, "ring.csv"),
                "-segment_list_type", "csv", "-segment_list_size", "0",
                os.path.join(self.dir, "seg%02d.ts")]
@@ -153,6 +155,33 @@ class Ring:
                 "frames": round((picked[-1][2] - picked[0][1]) * FPS),
                 "requested": [end - seconds, end], "rect": self.rect, "clock_offset": off}
 
+    def frame(self, width=448):
+        """The newest frame as JPEG, and its epoch. MPEG-TS can be read while it is written, so the
+        open segment (the one after the last listed) is decoded first; if it has no whole frame yet,
+        the last closed one. Frames come at a constant FPS from the segment's start."""
+        with self.lock:
+            if not self.segs:
+                raise RuntimeError("no segments yet")
+            name, (_, end) = next(reversed(self.segs.items()))
+            off = self.offset()
+        nxt = "seg%02d.ts" % ((int(name[3:5]) + 1) % RING)
+        for seg, is_open in ((nxt, True), (name, False)):
+            p = os.path.join(self.dir, seg)
+            try:
+                if is_open and os.path.getmtime(p) + 0.5 < time.time():
+                    continue                    # not written since the last wrap: an old segment
+            except FileNotFoundError:
+                continue
+            out = subprocess.run([self.ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-i", p,
+                                  "-vf", f"scale={int(width)}:-2", "-c:v", "mjpeg", "-q:v", "3",
+                                  "-f", "image2pipe", "-"], capture_output=True).stdout
+            jpegs = [j + b"\xff\xd9" for j in out.split(b"\xff\xd9") if j.startswith(b"\xff\xd8")]
+            # the open segment's last packet may be cut mid-write: its frame is not trusted
+            k = len(jpegs) - 1 - is_open
+            if k >= 0:
+                return jpegs[k], end + off + (k / FPS if is_open else -1 / FPS), is_open
+        raise RuntimeError("no frame could be decoded")
+
     def _prune(self):
         d = os.path.join(self.dir, "snaps")
         clips = sorted(f for f in os.listdir(d) if f.endswith(".mp4"))
@@ -210,6 +239,15 @@ def make_handler(ring, cursor, hwnd, stop):
                     meta = ring.snapshot(q.get("seconds", 10), q.get("end"))
                     meta["cursor"] = cursor.between(meta["t0_epoch"], meta["t1_epoch"])
                     self._json(meta)
+                elif u.path == "/frame":
+                    data, t, live = ring.frame(q.get("width", 448))
+                    self.send_response(200)
+                    self.send_header("Content-Type", "image/jpeg")
+                    self.send_header("Content-Length", str(len(data)))
+                    self.send_header("X-Frame-Epoch", repr(t))
+                    self.send_header("X-Open-Segment", "1" if live else "0")
+                    self.end_headers()
+                    self.wfile.write(data)
                 elif u.path.startswith("/clip/"):
                     sid = os.path.basename(u.path)
                     p = os.path.join(ring.dir, "snaps", sid + ".mp4")

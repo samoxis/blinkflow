@@ -59,6 +59,14 @@ def travel(record):
     return sum(math.dist(a, b) for a, b in zip(pts, pts[1:]))
 
 
+def contact_of(ev):
+    """The reading a verdict trusts, and its first contact or None: the base's when the object's base
+    was found (the body's when only it saw one), else the whole masks'."""
+    c = ev["contacts"]
+    reading = ("body" if c.get("body") and not c["base"] else "base") if ev.get("base") else "whole_mask"
+    return reading, c[reading]
+
+
 def verdict(ev, record, reference_travel=None, kind="contact"):
     """Did the incident happen again? `kind` is the incident's: "contact" or "fall".
     Contact, from the masks: with the object's base found, a touch at the base's depth counts, or failing
@@ -68,8 +76,7 @@ def verdict(ev, record, reference_travel=None, kind="contact"):
     No verdict if the robot was not followed through the shot or barely walked, or, for a contact,
     if the object was never found."""
     c = ev["contacts"]
-    reading = ("body" if c.get("body") and not c["base"] else "base") if ev.get("base") else "whole_mask"
-    hit = c[reading]
+    reading, hit = contact_of(ev)
     fall = (ev.get("fall") or {}).get("first")
     again = fall if kind == "fall" else hit
     found = ev["tracking"]["robot"]["frames_with_mask"]

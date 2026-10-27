@@ -16,6 +16,7 @@ It runs Meta's **open-weight Muse Glimmer on this PC**, so the robot's camera ne
 | Step | What happens | Meta model |
 |---|---|---|
 | Remember | The last 60 seconds of the simulator window are kept locally | — |
+| Watch | Or nobody says anything: about once a second the newest frame is checked locally for a robot touching, nearly touching, fallen or stuck; a raised hand is confirmed on pixels before the loop starts, and the moment comes from BlinkFlow's own clock (`results/watcher.md`) | Muse Glimmer (local), SAM 3.1 |
 | Listen | You say (or type) what you saw; the moment comes from BlinkFlow's own clock | Muse Voice Transcribe |
 | See | Objects in those seconds are named locally and then followed pixel by pixel; the masks become measurements (distance between objects per frame, first contact) | Muse Glimmer (local), SAM 3.1 |
 | Understand | Key frames + measurements + time-aligned logs + the robot's code → the cause, plus a plain-language explanation | Muse Wonder |
