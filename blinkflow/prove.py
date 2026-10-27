@@ -173,7 +173,7 @@ def control(out, brain=TARGET):
         try:
             ev = see.see(meta, out / scene / "evidence", tag=f"control-{scene}")
         except RuntimeError as e:                    # nothing near the robot could be named or found
-            return {"clean": False, "why": f"no verdict: {e}"[:300], "names": None}
+            return {"clean": False, "valid": False, "why": f"no verdict: {e}"[:300], "names": None}
         kind = "fall" if ev["names"]["object_is"] == "hazard" else "contact"
         v = verdict(ev, json.loads(meta.read_text())["record"], kind=kind)
         hit = v["contact"] and kind == "contact"
@@ -194,7 +194,7 @@ def control(out, brain=TARGET):
     for s in CONTROL_SCENES:
         result[s] = {**looked[s], "render_s": rendered[s][1]}
         events.emit("control.scene", scene=s, **{k: result[s].get(k) for k in (
-            "clean", "why", "names", "evidence", "render_s", "see_s", "robot_frames", "closest_gap_px")})
+            "clean", "valid", "why", "names", "evidence", "render_s", "see_s", "robot_frames", "closest_gap_px")})
     (out / "control.json").write_text(json.dumps(result, indent=1))
     events.emit("control.done", clean=all(c["clean"] for c in result.values()),
                 scenes={s: c["clean"] for s, c in result.items()})

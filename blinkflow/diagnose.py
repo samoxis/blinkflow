@@ -68,11 +68,15 @@ it rules out and why.
 in brain.toml counts as a place).
 - Do not write a patch. Give the direction of the fix in one or two sentences.
 - The explanation is for someone who has never seen the code: 2-3 sentences, no code identifiers.
+- plain: the same story in three short sentences for that person, each at most 14 words, no code \
+identifiers or numbers they cannot check: camera (what the camera showed), robot (what the robot \
+believed or did, by its own log), why (why it believed that).
 Reply with JSON only."""
 
 SCHEMA = {
     "type": "object", "additionalProperties": False,
-    "required": ["observed", "cause", "evidence", "ruled_out", "confidence", "fix_direction", "explanation"],
+    "required": ["observed", "cause", "evidence", "ruled_out", "confidence", "fix_direction", "explanation",
+                 "plain"],
     "properties": {
         "observed": {"type": "string", "description": "what happened, in the evidence's terms"},
         "cause": {"type": "object", "additionalProperties": False,
@@ -93,6 +97,8 @@ SCHEMA = {
         "confidence": {"type": "number", "description": "0 to 1"},
         "fix_direction": {"type": "string"},
         "explanation": {"type": "string"},
+        "plain": {"type": "object", "additionalProperties": False, "required": ["camera", "robot", "why"],
+                  "properties": {"camera": {"type": "string"}, "robot": {"type": "string"}, "why": {"type": "string"}}},
     },
 }
 
@@ -614,6 +620,7 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, c
     doc = report(evdir, ev, frames, target, results, "wonder" if compare else model)
     events.emit("diagnosis", tag=tag, **{k: doc[k] for k in ("observed", "cause", "evidence", "ruled_out", "confidence",
                                                              "fix_direction", "explanation", "cause_key")},
+                plain=doc.get("plain"),
                 grounded=doc["check"]["grounded"], code=snippet(files, doc["cause"]),
                 model={k: doc["model"].get(k) for k in ("model", "seconds", "cost_usd", "input_tokens",
                                                         "cached_input_tokens", "output_tokens", "reasoning_tokens")})

@@ -90,18 +90,23 @@ def parse(text, ledger):
     raise RuntimeError(f"could not read when it happened: {tried}")
 
 
-def hear(u, ledger):
+def hear(u, ledger, out=None):
     """An utterance ({press, release, wav} or {press, release, text}) -> what was said and when it happened.
-    None if nothing was said."""
+    None if nothing was said. The recording is kept in `out` as said.wav (the console draws it)."""
     t = time.time()
     events.emit("key", press=u["press"], release=u["release"], typed="text" in u)
+    audio = None
     if "text" in u:
         text, audio_s, how = u["text"].strip(), None, "typed"
     else:
+        if out:
+            audio = pathlib.Path(out) / "said.wav"
+            audio.write_bytes(u["wav"])
         text, audio_s = models.transcribe(u["wav"], ledger, "what the person said (push-to-talk)")
         how = models.VOICE
     t_heard = time.time()
-    events.emit("said", text=text, heard_by=how, audio_s=audio_s, seconds=round(t_heard - t, 2))
+    events.emit("said", text=text, heard_by=how, audio_s=audio_s, seconds=round(t_heard - t, 2),
+                audio=audio and str(audio))
     if not text:
         return None
     p, reader, tried = parse(text, ledger)
@@ -206,7 +211,7 @@ def clip(path, press, out, wav=None, text=None, with_loop=True, auto=False, brai
     u = {"press": press, "release": release, **({"wav": data} if data else {"text": text})}
     t = feed.now()
     events.clock_start(feed.t_start + release, "the person let go of the key")
-    h = hear(u, ledger)
+    h = hear(u, ledger, out)
     doc = {"feed": "clip", "clip": str(feed.path), "brain": feed.meta.get("brain"), "clock": "brain time",
            "window_s": [BEFORE, AFTER]}
     if not h:
@@ -281,7 +286,7 @@ def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=
                     u["wav"] = cap.utterance(u["id"])
             if u:
                 events.clock_start(u["release"], "the person let go of the key" if not type_ else "the person typed it")
-                h = hear(u, ledger)
+                h = hear(u, ledger, out)
                 if not h:
                     print("heard nothing; hold the key and speak again", flush=True)
         stop.set()
@@ -315,6 +320,7 @@ def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=
     m["record"] = watch.cut_record(record, m["seconds"], snap.parent / "run.jsonl.gz")
     snap.write_text(json.dumps(m))
     h.update(moment_brain_s=round(h["moment"] - start, 3), press_brain_s=round(h["press"] - start, 3))
+    events.emit("brain.clock", start=start, press_s=h["press_brain_s"], moment_s=h["moment_brain_s"])
     t0, t1 = window(h)
     c = confirm(snap, out / "window" / "evidence", h, ledger)
     c["window_brain_s"] = [round(t0 - start, 3), round(t1 - start, 3)]

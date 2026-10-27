@@ -134,6 +134,14 @@ def warm_glimmer():
     return time.time() - t
 
 
+def glimmer_vram():
+    """Glimmer as Ollama holds it now: {"vram_gb", "size_gb", "context"} (None when it is not loaded)."""
+    with urllib.request.urlopen(OLLAMA.replace("/api/chat", "/api/ps"), timeout=5) as r:
+        m = next((m for m in json.load(r)["models"] if m["name"].split(":")[0] == GLIMMER), None)
+    return m and {"vram_gb": round(m["size_vram"] / 1e9, 1), "size_gb": round(m["size"] / 1e9, 1),
+                  "context": m.get("context_length")}
+
+
 def spark(prompt, images, ledger, purpose, effort="low"):
     """Muse Spark 1.3 on the Meta Model API, JSON reply. Returns the reply text."""
     content = [{"type": "input_text", "text": prompt}]

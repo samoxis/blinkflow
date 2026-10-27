@@ -345,7 +345,7 @@ def terminal():
 def terminal_ask(question, tty, **context):
     """y or n from the person at the terminal, or the same answer from the console (blinkflow.console),
     whichever comes first; anything else asks again. `context` goes to the console with the question."""
-    qid = f"q{time.time_ns()}"
+    qid, t = f"q{time.time_ns()}", time.time()
     events.emit("ask", id=qid, question=question, **context)
     print(f"{question} [y/n] ", end="", flush=True)
     while True:
@@ -361,7 +361,7 @@ def terminal_ask(question, tty, **context):
             by = "console"
             print(f"{'y' if yes else 'n'} (answered in the console)", flush=True)
             break
-    events.emit("answer", id=qid, question=question, yes=yes, by=by)
+    events.emit("answer", id=qid, question=question, yes=yes, by=by, seconds=round(time.time() - t, 1))
     return yes
 
 
@@ -403,7 +403,13 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
     # replay before any change rendered in the twin, at low priority: on the same cores, seeing the
     # incident comes first (its own work took 9.9 s instead of 4.2 s beside a full-speed render).
     pool = concurrent.futures.ThreadPoolExecutor(4)
-    pool.submit(timed, stages, "Glimmer loaded and kept warm (background)", t0, models.warm_glimmer)
+    def warm():
+        models.warm_glimmer()
+        try:
+            events.emit("glimmer.vram", **(models.glimmer_vram() or {}))
+        except OSError as e:                    # only the console's line about the PC goes without it
+            print(f"Glimmer's VRAM not read: {e}", flush=True)
+    pool.submit(timed, stages, "Glimmer loaded and kept warm (background)", t0, warm)
     cache = None if diagnosed else pool.submit(timed, stages, "Muse Wonder's prompt cache: instructions + code "
                                                "(background)", t0, diagnose.warm, ledger)
     rendered = pool.submit(timed, stages, "replay before any change: twin render (background)", t0,
@@ -417,8 +423,12 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
     # The replay's SAM 3.1 runs beside the diagnosis.
     def look_before():
         meta, seconds = rendered.result()
-        return timed(stages, "replay before any change: SAM 3.1 + verdict (background)", t0, prove.look, meta,
-                     run / "before", names, kind=kind, replay_s=seconds)
+        try:
+            return timed(stages, "replay before any change: SAM 3.1 + verdict (background)", t0, prove.look, meta,
+                         run / "before", names, kind=kind, replay_s=seconds)
+        finally:
+            looked_at.append(time.time())
+    looked_at = []
     looked = pool.submit(look_before)
     if not diagnosed:
         try:
@@ -442,8 +452,16 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
         yes = ask("Fix it?", attempt=i, cause=two_sentences(d["explanation"]), file=c["file"],
                   lines=[c["lines"]["start"], c["lines"]["end"]], confidence=d["confidence"])
         stage(stages, f"attempt {i}: the person decides to fix", t, t0)
-        answers.append({"attempt": i, "question": "Fix it?", "yes": yes, "seconds": round(time.time() - t, 1)})
+        answers.append({"attempt": i, "question": "Fix it?", "yes": yes, "seconds": round(time.time() - t, 1),
+                        "asked": t, "answered": time.time()})
         return yes
+
+    def held():
+        """The person's share of the clock: the time a "Fix it?" waited for an answer while no machine work
+        ran (the first one overlaps the replay before any change, which keeps the machine busy)."""
+        busy = looked_at[0] if looked_at else float("inf")
+        return sum(max(0.0, a["answered"] - max(a["asked"], busy if a["attempt"] == 1 else 0))
+                   for a in answers if a["question"] == "Fix it?")
 
     # the first question while the replay before any change finishes in the background
     go = approve(1, evdir)
@@ -490,9 +508,11 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
         rec["verdict"] = v
         if v["valid"] and not v["incident"]:
             done["fixed"] = True
-            done["verified_s"] = round(time.time() - seen, 1)
-            events.emit("clock.stop", at=time.time(), seconds=done["verified_s"], why="fixed and verified",
-                        attempt=i)
+            # the machine's time only: the seconds the loop sat waiting for the person are shown apart
+            done["person_s"] = round(held(), 1)
+            done["verified_s"] = round(time.time() - seen - held(), 1)
+            events.emit("clock.stop", at=time.time(), seconds=done["verified_s"], wall_s=round(time.time() - seen, 1),
+                        person_s=done["person_s"], why="fixed and verified", attempt=i)
             if control:
                 done["control"] = timed(stages, f"attempt {i}: control, every other scene (pixels)", t0,
                                         prove.control, a / "control")
@@ -507,7 +527,7 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
                            stat=mc["change"]["stat"], files=mc["change"]["files"])
                 stage(stages, f"attempt {i}: the person decides to keep", t, t0)
                 answers.append({"attempt": i, "question": "Keep the fix?", "yes": keep,
-                                "seconds": round(time.time() - t, 1)})
+                                "seconds": round(time.time() - t, 1), "asked": t, "answered": time.time()})
                 if not keep:
                     undo(base, "the person did not keep the fix")
                     rec["rolled_back"] = True
@@ -565,7 +585,8 @@ def finish(run, snapshot, evdir, ev, diag, done, stages, ledger, t0):
     (run / "fix.json").write_text(json.dumps(done, indent=1))
     write_report(run, snapshot, evdir, ev, diag, done, mdoc)
     events.emit("done", fixed=done["fixed"], kept=done["kept"], stopped=done.get("stopped"),
-                seconds=done["seconds"], verified_s=done.get("verified_s"), seen_s=done.get("seen_s"),
+                seconds=done["seconds"], verified_s=done.get("verified_s"), person_s=done.get("person_s"),
+                seen_s=done.get("seen_s"),
                 attempts=len(done["attempts"]), base=done["base"], fix_commit=done.get("fix_commit"),
                 report=str(run / "report.md"), cost_usd=mdoc["total_cost_usd"],
                 models=manifest(mdoc["calls"]))
@@ -606,8 +627,9 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                 f"keep it ({done['seconds']:.0f} s).")
     elif kept:
         head = (f"**Fixed and verified in attempt {kept['attempt']} of {n}.** Seen -> fixed and verified: "
-                f"**{done.get('verified_s', done['seconds']):.0f} s** of wall time"
-                + (f" ({done['seconds']:.0f} s with the control and the person's answers)." if done.get("asked")
+                f"**{done.get('verified_s', done['seconds']):.0f} s** of machine time"
+                + (f" (the person took {done.get('person_s', 0):.1f} s to answer \"Fix it?\", not counted; "
+                   f"{done['seconds']:.0f} s in all with the control and the answers)." if done.get("asked")
                    or done.get("control") else "."))
     else:
         head = f"**Not fixed** after {n} attempt(s), {done['seconds']:.0f} s. " + done.get("stopped", "")
