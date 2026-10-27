@@ -64,7 +64,8 @@ def verdict(ev, record, reference_travel=None, kind="contact"):
     that a touch with the robot within reach of the base (any part, e.g. its head); a tall object's top
     hanging over the robot's path on screen does not. Without a base, any touch.
     Fall: the robot's mask tips over, drops or vanishes mid-shot (pixels), or the brain logs a fall.
-    No verdict if the robot was not followed through the shot or barely walked."""
+    No verdict if the robot was not followed through the shot or barely walked, or, for a contact,
+    if the object was never found."""
     c = ev["contacts"]
     reading = ("body" if c.get("body") and not c["base"] else "base") if ev.get("base") else "whole_mask"
     hit = c[reading]
@@ -75,7 +76,9 @@ def verdict(ev, record, reference_travel=None, kind="contact"):
     problems = []
     if found < MIN_ROBOT_FRAMES:
         problems.append(f"robot found in only {found} frames")
-    if not ev["tracking"]["object"]["frames_with_mask"]:
+    # A fall is read from the robot's mask and the brain's log; the hazard need not be segmented
+    # (SAM 3.1 found no "yellow pit" in any frame: a hole in the floor is not a thing).
+    if kind == "contact" and not ev["tracking"]["object"]["frames_with_mask"]:
         problems.append("object not found")
     if reference_travel and walked < MIN_TRAVEL * reference_travel:
         problems.append(f"robot walked {walked:.2f} m, the incident {reference_travel:.2f} m")

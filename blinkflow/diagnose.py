@@ -283,8 +283,12 @@ def fall_text(ev):
         b = f["brain_log"]
         lines.append(f"- The brain's own log reports it at t = {b['brain_s']:.3f} s: \"{b['how']}\".")
     w = ev["contacts"].get("whole_mask")
-    lines.append(f"- The robot's and the {names['object']}'s masks first touch on screen at t = {w['brain_s']:.3f} s."
-                 if w else f"- The robot's and the {names['object']}'s masks never touch on screen.")
+    if not ev["tracking"]["object"]["frames_with_mask"]:
+        lines.append(f"- SAM 3.1 found no mask for the {names['object']} in any frame, so no gap to it is measured; "
+                     "where it is must be read from the key frames.")
+    else:
+        lines.append(f"- The robot's and the {names['object']}'s masks first touch on screen at t = {w['brain_s']:.3f} s."
+                     if w else f"- The robot's and the {names['object']}'s masks never touch on screen.")
     return lines
 
 
