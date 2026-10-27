@@ -209,13 +209,13 @@ def located(cause, where):
     return any(cause["file"].endswith(w["file"]) and lo <= w["line"] <= hi for w in where)
 
 
-def restored(label, where, suite=SUITE):
-    """How many mutated lines read again as in the clean base, in the copy as the loop left it."""
+def restored(label, where, suite=SUITE, head="HEAD"):
+    """How many mutated lines read again as in the clean base, in the copy as the loop left it (`head`)."""
     with tempfile.TemporaryDirectory(dir=suite) as tmp:
         base = inject_bug.clean_base(pathlib.Path(tmp) / "base")
         now = suite / label / "target"
         same = sum((base / w["file"]).read_text().splitlines()[w["line"] - 1]
-                   == (now / w["file"]).read_text().splitlines()[w["line"] - 1] for w in where)
+                   == git(now, "show", f"{head}:{w['file']}").splitlines()[w["line"] - 1] for w in where)
     return same, len(where)
 
 
@@ -242,63 +242,87 @@ def incident(r):
     return ", ".join(out + ([f"fall {r['fell_s']:.2f} s"] if r.get("fell_s") is not None else []))
 
 
+ROUND1 = "round-1"          # a rerun keeps the first run's folders here
+
+
+LAYER_HEAD = ["| bug | layer (scene) | mutation (revealed) | incident before (twin) | Muse Wonder's cause (confidence) | "
+              "at the mutated line? | Muse Code attempts | loop's verdict | (a) incident gone | "
+              "(b) control clean in all 5 scenes | (c) change touches mutated lines | time | cost |",
+              "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+
+
+def layer_row(label, t, d, suite):
+    """One bug's table row from the run kept in `d`, with what the totals need."""
+    r = json.loads((d / "result.json").read_text())
+    fj, dj = d / "fix" / "fix.json", d / "fix" / "incident" / "diagnosis.json"
+    fix = json.loads(fj.read_text()) if fj.exists() else None
+    diag = json.loads(dj.read_text()) if dj.exists() else None
+    mj = d / "fix" / "models.json"
+    c = costs(mj) if mj.exists() else None
+    runs_f = d / "fix" / "incident" / "diagnosis-runs.json"
+    per_model = {}
+    for x in json.loads(runs_f.read_text()) if runs_f.exists() else []:
+        if x.get("mode") == "evidence":
+            m = per_model.setdefault(x["model"], [0, 0])
+            m[0] += "diagnosis" in x and located(x["diagnosis"]["cause"], t["where"])
+            m[1] += 1
+    hit = diag is not None and located(diag["cause"], t["where"])
+    a = incident_s(r["after_twin"]) is None
+    b = all(x["clean"] for x in r["control_after"].values())
+    dirty = [f"{s}: " + (f"fall {x['fell_s']:.1f} s" if x["fell_s"] is not None else
+                         f"{x['touches'][0]['geom']} {x['touches'][0]['t']:.1f} s")
+             for s, x in r["control_after"].items() if not x["clean"]]
+    hits = touched(r["diff"], t["where"])
+    same, nw = restored(label, t["where"], suite, r["head"])
+    api = len(list(d.glob("fix-failed-*.log")))
+    att = len(fix["attempts"]) if fix else 0
+    found = (f"`{diag['cause']['file']}` {diag['cause']['lines']['start']}-{diag['cause']['lines']['end']} "
+             f"({diag['confidence']:.2f})") if diag else "no diagnosis"
+    verdict = ("fixed" if fix["fixed"] else "not fixed") if fix else f"loop failed (rc {r['fix_rc']})"
+    if fix and fix.get("stopped"):
+        verdict = "stopped: " + fix["stopped"].split(":")[0]
+    row = (f"| {label} | {t['layer']} ({t['scene']}) | {t['mutation']}: `{t['change']}` | "
+           f"{incident(r['before_twin'])} | {found} | {'yes' if hit else 'no'} | "
+           f"{att or '-'}{f' (+{api} after API error)' if api else ''} | {verdict} | "
+           f"{'yes' if a else 'no: ' + incident(r['after_twin'])} | "
+           f"{'yes' if b else 'no: ' + '; '.join(dirty)} | {hits}/{nw} (restored {same}/{nw}) | "
+           f"{r['render_s'] + r['fix_s']:.0f} s | "
+           + (f"${sum(c.values()):.2f} (SAM {c['sam']:.2f}, Wonder {c['wonder']:.2f})" if c else "-") + " |")
+    return row, {"a": a, "b": b, "c": hits > 0, "abc": a and b and hits > 0, "located": hit,
+                 "retried": att > 1, "api": api}, c, per_model
+
+
 def report_layers():
     suite = inject_bug.SUITE_LAYERS
     val = json.loads((suite / "validation.json").read_text())
     truth = inject_bug.reveal(name="layers")
-    rows, total = [], {"sam": 0.0, "wonder": 0.0, "other": 0.0}
+    rows, rerun_rows, total = [], [], {"sam": 0.0, "wonder": 0.0, "other": 0.0}
     n = {"a": 0, "b": 0, "c": 0, "abc": 0, "located": 0, "run": 0, "retried": 0, "api": 0}
+    final = {"a": 0, "b": 0, "c": 0, "abc": 0}
     per_model, layers = {}, {}
     for label in val["kept"]:
-        t, rf = truth[label], suite / label / "result.json"
+        t = truth[label]
         layers.setdefault(t["layer"], []).append(label)
-        if not rf.exists():
+        first = suite / label / ROUND1 if (suite / label / ROUND1).exists() else suite / label
+        if not (first / "result.json").exists():
             rows.append(f"| {label} | {t['layer']} ({t['scene']}) | {t['mutation']}: `{t['change']}` | not run |"
                         + " |" * 10)
             continue
         n["run"] += 1
-        r = json.loads(rf.read_text())
-        fj, dj = suite / label / "fix" / "fix.json", suite / label / "fix" / "incident" / "diagnosis.json"
-        fix = json.loads(fj.read_text()) if fj.exists() else None
-        diag = json.loads(dj.read_text()) if dj.exists() else None
-        mj = suite / label / "fix" / "models.json"
-        c = costs(mj) if mj.exists() else None
-        if c:
-            total = {k: total[k] + c[k] for k in total}
-        runs_f = suite / label / "fix" / "incident" / "diagnosis-runs.json"
-        for x in json.loads(runs_f.read_text()) if runs_f.exists() else []:
-            if x.get("mode") == "evidence":
-                m = per_model.setdefault(x["model"], [0, 0])
-                m[0] += "diagnosis" in x and located(x["diagnosis"]["cause"], t["where"])
-                m[1] += 1
-        hit = diag is not None and located(diag["cause"], t["where"])
-        a = incident_s(r["after_twin"]) is None
-        b = all(x["clean"] for x in r["control_after"].values())
-        dirty = [f"{s}: " + (f"fall {x['fell_s']:.1f} s" if x["fell_s"] is not None else
-                             f"{x['touches'][0]['geom']} {x['touches'][0]['t']:.1f} s")
-                 for s, x in r["control_after"].items() if not x["clean"]]
-        hits = touched(r["diff"], t["where"])
-        same, nw = restored(label, t["where"], suite)
-        api = len(list((suite / label).glob("fix-failed-*.log")))
-        att = len(fix["attempts"]) if fix else 0
-        n["a"] += a
-        n["b"] += b
-        n["c"] += hits > 0
-        n["abc"] += a and b and hits > 0
-        n["located"] += hit
-        n["retried"] += att > 1
-        n["api"] += api
-        found = (f"`{diag['cause']['file']}` {diag['cause']['lines']['start']}-{diag['cause']['lines']['end']} "
-                 f"({diag['confidence']:.2f})") if diag else "no diagnosis"
-        verdict = ("fixed" if fix["fixed"] else "not fixed") if fix else f"loop failed (rc {r['fix_rc']})"
-        rows.append(
-            f"| {label} | {t['layer']} ({t['scene']}) | {t['mutation']}: `{t['change']}` | "
-            f"{incident(r['before_twin'])} | {found} | {'yes' if hit else 'no'} | "
-            f"{att or '-'}{f' (+{api} after API error)' if api else ''} | {verdict} | "
-            f"{'yes' if a else 'no: ' + incident(r['after_twin'])} | "
-            f"{'yes' if b else 'no: ' + '; '.join(dirty)} | {hits}/{nw} (restored {same}/{nw}) | "
-            f"{r['render_s'] + r['fix_s']:.0f} s | "
-            + (f"${sum(c.values()):.2f} (SAM {c['sam']:.2f}, Wonder {c['wonder']:.2f})" if c else "-") + " |")
+        runs = [(first, rows)] + ([(suite / label, rerun_rows)] if first != suite / label else [])
+        for d, out in runs:
+            row, f, c, pm = layer_row(label, t, d, suite)
+            out.append(row)
+            if c:
+                total = {k: total[k] + c[k] for k in total}
+            for m, (x, y) in pm.items():
+                q = per_model.setdefault(m, [0, 0])
+                q[0], q[1] = q[0] + x, q[1] + y
+            if d == first:
+                for k in f:
+                    n[k] += f[k]
+        for k in final:                     # the last run of each bug
+            final[k] += f[k]
     k = len(val["kept"])
     ctl = ", ".join(f"{s} {'clean' if c['clean'] else 'NOT clean'}" for s, c in val["control"].items())
     out = [LAYERS_MARK, "", "# Layered bug suite", "",
@@ -310,10 +334,7 @@ def report_layers():
            + ", ".join(f"{ly} {len(ls)}" for ly, ls in layers.items()) + ". BlinkFlow saw each incident only "
            "as the twin's rendered shot and the brain's log; the mutation is revealed here, after the runs. "
            f"Muse Wonder diagnosed once per bug; Muse Spark ran once beside it on {', '.join(val['compared'])}.", "",
-           "| bug | layer (scene) | mutation (revealed) | incident before (twin) | Muse Wonder's cause (confidence) | "
-           "at the mutated line? | Muse Code attempts | loop's verdict | (a) incident gone | "
-           "(b) control clean in all 5 scenes | (c) change touches mutated lines | time | cost |",
-           "|---|---|---|---|---|---|---|---|---|---|---|---|---|", *rows, "",
+           *LAYER_HEAD, *rows, "",
            f"**(a) incident gone: {n['a']}/{k}. (b) no regression in any scene: {n['b']}/{k}. (c) the change "
            f"touches a mutated line: {n['c']}/{k}. All three: {n['abc']}/{k}.** Wonder's cause contained a mutated "
            f"line in {n['located']}/{k}. {n['retried']} bug(s) needed more than one Muse Code attempt; "
@@ -325,6 +346,14 @@ def report_layers():
            "", f"Model cost of the runs: ${sum(total.values()):.2f} (SAM 3.1 ${total['sam']:.2f}, Muse Wonder "
            f"${total['wonder']:.2f}, other ${total['other']:.2f}). Time = rendering the incident + the whole loop.",
            ""]
+    if rerun_rows:
+        out += ["## Rerun of the failures", "",
+                "After three changes to BlinkFlow (any-part contact reading, a retry's diagnosis sees every earlier "
+                "attempt, the audit no longer reads a division as a path), the bugs that failed above were run "
+                "again from scratch, with the same sealed copies. The first run stays in the table above.", "",
+                *LAYER_HEAD, *rerun_rows, "",
+                f"**After the rerun: (a) {final['a']}/{k}, (b) {final['b']}/{k}, (c) {final['c']}/{k}, all three "
+                f"{final['abc']}/{k}.**", ""]
     if val["rejected"]:
         out += ["## Layered mutations without an incident in their scene (not in the set)", ""]
         out += [f"- {v['layer']} ({v['scene']}): {v['mutation']}: `{v['change']}`" for v in val["rejected"].values()]
