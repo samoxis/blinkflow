@@ -50,6 +50,7 @@ SCENES = ("box", "low_cube", "ledge", "corner", "doorway")    # blinkflow.scenes
 MAX_LAYERED = 8
 COMPARED = 2              # layered set: bugs whose first diagnosis also runs Muse Spark once
 LAYERS_MARK = "<!-- layered suite -->"
+NOTES_MARK = "<!-- layered notes -->"     # hand-written analysis after it survives a new report
 
 
 def twin(brain, seconds, out, video=False, scene=None):
@@ -328,8 +329,9 @@ def report_layers():
         out += ["## Layered mutations without an incident in their scene (not in the set)", ""]
         out += [f"- {v['layer']} ({v['scene']}): {v['mutation']}: `{v['change']}`" for v in val["rejected"].values()]
         out += [""]
-    before = RESULTS.read_text().split(LAYERS_MARK)[0].rstrip() + "\n\n" if RESULTS.exists() else ""
-    RESULTS.write_text(before + "\n".join(out))
+    text = RESULTS.read_text() if RESULTS.exists() else ""
+    before = text.split(LAYERS_MARK)[0].rstrip() + "\n\n" if text else ""
+    RESULTS.write_text(before + "\n".join(out) + "".join(text.partition(NOTES_MARK)[1:]))
     print(RESULTS)
 
 
