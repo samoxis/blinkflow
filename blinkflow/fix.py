@@ -62,6 +62,15 @@ HISTORY = """
 Each one was undone: the workspace is back to its original state. Do not simply repeat one.
 {attempts}"""
 
+EARLIER = """NOTE. Earlier fixes did not remove this incident. Each was replayed in the same deterministic \
+scene and looked at again from the pixels; the robot still touched the {obj}.
+
+{attempts}
+
+The evidence above is the replay with attempt {last}'s change still in the code shown above. A cause whose \
+change left the incident as it was is not the cause, or not the whole of it: look at the other parts of the \
+brain that could lead to this incident, and say in ruled_out why the earlier causes were not enough."""
+
 
 # ── the target's git ─────────────────────────────────────────────────────────
 def git(*args, check=True):
@@ -262,6 +271,17 @@ def says(v, obj):
     return f"no contact; closest gap {v['closest_gap_px']:.0f} px at t = {v['closest_s']:.2f} s"
 
 
+def effect(v, before):
+    """What a failed change did to the incident, against the replay without it (same scene, same clock)."""
+    if not (v["valid"] and v["contact"]):
+        return ""
+    d = v["first_contact_s"] - before["first_contact_s"]
+    if abs(d) < 0.1:
+        return (f"; before any change it was at t = {before['first_contact_s']:.3f} s, so this change did not "
+                f"move the incident at all")
+    return f", {abs(d):.2f} s {'later' if d > 0 else 'earlier'} than before any change"
+
+
 def stage(stages, name, t):
     stages.append({"stage": name, "seconds": round(time.time() - t, 1)})
 
@@ -298,7 +318,7 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
         done["stopped"] = "the replay without a change does not show the contact: " + says(before, obj)
         return finish(run, snapshot, evdir, ev, first_diag, done, stages, ledger, t0)
 
-    diag_dir, history = evdir, []
+    diag_dir, history, tried = evdir, [], []
     for i in range(1, attempts + 1):
         a = run / f"attempt-{i}"
         prompt = PROMPT.format(diagnosis=diagnosis_text(diag_dir))
@@ -312,9 +332,12 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
                "muse_code": {k: mc[k] for k in ("seconds", "outcome", "summary", "problems", "session")},
                "change": mc["change"], "verdict": None, "kept": False}
         done["attempts"].append(rec)
+        cause = json.loads((diag_dir / "diagnosis.json").read_text())["cause"]
         if mc["problems"]:
             undo(base)
             history.append(f"Attempt {i} was rejected before any replay: {'; '.join(mc['problems'])}.")
+            tried.append(f"Attempt {i}: the diagnosis named `{rec['cause_key']}` ({cause['what']}) The change was "
+                         f"rejected before any replay ({'; '.join(mc['problems'])}), so that idea is untested.")
             continue
         t = time.time()
         try:
@@ -330,13 +353,15 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
             done["fix_commit"] = git("rev-parse", "HEAD").strip()
             break
         what = f"Attempt {i} changed:\n```diff\n{mc['change']['diff']}```\nIts note: {mc['summary']}\n" \
-               f"Replay of the same scene with this change: {says(v, obj)}."
+               f"Replay of the same scene with this change: {says(v, obj)}{effect(v, before)}."
+        tried.append(f"Attempt {i}: the diagnosis named `{rec['cause_key']}` ({cause['what']}) The change:\n"
+                     f"```diff\n{mc['change']['diff']}```\nReplay of the same scene with it: {says(v, obj)}"
+                     f"{effect(v, before)}.")
         if i < attempts and v["valid"]:
-            # Back to Muse Wonder with the new evidence, the change still in place so code and pixels agree.
+            # Back to Muse Wonder with the new evidence, the change still in place so code and pixels agree,
+            # and with every earlier cause and what its change did, so it can look elsewhere.
             t = time.time()
-            context = (f"NOTE. This replay ran with a fix already applied to the code above, and the robot still "
-                       f"touched the {obj}. The fix was:\n{mc['change']['diff']}\nFind what else causes the "
-                       f"contact; the cause may be in a different place than the one this fix changed.")
+            context = EARLIER.format(obj=obj, attempts="\n\n".join(tried), last=i)
             try:
                 diagnose.diagnose(a / "evidence", context=context)
                 diag_dir = a / "evidence"
