@@ -25,6 +25,7 @@ import gzip
 import json
 import pathlib
 import subprocess
+import urllib.error
 
 import numpy as np
 from scipy import ndimage
@@ -56,6 +57,15 @@ NAMING_PROMPT = (
     "which object or hazard is closest to the robot, and whether that one is an object or a hazard. "
     "Reply only with JSON: {{\"objects\": [\"...\"], \"hazards\": [\"...\"], \"robot\": \"...\", "
     "\"nearest\": \"...\", \"nearest_is\": \"object\" or \"hazard\"}}")
+
+
+NAMING_SCHEMA = {
+    "type": "object",
+    "properties": {"objects": {"type": "array", "items": {"type": "string"}, "maxItems": 6},
+                   "hazards": {"type": "array", "items": {"type": "string"}, "maxItems": 6},
+                   "robot": {"type": "string"}, "nearest": {"type": "string"},
+                   "nearest_is": {"type": "string", "enum": ["object", "hazard"]}},
+    "required": ["objects", "hazards", "robot", "nearest", "nearest_is"]}
 
 
 # ── snapshot ─────────────────────────────────────────────────────────────────
@@ -143,8 +153,13 @@ def name_objects(images, ledger, namers=("glimmer", "spark")):
     tried = []
     prompt = NAMING_PROMPT.format(n=len(images))
     for namer in namers:
-        call = models.glimmer if namer == "glimmer" else models.spark
-        reply = call(prompt, images, ledger, "name the robot and the object or hazard nearest to it")
+        purpose = "name the robot and the object or hazard nearest to it"
+        try:
+            reply = (models.glimmer(prompt, images, ledger, purpose, NAMING_SCHEMA) if namer == "glimmer"
+                     else models.spark(prompt, images, ledger, purpose))
+        except urllib.error.HTTPError as e:         # a local model that fails is a namer that did not answer
+            tried.append({"namer": namer, "reply": None, "rejected": f"HTTP {e.code}: {e.read()[:200]!r}"})
+            continue
         named, why = check_names(reply)
         tried.append({"namer": namer, "reply": reply, "rejected": why})
         if named:

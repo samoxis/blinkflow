@@ -96,9 +96,11 @@ def sam_reserve(frames, what):
 
 
 # ── text + image models ──────────────────────────────────────────────────────
-def glimmer(prompt, images, ledger, purpose):
-    """Muse Glimmer on this PC through Ollama. `images` are JPEG bytes. Returns the reply text."""
-    body = {"model": GLIMMER, "stream": False, "format": "json", "think": False,
+def glimmer(prompt, images, ledger, purpose, schema=None):
+    """Muse Glimmer on this PC through Ollama. `images` are JPEG bytes. Returns the reply text.
+    `schema`: a JSON schema the reply must follow. Plain "json" lets it reason inside a string field,
+    and on a long prompt it can loop until Ollama aborts (seen naming hazards, Oct 27)."""
+    body = {"model": GLIMMER, "stream": False, "format": schema or "json", "think": False,
             "options": {"temperature": 0, "num_ctx": 8192},
             "messages": [{"role": "user", "content": prompt,
                           "images": [base64.b64encode(i).decode() for i in images]}]}
