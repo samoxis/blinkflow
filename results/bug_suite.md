@@ -36,3 +36,42 @@ Why the seven did not touch anything in 20 s: the brain has three layers between
 - **Spark is the weaker diagnostician here.** Across the six first diagnoses, 14/18 Wonder runs and 12/18 Spark runs cited a mutated line. The gap is concentrated in b9, where Wonder scored 3/3 and Spark 1/3, with Spark blaming `depth.py`. Muse Code receives Wonder's majority, which is why the comparison matters.
 - **The run was not one clean pass.** Two harness fixes landed during the suite. The audit fix came before b4. The API-error check was too loose: it matched an earlier "ended" line, restarted b3, and discarded its first run. The SAM daily cap ($5) stopped the suite at b9 before any loop call. Following the instruction not to stop for cost, b9-b10 were rerun with `BLINKFLOW_SAM_BUDGET=12 BLINKFLOW_WONDER_BUDGET=30` set for the suite only; the defaults in code stay $5/$15. The day's ledgers, including everything before the suite and the discarded b3 run, end at SAM $6.52 and Muse Wonder $6.78. That is above the $3/$6 the suite was first given.
 - **One rendering bug surfaced in the report.** Wonder's em dashes arrived as `â\x80\x94`: `requests` decodes a `text/event-stream` with no charset as latin-1. `blinkflow/models.py` now forces UTF-8 on the stream. The one affected character in the b7 row was repaired by hand.
+
+<!-- layered suite -->
+
+# Layered bug suite
+
+Control: the clean base (`~/duck-target` with its side-memory bug undone) in every scene for 20 s, touching nothing and not falling: box clean, low_cube clean, ledge clean, corner clean, doorway clean. 11 mutations drawn from `tools/inject_bug.py --set layers` with a sealed seed, each filmed in the scene of its layer; 8 gave an incident (a contact with the scene's obstacle, or a fall) within 20 s and 8 were kept, from 4 layers: low objects 3, drops 3, corridor 1, side memory 1. BlinkFlow saw each incident only as the twin's rendered shot and the brain's log; the mutation is revealed here, after the runs. Muse Wonder diagnosed once per bug; Muse Spark ran once beside it on b1, b5.
+
+| bug | layer (scene) | mutation (revealed) | incident before (twin) | Muse Wonder's cause (confidence) | at the mutated line? | Muse Code attempts | loop's verdict | (a) incident gone | (b) control clean in all 5 scenes | (c) change touches mutated lines | time | cost |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| b1 | low objects (low_cube) | low-object position swapped: `depth.low_obstacles: LowObstacle(..., d*by, d*bx, ...)` | contact 10.56 s | `src/microduck_brain/depth.py` 268-273 (0.86) | yes | 1 | fixed | yes | yes | 1/1 (restored 1/1) | 604 s | $1.08 (SAM 0.70, Wonder 0.24) |
+| b2 | low objects (low_cube) | wall-foot margin too wide: `[low] wall_margin = 2.5` | contact 10.56 s | `src/microduck_brain/depth.py` 250-267 (0.78) | no | 1 | fixed | yes | yes | 2/2 (restored 0/2) | 598 s | $1.12 (SAM 0.70, Wonder 0.32) |
+| b5 | drops (ledge) | drop position swapped: `depth.drop_zones: DropZone(..., nominal*by, nominal*bx, ...)` | contact 9.34 s, fall 10.25 s | `src/microduck_brain/depth.py` 294-321 (0.62) | yes | 1 | fixed | yes | yes | 1/1 (restored 1/1) | 1397 s | $1.16 (SAM 0.65, Wonder 0.35) |
+| b6 | drops (ledge) | drop margin too wide: `[drop] range_margin = 0.6` | contact 9.34 s, fall 10.25 s | `src/microduck_brain/depth.py` 250-267 (0.52) | no | 3 (+1 after API error) | not fixed | no: contact 9.34 s, fall 10.25 s | no: ledge: fall 10.2 s | 0/2 (restored 0/2) | 2370 s | $2.64 (SAM 0.89, Wonder 1.21) |
+| b7 | drops (ledge) | drop check too short: `[drop] max_expected = 0.3` | contact 9.34 s, fall 10.25 s | `src/microduck_brain/depth.py` 250-274 (0.58) | no | 3 (+1 after API error) | not fixed | no: contact 9.34 s, fall 10.25 s | no: ledge: fall 10.2 s | 0/2 (restored 0/2) | 2675 s | $3.18 (SAM 0.89, Wonder 1.53) |
+| b9 | low objects (low_cube) | low-object margin too wide: `[low] range_margin = 0.45` | contact 10.56 s | `src/microduck_brain/depth.py` 263-265 (0.68) | no | 1 | fixed | yes | yes | 1/2 (restored 0/2) | 672 s | $1.32 (SAM 0.70, Wonder 0.50) |
+| b10 | corridor (box) | corridor too narrow: `[obstacle] corridor_half_width = 0.05` | contact 18.43 s | `src/microduck_brain/hazards.py` 209-226 (0.55) | no | - | not fixed | no: contact 18.43 s | no: box: demo_box 18.4 s | 0/2 (restored 0/2) | 614 s | $1.19 (SAM 0.61, Wonder 0.59) |
+| b11 | side memory (box) | side memory too short: `[obstacle] side_memory_seconds = 0.05` | contact 12.38 s | `brain.toml` 29-29 (0.58) | yes | 1 | fixed | yes | yes | 1/2 (restored 0/2) | 569 s | $1.23 (SAM 0.75, Wonder 0.39) |
+
+**(a) incident gone: 5/8. (b) no regression in any scene: 5/8. (c) the change touches a mutated line: 5/8. All three: 5/8.** Wonder's cause contained a mutated line in 3/8. 2 bug(s) needed more than one Muse Code attempt; 2 loop(s) were rerun after an API error. 8/8 bugs ran. Incidents and the control are the twin's own log (scorer); the loop decides from pixels only.
+
+Wonder and Spark on the same evidence (bugs b1, b5), runs whose cause contains a mutated line: wonder 3/8, spark 1/2.
+
+Model cost of the runs: $12.94 (SAM 3.1 $5.88, Muse Wonder $5.13, other $1.93). Time = rendering the incident + the whole loop.
+
+## Layered mutations without an incident in their scene (not in the set)
+
+- direction (corner): freer side inverted: `depth.View.freer_side: left when left_free < right_free`
+- corridor (doorway): corridor too narrow (doorway): `[obstacle] corridor_half_width = 0.05`
+- stop threshold (corner): stop distance too short: `[obstacle] stop_distance = 0.16`
+<!-- layered notes -->
+## What the layered suite shows
+
+- **Control.** The repaired brain stayed clean in all five scenes for 20 s, so every scene stayed in. Two of them, corner and doorway, are still control-only: none of their own layer's mutations produced an incident there. Stop distance 0.12/0.16, the freer side inverted, and the corridor at 0.04/0.05 m all gave the same result, with the duck meandering and never touching anything. The stop decision is made twice, once in the wall view and once again when side memory is merged back in, so weakening one layer leaves the other still holding. A stuck robot is not counted, because in the box the clean brain already lingers for about 10 s. A blocking detector would mostly be detecting patience. That is why the corridor layer's bug comes from the box scene.
+- **Four layers, two failures.** Low objects (3) and side memory (1) were fixed on all three measures. The drops layer (b5, b6, b7) failed on 2 of 3. In b6 and b7, Muse Wonder named `depth.py::low_obstacles`, which is the wrong layer. Muse Code's notes describe the ledge as "a shallow tray" or "rim", so the evidence of a fall was read as a low object. The three attempts kept changing the low-object filter, and the robot fell at 10.25 s every time. b5, where the position of the drop was swapped, was fixed: there, Wonder went straight to `drop_zones`.
+- **Attempt 2 was rejected before replay in both b6 and b7.** The approval guard caught them. In b6, Muse Code wrote `/tmp/tray_probe.py`, a correct rejection. In b7, the guard read the arithmetic `/1000.0` in a bash command as a path outside the target, which is a false positive. That leaves 2 real replays out of 3 attempts.
+- **Wonder ran out of room on the ledge.** The first run of b6 and b7 each ended with 12000 reasoning tokens and no answer. `diagnose.py` crashed on a missing key instead of failing as an API error. It now keeps only runs that have a diagnosis, and the limit is now 32000 output tokens. Each bug was rerun once, counted as "+1 after API error".
+- **b10 is a measurement miss, not a model miss.** With the corridor at 0.05 m, the twin logs a contact between the jaw and `demo_box` at 18.43 s. `see.py` counts only contacts at the base, where the feet are at the box's depth, so the replay before any change "does not show the contact". The loop stopped before Muse Code. Head contacts need a second reading.
+- **(c) is weaker than (a).** b2 and b9 were fixed with no regressions, but Wonder pointed at the code and not at the configured value. Muse Code's change reaches the mutated lines without restoring their value: the incident went away by another route.
+- **Cost.** $12.94 in model calls for the eight loops (SAM 3.1 $5.88, Muse Wonder $5.13). The suite ran with `BLINKFLOW_SAM_BUDGET=25 BLINKFLOW_WONDER_BUDGET=30` from the environment. The code defaults are still $5 and $15.
