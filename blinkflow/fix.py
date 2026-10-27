@@ -20,6 +20,7 @@ The target is ~/duck-target, or the copy named by BLINKFLOW_TARGET.
 """
 import argparse
 import asyncio
+import concurrent.futures
 import json
 import pathlib
 import re
@@ -54,7 +55,13 @@ and looks at the camera again.
 - Finish with two or three plain sentences in English: what you changed and why.
 
 ===== DIAGNOSIS =====
-{diagnosis}"""
+{diagnosis}
+
+===== WORKSPACE =====
+Its files (git ls-files): {files}
+The file the diagnosis names, as it is now (line numbers added; read any other file you need):
+
+{cause}"""
 
 HISTORY = """
 
@@ -270,6 +277,15 @@ def diagnosis_text(evdir):
     return re.sub(r"^!\[[^\]]*\]\([^)]*\)\n?", "", md, flags=re.M).strip()
 
 
+def workspace_text(evdir):
+    """The target's file list and the file the diagnosis names, numbered: Muse Code starts editing
+    instead of spending its first turns listing and reading the workspace."""
+    files = git("ls-files").split()
+    cause = json.loads((pathlib.Path(evdir) / "diagnosis.json").read_text())["cause"]["file"]
+    shown = {cause: (TARGET / cause).read_text()} if cause in files else {}
+    return {"files": ", ".join(files), "cause": diagnose.code_text(shown) or "(not a file of this workspace)"}
+
+
 def says(v, obj, kind="contact"):
     if not v["valid"]:
         return "no verdict (" + "; ".join(v["problems"]) + ")"
@@ -294,8 +310,17 @@ def effect(v, before):
     return f", {abs(d):.2f} s {'later' if d > 0 else 'earlier'} than before any change"
 
 
-def stage(stages, name, t):
-    stages.append({"stage": name, "seconds": round(time.time() - t, 1)})
+def stage(stages, name, t, t0):
+    stages.append({"stage": name, "start": round(t - t0, 1), "seconds": round(time.time() - t, 1)})
+
+
+def timed(stages, name, t0, fn, *args, **kw):
+    """fn(*args, **kw), its wall time kept as a stage (stages may overlap: some run in the background)."""
+    t = time.time()
+    try:
+        return fn(*args, **kw)
+    finally:
+        stage(stages, name, t, t0)
 
 
 def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
@@ -305,26 +330,42 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
     t0 = time.time()
     stages, ledger = [], models.Ledger()
     base = checkpoint()
+    evdir = pathlib.Path(evidence).expanduser().resolve() if evidence else run / "incident"
+    diagnosed = (evdir / "diagnosis.json").exists()
 
-    t = time.time()
-    if evidence:
-        evdir = pathlib.Path(evidence).expanduser().resolve()
-    else:
-        evdir = run / "incident"
-        see.see(snapshot, evdir)
-        stage(stages, "see the incident (Glimmer names, SAM 3.1 masks)", t)
+    # Started at once, none of them needs the incident's names: Glimmer loaded into VRAM, the
+    # diagnosis's fixed head (instructions + code) read into Muse Wonder's prompt cache, and the
+    # replay before any change rendered in the twin, at low priority: on the same cores, seeing the
+    # incident comes first (its own work took 9.9 s instead of 4.2 s beside a full-speed render).
+    pool = concurrent.futures.ThreadPoolExecutor(4)
+    pool.submit(timed, stages, "Glimmer loaded and kept warm (background)", t0, models.warm_glimmer)
+    cache = None if diagnosed else pool.submit(timed, stages, "Muse Wonder's prompt cache: instructions + code "
+                                               "(background)", t0, diagnose.warm, ledger)
+    rendered = pool.submit(timed, stages, "replay before any change: twin render (background)", t0,
+                           prove.render, snapshot, run / "before", nice=10)
+
+    if not evidence:
+        timed(stages, "see the incident (Glimmer names, SAM 3.1 masks)", t0, see.see, snapshot, evdir)
     ev = json.loads((evdir / "evidence.json").read_text())
-    t = time.time()
-    if not (evdir / "diagnosis.json").exists():
-        diagnose.diagnose(evdir, compare=compare)       # compare: N runs each of Wonder and Spark, Wonder's majority kept
-        stage(stages, "understand (Glimmer key frames, Muse Wonder)", t)
-    first_diag = json.loads((evdir / "diagnosis.json").read_text())
     names = (ev["names"]["robot"], ev["names"]["object"])
     obj, kind = names[1], ev.get("incident", "contact")
+    # The replay's SAM 3.1 runs beside the diagnosis.
+    def look_before():
+        meta, seconds = rendered.result()
+        return timed(stages, "replay before any change: SAM 3.1 + verdict (background)", t0, prove.look, meta,
+                     run / "before", names, kind=kind, replay_s=seconds)
+    looked = pool.submit(look_before)
+    if not diagnosed:
+        try:
+            cache.result()
+        except Exception as e:                  # a cold cache is slower and dearer, not wrong
+            print(f"prompt cache not warmed: {e}", flush=True)
+        # compare: N runs each of Wonder and Spark, Wonder's majority kept
+        timed(stages, "understand (Glimmer key frames, Muse Wonder)", t0, diagnose.diagnose, evdir, compare=compare)
+    first_diag = json.loads((evdir / "diagnosis.json").read_text())
 
-    t = time.time()
-    before = prove.prove(snapshot, run / "before", names, kind=kind)
-    stage(stages, "replay before any change (twin + SAM 3.1)", t)
+    before = timed(stages, "wait for the replay before any change", t0, looked.result)
+    pool.shutdown(wait=False)
     done = {"run": str(run), "base": base, "kind": kind, "before": before, "attempts": [], "fixed": False}
     if not (before["valid"] and before["incident"]):
         done["stopped"] = f"the replay without a change does not show the {kind}: " + says(before, obj, kind)
@@ -333,12 +374,11 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
     diag_dir, history, tried = evdir, [], []
     for i in range(1, attempts + 1):
         a = run / f"attempt-{i}"
-        prompt = PROMPT.format(incident=INCIDENT[kind], diagnosis=diagnosis_text(diag_dir))
+        prompt = PROMPT.format(incident=INCIDENT[kind], diagnosis=diagnosis_text(diag_dir), **workspace_text(diag_dir))
         if history:
             prompt += HISTORY.format(attempts="\n\n".join(history))
-        t = time.time()
-        mc = muse_code(prompt, a, base, ledger, f"fix attempt {i}", model)
-        stage(stages, f"attempt {i}: Muse Code edits the target", t)
+        mc = timed(stages, f"attempt {i}: Muse Code edits the target", t0, muse_code, prompt, a, base, ledger,
+                   f"fix attempt {i}", model)
         rec = {"attempt": i, "diagnosis": str(diag_dir / "diagnosis.md"),
                "cause_key": json.loads((diag_dir / "diagnosis.json").read_text())["cause_key"],
                "muse_code": {k: mc[k] for k in ("seconds", "outcome", "summary", "problems", "session")},
@@ -356,7 +396,7 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
             v = prove.prove(snapshot, a, names, before["travel_m"], kind=kind)
         except subprocess.CalledProcessError as e:              # the patched brain did not run
             v = {"valid": False, "incident": None, "contact": None, "problems": [f"the replay failed: {e}"]}
-        stage(stages, f"attempt {i}: replay and look again", t)
+        stage(stages, f"attempt {i}: replay and look again", t, t0)
         rec["verdict"] = v
         if v["valid"] and not v["incident"]:
             git("commit", "-qm", f"fix: {rec['cause_key']}\n\n{mc['summary']}\n\nVerified by BlinkFlow replay: "
@@ -380,7 +420,7 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
                 what += " A new diagnosis of that replay, made with the change in place, is the DIAGNOSIS above."
             except (SystemExit, RuntimeError) as e:
                 what += f" (no new diagnosis: {e})"
-            stage(stages, f"attempt {i}: understand the replay (Glimmer, Muse Wonder)", t)
+            stage(stages, f"attempt {i}: understand the replay (Glimmer, Muse Wonder)", t, t0)
         undo(base)
         history.append(what)
     return finish(run, snapshot, evdir, ev, first_diag, done, stages, ledger, t0)
@@ -395,7 +435,8 @@ def all_calls(run, evdir, ledger):
         f = d / "models.json"
         if f.exists():
             calls += [{**c, "stage": role} for c in json.loads(f.read_text())["calls"]]
-    calls += [{**c, "stage": c["purpose"].replace("fix attempt ", "attempt-")} for c in ledger.calls]
+    calls += [{**c, "stage": c["purpose"].replace("fix attempt ", "attempt-") if c["purpose"].startswith("fix")
+               else "incident"} for c in ledger.calls]
     return calls
 
 
@@ -493,9 +534,11 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                 else f"- replay: {says(v, obj, kind) if v else 'not run'}", ""]
         if not a["kept"] and a["change"]["diff"].strip():
             out += ["```diff", a["change"]["diff"].rstrip(), "```", ""]
-    out += ["## Time", "", "| stage | s |", "|---|---|"]
-    out += [f"| {s['stage']} | {s['seconds']:.0f} |" for s in done["stages"]]
-    out += [f"| **total** | **{done['seconds']:.0f}** |", ""]
+    out += ["## Time", "", "Stages marked background run beside the others, so the column does not add up to the "
+            "total.", "", "| stage | from (s) | s |", "|---|---|---|"]
+    out += [f"| {s['stage']} | {s['start']:.0f} | {s['seconds']:.0f} |"
+            for s in sorted(done["stages"], key=lambda s: s["start"])]
+    out += [f"| **total** | 0 | **{done['seconds']:.0f}** |", ""]
     if evdir.parent != run:
         out += ["The incident's evidence and first diagnosis were reused from an earlier run; their time is not "
                 "counted above.", ""]

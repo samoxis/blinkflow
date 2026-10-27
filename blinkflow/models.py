@@ -21,6 +21,8 @@ GLIMMER = "muse-glimmer"
 SPARK = "muse-spark-1.3"
 WONDER = "muse-wonder-1.0"
 PRICES = {SPARK: (1.25, 0.15, 4.25), WONDER: (4.0, 0.20, 20.0)}   # per 1M tokens: input, cached input, output
+WARM_OUTPUT = 16         # output tokens of a call that only fills the prompt cache
+GLIMMER_KEEP = "30m"     # Ollama unloads an idle model after 5 min; a cold Glimmer is a ~20 GB load
 SAM_PER_FRAME = 0.20 / 1000
 SPEND = pathlib.Path.home() / "blinkflow-runs" / "sam-spend.jsonl"
 SAM_DAILY_BUDGET = float(os.environ.get("BLINKFLOW_SAM_BUDGET", "5.0"))
@@ -101,7 +103,7 @@ def glimmer(prompt, images, ledger, purpose, schema=None):
     `schema`: a JSON schema the reply must follow. Plain "json" lets it reason inside a string field,
     and on a long prompt it can loop until Ollama aborts (seen naming hazards, Oct 27)."""
     body = {"model": GLIMMER, "stream": False, "format": schema or "json", "think": False,
-            "options": {"temperature": 0, "num_ctx": 8192},
+            "options": {"temperature": 0, "num_ctx": 8192}, "keep_alive": GLIMMER_KEEP,
             "messages": [{"role": "user", "content": prompt,
                           "images": [base64.b64encode(i).decode() for i in images]}]}
     req = urllib.request.Request(OLLAMA, data=json.dumps(body).encode(),
@@ -112,6 +114,17 @@ def glimmer(prompt, images, ledger, purpose, schema=None):
     ledger.add(GLIMMER, "local", purpose, time.time() - t, 0.0, images=len(images),
                input_tokens=d.get("prompt_eval_count"), output_tokens=d.get("eval_count"))
     return d["message"]["content"].replace("<|eot|>", "").strip()
+
+
+def warm_glimmer():
+    """Load Glimmer into VRAM (with the context size the calls use) and keep it there; returns seconds.
+    Ollama loads a model on its first request, so without this the first naming waits for the load."""
+    body = {"model": GLIMMER, "messages": [], "keep_alive": GLIMMER_KEEP, "options": {"num_ctx": 8192}}
+    req = urllib.request.Request(OLLAMA, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
+    t = time.time()
+    with urllib.request.urlopen(req, timeout=600) as r:
+        r.read()
+    return time.time() - t
 
 
 def spark(prompt, images, ledger, purpose, effort="low"):
@@ -136,10 +149,14 @@ def spark(prompt, images, ledger, purpose, effort="low"):
     return "".join(text)
 
 
-def respond(model, content, ledger, purpose, effort="medium", schema=None, max_output=16000):
+def respond(model, content, ledger, purpose, effort="medium", schema=None, max_output=16000, warm=False):
     """One Responses API call with text and images (`content` as input_text / input_image parts),
     streamed (long non-streaming calls end in HTTP 504). JSON reply, held to `schema` when given.
-    Muse Wonder first reserves the most the call can cost against its daily budget."""
+    Muse Wonder first reserves the most the call can cost against its daily budget.
+    `warm`: only read `content` into the prompt cache (same model, format and cache key as the real
+    call, so its prefix matches); the reply is cut off after a few tokens and not returned."""
+    if warm:
+        max_output = WARM_OUTPUT
     pin, pcached, pout = PRICES[model]
     if model == WONDER:
         chars = sum(len(c.get("text", "")) for c in content)
@@ -186,6 +203,8 @@ def respond(model, content, ledger, purpose, effort="medium", schema=None, max_o
                input_tokens=usage.get("input_tokens"), cached_input_tokens=cached,
                output_tokens=usage.get("output_tokens"),
                reasoning_tokens=(usage.get("output_tokens_details") or {}).get("reasoning_tokens"))
+    if warm:
+        return None
     if status != "completed":
         raise RuntimeError(f"{model} ended {status}: {''.join(text)[:300]!r}")
     return "".join(text)

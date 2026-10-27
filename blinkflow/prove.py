@@ -39,10 +39,11 @@ def scenario(snapshot_path):
     return {"from": "live", "scene": None, "settle": 3.0, "seconds": m["seconds"] + EXTRA_S}   # sim.py: scene "demo"
 
 
-def replay(scen, out, brain=TARGET):
-    """Run the twin with the incident's camera shot rendered; returns the replay's meta.json."""
+def replay(scen, out, brain=TARGET, nice=0):
+    """Run the twin with the incident's camera shot rendered; returns the replay's meta.json.
+    `nice`: a replay rendered in the background yields the CPU to the work in front of it."""
     out.mkdir(parents=True, exist_ok=True)
-    args = [str(RL_PYTHON), "-m", "blinkflow.twin", "--brain", str(brain), "--settle", str(scen["settle"]),
+    args = ["nice", "-n", str(nice)] * bool(nice) + [str(RL_PYTHON), "-m", "blinkflow.twin", "--brain", str(brain), "--settle", str(scen["settle"]),
             "--seconds", str(scen["seconds"]), "--video", "--out", str(out)]
     if scen["scene"]:
         args += ["--scene", scen["scene"]]
@@ -92,19 +93,29 @@ def verdict(ev, record, reference_travel=None, kind="contact"):
             "robot_frames": found, "travel_m": round(walked, 3)}
 
 
+def render(snapshot, out, brain=TARGET, nice=0):
+    """The snapshot's scenario replayed in the twin with the brain as it is now: (meta.json, seconds)."""
+    t = time.time()
+    meta = replay(scenario(snapshot), pathlib.Path(out) / "twin", brain, nice)
+    return meta, round(time.time() - t, 1)
+
+
+def look(meta, out, follow, reference_travel=None, kind="contact", replay_s=None):
+    """SAM 3.1 on a rendered replay, following `follow`; the verdict on an incident of this `kind`."""
+    out = pathlib.Path(out)
+    t = time.time()
+    ev = see.see(meta, out / "evidence", follow=follow)
+    v = verdict(ev, json.loads(meta.read_text())["record"], reference_travel, kind)
+    v.update(meta=str(meta), evidence=str(out / "evidence"), replay_s=replay_s, see_s=round(time.time() - t, 1))
+    (out / "verdict.json").write_text(json.dumps(v, indent=1))
+    return v
+
+
 def prove(snapshot, out, follow, reference_travel=None, brain=TARGET, kind="contact"):
     """Replay the snapshot's scenario with the brain as it is now, look at it, give the verdict on an
     incident of this `kind`."""
-    out = pathlib.Path(out)
-    t = time.time()
-    meta = replay(scenario(snapshot), out / "twin", brain)
-    t_replay = time.time() - t
-    ev = see.see(meta, out / "evidence", follow=follow)
-    v = verdict(ev, json.loads(meta.read_text())["record"], reference_travel, kind)
-    v.update(meta=str(meta), evidence=str(out / "evidence"), replay_s=round(t_replay, 1),
-             see_s=round(time.time() - t - t_replay, 1))
-    (out / "verdict.json").write_text(json.dumps(v, indent=1))
-    return v
+    meta, seconds = render(snapshot, out, brain)
+    return look(meta, out, follow, reference_travel, kind, seconds)
 
 
 def main():

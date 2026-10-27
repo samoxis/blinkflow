@@ -20,6 +20,7 @@ the evidence, to see whether the cause can be guessed from the code alone.
 import argparse
 import base64
 import collections
+import concurrent.futures
 import gzip
 import json
 import math
@@ -162,32 +163,37 @@ def build_frames(evdir, ev, snap, ledger):
     shot = str(evdir / "shot.mp4")
     size = tuple(ev["shot"]["size"])
     start = ev["shot"]["first_frame"]
-    robot_raw, obj_raw = sam.load_raw(evdir / "sam-robot.txt"), sam.load_raw(evdir / "sam-object.txt")
+    keys = key_frames(ev, snap)
+    fb = ev["base"]["from_frame"] - start if ev.get("base") and ev.get("incident") != "fall" else None
+    needed = {k["shot_frame"] for k in keys} | {fb}          # only these masks are drawn
+    robot_raw, obj_raw = sam.load_raw(evdir / "sam-robot.txt", needed), sam.load_raw(evdir / "sam-object.txt", needed)
     base = None
-    if ev.get("base") and ev.get("incident") != "fall":
-        fb = ev["base"]["from_frame"] - start
+    if fb is not None:
         base = see.base_of(see.union(obj_raw[fb], size), see.rgb(shot, fb))["mask"]
     by_frame = {p["frame"]: p for p in ev["gap_by_frame"]}
     names = (ev["names"]["robot"], ev["names"]["object"])
     (evdir / "keyframes").mkdir(exist_ok=True)
-    frames = []
-    for k in key_frames(ev, snap):
+    what = "a hazard in the floor (an edge, a pit, a step)" if hazard(ev) else "an object"
+
+    def describe(k):
         f = k["shot_frame"]
         r = see.union(robot_raw.get(f) or [], size)
         o = see.union(obj_raw.get(f) or [], size)
         m = by_frame.get(k["frame"])
         path = evdir / "keyframes" / f"{k['tag']}.jpg"
         annotate(see.rgb(shot, f), r, o, base, k, m, names).save(path, quality=88)
-        what = "a hazard in the floor (an edge, a pit, a step)" if hazard(ev) else "an object"
         reply = models.glimmer(DESCRIBE_PROMPT.format(label=k["label"], robot=names[0], object=names[1], what=what),
                                [see.jpeg(shot, f)], ledger, f"describe key frame {k['tag']}")
         try:
             sentence = json.loads(reply)["sentence"].strip()
         except (ValueError, KeyError, AttributeError):
             sentence = reply.strip()
-        frames.append({**k, "image": str(path.relative_to(evdir)), "glimmer": sentence,
-                       "gap_px": m and m["gap_px"], "feet_depth_px": m and m.get("feet_depth_px")})
-    return frames
+        return {**k, "image": str(path.relative_to(evdir)), "glimmer": sentence,
+                "gap_px": m and m["gap_px"], "feet_depth_px": m and m.get("feet_depth_px")}
+
+    # All four at once: Ollama answers them side by side (4.0 s one after another, 2.4 s together).
+    with concurrent.futures.ThreadPoolExecutor(len(keys)) as pool:
+        return list(pool.map(describe, keys))
 
 
 # ── brain log ────────────────────────────────────────────────────────────────
@@ -527,6 +533,14 @@ def rescore(evdir):
             r["key"] = cause_key(r["diagnosis"], r["check"], files)
     main_model = "wonder" if any(r["model"] == "wonder" and r["mode"] == "evidence" for r in results) else "spark"
     return report(evdir, ev, frames, target, results, main_model)
+
+
+def warm(ledger, model="wonder"):
+    """Send the head every diagnosis starts with (instructions + the target's code, ~30k tokens) ahead
+    of time, while the incident is still being measured, so the diagnosis finds it in the prompt cache."""
+    head = INSTRUCTIONS + "\n\n" + code_text(target_files(TARGET))
+    models.respond(MODELS[model], [{"type": "input_text", "text": head}], ledger,
+                   "warm the prompt cache (instructions + code)", EFFORT, SCHEMA, warm=True)
 
 
 def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, context=None):
