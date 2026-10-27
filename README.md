@@ -95,6 +95,10 @@ Glimmer is the open-weight model that names objects, describes key frames and re
 
 `python3 tools/pack_example.py <run>/events.jsonl examples/<name>` packs any run the same way: paths made relative to the example, the home folder written as `~`, no keys, and never the scorer's ground truth.
 
+## Related work
+
+Parts of this loop exist on their own. Vision-language models such as [AHA](https://aha-vlm.github.io/), [RoboFAC](https://arxiv.org/abs/2505.12224) and [Guardian](https://arxiv.org/abs/2512.01946) detect and explain robot failures from images. [Roboto Agents](https://www.roboto.ai/blog/root-cause-analysis/) link robot logs to code and propose a fix for review. [GALA](https://arxiv.org/abs/2604.08089) (2026) maps screenshots of web UI bugs to the code behind them. [Fly-by-Code](https://fly-by-code.github.io/) and [SimEX](https://arxiv.org/abs/2609.38982) (2026) have coding agents write robot programs and test them in simulation. BlinkFlow closes the loop for an existing robot: from what a person saw, to a fix proven on the same scene, with the ground truth kept away from the agent.
+
 ## Limits
 
 - **The twin is not the live simulator.** It starts the robot standing (no sit-to-stand boot) and re-states robotd's controller in Python, so robotd itself is bypassed.
