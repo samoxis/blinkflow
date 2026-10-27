@@ -410,7 +410,9 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                 f"(base `{done['base'][:7]}`).", "", "```diff", kept["change"]["diff"].rstrip(), "```", ""]
     out += ["## Proof: the same scenario replayed in the twin, before and after", "",
             "The verdict comes from SAM 3.1 masks on the rendered incident shot, following the incident's robot "
-            "and object. Contact = masks touching with the robot's feet at the object's base (the base reading).", "",
+            "and object. Contact = masks touching with the robot's feet at the object's base (the base reading), or, "
+            "when the feet never get there, with the robot within reach of the base (body reading: another part "
+            "of it, such as its head).", "",
             "| replay | contact | first contact (s) | masks touch on screen (s) | closest gap (px) | walked (m) |",
             "|---|---|---|---|---|---|"]
 

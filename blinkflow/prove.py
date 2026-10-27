@@ -58,11 +58,12 @@ def travel(record):
 
 
 def verdict(ev, record, reference_travel=None):
-    """Contact or not, from the masks. With the object's base found, only a touch at the base's depth
-    counts (a tall object's top hangs over the robot's path on screen); without it, any touch.
+    """Contact or not, from the masks. With the object's base found, a touch at the base's depth counts,
+    or failing that a touch with the robot within reach of the base (any part, e.g. its head); a tall
+    object's top hanging over the robot's path on screen does not. Without a base, any touch.
     No verdict if the robot was not followed through the shot or barely walked."""
     c = ev["contacts"]
-    reading = "base" if ev.get("base") else "whole_mask"
+    reading = ("body" if c.get("body") and not c["base"] else "base") if ev.get("base") else "whole_mask"
     hit = c[reading]
     found = ev["tracking"]["robot"]["frames_with_mask"]
     walked = travel(record)

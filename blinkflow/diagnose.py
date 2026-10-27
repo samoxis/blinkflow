@@ -265,7 +265,11 @@ def incident_text(ev, frames, table):
              "Measurements (from SAM 3.1 segmentation masks, per video frame):",
              f"- First contact ({c['reading']} reading): frame {c['frame']}, t = {c['brain_s']:.3f} s; mask gap "
              f"{c['gap_px']} px, robot's feet {c.get('feet_depth_px')} px past the base's far edge "
-             f"(contact = gap <= {ev['contact_px']} px with the feet at the base's depth)."]
+             + (f"(contact = gap <= {ev['contact_px']} px with the robot's lowest point within "
+                f"{ev['base']['reach_px']} px of the base, its own height {ev['base']['robot_height_px']} px: the "
+                "feet never reach the base, so a part of the robot other than its feet touches the object)."
+                if c["reading"] == "body" else
+                f"(contact = gap <= {ev['contact_px']} px with the feet at the base's depth).")]
     if w and w["frame"] != c["frame"]:
         lines.append(f"- The two masks first touch on screen earlier, at frame {w['frame']}, t = {w['brain_s']:.3f} s, "
                      "while the feet are not yet at the object's base (the object's top overlaps the robot "

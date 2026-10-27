@@ -6,7 +6,9 @@
   3. SAM 3.1 tracks both names through the shot, in parallel; masks are decoded, not just boxes;
   4. per frame: the smallest pixel gap between the two masks, and how far the robot's feet are from
      the object's base (found from pixels: lit top face, darker side face, far end of the mask);
-     two first contacts: masks touching, and masks touching with the feet at the base's depth;
+     three first contacts: masks touching; masks touching with the feet at the base's depth; and,
+     when the base never sees one, masks touching with the robot close enough to the base for any
+     part of it (a head, an arm) to reach the object;
      both placed on the brain's clock and the wall clock, with the brain ticks around them;
   5. writes evidence.json, evidence.png and models.json.
 
@@ -28,6 +30,9 @@ from . import models, sam
 
 CONTACT_PX = 2           # masks this close (or overlapping) count as touching
 BASE_TOL = 0.1           # the robot's feet may be this fraction of the base's thickness short of it
+REACH = 0.65             # any part: the robot's lowest point may be this many of its own heights short of
+                         # the base (b10's jaw on the box read 0.5-0.8 on time; base runs unchanged)
+CLEAR_PX = 20            # the robot's height on screen is measured where it is this far from the object
 CUT_SCALE = (160, 125)
 SCENERY = ("wall", "floor", "ground", "background", "shadow", "sky", "ceiling", "grid", "tile", "room")
 
@@ -206,6 +211,13 @@ def feet_depth(robot_mask, base):
     return float(np.percentile(np.stack([ys, xs], 1) @ base["u"], 99)) - base["far"]
 
 
+def extent(robot_mask, u):
+    """The robot's length on screen along the object's "down", in px."""
+    ys, xs = np.nonzero(robot_mask)
+    s = np.stack([ys, xs], 1) @ u
+    return float(np.percentile(s, 99) - np.percentile(s, 1))
+
+
 def brain_ticks(record):
     if not record or not pathlib.Path(record).exists():
         return []
@@ -245,7 +257,7 @@ def draw(path, frame_rgb, robot_mask, object_mask, base_mask, names, series, con
         top.contour(base_mask, levels=[0.5], colors=["#e8222e"], linewidths=1.4)
     top.set_axis_off()
     title = f"{names[0]} (blue)  ·  {names[1]} (green)  ·  its base, from pixels (red)"
-    shown = contacts.get("base") or contacts.get("whole_mask")
+    shown = contacts.get("base") or contacts.get("body") or contacts.get("whole_mask")
     if shown:
         title += f"\nfirst contact: frame {shown['frame']}, {shown['brain_s']:.3f} s after the brain starts"
     top.set_title(title, fontsize=11)
@@ -256,7 +268,8 @@ def draw(path, frame_rgb, robot_mask, object_mask, base_mask, names, series, con
         bottom.plot(t, [p.get("feet_depth_px") for p in series], color="#999", lw=1, ls=":",
                     label="robot's feet past the base's far edge (px)")
     bottom.axhline(CONTACT_PX, color="#bbb", lw=0.8, ls="--")
-    for key, colour, label in (("whole_mask", "#8a5cd1", "masks touch"), ("base", "#d14b1f", "touch at the base")):
+    for key, colour, label in (("whole_mask", "#8a5cd1", "masks touch"), ("base", "#d14b1f", "touch at the base"),
+                               ("body", "#c9a227", "touch, any part")):
         c = contacts.get(key)
         if c:
             bottom.axvline(c["brain_s"], color=colour, lw=1, label=f"{label}: frame {c['frame']}")
@@ -343,15 +356,26 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
         if base:
             p["base_gap_px"] = round(gap(ra, base["mask"]), 1)
             p["feet_depth_px"] = round(feet_depth(ra, base), 1)
+            p["robot_px"] = round(extent(ra, base["u"]), 1)
         series.append(p)
 
-    # Two readings of "first contact". Whole masks: the two masks touch on screen. Base: they touch
+    # Three readings of "first contact". Whole masks: the two masks touch on screen. Base: they touch
     # while the robot's feet have reached the depth of the object's base, so a robot passing behind
-    # a tall object (whose top hangs over its path on screen) does not count.
-    contacts = {"whole_mask": next((p for p in series if p["gap_px"] <= CONTACT_PX), None), "base": None}
+    # a tall object (whose top hangs over its path on screen) does not count. Any part: only when the
+    # base sees nothing, they touch while the robot's lowest point is within REACH of its own height
+    # (measured where it stands clear of the object) of the base: a head can reach the object's side
+    # from there, a robot well behind it cannot. It is not the first reading because a leg on its way
+    # to the base passes through that band ~0.8 s early.
+    contacts = {"whole_mask": next((p for p in series if p["gap_px"] <= CONTACT_PX), None), "base": None, "body": None}
+    height = None
     if base:
         contacts["base"] = next((p for p in series if p["gap_px"] <= CONTACT_PX
                                  and p["feet_depth_px"] >= -BASE_TOL * base["thickness"]), None)
+        clear = [p["robot_px"] for p in series if p["gap_px"] > CLEAR_PX]
+        height = float(np.median(clear)) if clear else None
+        if height and not contacts["base"]:
+            contacts["body"] = next((p for p in series if p["gap_px"] <= CONTACT_PX
+                                     and p["feet_depth_px"] >= -REACH * height), None)
 
     ticks = brain_ticks(snap["record"])
     for key, hit in contacts.items():
@@ -365,7 +389,8 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
             c["brain_tick"] = min(ticks, key=lambda k: abs(k["t"] - hit["brain_s"]))
             c["brain_ticks_before"] = around(ticks, hit["brain_s"])
         contacts[key] = c
-    first = contacts["base"] or contacts["whole_mask"]
+    reading = next((k for k in ("base", "body", "whole_mask") if contacts[k]), None)
+    first = reading and contacts[reading]
     closest = min(series, key=lambda p: p["gap_px"]) if series else None
 
     key = first or closest
@@ -386,8 +411,10 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
         "contact_px": CONTACT_PX,
         "base": base and {"method": base["method"], "from_frame": base["frame"],
                           "down": [round(float(x), 3) for x in base["u"]], "thickness_px": round(base["thickness"], 1),
-                          "feet_tolerance_px": round(BASE_TOL * base["thickness"], 1)},
-        "first_contact": first and {"reading": "base" if contacts["base"] else "whole_mask", **first},
+                          "feet_tolerance_px": round(BASE_TOL * base["thickness"], 1),
+                          "robot_height_px": height and round(height, 1),
+                          "reach_px": height and round(REACH * height, 1)},
+        "first_contact": first and {"reading": reading, **first},
         "contacts": contacts,
         "closest": closest,
         "gap_by_frame": series,
