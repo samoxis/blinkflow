@@ -1236,6 +1236,7 @@ window.BLINKFLOW = {
     if (id) pin(id);
   },
   events: () => EVENTS,
+  marked: (text) => marked(text, st.read),          // the sentence coloured as the heard step colours it
   player: (key) => keep.get(key),
   players: () => [...keep.entries()].filter(([, v]) => v instanceof Player).map(([k]) => k),
 };
