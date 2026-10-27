@@ -246,7 +246,7 @@ ROUNDS = "round-*"          # a rerun keeps the earlier runs' folders in round-1
 RERUNS = {
     1: "After three changes to BlinkFlow (any-part contact reading, a retry's diagnosis sees every earlier "
        "attempt, the audit no longer reads a division as a path), the bugs that failed above were run "
-       "again from scratch, with the same sealed copies. The first run stays in the table above.",
+       "again from scratch, with the same sealed copies.",
     2: "After a fall became an incident of its own (seen from pixels: the robot's mask drops and tips over, "
        "or vanishes mid-frame; or from the brain's own log; never from the twin's record of the fall), with "
        "Glimmer asked for hazards in the floor (edges, pits, steps) as well as objects, the two ledge bugs "
