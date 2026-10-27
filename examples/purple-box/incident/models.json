@@ -1,0 +1,121 @@
+{
+ "calls": [
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "name the robot and the object or hazard nearest to it",
+   "seconds": 1.9,
+   "images": 3,
+   "input_tokens": 1480,
+   "output_tokens": 47,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 0-71, sent from 0)",
+   "seconds": 4.42,
+   "frames": 72,
+   "frames_returned": 41,
+   "cache_key": "3f655360b8147dd593c81416171fe5b4b75df5885ee5bda4b517c0b018a1eb03",
+   "original_seconds": 5.7,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'purple box' (frames 0-71, sent from 0)",
+   "seconds": 5.25,
+   "frames": 72,
+   "frames_returned": 68,
+   "cache_key": "bb43541e22893fc7134663d15344b5d4e3804efe3fda3c9d7edca13847bb86e7",
+   "original_seconds": 7.39,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'purple box' (frames 72-144, sent from 57)",
+   "seconds": 5.84,
+   "frames": 88,
+   "frames_returned": 88,
+   "cache_key": "9c107d97807ece3d847cf09d597fc58cf356cf9a486a6195b7e35e1b9081254b",
+   "original_seconds": 9.19,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 72-144, sent from 57)",
+   "seconds": 6.24,
+   "frames": 88,
+   "frames_returned": 88,
+   "cache_key": "516c70a418d296a101f17d7c3cb885e0c0b76ffd280fd2fab158e63ed2b7230e",
+   "original_seconds": 9.33,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "describe key frame K1",
+   "seconds": 1.76,
+   "images": 1,
+   "input_tokens": 589,
+   "output_tokens": 44,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "describe key frame K2",
+   "seconds": 2.98,
+   "images": 1,
+   "input_tokens": 591,
+   "output_tokens": 44,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "describe key frame K3",
+   "seconds": 4.35,
+   "images": 1,
+   "input_tokens": 587,
+   "output_tokens": 45,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "describe key frame K4",
+   "seconds": 5.67,
+   "images": 1,
+   "input_tokens": 586,
+   "output_tokens": 44,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "muse-wonder-1.0",
+   "where": "Meta Model API",
+   "purpose": "diagnose (evidence, run 1)",
+   "seconds": 64.25,
+   "effort": "medium",
+   "status": "completed",
+   "images": 4,
+   "input_tokens": 40826,
+   "cached_input_tokens": 30182,
+   "output_tokens": 6063,
+   "reasoning_tokens": 4753,
+   "cost_usd": 0.16987
+  }
+ ],
+ "total_cost_usd": 0.16987,
+ "prices": {
+  "sam-3.1": "$0.20 per 1000 frames",
+  "muse-spark-open-1026": "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+  "muse-wonder-1.0": "$4.00 / 1M input, $0.20 / 1M cached input, $20.00 / 1M output",
+  "muse-voice-transcribe-1.0": "$3.00 per 1000 audio minutes",
+  "muse-glimmer": "local (Ollama on this PC), $0",
+  "cached": "a SAM 3.1 reply for the same video bytes, concept and parameters, $0"
+ }
+}

@@ -601,10 +601,10 @@ def finish(run, snapshot, evdir, ev, diag, done, stages, ledger, t0):
 
 
 def manifest(calls):
-    """Per model: where it ran, calls, tokens, cost (the console's table)."""
+    """Per model and where it ran (a cached SAM reply is a row of its own): calls, tokens, cost (the console's table)."""
     out = {}
     for c in calls:
-        m = out.setdefault(c["model"], {"model": c["model"], "where": c["where"], "calls": 0, "input_tokens": 0,
+        m = out.setdefault((c["model"], c["where"]), {"model": c["model"], "where": c["where"], "calls": 0, "input_tokens": 0,
                                         "output_tokens": 0, "frames": 0, "cost_usd": 0.0, "seconds": 0.0})
         m["calls"] += 1
         m["seconds"] = round(m["seconds"] + (c.get("seconds") or 0), 1)

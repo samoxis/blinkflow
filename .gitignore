@@ -9,3 +9,5 @@ footage/
 *.mov
 *.jsonl.gz
 tools/.bugseal*
+!examples/**/*.mp4
+!examples/**/*.jsonl.gz

@@ -1,6 +1,8 @@
 """Model calls, and the record of every call: model, where it ran, how much it read and wrote, what it cost.
 
-Prices are Meta Model API list prices (USD). Local calls cost nothing but are recorded the same way.
+Prices are list prices (USD): the Meta Model API's, and Baseten's for Muse Spark Open. Local calls cost
+nothing but are recorded the same way. Muse Spark runs on Baseten (the open-weight Muse Spark Open), so
+the Meta credits go to SAM 3.1, Muse Wonder, Muse Code and Muse Voice Transcribe.
 SAM and Muse Wonder spend is also kept in daily ledgers, so a run refuses to start a call that could
 take the day past its budget.
 """
@@ -21,7 +23,9 @@ API = "https://api.meta.ai/v1/responses"
 ASR = "https://api.meta.ai/v1/asr/transcribe"
 OLLAMA = "http://127.0.0.1:11434/api/chat"
 GLIMMER = "muse-glimmer"
-SPARK = "muse-spark-1.3"
+SPARK = "muse-spark-open-1026"
+BASETEN = "https://inference.baseten.co/v1/chat/completions"
+BASETEN_MODEL = "meta-models/" + SPARK
 WONDER = "muse-wonder-1.0"
 VOICE = "muse-voice-transcribe-1.0"
 VOICE_PER_MIN = 3.00 / 1000
@@ -35,15 +39,19 @@ WONDER_SPEND = pathlib.Path.home() / "blinkflow-runs" / "wonder-spend.jsonl"
 WONDER_DAILY_BUDGET = float(os.environ.get("BLINKFLOW_WONDER_BUDGET", "15.0"))
 
 
-def api_key():
-    key = os.environ.get("MODEL_API_KEY")
+def api_key(name="MODEL_API_KEY"):
+    key = os.environ.get(name)
     if not key:
         env = pathlib.Path.home() / ".config" / "blinkflow" / "env"
-        m = re.search(r"MODEL_API_KEY=(\S+)", env.read_text()) if env.exists() else None
+        m = re.search(name + r"=(\S+)", env.read_text()) if env.exists() else None
         key = m and m.group(1).strip("'\"")
     if not key:
-        raise RuntimeError("MODEL_API_KEY is not set")
+        raise RuntimeError(f"{name} is not set")
     return key
+
+
+def baseten_key():
+    return api_key("BASETEN_API_KEY")
 
 
 class Ledger:
@@ -62,10 +70,11 @@ class Ledger:
         known = [c["cost_usd"] for c in self.calls if c["cost_usd"] is not None]
         doc = {"calls": self.calls, "total_cost_usd": round(sum(known), 5),
                "prices": {"sam-3.1": "$0.20 per 1000 frames",
-                          SPARK: "$1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+                          SPARK: "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
                           WONDER: "$4.00 / 1M input, $0.20 / 1M cached input, $20.00 / 1M output",
                           VOICE: "$3.00 per 1000 audio minutes",
-                          GLIMMER: "local (Ollama on this PC), $0"}}
+                          GLIMMER: "local (Ollama on this PC), $0",
+                          "cached": "a SAM 3.1 reply for the same video bytes, concept and parameters, $0"}}
         pathlib.Path(path).write_text(json.dumps(doc, indent=1))
         return doc
 
@@ -142,26 +151,76 @@ def glimmer_vram():
                   "context": m.get("context_length")}
 
 
+def chat_content(content):
+    """Responses API parts (input_text / input_image) as chat completion parts."""
+    return [{"type": "text", "text": c["text"]} if c["type"] == "input_text"
+            else {"type": "image_url", "image_url": {"url": c["image_url"]}} for c in content]
+
+
+def spark_cost(u):
+    cached = (u.get("prompt_tokens_details") or {}).get("cached_tokens") or 0
+    pin, pcached, pout = PRICES[SPARK]
+    return cached, ((u.get("prompt_tokens", 0) - cached) * pin + cached * pcached + u.get("completion_tokens", 0) * pout) / 1e6
+
+
 def spark(prompt, images, ledger, purpose, effort="low"):
-    """Muse Spark 1.3 on the Meta Model API, JSON reply. Returns the reply text."""
+    """Muse Spark Open on Baseten, JSON reply. Returns the reply text."""
     content = [{"type": "input_text", "text": prompt}]
     content += [{"type": "input_image", "image_url": "data:image/jpeg;base64," + base64.b64encode(i).decode()}
                 for i in images]
-    body = {"model": SPARK, "input": [{"type": "message", "role": "user", "content": content}],
-            "text": {"format": {"type": "json_object"}}, "reasoning": {"effort": effort}}
+    body = {"model": BASETEN_MODEL, "messages": [{"role": "user", "content": chat_content(content)}],
+            "response_format": {"type": "json_object"}, "reasoning_effort": effort}
     t = time.time()
-    r = requests.post(API, json=body, timeout=300, headers={"Authorization": "Bearer " + api_key()})
+    r = requests.post(BASETEN, json=body, timeout=300, headers={"Authorization": "Api-Key " + baseten_key()})
     r.raise_for_status()
     d = r.json()
     u = d.get("usage") or {}
-    cached = (u.get("input_tokens_details") or {}).get("cached_tokens", 0)
-    pin, pcached, pout = PRICES[SPARK]
-    cost = ((u.get("input_tokens", 0) - cached) * pin + cached * pcached + u.get("output_tokens", 0) * pout) / 1e6
-    ledger.add(SPARK, "Meta Model API", purpose, time.time() - t, cost, images=len(images),
-               input_tokens=u.get("input_tokens"), output_tokens=u.get("output_tokens"))
-    text = [c["text"] for o in d["output"] if o["type"] == "message" for c in o["content"]
-            if c["type"] == "output_text"]
-    return "".join(text)
+    cached, cost = spark_cost(u)
+    ledger.add(SPARK, "Baseten", purpose, time.time() - t, cost, images=len(images),
+               input_tokens=u.get("prompt_tokens"), cached_input_tokens=cached, output_tokens=u.get("completion_tokens"))
+    return d["choices"][0]["message"]["content"] or ""
+
+
+def spark_stream(content, ledger, purpose, effort, schema, max_output, on_text=None, on_thinking=None):
+    """`respond` for Muse Spark: the same call as a streamed chat completion on Baseten.
+    Returns (text, status, ledger entry fields)."""
+    fmt = ({"type": "json_schema", "json_schema": {"name": "reply", "schema": schema, "strict": True}} if schema
+           else {"type": "json_object"})
+    body = {"model": BASETEN_MODEL, "stream": True, "stream_options": {"include_usage": True},
+            "messages": [{"role": "user", "content": chat_content(content)}],
+            "response_format": fmt, "reasoning_effort": effort, "max_tokens": max_output}
+    text, usage, status = [], {}, "eof"
+    with requests.post(BASETEN, json=body, stream=True, timeout=900,
+                       headers={"Authorization": "Api-Key " + baseten_key()}) as r:
+        if r.status_code != 200:
+            raise RuntimeError(f"{SPARK} HTTP {r.status_code}: {r.text[:500]}")
+        r.encoding = "utf-8"
+        for line in r.iter_lines(decode_unicode=True):
+            if not line or not line.startswith("data:"):
+                continue
+            payload = line[5:].strip()
+            if payload == "[DONE]":
+                break
+            try:
+                ev = json.loads(payload)
+            except json.JSONDecodeError:
+                continue
+            usage = ev.get("usage") or usage
+            for ch in ev.get("choices") or []:
+                delta = ch.get("delta") or {}
+                if delta.get("content"):
+                    text.append(delta["content"])
+                    if on_text:
+                        on_text(delta["content"])
+                if delta.get("reasoning_content") and on_thinking:
+                    on_thinking(delta["reasoning_content"])
+                if ch.get("finish_reason"):
+                    status = "completed" if ch["finish_reason"] == "stop" else "incomplete: " + ch["finish_reason"]
+    cached, cost = spark_cost(usage)
+    return "".join(text), status, cost, dict(
+        input_tokens=usage.get("prompt_tokens"), cached_input_tokens=cached,
+        output_tokens=usage.get("completion_tokens"),
+        reasoning_tokens=(usage.get("completion_tokens_details") or {}).get("reasoning_tokens"))
 
 
 def transcribe(wav, ledger, purpose, mode="PUSH_TO_TALK"):
@@ -190,6 +249,17 @@ def respond(model, content, ledger, purpose, effort="medium", schema=None, max_o
     `on_text`, `on_thinking`: called with each piece of the reply, and of any reasoning the stream shows."""
     if warm:
         max_output = WARM_OUTPUT
+    if model == SPARK:
+        t = time.time()
+        text, status, cost, amounts = spark_stream(content, ledger, purpose, effort, schema, max_output,
+                                                   on_text, on_thinking)
+        ledger.add(model, "Baseten", purpose, time.time() - t, cost, effort=effort, status=status,
+                   images=sum(c["type"] == "input_image" for c in content), **amounts)
+        if warm:
+            return None
+        if status != "completed":
+            raise RuntimeError(f"{model} ended {status}: {text[:300]!r}")
+        return text
     pin, pcached, pout = PRICES[model]
     if model == WONDER:
         chars = sum(len(c.get("text", "")) for c in content)

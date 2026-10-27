@@ -1,0 +1,167 @@
+{
+ "calls": [
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 0-93, sent from 0)",
+   "seconds": 0.0,
+   "frames": 94,
+   "frames_returned": 0,
+   "cache_key": "e793129761971da10c3e49def073154a9abbc2ae5cd18d4dc9ca94e90f817c97",
+   "original_seconds": 3.9,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 282-375, sent from 267)",
+   "seconds": 0.0,
+   "frames": 109,
+   "frames_returned": 0,
+   "cache_key": "62df6aefccf8a31d26439d077f48f0b76497a227e539f76eeebeab0363b1e18e",
+   "original_seconds": 4.08,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 188-281, sent from 173)",
+   "seconds": 0.0,
+   "frames": 109,
+   "frames_returned": 0,
+   "cache_key": "ff7c356df9424a1ef27bf8c67a284b13d92d6294190df28cd94b4d54634ebe5d",
+   "original_seconds": 4.24,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 94-187, sent from 79)",
+   "seconds": 0.0,
+   "frames": 109,
+   "frames_returned": 0,
+   "cache_key": "5e03fc52f831bf8922c8a710f54829ed3e0e5aec7c4564eb0f959cef4b874345",
+   "original_seconds": 4.41,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 564-657, sent from 549)",
+   "seconds": 0.0,
+   "frames": 109,
+   "frames_returned": 0,
+   "cache_key": "41e9ac968ca4c7ce63e3ea569635f50153b9b4b753080d21d9653f0ad74d81d8",
+   "original_seconds": 4.41,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 470-563, sent from 455)",
+   "seconds": 0.29,
+   "frames": 109,
+   "frames_returned": 93,
+   "cache_key": "87de76e4cd0d5eefca4dd51281b74ee2b8cef555c284ca0b64e28894aeea901b",
+   "original_seconds": 6.42,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 376-469, sent from 361)",
+   "seconds": 0.39,
+   "frames": 109,
+   "frames_returned": 22,
+   "cache_key": "98d260e72036c6e36175e0359a224c7cfd00fec95ff2d690ee7a92bf94b6d648",
+   "original_seconds": 6.14,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'purple box' (frames 0-93, sent from 0)",
+   "seconds": 1.56,
+   "frames": 94,
+   "frames_returned": 94,
+   "cache_key": "5153cff09293649905f7de2e6e7e106db8fe1e1e7b852dbda5af60e6d68a276e",
+   "original_seconds": 8.89,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'purple box' (frames 94-187, sent from 79)",
+   "seconds": 1.84,
+   "frames": 109,
+   "frames_returned": 109,
+   "cache_key": "555e877ff8d392a26cda8863a48d6af05ce2753221e996cadede00d5d86fdebb",
+   "original_seconds": 10.36,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'purple box' (frames 282-375, sent from 267)",
+   "seconds": 2.47,
+   "frames": 109,
+   "frames_returned": 109,
+   "cache_key": "ecbb21c6f47f048fa3df95f00f54bd6d0b7c51fcbad55b418435b7ca1d0559d7",
+   "original_seconds": 8.72,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'purple box' (frames 470-563, sent from 455)",
+   "seconds": 3.17,
+   "frames": 109,
+   "frames_returned": 109,
+   "cache_key": "ba5da3985b775ab4fb1360d5b4834af661b97f85dd090d7d87040e3cdc9b4daf",
+   "original_seconds": 8.17,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'purple box' (frames 188-281, sent from 173)",
+   "seconds": 4.12,
+   "frames": 109,
+   "frames_returned": 109,
+   "cache_key": "15da0794db61882adcb0b7dcff43af3e2e64be3dd3df66266e0b671cc0709804",
+   "original_seconds": 10.88,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'purple box' (frames 376-469, sent from 361)",
+   "seconds": 4.53,
+   "frames": 109,
+   "frames_returned": 109,
+   "cache_key": "f0c17ed9ebdb1e1a40966468e63190a5215327eebca3c6e8216afad01ba98f68",
+   "original_seconds": 8.26,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'purple box' (frames 564-657, sent from 549)",
+   "seconds": 5.12,
+   "frames": 109,
+   "frames_returned": 109,
+   "cache_key": "c34210dc3969dc651320c6a6811ac9b6dd3ff6346a1e41e75286036130715fb5",
+   "original_seconds": 7.84,
+   "cost_usd": 0.0
+  }
+ ],
+ "total_cost_usd": 0.0,
+ "prices": {
+  "sam-3.1": "$0.20 per 1000 frames",
+  "muse-spark-open-1026": "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+  "muse-wonder-1.0": "$4.00 / 1M input, $0.20 / 1M cached input, $20.00 / 1M output",
+  "muse-voice-transcribe-1.0": "$3.00 per 1000 audio minutes",
+  "muse-glimmer": "local (Ollama on this PC), $0",
+  "cached": "a SAM 3.1 reply for the same video bytes, concept and parameters, $0"
+ }
+}

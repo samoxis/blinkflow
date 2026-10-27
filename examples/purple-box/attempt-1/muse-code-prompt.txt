@@ -1,0 +1,161 @@
+You are fixing the brain of a small two-legged walking robot; this workspace is its code. In a simulator the robot touched an object it should have kept clear of. BlinkFlow filmed it, measured it from the pixels and read the brain's own log; its diagnosis follows.
+
+Make the smallest change to this workspace that removes the cause. Rules:
+- Edit only files inside this workspace. Do not commit or otherwise touch git.
+- Do not read anything outside this workspace.
+- Keep the robot's behaviour otherwise the same: do not lower its speeds, stop it from walking, or loosen its safety settings.
+- You cannot run the simulator. When you finish, BlinkFlow replays the same scene in a deterministic twin and looks at the camera again.
+- Quick local checks are fine, e.g. `python3 -m py_compile <file>`, or parsing brain.toml with tomllib.
+- Finish with two or three plain sentences in English: what you changed and why.
+
+===== DIAGNOSIS =====
+# Diagnosis: white robot touches the purple box
+
+**Cause:** `brain.toml`, `configuration value`, lines 29-29. side_memory_seconds is set to 0.0, disabling the side-hazard memory.
+
+**In plain words:** The robot had seen the tall box on its side while it was still ahead, but a configuration choice switched off the short memory meant for nearby side objects. Once the robot drew alongside it, the box was no longer in the forward view, so the robot believed the way was clear and kept walking until its side clipped the box.
+
+**What happened:** Robot walked forward alongside a tall purple box and clipped it with its side at t=12.022s after approaching it from ahead-left in depth.
+
+**Confidence:** 0.84  ·  **Fix direction (no patch):** Restore a non-zero side-memory duration in the brain configuration (matching the intended default) and add a regression check that the deployed config does not silently disable side memory.
+
+## Evidence cited
+
+- *frame* `K1 t=11.022s`: Purple box close to the robot's left side, slightly in front, gap 8 px. The purple box is already very close to the robot's side, slightly in front of it, while the robot is still walking forward.
+- *frame* `K2 t=11.522s and K3 t=11.922s`: Box remains close beside robot as feet pass the base; gap still non-contact before K4. The robot keeps passing alongside the box with the box still close to its side; contact is a side clip, not a head-on approach.
+- *frame* `K4 t=12.022s`: First contact, gap 2 px, feet 265.7 px past base edge. First contact occurs while the box is beside the robot, at gap 2 px and feet 265.7 px past the base's far edge, consistent with clipping a side object after passing its front.
+- *log* `brain log t=9.045-10.498s, dt -2.977 to -1.524s`: Close left-edge wall-row depth returns before passing. Earlier full depth frames have close upper/wall-row returns on the robot's left edge, e.g. column 0 upper rows about 83/81/77/77/75 cm at t=9.045s and about 63/62/60/59/58 cm at t=10.498s, so a side wall/object return was available to be remembered before the robot passed it.
+- *log* `brain log t=11.500s`: Forward/left depth view clear during passing. By the passing phase the full depth frame no longer shows that close left object in the near wall rows; column 0 wall-row values are about 150/148/146/145/147 cm, so the box is effectively outside the trusted forward view while it is beside the robot.
+- *log* `brain log t=9.045-11.950s`: Always forward/move, no brake or turn. The brain stays in state=forward with cmd move vx=0.24 throughout the approach and passing; it never brakes/turns for the box before contact, even while K1-K3 show it close alongside.
+- *code* `brain.toml:29`: side_memory_seconds = 0.0. The deployed configuration explicitly sets side_memory_seconds = 0.0, unlike the code default of 3.0 s in src/microduck_brain/config.py:46.
+- *code* `src/microduck_brain/hazards.py:62-66 and 73-76`: _enabled(SIDE) requires >0; _memory_seconds uses same setting. Side hazards are enabled only when side_memory_seconds > 0, and that value is also the memory duration for side points; with 0.0 the side memory is disabled and cannot contribute a remembered hazard to the view.
+- *code* `src/microduck_brain/hazards.py:96-107 and 173-204`: SIDE detection exists but is disabled by config. The code has a specific path that detects wall-row returns near the body and remembers them in odometry, but that path is inert when the memory is disabled in configuration.
+
+## Ruled out
+
+- Pure head-on wall stopping failing: The contact in K4 is beside the robot after its feet had passed the base's far edge, and by t=11.500-11.950s the forward depth view was comparatively clear; the missing protection is for a side object that was seen earlier and then passed.
+- Low-object bottom-row detection being the primary cause: The purple box is tall and appears in the close upper/wall-row depth returns earlier (t=9.045-10.498s), not as a bottom-row-only cube/ball case.
+- Safety hold, fall, or missing depth frames: The log shows safe=yes and continuous forward commands through the incident window; the robot was not held for a fall or missing depth.
+- Corridor-width filtering in the hazard merge as the sole cause: With side memory disabled by brain.toml:29, hazards.py cannot retain SIDE points at all, so the merge threshold is not the first failing place on this evidence.
+
+## Check against what was sent
+
+- file exists: True; lines in range: True; function found: True
+- key frames cited: K1, K2, K3, K4; log ticks cited: 9.045, 10.498, 11.022, 11.500, 11.522, 11.922, 11.950
+- references that match nothing sent: none
+- **grounded in pixels and log: yes**
+
+## Key frames
+
+**K1** 1 s before contact, t = 11.02 s. Glimmer: *The robot is walking forward with its legs lifted off the ground, and the purple box is to the left of the robot, slightly in front of it and very close to its left side.*
+
+
+**K2** 0.5 s before contact, t = 11.52 s. Glimmer: *The robot is walking forward with its legs positioned under its body, and the purple box is to the left of the robot, slightly above it in the picture and close to its left side.*
+
+
+**K3** just before contact, t = 11.92 s. Glimmer: *The robot is walking forward with its legs positioned behind its body, and the purple box is to the left of the robot, slightly above it in the picture and very close to its left side.*
+
+
+**K4** first contact, t = 12.02 s. Glimmer: *The robot is standing still with its legs together under its body, and the purple box is to the left of the robot in the picture, slightly above it and close to its left side.*
+
+
+## Model
+
+muse-wonder-1.0 (Meta Model API), effort medium, 40826 input tokens (30182 cached), 6063 output (4753 reasoning), $0.170, 64 s. Every call of this incident is in `models.json`.
+
+===== WORKSPACE =====
+Its files (git ls-files): .gitignore, LICENSE, brain.toml, pyproject.toml, src/microduck_brain/__init__.py, src/microduck_brain/brain.py, src/microduck_brain/cli.py, src/microduck_brain/config.py, src/microduck_brain/depth.py, src/microduck_brain/hazards.py, src/microduck_brain/ipc.py, src/microduck_brain/plot.py, src/microduck_brain/record.py, src/microduck_brain/runner.py, uv.lock
+The file the diagnosis names, as it is now (line numbers added; read any other file you need):
+
+===== brain.toml (91 lines) =====
+   1| # microduck-brain configuration. An unknown key is an error, not silently ignored.
+   2| # Distances in metres, speeds in m/s and rad/s, times in seconds.
+   3| 
+   4| [sockets]
+   5| # Empty = auto: the simulator's sockets (~/.cache/duck-sim/...) if present, else the robot's (/run/...).
+   6| robot = ""
+   7| tof = ""
+   8| 
+   9| [motion]
+  10| # Measured in the full simulator with the official walking policies (2026-10-03): below ~0.20 m/s
+  11| # forward and ~1.1 rad/s turning the policy does not step at all. Real speed is lower than commanded:
+  12| # 0.24 commanded ≈ 0.10 m/s real; 1.4 commanded ≈ 0.65-0.97 rad/s real.
+  13| forward_speed = 0.24      # commanded walking speed (m/s); the code warns below 0.20
+  14| turn_speed = 1.4          # commanded turn rate when turning in place (rad/s); the code warns below 1.1
+  15| big_turn_speed = 1.4      # commanded turn rate for the big (corner) turn (rad/s)
+  16| 
+  17| [obstacle]
+  18| stop_distance = 0.28      # closer than this ahead (no room left) => stop completely and turn in place
+  19| slow_distance = 0.70      # between slow_distance and stop_distance: steer away while walking, harder when closer
+  20| steer_yaw_max = 0.8       # commanded turn rate while steering, at the closest approach (rad/s)
+  21| steer_slew = 3.0          # how fast the commanded turn rate may change (rad/s per s): no jerks
+  22| low_obstacles = "avoid"   # "avoid" = go around cubes/balls seen in the bottom rows; "ignore" = don't look for them
+  23| drops = "avoid"           # "avoid" = keep away from drops (ledges, stairs going down); "ignore" = don't look for them
+  24| clear_distance = 0.40     # a turn ends only once at least this much is clear ahead
+  25| first_row = 0             # frame rows used for walls (0 = top). Rows below last_row also see the floor:
+  26| last_row = 4              # they are handled separately, as low objects and drops.
+  27| corridor_half_width = 0.14 # half-width of the robot's swept corridor (m): body width + margin
+  28| sensor_lateral = 0.0224   # the sensor sits this far left of the robot's axis (m; MJCF `tof` site)
+  29| side_memory_seconds = 0.0 # remember wall returns near the body for this long (s)
+  30| front_first_col = 1       # central columns used to decide whether the sensor is blind (0 = the sensor's left)
+  31| front_last_col = 6
+  32| min_zones = 2             # how many zones must be close for it to count (rejects single-zone noise)
+  33| blind_fraction = 0.5      # if fewer than this fraction of zones return a measurement, the sensor is "blind" => obstacle
+  34| max_range = 4.0           # "nothing in range" is taken to be this far
+  35| stop_pause = 0.3          # stand still this long before starting to turn
+  36| min_turn_time = 0.5       # a turn in place lasts at least this long...
+  37| min_turn_degrees = 20.0   # ...and covers at least this many MEASURED degrees (odom.yaw)
+  38| max_turn_time = 6.0       # if the way doesn't clear within this time, give up and do the big turn
+  39| default_turn = "left"     # which way to turn when both sides are equally free: left | right
+  40| 
+  41| [low]
+  42| # Low objects: in the rows below last_row the floor is visible too. The range each zone would read on an
+  43| # empty floor is computed from the sensor pose in robot.state (frames.tof, safety.gravity, odom.position[2]);
+  44| # a clearly shorter reading is an object. The nominal values are used when the robot sends no pose.
+  45| nominal_height = 0.246            # sensor height above the floor when standing (m; measured in MuJoCo)
+  46| nominal_pitch_deg = 0.0           # nominal downward pitch of the sensor (degrees)
+  47| nominal_sensor_forward = 0.064    # how far ahead of the trunk origin the sensor is (m)
+  48| tilt_tolerance_deg = 1.5          # pose error tolerated with a pose (timing, gait sway)
+  49| tilt_tolerance_nopose_deg = 4.5   # without a pose: wider, covers ±3° pitch and ±3° roll at once (catches fewer objects)
+  50| range_margin = 0.06               # relative margin (sensor noise + height error)
+  51| min_range = 0.10                  # readings closer than this are crosstalk noise and are ignored
+  52| confirm_time = 0.12               # an object must be seen continuously this long (≈ 2 frames) to count
+  53| corridor_half_width = 0.15        # an object closer than this to the robot's axis is "in the way" (m)
+  54| memory_seconds = 12.0             # how long an object is remembered after leaving the sensor's view (0 = never)
+  55| extra_clearance = 0.15            # a low object is treated as this much closer (m): it is visible only briefly, so react firmly
+  56| wall_margin = 0.25                # a low reading with a wall row in the same column closer than reading + this is a wall's foot, not an object
+  57| 
+  58| [drop]
+  59| # Drops: where the floor should be clearly visible, "nothing in range" or a clearly longer range = the floor is missing.
+  60| max_expected = 1.2        # only zones whose expected floor is closer than this (m): rows 6-7 when standing
+  61| range_margin = 0.10       # how much longer than the furthest plausible floor (head tilted up) a reading must be
+  62| min_zones = 2             # how many floor-less zones in the same frame (a single one is noise)
+  63| confirm_time = 0.12       # seen continuously this long to count
+  64| clearance = 0.45          # a drop is treated as this much closer (m): stop well before the edge
+  65| corridor_half_width = 0.18
+  66| memory_seconds = 120.0    # how long a drop is remembered (a hole doesn't go anywhere)
+  67| 
+  68| [corner]
+  69| turns_before_big_turn = 3 # this many full stops in a row without progress => big turn
+  70| progress_time = 3.0       # walking with a clear way this long resets that count
+  71| big_turn_degrees = 160.0  # the big turn's angle, MEASURED from odom.yaw (not timed)
+  72| big_turn_max_time = 15.0  # safety: give up if the angle isn't reached in time (frozen odometry / wrong sign)
+  73| fallback_turn_efficiency = 0.5  # only without odom.yaw: time the turn assuming this fraction of the commanded rate
+  74| 
+  75| [heading]
+  76| # While walking straight, hold the heading with odom.yaw (a small PI controller on vyaw).
+  77| enabled = true
+  78| kp = 2.0                  # rad/s of correction per rad of error
+  79| ki = 0.3                  # cancels the gait's constant drift to one side
+  80| max_correction = 0.5      # the most correction added to the turn rate (rad/s)
+  81| yaw_sign = 1.0            # 1 = odom.yaw grows to the left (like vyaw, as the protocol states); -1 if reversed
+  82| 
+  83| [safety]
+  84| tof_timeout = 0.5         # a depth frame older than this => stop (never walk blind)
+  85| state_timeout = 1.0       # robot.state silent this long => treated as unsafe
+  86| health_poll = 1.0         # how often to ask robot.health
+  87| resume_delay = 1.5        # once the robot is safe again (upright, healthy, depth frames), wait this long before walking
+  88| 
+  89| [loop]
+  90| rate_hz = 20.0            # how often robot.move is sent (the robot stops by itself after ~0.5 s without commands)
+  91| log_every = 5.0           # seconds between status lines (0 = never)

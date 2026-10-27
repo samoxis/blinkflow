@@ -6,9 +6,14 @@ The reply streams as text, one line per frame:
 
 Box corners are inclusive; the mask covers exactly the box. Lines can be split across stream deltas,
 so text is buffered until a newline.
+
+A completed reply is kept under the SHA-256 of the video's exact bytes, the concept and the request's
+parameters. The twin is deterministic, so a replay before a change and an unchanged control scene give the
+same bytes, and SAM 3.1 is not paid twice for them. Any other byte gives another key.
 """
 import base64
 import concurrent.futures
+import hashlib
 import json
 import multiprocessing
 import os
@@ -27,6 +32,7 @@ RECORD = re.compile(r",?(\d+)((?:<\|[^|]*\|>)+)")
 TOKEN = re.compile(r"<\|([A-Za-z][\w.-]*)(?:;([^|]*))?\|>")
 MASK_DATA = re.compile(r"^(\d+),(\d+),([!~][^|]+)$")
 RETRY = [5, 15, 40]                 # seconds before asking SAM 3.1 again when it is overloaded (429, 5xx)
+CACHE = pathlib.Path.home() / "blinkflow-runs" / "sam-cache"
 
 
 class Instance:
@@ -107,12 +113,22 @@ def load_raw(path, only=None):
 def track(clip, concept, frames, raw_path=None):
     """Track `concept` through `clip` (which has `frames` frames). Returns a dict with per-frame
     instances, timing, usage and cost. Spends against the daily SAM budget before sending."""
+    data = open(clip, "rb").read()
+    params = {"model": "sam-3.1", "stream": True, "metadata": {"include_confidence": "true"}}
+    key = hashlib.sha256(hashlib.sha256(data).digest() + json.dumps([concept, params], sort_keys=True).encode()).hexdigest()
+    hit = CACHE / f"{key}.json"
+    if hit.exists() and os.environ.get("BLINKFLOW_SAM_CACHE", "1") != "0":
+        t0, saved = time.time(), json.loads(hit.read_text())
+        per_frame = parse_lines(saved["raw"].split("\n"))
+        return {"concept": concept, "frames": per_frame, "status": saved["status"], "usage": saved["usage"],
+                "raw": saved["raw"], "seconds": time.time() - t0, "seconds_to_first_frame": 0.0,
+                "frames_sent": frames, "cost_usd": 0.0, "price_per_frame": SAM_PER_FRAME,
+                "cached": key, "cache_key": key, "original_seconds": saved["seconds"]}
     cost = sam_reserve(frames, f"sam-3.1 '{concept}' on {clip}")
-    video = "data:video/mp4;base64," + base64.b64encode(open(clip, "rb").read()).decode()
-    body = {"model": "sam-3.1", "stream": True, "metadata": {"include_confidence": "true"},
-            "input": [{"type": "message", "role": "user", "content": [
-                {"type": "input_text", "text": concept},
-                {"type": "input_video", "video_url": video}]}]}
+    video = "data:video/mp4;base64," + base64.b64encode(data).decode()
+    body = {**params, "input": [{"type": "message", "role": "user", "content": [
+        {"type": "input_text", "text": concept},
+        {"type": "input_video", "video_url": video}]}]}
     t0 = time.time()
     first, buf, raw, pending, usage, status = None, "", [], [], None, "eof"
 
@@ -158,9 +174,18 @@ def track(clip, concept, frames, raw_path=None):
     per_frame = dict(p for p in (f.result() for f in pending) if p)
     if raw_path:
         open(raw_path, "w").write("".join(raw))
+    seconds = time.time() - t0
+    if status == "completed":
+        CACHE.mkdir(parents=True, exist_ok=True)
+        tmp = hit.with_suffix(".tmp")
+        tmp.write_text(json.dumps({"concept": concept, "params": params, "video_sha256": hashlib.sha256(data).hexdigest(),
+                                   "frames": frames, "status": status, "usage": usage, "seconds": round(seconds, 2),
+                                   "cost_usd": cost, "saved": time.time(), "raw": "".join(raw)}))
+        tmp.replace(hit)
     return {"concept": concept, "frames": per_frame, "status": status, "usage": usage, "raw": "".join(raw),
-            "seconds": time.time() - t0, "seconds_to_first_frame": first,
-            "frames_sent": frames, "cost_usd": cost, "price_per_frame": SAM_PER_FRAME}
+            "seconds": seconds, "seconds_to_first_frame": first,
+            "frames_sent": frames, "cost_usd": cost, "price_per_frame": SAM_PER_FRAME, "cached": None,
+            "cache_key": key}
 
 
 def renumber(raw, offset, keep):

@@ -1046,17 +1046,18 @@ P.done = () => {
 };
 function friendly(m) {
   if (/Muse Code/.test(m.where || "")) return "Muse Code";
-  return { "sam-3.1": "SAM 3.1", "muse-wonder-1.0": "Muse Wonder", "muse-spark-1.3": "Muse Spark", "muse-glimmer": "Muse Glimmer",
+  return { "sam-3.1": "SAM 3.1", "muse-wonder-1.0": "Muse Wonder", "muse-spark-1.3": "Muse Spark", "muse-spark-open-1026": "Muse Spark Open", "muse-glimmer": "Muse Glimmer",
     "muse-voice-transcribe-1.0": "Muse Voice" }[m.model] || m.model;
 }
 
 function manifest(calls) {
   const out = new Map();
   for (const c of calls) {
-    const m = out.get(c.model) || { model: c.model, where: c.where, calls: 0, input_tokens: 0, output_tokens: 0, frames: 0, cost_usd: 0, seconds: 0 };
+    const key = `${c.model}|${c.where}`;     // a cached SAM reply is a row of its own, at $0
+    const m = out.get(key) || { model: c.model, where: c.where, calls: 0, input_tokens: 0, output_tokens: 0, frames: 0, cost_usd: 0, seconds: 0 };
     m.calls++; m.seconds += c.seconds || 0; m.cost_usd += c.cost_usd || 0;
     for (const k of ["input_tokens", "output_tokens", "frames"]) m[k] += c[k] || 0;
-    out.set(c.model, m);
+    out.set(key, m);
   }
   return [...out.values()];
 }

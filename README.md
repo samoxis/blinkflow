@@ -4,9 +4,13 @@
 
 **The robot did something wrong? Just say what you saw.**
 
-BlinkFlow watches a robot simulator the way you do: through the screen. When the robot does something wrong, you say what you saw. BlinkFlow rewinds to that moment, works out which part of the robot's program caused it, writes the fix, and plays the exact same scene again to prove the problem is gone. If the fix doesn't work, it undoes it and tries again.
+<p align="center"><img src="docs/blinkflow.gif" width="640" alt="The robot's right leg brushes the purple box; after BlinkFlow's fix, contacts go from 1 to 0"></p>
 
-It runs Meta's **open-weight Muse Glimmer on this PC**, so the robot's camera never leaves the machine until there is something worth fixing.
+For people who write robot software and test it in a simulator: you say what went wrong on screen, BlinkFlow finds the cause in the robot's code, fixes it, and proves the fix on the same scene.
+
+BlinkFlow watches a robot simulator the way you do: through the screen. When the robot does something wrong, you say what you saw. BlinkFlow rewinds to that moment, works out which part of the robot's program caused it, writes the fix, and plays the same scene again to prove the problem is gone. If the fix doesn't work, it undoes it and tries again.
+
+What it films is the simulator's window on your screen, not a camera on the robot. It runs Meta's **open-weight Muse Glimmer on this PC**, so that window never leaves the machine until there is something worth fixing.
 
 > Built during the [Meta Global AI Developer Hackathon](https://cerebralvalley.ai/e/meta-ai-developer-hackathon), Oct 26 – Nov 4, 2026. Indie Developer track, theme: Push the Frontier.
 > **Work in progress.** This README grows as each piece starts working. The build log is in [`DEVLOG.md`](DEVLOG.md).
@@ -19,9 +23,77 @@ It runs Meta's **open-weight Muse Glimmer on this PC**, so the robot's camera ne
 | Watch | Or nobody says anything: about once a second the newest frame is checked locally for a robot touching, nearly touching, fallen or stuck; a raised hand is confirmed on pixels before the loop starts, and the moment comes from BlinkFlow's own clock (`results/watcher.md`) | Muse Glimmer (local), SAM 3.1 |
 | Listen | Hold F9 and say what you saw ("three seconds ago its right leg hit the purple box"), or type it; the moment is the key press on BlinkFlow's own clock minus the time you said; the sentence is read locally (`results/voice.md`) | Muse Voice Transcribe, Muse Glimmer (local) |
 | See | Objects in those seconds are named locally and then followed pixel by pixel; the masks become measurements (distance between objects per frame, first contact) | Muse Glimmer (local), SAM 3.1 |
-| Understand | Key frames + measurements + time-aligned logs + the robot's code → the cause, plus a plain-language explanation | Muse Wonder |
+| Understand | Key frames + measurements + time-aligned logs + the robot's code → the cause, plus a plain-language explanation. Every claim cites its source: a key frame, a measurement, a log tick or a code line, and the answer is checked against what was sent (the file, function and lines exist; the cited frames and ticks exist) | Muse Wonder |
 | Fix | A coding agent patches the code inside its sandbox; a git commit is taken first | Muse Code (Python SDK) |
-| Prove | The identical scenario is replayed and checked again on pixels; failed fixes are rolled back and retried | SAM 3.1, Muse Code |
+| Prove | The same scene, replayed exactly in a deterministic twin, and checked again on pixels; failed fixes are rolled back and retried. For the demo incident, then confirmed on the live simulator (`results/live_check.md`) | SAM 3.1, Muse Code |
+
+## Results
+
+Measured during the hackathon; each number links to the file it comes from.
+
+| What | Result | Source |
+|---|---|---|
+| Blind bug suite, stratified by layer (11 mutations drawn with a sealed seed, 8 gave an incident) | **8/8 incidents gone, 8/8 control clean in all five scenes, 6/8 changes on the mutated line**, after two reruns of the drops layer (5/8 on all three in the first pass) | [`results/bug_suite.md`](results/bug_suite.md) |
+| First blind suite (6 bugs) | 6/6 fixed; Muse Wonder's cause on the mutated line in 5/6 | [`results/bug_suite.md`](results/bug_suite.md) |
+| Live simulator, the demo incident, 20 s per run | contact in **5/5** runs without the fix, **0/5** with it | [`results/live_check.md`](results/live_check.md) |
+| Seen → fixed and verified (machine time) | **135.8–191.0 s** over 8 purple-box loops, median 166.6 s; the spread is mostly Muse Wonder (55–97 s) | [`results/loop_times.md`](results/loop_times.md), [`results/quick_loop.md`](results/quick_loop.md) |
+| Control after the fix, on pixels | **5/5 scenes clean, all 5 measured** (the 166.4 s run); the twin's log agrees | [`results/loop_times.md`](results/loop_times.md), [`results/console/`](results/console) |
+| Watcher (nobody speaks) | **0 false alarms** in 16 runs without an incident; **14/17** incidents caught. Optimistic: the suite gave Glimmer a look every 0.97 s, live beside the simulator it is ~1.45 s | [`results/watcher.md`](results/watcher.md) |
+| Voice | **5/5** sentences from a TTS heard, read and seen; the real microphone not yet tested | [`results/voice.md`](results/voice.md) |
+| Pixel rule against ground truth | 92 saved looks re-measured: 60/64 incidents caught, false alarms 1 → 0 after one correction | [`results/control.md`](results/control.md) |
+| Cost of one loop (model calls) | **$0.88** for the profiled loop; $0.34–$1.71 over the 8 runs (measuring the four control scenes adds SAM 3.1; replies from the cache cost $0) | [`results/quick_loop.md`](results/quick_loop.md), [`results/loop_times.md`](results/loop_times.md) |
+
+Every run writes a `models.json`: each model call with the model, where it ran (this PC, Meta, Baseten, the cache), tokens or frames, seconds and cost.
+
+## Try it without a GPU
+
+A recorded run of the demo incident is in [`examples/purple-box/`](examples/purple-box): the 60 s snapshot, the evidence, Muse Wonder's diagnosis, Muse Code's change, the replays before and after, and the model calls. No GPU, no simulator, no key.
+
+**1. The report.** Python 3 (tested on 3.12), standard library only:
+
+```bash
+git clone https://github.com/samoxis/blinkflow && cd blinkflow
+python3 -m venv .venv && . .venv/bin/activate
+python3 -m blinkflow.console report examples/purple-box/events.jsonl --out report
+```
+
+Open `report/index.html` over a local server (`python3 -m http.server -d report 8000`, then http://localhost:8000): the whole loop step by step, the masks, the distance to first contact, the cause with its key frame, log row and code line, the replay before | after, the clock and the bill.
+
+**2. Measure it again.** The contact is re-derived from SAM 3.1's saved replies, offline (needs `ffmpeg`):
+
+```bash
+pip install numpy scipy requests matplotlib
+cp -r examples/purple-box /tmp/pb
+python3 -m blinkflow.see /tmp/pb/outside/snapshot.json --out /tmp/pb/incident --reuse
+```
+
+`/tmp/pb/incident/evidence.json` comes out identical to `examples/purple-box/incident/evidence.json` (first contact, closest gap, the gap in every frame) except for the two paths it names. It writes into the evidence folder, hence the copy.
+
+**What needs a key.** Nothing above. Asking the models again does: SAM 3.1 and Muse Wonder need `MODEL_API_KEY` (Meta Model API), a diagnosis with Muse Spark needs `BASETEN_API_KEY` (Baseten), and both also need the robot's code. Keys are read from the environment or `~/.config/blinkflow/env`, never from the repo.
+
+## Muse Glimmer, on this PC — provenance
+
+Glimmer is the open-weight model that names objects, describes key frames and reads the person's sentence, on an RTX 4090 through Ollama. To check that without this PC, [`examples/purple-box/`](examples/purple-box) carries:
+
+- [`models.json`](examples/purple-box/models.json): every model call of the run. Glimmer's five are `muse-glimmer`, `local`, with tokens in and out and seconds; the 32 SAM 3.1 calls are `cached, $0`, each with the hash of the video bytes, concept and parameters it answers.
+- [`models-first-run.json`](examples/purple-box/models-first-run.json): the same loop on the same clip three minutes earlier, when SAM 3.1 was still paid for ($0.93 against $0.34).
+- [`provenance.txt`](examples/purple-box/provenance.txt): `ollama ps` and `nvidia-smi` sampled every ~3 s while the run ran, with timestamps that line up with Glimmer's calls: `muse-glimmer`, 16 GB, 100% GPU, context 8192.
+- [`glimmer.jsonl`](examples/purple-box/glimmer.jsonl): Glimmer's raw replies from the run, each with what it was asked and the image it saw.
+
+`python3 tools/pack_example.py <run>/events.jsonl examples/<name>` packs any run the same way: paths made relative to the example, the home folder written as `~`, no keys, and never the scorer's ground truth.
+
+## Limits
+
+- **The twin is not the live simulator.** It starts the robot standing (no sit-to-stand boot) and re-states robotd's controller in Python, so robotd itself is bypassed.
+- **The live simulator is not deterministic.** Four wall clocks run it, so the same brain does not walk the same path twice. That is why the proof is double: exact in the twin, then 5 runs on each side live.
+- **Muse Wonder varies.** The same evidence gives different lengths of answer (4.7k–8.4k output tokens), and that alone moves the loop time by about 40 s; its cause is not always on the mutated line ([`results/bug_suite.md`](results/bug_suite.md)).
+- **The watcher confirms after the fact,** a median 19.5 s after the incident (13–52 s): it is a safety net, not a brake.
+- **"Stuck" has no real case.** The watcher checks for it, but no run has had a robot stuck.
+- **The real microphone is untested.** This PC has only a virtual one; voice was measured with TTS sentences.
+
+## Cost
+
+The SAM 3.1 replies are cached by the exact hash of the video bytes, the concept and the parameters: the twin is deterministic, so an unchanged scene gives the same video and is not paid twice. Muse Spark runs on Baseten (`meta-models/muse-spark-open-1026`); Muse Wonder stays on the Meta Model API. `python3 tools/spend.py --day YYYY-MM-DD` sums the `models.json` of every run that day, per model and per provider.
 
 ## The console
 

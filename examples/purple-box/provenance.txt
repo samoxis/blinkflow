@@ -1,0 +1,1411 @@
+# Muse Glimmer on this PC, sampled while this example ran (Oct 27, 2026, UK time).
+# Every ~3 s: `ollama ps` on Windows (Ollama 0.40.11 serves Glimmer to WSL on 127.0.0.1:11434)
+# and `nvidia-smi` in WSL (the same RTX 4090). Glimmer's calls in this run (events.jsonl, models.json):
+#   21:57:13-21:57:15  name the robot and the object or hazard nearest to it  (1480 tokens in, 47 out)
+#   21:57:30-21:57:32  describe key frame K1  (589 tokens in, 44 out)
+#   21:57:31-21:57:34  describe key frame K2  (591 tokens in, 44 out)
+#   21:57:31-21:57:35  describe key frame K3  (587 tokens in, 45 out)
+#   21:57:31-21:57:36  describe key frame K4  (586 tokens in, 44 out)
+# The window's own processes are on the Windows side, so WSL's nvidia-smi lists none but Xwayland;
+# `ollama ps` names the model, its size, 100% GPU and the 8192 context the calls use.
+
+=== 2026-10-27T21:57:11+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:12 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20004MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:15+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:15 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   44C    P2            268W /  450W |   20012MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:18+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:19 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P3             56W /  450W |   20013MiB /  24564MiB |     16%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:22+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:23 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             51W /  450W |   20012MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:26+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:27 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20023MiB /  24564MiB |     19%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:30+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:30 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             50W /  450W |   20024MiB /  24564MiB |     54%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:34+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:34 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   43C    P2            274W /  450W |   20036MiB /  24564MiB |     95%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:37+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:38 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   36C    P2             99W /  450W |   20030MiB /  24564MiB |      9%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:41+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:42 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P3             56W /  450W |   20028MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:45+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:45 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P5             55W /  450W |   20033MiB /  24564MiB |     60%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:48+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:49 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P3             56W /  450W |   20034MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:52+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:52 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P5             49W /  450W |   20030MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:55+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:56 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             48W /  450W |   20034MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:57:59+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:57:59 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20038MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:02+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:03 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P3             68W /  450W |   20035MiB /  24564MiB |     14%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:06+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:06 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P5             55W /  450W |   20039MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:09+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:09 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20039MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:12+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:13 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20029MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:16+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:16 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P2             79W /  450W |   20022MiB /  24564MiB |     10%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:19+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:19 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P3             56W /  450W |   20031MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:22+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:23 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20031MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:26+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:26 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             48W /  450W |   20033MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:29+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:30 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20026MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:33+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:33 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P3             62W /  450W |   20080MiB /  24564MiB |     14%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:36+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    29 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:36 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P3             56W /  450W |   20073MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:39+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:40 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             48W /  450W |   20087MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:43+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:43 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             48W /  450W |   20062MiB /  24564MiB |     20%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:46+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:46 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   35C    P2             85W /  450W |   20068MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:49+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:50 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P3             57W /  450W |   20073MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:53+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:53 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             50W /  450W |   20064MiB /  24564MiB |     19%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:58:56+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:58:57 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20067MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:00+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:00 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P2             52W /  450W |   20073MiB /  24564MiB |     77%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:03+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:03 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P3             56W /  450W |   20073MiB /  24564MiB |     16%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:06+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:07 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             52W /  450W |   20066MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:10+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:10 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             48W /  450W |   20053MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:13+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:14 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20056MiB /  24564MiB |     19%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:17+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:17 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P3             70W /  450W |   20055MiB /  24564MiB |     14%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:20+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:21 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P3             56W /  450W |   20039MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:24+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:24 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20039MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:27+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:27 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             48W /  450W |   20039MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:30+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:31 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P2             67W /  450W |   20039MiB /  24564MiB |     24%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:34+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    28 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:34 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P3             55W /  450W |   20039MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:37+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:37 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20039MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:40+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:41 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20039MiB /  24564MiB |     19%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:44+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:44 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20060MiB /  24564MiB |     22%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:47+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:48 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P3             72W /  450W |   20207MiB /  24564MiB |     14%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:51+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:51 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             56W /  450W |   20217MiB /  24564MiB |     19%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:54+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:55 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             50W /  450W |   20230MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T21:59:58+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 21:59:59 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20230MiB /  24564MiB |     19%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T22:00:02+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 22:00:02 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P3             81W /  450W |   20361MiB /  24564MiB |     14%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T22:00:05+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 22:00:06 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             55W /  450W |   20129MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T22:00:09+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 22:00:10 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             50W /  450W |   20122MiB /  24564MiB |     18%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T22:00:13+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 22:00:14 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20122MiB /  24564MiB |     19%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T22:00:17+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 22:00:17 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   34C    P2             77W /  450W |   20153MiB /  24564MiB |     11%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T22:00:20+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 22:00:21 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P3             56W /  450W |   20159MiB /  24564MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+
+=== 2026-10-27T22:00:24+00:00
+--- ollama ps (Windows)
+NAME                   ID              SIZE     PROCESSOR    CONTEXT    RUNNER      UNTIL               
+muse-glimmer:latest    de878ce33ad8    16 GB    100% GPU     8192       llamacpp    27 minutes from now    
+--- nvidia-smi
+Tue Oct 27 22:00:24 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4090        On  |   00000000:01:00.0  On |                  Off |
+|  0%   33C    P5             49W /  450W |   20123MiB /  24564MiB |      5%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             646      G   /Xwayland                             N/A      |
++-----------------------------------------------------------------------------------------+

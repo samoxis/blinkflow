@@ -9,6 +9,7 @@ the stream names; the loop runs the same without it. The one thing it writes is 
     python3 -m blinkflow.console report [EVENTS] [--out DIR]           # the same page, static, from a run
 
 A static report is a folder: the same page, the stream embedded, and every file it shows copied in.
+A stream may name its files relative to its own folder ("./fix/models.json"), as the packed examples do.
 Never served or copied, whatever the stream names: the simulator's contact logs, the twin's own record
 (truth.json, contacts.csv) and scene files.
 """
@@ -55,7 +56,7 @@ def read_events(path):
 
 
 def named_paths(evs):
-    """Every absolute path the stream names (any string value, at any depth)."""
+    """Every path the stream names (any string value, at any depth): absolute, or "./" from its folder."""
     out = set()
 
     def walk(x):
@@ -65,7 +66,7 @@ def named_paths(evs):
         elif isinstance(x, list):
             for v in x:
                 walk(v)
-        elif isinstance(x, str) and x.startswith("/") and len(x) < 400:
+        elif isinstance(x, str) and x.startswith(("/", "./")) and len(x) < 400:
             out.add(x)
 
     for e in evs:
@@ -73,13 +74,15 @@ def named_paths(evs):
     return out
 
 
-def servable(p, evs):
-    """A file the page may show: named by the stream, under the runs folder, never ground truth."""
+def servable(p, evs, stream):
+    """A file the page may show: named by the stream, under the runs folder or the stream's own, never
+    ground truth."""
+    base = pathlib.Path(stream).resolve().parent
     try:
-        q = pathlib.Path(p).resolve()
+        q = (base / p if p.startswith("./") else pathlib.Path(p)).resolve()
     except (OSError, RuntimeError):
         return None
-    if NEVER.search(q.name) or not q.is_file() or not any(r == q or r in q.parents for r in ROOTS):
+    if NEVER.search(q.name) or not q.is_file() or not any(r == q or r in q.parents for r in ROOTS + (base,)):
         return None
     return q if p in named_paths(evs) else None
 
@@ -145,7 +148,7 @@ def handler(fixed, frames):
                     return self.send(200, json.dumps(read_events(p) if p else []).encode(), "application/json")
                 if u.path == "/file":
                     p = stream()
-                    f = p and servable(q.get("p", ""), read_events(p))
+                    f = p and servable(q.get("p", ""), read_events(p), p)
                     return self.file(f) if f else self.send(404, b"not in this run's stream")
                 if u.path == "/sim.jpg":
                     p = stream()
@@ -267,7 +270,7 @@ def report(path, out=None):
     shutil.copy(ICON, out / "icon.png")
     files, n = {}, 0
     for p in sorted(named_paths(evs)):
-        f = servable(p, evs)
+        f = servable(p, evs, path)
         if not f:
             continue
         n += 1

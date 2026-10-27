@@ -83,6 +83,9 @@ def load_snapshot(path):
     clip, per-frame brain time (s after the brain's first tick), per-frame epoch or None, brain log."""
     path = pathlib.Path(path).expanduser()
     m = json.loads(path.read_text())
+    for k in ("video", "record", "path"):          # a packed example names its files from the snapshot's folder
+        if isinstance(m.get(k), str) and m[k].startswith("./"):
+            m[k] = str(path.parent / m[k])
     if "video_times" in m:                                    # twin: simulated time
         times = [t - m["brain_start_sim"] for t in m["video_times"]]
         return {"source": str(path), "kind": "twin", "clip": m["video"], "record": m["record"],
@@ -545,8 +548,12 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
             lo, a, b = plan[i]
             r = sam.track(str(clips[i]), concept, b - lo)
             what = f"track '{concept}'" + (f" (frames {a}-{b - 1}, sent from {lo})" if len(plan) > 1 else "")
-            ledger.add("sam-3.1", "Meta Model API", what, r["seconds"], r["cost_usd"],
-                       frames=b - lo, frames_returned=len(r["frames"]), usage=r["usage"])
+            if r["cached"]:                         # the same bytes, concept and parameters were paid for before
+                ledger.add("sam-3.1", "cached", what, r["seconds"], 0.0, frames=b - lo,
+                           frames_returned=len(r["frames"]), cache_key=r["cached"], original_seconds=r["original_seconds"])
+            else:
+                ledger.add("sam-3.1", "Meta Model API", what, r["seconds"], r["cost_usd"],
+                           frames=b - lo, frames_returned=len(r["frames"]), usage=r["usage"], cache_key=r["cache_key"])
             events.emit("sam.piece", tag=tag, concept=concept, piece=i, pieces=len(plan), first=a, end=b,
                         found=sum(1 for f, v in r["frames"].items() if v and a <= lo + f < b))
             return r
