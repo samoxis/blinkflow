@@ -15,6 +15,8 @@ What it films is the simulator's window on your screen, not a camera on the robo
 > Built during the [Meta Global AI Developer Hackathon](https://cerebralvalley.ai/e/meta-ai-developer-hackathon), Oct 26 – Nov 4, 2026. Indie Developer track, theme: Push the Frontier.
 > **Work in progress.** This README grows as each piece starts working. The build log is in [`DEVLOG.md`](DEVLOG.md).
 
+**New vs pre-existing:** everything in this repo was written after the kickoff on Oct 26, 2026; the robot, its simulator and its brain existed before — see [Pre-existing vs built during the hackathon](#pre-existing-vs-built-during-the-hackathon).
+
 ## How it works
 
 | Step | What happens | Meta model |
@@ -47,7 +49,7 @@ Every run writes a `models.json`: each model call with the model, where it ran (
 
 ## Where this could go (not built or tested yet)
 
-BlinkFlow needs three things: a screen, a log and a folder of code. Nothing in the loop is specific to the duck, so the same loop could serve:
+BlinkFlow needs three things: a screen, a log and a folder of code. Only the deterministic twin and the target are specific to the duck; the rest of the loop is not, so it could serve:
 
 - **Warehouse and delivery robots**, tested every day in simulation before they touch a real shelf.
 - **Home robots**, like a vacuum that keeps getting stuck under the same sofa.
