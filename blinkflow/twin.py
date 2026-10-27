@@ -128,7 +128,7 @@ class Twin:
         self.twist = [0.0, 0.0, 0.0]
         self.frame, self.frame_at, self.frame_t = None, -1e9, 0.0
         self.states = []               # (t, state dict), last 64
-        self.contacts = []             # (t, duck body) with the scene's obstacle
+        self.contacts = []             # (t, duck body, world point) with the scene's obstacle
         self.touches = []              # (t, duck body, geom) with anything but the ground, first per geom
         self.track = []                # (t, x, y, fallen), every brain tick
         self.tof_n = 0
@@ -183,7 +183,7 @@ class Twin:
                 if duck in self.duck_geoms and other in self.things:
                     name = mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_BODY, m.geom_bodyid[duck])
                     if other in self.obstacle:
-                        self.contacts.append((round(self.t, 3), name))
+                        self.contacts.append((round(self.t, 3), name, tuple(round(float(v), 4) for v in c.pos)))
                     if all(g != self.things[other] for _, _, g in self.touches):
                         self.touches.append((round(self.t, 3), name, self.things[other]))
 
@@ -357,9 +357,9 @@ def main():
     # scene's obstacle; and in truth.json, the first touch of every other thing and the trunk's track.
     with open(out / "contacts.csv", "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["t_brain", "body"])
-        for t, body in twin.contacts:
-            w.writerow([f"{t - brain_start:.3f}", body])
+        w.writerow(["t_brain", "body", "x", "y", "z"])
+        for t, body, at in twin.contacts:
+            w.writerow([f"{t - brain_start:.3f}", body, *at])
     fell = next((t for t, _, _, fallen in twin.track if fallen), None)
     truth = {"scene": a.scene,
              "touches": [{"t": round(t - brain_start, 3), "body": b, "geom": g} for t, b, g in twin.touches],
