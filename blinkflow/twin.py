@@ -225,9 +225,9 @@ class Twin:
 
 
 class Video:
-    """Offscreen render of one fixed camera at 30 fps of simulated time, piped to ffmpeg."""
+    """Offscreen render of one fixed camera at `fps` (30) of simulated time, piped to ffmpeg."""
 
-    def __init__(self, twin, path, pos, look, fov, size=(960, 720), renderer=True):
+    def __init__(self, twin, path, pos, look, fov, size=(960, 720), renderer=True, fps=30):
         import subprocess
         m = twin.world.model
         m.vis.global_.offwidth, m.vis.global_.offheight = max(size[0], 640), max(size[1], 480)
@@ -241,7 +241,7 @@ class Video:
         self.cam.azimuth = math.degrees(math.atan2(d[1], d[0]))
         self.cam.elevation = math.degrees(math.asin(d[2] / np.linalg.norm(d)))
         m.vis.global_.fovy = fov
-        self.every = round(1000 / 30 / STEP_MS)    # 7 steps = 35 ms; frame times are kept exactly
+        self.every = round(1000 / fps / STEP_MS)   # at 30: 7 steps = 35 ms; frame times are kept exactly
         self.times = []
         self.proc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24",
                                       "-s", f"{size[0]}x{size[1]}", "-r", str(1000 / (self.every * STEP_MS)),
@@ -295,8 +295,8 @@ class ParallelVideo(Video):
 
     CHUNK = 6
 
-    def __init__(self, twin, path, pos, look, fov, size=(960, 720), workers=12):
-        super().__init__(twin, path, pos, look, fov, size, renderer=False)
+    def __init__(self, twin, path, pos, look, fov, size=(960, 720), workers=12, fps=30):
+        super().__init__(twin, path, pos, look, fov, size, renderer=False, fps=fps)
         self.model, self.workers, self.states = twin.world.model, workers, []
 
     def __call__(self, twin):
@@ -327,6 +327,9 @@ def main():
     ap.add_argument("--video", action="store_true", help="render the incident's fixed shot")
     ap.add_argument("--workers", type=int, default=min(12, os.cpu_count() or 1),
                     help="processes rendering the shot (1: render during the run)")
+    ap.add_argument("--camera", help='another shot instead of the scene\'s: {"pos": [..], "look": [..], "fov": deg}')
+    ap.add_argument("--size", default="960x720", help="the shot's width x height")
+    ap.add_argument("--fps", type=float, default=30, help="frames per simulated second (up to 200)")
     ap.add_argument("--out", default=str(HOME / "blinkflow-runs" / "twin"))
     a = ap.parse_args()
 
@@ -341,9 +344,10 @@ def main():
     video = None
     if a.video:
         # The scene's fixed shot (for `box`, the live incident's camera/shots_incident.json).
-        shot = scenes.get(a.scene).camera
-        video = (ParallelVideo(twin, out / "twin.mp4", **shot, workers=a.workers) if a.workers > 1
-                 else Video(twin, out / "twin.mp4", **shot))
+        shot = json.loads(a.camera) if a.camera else scenes.get(a.scene).camera
+        size = tuple(int(x) for x in a.size.split("x"))
+        video = (ParallelVideo(twin, out / "twin.mp4", **shot, size=size, workers=a.workers, fps=a.fps)
+                 if a.workers > 1 else Video(twin, out / "twin.mp4", **shot, size=size, fps=a.fps))
     wall = time.time()
     brain_start = twin.run(a.settle, a.seconds, rec, video)
     rec.close()
