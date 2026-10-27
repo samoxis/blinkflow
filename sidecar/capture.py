@@ -3,26 +3,33 @@
 Keeps the last ~60 s of one window's client area as 1 s H.264 segments
 (ffmpeg ddagrab -> NVENC -> segment ring) and samples the cursor at 60 Hz.
 Serves snapshots over HTTP so the agent in WSL can ask for "the last N seconds".
+With --listen, also push-to-talk: while the key is held (F9 by default, anywhere on the desktop) the
+microphone is recorded; the moment of the press is the moment the person speaks about.
 
-    python capture.py --host 172.20.80.1 --title Viser --crop-top 45 --crop-right 356
+    python capture.py --host 172.20.80.1 --title Viser --crop-top 45 --crop-right 356 [--listen [--mic NAME]]
 
 GET /health                  -> state, capture rect, clock offset
 GET /snapshot?seconds=N      -> metadata of a new clip (optionally &end=<epoch>)
 GET /clip/<id>               -> the clip's mp4 bytes
 GET /frame?width=N           -> the newest frame as JPEG (epoch in X-Frame-Epoch), for the watcher
+GET /listen?after=N&timeout=S -> the next utterance after id N (press/release epochs), or id null
+GET /utterance/<id>          -> its WAV (mono, 16-bit, 24 kHz)
 POST /quit[?close=1]         -> stop ffmpeg and exit (optionally close the window)
 """
 import argparse
 import collections
 import ctypes
 import ctypes.wintypes as wt
+import io
 import json
 import os
+import re
 import shutil
 import subprocess
 import threading
 import time
 import uuid
+import wave
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
@@ -213,7 +220,102 @@ class Cursor:
         return [s for s in list(self.samples) if t0 <= s[0] <= t1]
 
 
-def make_handler(ring, cursor, hwnd, stop):
+class Mic:
+    """Push-to-talk. The microphone is read (ffmpeg dshow, 50 ms chunks) all the while, but with the key
+    up only the last PREROLL s are kept, in memory; nothing is written to disk. Holding the key records
+    an utterance, PREROLL before the press to POSTROLL after the release (the first word is often
+    spoken with the press). Each chunk is stamped when it arrives."""
+    RATE, CHUNK = 24000, 1200
+    PREROLL, POSTROLL, MAX_S, KEEP = 0.3, 0.3, 60, 10
+
+    def __init__(self, ffmpeg, device, vk):
+        self.device, self.vk = device, vk
+        self.chunks = collections.deque()
+        self.utterances = collections.OrderedDict()
+        self.press = None
+        self.n = 0
+        self.lock = threading.Condition()
+        self.proc = subprocess.Popen([ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin",
+                                      "-f", "dshow", "-audio_buffer_size", "50", "-i", f"audio={device}",
+                                      "-ac", "1", "-ar", str(self.RATE), "-f", "s16le", "-"],
+                                     stdout=subprocess.PIPE)
+        threading.Thread(target=self._read, daemon=True).start()
+        threading.Thread(target=self._keys, daemon=True).start()
+
+    @staticmethod
+    def devices(ffmpeg):
+        out = subprocess.run([ffmpeg, "-hide_banner", "-list_devices", "true", "-f", "dshow", "-i", "dummy"],
+                             capture_output=True, text=True, errors="replace").stderr
+        return re.findall(r'"([^"]+)" \(audio\)', out)
+
+    def _read(self):
+        while True:
+            b = self.proc.stdout.read(self.CHUNK * 2)
+            if not b:
+                return
+            now = time.time()
+            with self.lock:
+                self.chunks.append((now, b))
+                keep = self.PREROLL + 0.2 if self.press is None else self.MAX_S
+                while self.chunks and self.chunks[0][0] < now - keep:
+                    self.chunks.popleft()
+
+    def _keys(self):
+        down = False
+        while True:
+            held = bool(user32.GetAsyncKeyState(self.vk) & 0x8000)
+            if held and not down:
+                with self.lock:
+                    self.press = time.time()
+            elif down and not held:
+                threading.Thread(target=self._cut, args=(self.press, time.time()), daemon=True).start()
+            down = held
+            time.sleep(0.01)
+
+    def _cut(self, press, release):
+        time.sleep(self.POSTROLL + 0.1)
+        with self.lock:
+            pcm = b"".join(b for t, b in self.chunks if press - self.PREROLL <= t <= release + self.POSTROLL)
+            if self.press == press:
+                self.press = None
+            self.n += 1
+            buf = io.BytesIO()
+            with wave.open(buf, "wb") as w:
+                w.setnchannels(1)
+                w.setsampwidth(2)
+                w.setframerate(self.RATE)
+                w.writeframes(pcm)
+            self.utterances[self.n] = {"id": self.n, "press": press, "release": release,
+                                       "audio_s": round(len(pcm) / 2 / self.RATE, 3), "wav": buf.getvalue()}
+            while len(self.utterances) > self.KEEP:
+                self.utterances.popitem(last=False)
+            self.lock.notify_all()
+
+    def next(self, after, timeout):
+        """The first utterance after id `after`, waiting up to `timeout` s for one."""
+        deadline = time.time() + timeout
+        with self.lock:
+            while True:
+                u = next((u for i, u in self.utterances.items() if i > after), None)
+                if u or time.time() >= deadline:
+                    return u, self.press is not None
+                self.lock.wait(min(0.5, deadline - time.time()))
+
+    def alive(self):
+        return self.proc.poll() is None
+
+    def stop(self):
+        if self.alive():
+            self.proc.terminate()
+
+
+def vk_code(key):
+    """F1..F24 or a hex virtual-key code (0x..)."""
+    k = key.upper()
+    return 0x6F + int(k[1:]) if re.fullmatch(r"F([1-9]|1[0-9]|2[0-4])", k) else int(k, 16)
+
+
+def make_handler(ring, cursor, hwnd, stop, mic=None):
     class H(BaseHTTPRequestHandler):
         def log_message(self, *a):
             pass
@@ -234,7 +336,23 @@ def make_handler(ring, cursor, hwnd, stop):
                     alive = ring.proc.poll() is None
                     self._json({"now": time.time(), "recording": alive, "rect": ring.rect, "fps": FPS,
                                 "segments": len(ring.segs), "clock_offset": ring.offset(),
-                                "window_alive": bool(user32.IsWindow(hwnd))})
+                                "window_alive": bool(user32.IsWindow(hwnd)),
+                                "listening": bool(mic and mic.alive()), "mic": mic and mic.device})
+                elif u.path == "/listen":
+                    if not (mic and mic.alive()):
+                        raise RuntimeError("not listening (start with --listen; is there a microphone?)")
+                    utt, held = mic.next(int(q.get("after", 0)), min(float(q.get("timeout", 20)), 60))
+                    self._json({"id": None, "held": held} if not utt else
+                               {**{k: v for k, v in utt.items() if k != "wav"}, "held": held, "now": time.time()})
+                elif u.path.startswith("/utterance/"):
+                    utt = mic and mic.utterances.get(int(os.path.basename(u.path)))
+                    if not utt:
+                        raise KeyError("no such utterance (only the last 10 are kept)")
+                    self.send_response(200)
+                    self.send_header("Content-Type", "audio/wav")
+                    self.send_header("Content-Length", str(len(utt["wav"])))
+                    self.end_headers()
+                    self.wfile.write(utt["wav"])
                 elif u.path == "/snapshot":
                     meta = ring.snapshot(q.get("seconds", 10), q.get("end"))
                     meta["cursor"] = cursor.between(meta["t0_epoch"], meta["t1_epoch"])
@@ -285,7 +403,19 @@ def main():
     ap.add_argument("--wait", type=float, default=60, help="seconds to wait for the window")
     ap.add_argument("--ffmpeg", default=shutil.which("ffmpeg") or "ffmpeg")
     ap.add_argument("--dir", default=os.path.join(os.environ["LOCALAPPDATA"], "BlinkFlow", "ring"))
+    ap.add_argument("--listen", action="store_true", help="push-to-talk: record the microphone while the key is held")
+    ap.add_argument("--mic", help="dshow audio device (default: the first that is not a virtual one)")
+    ap.add_argument("--ptt-key", default="F9", help="F1..F24 or a hex virtual-key code")
     a = ap.parse_args()
+
+    mic = None
+    if a.listen:
+        found = Mic.devices(a.ffmpeg)
+        real = [d for d in found if not re.search(r"steam|virtual|cable|voicemeeter", d, re.I)]
+        device = a.mic or (real or found or [None])[0]
+        if not device:
+            raise SystemExit("--listen: no microphone found (ffmpeg -list_devices true -f dshow -i dummy)")
+        mic = Mic(a.ffmpeg, device, vk_code(a.ptt_key))
 
     deadline = time.time() + a.wait
     while not (hwnd := find_window(a.title)):
@@ -301,15 +431,18 @@ def main():
     ring.start()
     cursor = Cursor(rect)
     stop = threading.Event()
-    srv = ThreadingHTTPServer((a.host, a.port), make_handler(ring, cursor, hwnd, stop))
+    srv = ThreadingHTTPServer((a.host, a.port), make_handler(ring, cursor, hwnd, stop, mic))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
-    print(json.dumps({"listening": f"{a.host}:{a.port}", "rect": rect}), flush=True)
+    print(json.dumps({"listening": f"{a.host}:{a.port}", "rect": rect, "mic": mic and mic.device,
+                      "ptt_key": a.listen and a.ptt_key}), flush=True)
     try:
         while not stop.is_set() and ring.proc.poll() is None:
             stop.wait(0.5)
     finally:
         srv.shutdown()
         ring.stop()
+        if mic:
+            mic.stop()
         user32.SetWindowPos(hwnd, -2, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)  # HWND_NOTOPMOST
 
 

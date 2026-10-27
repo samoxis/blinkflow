@@ -381,7 +381,7 @@ def loop(found, brain, out):
     env = {**os.environ, "BLINKFLOW_TARGET": str(brain)}
     t = time.time()
     with open(out / "fix.log", "w") as log:
-        rc = subprocess.run([sys.executable, "-m", "blinkflow.fix", found["snapshot"], "--evidence",
+        rc = subprocess.run([sys.executable, "-m", "blinkflow.fix", found["snapshot"], "--auto", "--evidence",
                              found["evidence"], "--out", str(out / "fix")], cwd=REPO, env=env,
                             stdout=log, stderr=subprocess.STDOUT).returncode
     done = out / "fix" / "fix.json"

@@ -43,7 +43,7 @@ def run(label, snapshot):
     env = {**os.environ, "BLINKFLOW_TARGET": str(target)}
     t = time.time()
     with open(d / "fix.log", "w") as log:
-        rc = subprocess.run([sys.executable, "-m", "blinkflow.fix", str(snap), "--out", str(d / "fix")],
+        rc = subprocess.run([sys.executable, "-m", "blinkflow.fix", str(snap), "--auto", "--out", str(d / "fix")],
                             cwd=REPO, env=env, stdout=log, stderr=subprocess.STDOUT).returncode
     loop_s = time.time() - t
     t = time.time()

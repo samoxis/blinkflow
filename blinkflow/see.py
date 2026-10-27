@@ -171,9 +171,14 @@ def check_names(reply):
     return ((robot, nearest), kind), None
 
 
-def name_objects(images, ledger, namers=("glimmer", "spark")):
+SAID_HINT = (" A person watching said: \"{said}\". The object or hazard they say the robot touched or fell "
+             "into is the nearest one; name it as it looks on screen, not as they called it.")
+
+
+def name_objects(images, ledger, namers=("glimmer", "spark"), said=None):
+    """`said`: what the person who saw the incident said (blinkflow.voice); it tells the namer which one."""
     tried = []
-    prompt = NAMING_PROMPT.format(n=len(images))
+    prompt = NAMING_PROMPT.format(n=len(images)) + (SAID_HINT.format(said=said.replace('"', "'")) if said else "")
     for namer in namers:
         purpose = "name the robot and the object or hazard nearest to it"
         try:
@@ -411,9 +416,10 @@ def draw(path, frame_rgb, robot_mask, object_mask, base_mask, names, series, con
     plt.close(fig)
 
 
-def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow=None):
+def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow=None, said=None):
     """`reuse`: take the names and SAM replies of an earlier run in `out_dir` instead of new calls.
-    `follow`: (robot, object) names to track as given, no naming (a replay follows the incident's)."""
+    `follow`: (robot, object) names to track as given, no naming (a replay follows the incident's).
+    `said`: the person's own words about the incident, handed to the namer."""
     snap = load_snapshot(snapshot_path)
     out = pathlib.Path(out_dir).expanduser()
     out.mkdir(parents=True, exist_ok=True)
@@ -453,6 +459,7 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
         robot, nearest = before["names"]["robot"], before["names"]["object"]
         kind = before["names"].get("object_is", "object")
         namer, tried, trouble = before["names"]["named_by"], before["names"]["attempts"], before["names"]["object_warning"]
+        said = said or before["names"].get("said")
         tr, to = ({"concept": c, "frames": sam.load_raw(out / f"sam-{tag}.txt"), "status": before["tracking"][k]["status"]}
                   for c, tag, k in ((robot, "robot", "robot"), (nearest, "object", "object")))
         prior = json.loads((out / "models.json").read_text())["calls"]
@@ -466,13 +473,13 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
         if follow:
             (robot, nearest), kind, namer, tried = follow, "as in the incident", "incident", []
         else:
-            ((robot, nearest), kind), namer, tried = name_objects(images, ledger, namers)
+            ((robot, nearest), kind), namer, tried = name_objects(images, ledger, namers, said)
         with concurrent.futures.ThreadPoolExecutor(2) as pool:
             tr, to = pool.map(run, (robot, nearest), ("robot", "object"))
         trouble = object_trouble(to, size[0] * size[1], n)
         if trouble and not follow and "spark" in namers and namer != "spark":
             tried.append({"namer": "sam check", "rejected": f"{nearest!r}: {trouble}"})
-            ((_, nearest2), kind2), namer, more = name_objects(images, ledger, ("spark",))
+            ((_, nearest2), kind2), namer, more = name_objects(images, ledger, ("spark",), said)
             tried += more
             if nearest2 != nearest:
                 nearest, kind = nearest2, kind2
@@ -559,7 +566,7 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
         "snapshot": snap["source"], "kind": snap["kind"], "clock": snap["clock"], "clip": snap["clip"],
         "shot": {"first_frame": start, "frames": n, "size": list(size), "naming_frames": [start + p for p in picks]},
         "names": {"robot": robot, "object": nearest, "object_is": kind, "named_by": namer, "attempts": tried,
-                  "object_warning": trouble},
+                  "object_warning": trouble, "said": said},
         "tracking": {k: {"concept": t["concept"], "status": t["status"],
                          "frames_with_mask": sum(1 for v in t["frames"].values() if v),
                          "instances_max": max((len(v) for v in t["frames"].values()), default=0)}

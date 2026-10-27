@@ -16,10 +16,13 @@ import urllib.request
 import requests
 
 API = "https://api.meta.ai/v1/responses"
+ASR = "https://api.meta.ai/v1/asr/transcribe"
 OLLAMA = "http://127.0.0.1:11434/api/chat"
 GLIMMER = "muse-glimmer"
 SPARK = "muse-spark-1.3"
 WONDER = "muse-wonder-1.0"
+VOICE = "muse-voice-transcribe-1.0"
+VOICE_PER_MIN = 3.00 / 1000
 PRICES = {SPARK: (1.25, 0.15, 4.25), WONDER: (4.0, 0.20, 20.0)}   # per 1M tokens: input, cached input, output
 WARM_OUTPUT = 16         # output tokens of a call that only fills the prompt cache
 GLIMMER_KEEP = "30m"     # Ollama unloads an idle model after 5 min; a cold Glimmer is a ~20 GB load
@@ -58,6 +61,7 @@ class Ledger:
                "prices": {"sam-3.1": "$0.20 per 1000 frames",
                           SPARK: "$1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
                           WONDER: "$4.00 / 1M input, $0.20 / 1M cached input, $20.00 / 1M output",
+                          VOICE: "$3.00 per 1000 audio minutes",
                           GLIMMER: "local (Ollama on this PC), $0"}}
         pathlib.Path(path).write_text(json.dumps(doc, indent=1))
         return doc
@@ -147,6 +151,22 @@ def spark(prompt, images, ledger, purpose, effort="low"):
     text = [c["text"] for o in d["output"] if o["type"] == "message" for c in o["content"]
             if c["type"] == "output_text"]
     return "".join(text)
+
+
+def transcribe(wav, ledger, purpose, mode="PUSH_TO_TALK"):
+    """Muse Voice Transcribe on one recording (WAV: mono, 16-bit PCM, 16 or 24 kHz). Push-to-talk: the
+    key held down is the whole turn, so the reply is one transcript. Returns (text, audio seconds)."""
+    req = {"mode": mode, "model": VOICE, "audioEncoding": "WAV", "languageBias": ["English"]}
+    t = time.time()
+    r = requests.post(ASR, timeout=60, headers={"Authorization": "Bearer " + api_key()},
+                      files={"request": (None, json.dumps(req), "application/json"),
+                             "audio": ("utterance.wav", wav, "audio/wav")})
+    r.raise_for_status()
+    d = r.json()
+    audio_s = (d.get("audioDurationMs") or 0) / 1000
+    ledger.add(VOICE, "Meta Model API", purpose, time.time() - t, audio_s / 60 * VOICE_PER_MIN,
+               mode=mode, audio_seconds=audio_s, session=d.get("sessionId"))
+    return d.get("transcript", "").strip(), audio_s
 
 
 def respond(model, content, ledger, purpose, effort="medium", schema=None, max_output=16000, warm=False):

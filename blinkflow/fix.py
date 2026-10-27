@@ -11,20 +11,25 @@
   5. proof: the same scenario replayed with the change, SAM 3.1 on the rendered shot, incident or not.
      Still there: git reset --hard, the new evidence goes back to Muse Wonder (with the change
      in place, and said so), and Muse Code tries again with what failed. At most 3 attempts;
-  6. report.md and models.json (every model call of the whole run) in ~/blinkflow-runs/fixes/<stamp>/.
+  6. a person decides twice: before Muse Code writes ("Fix it?", after the cause in two plain sentences)
+     and after the proof ("Keep the fix?"; no = git reset --hard). --auto asks no one (suite, watcher);
+  7. report.md and models.json (every model call of the whole run) in ~/blinkflow-runs/fixes/<stamp>/.
 
     python3 -m blinkflow.fix <snapshot .json> [--evidence DIR] [--attempts 3] [--model MODEL] [--out DIR]
-                                 [--compare N]
+                                 [--compare N] [--auto]
 
 The target is ~/duck-target, or the copy named by BLINKFLOW_TARGET.
 """
 import argparse
 import asyncio
 import concurrent.futures
+import functools
 import json
+import os
 import pathlib
 import re
 import subprocess
+import sys
 import time
 
 from muse_code import (ApprovalDecisionInput, MuseClient, MuseClientSpawnOptions, SendUserTurnOptions,
@@ -310,6 +315,31 @@ def effect(v, before):
     return f", {abs(d):.2f} s {'later' if d > 0 else 'earlier'} than before any change"
 
 
+def two_sentences(text):
+    return " ".join(re.split(r"(?<=[.!?])\s+", text.strip())[:2])
+
+
+def terminal():
+    """The terminal, kept for the person's answers; fd 0 becomes /dev/null, so no child process takes what
+    the person types (ffmpeg reads its stdin for commands, and the replay renders while a question waits)."""
+    tty = os.fdopen(os.dup(0), "r")
+    null = os.open(os.devnull, os.O_RDONLY)
+    os.dup2(null, 0)
+    os.close(null)
+    return tty
+
+
+def terminal_ask(question, tty):
+    """y or n from the person at the terminal; anything else asks again."""
+    while True:
+        print(f"{question} [y/n] ", end="", flush=True)
+        a = tty.readline()
+        if not a:
+            raise EOFError("the terminal closed before an answer")
+        if a.strip().lower() in ("y", "yes", "n", "no"):
+            return a.strip().lower()[0] == "y"
+
+
 def stage(stages, name, t, t0):
     stages.append({"stage": name, "start": round(t - t0, 1), "seconds": round(time.time() - t, 1)})
 
@@ -323,7 +353,8 @@ def timed(stages, name, t0, fn, *args, **kw):
         stage(stages, name, t, t0)
 
 
-def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
+def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, ask=None):
+    """`ask`: question -> True/False, the person's answer (terminal_ask); None runs with no one asked."""
     snapshot = pathlib.Path(snapshot).expanduser().resolve()
     run = pathlib.Path(out).expanduser() if out else RUNS / time.strftime("%Y%m%d-%H%M%S")
     run.mkdir(parents=True)
@@ -363,10 +394,31 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
         # compare: N runs each of Wonder and Spark, Wonder's majority kept
         timed(stages, "understand (Glimmer key frames, Muse Wonder)", t0, diagnose.diagnose, evdir, compare=compare)
     first_diag = json.loads((evdir / "diagnosis.json").read_text())
+    answers = []
 
+    def approve(i, diag_dir):
+        """Before Muse Code writes: the cause in two plain sentences, and the person's yes or no."""
+        if not ask:
+            return True
+        d = json.loads((diag_dir / "diagnosis.json").read_text())
+        c = d["cause"]
+        print(f"\nCause: {two_sentences(d['explanation'])}\n({c['file']}, lines {c['lines']['start']}-"
+              f"{c['lines']['end']}; confidence {d['confidence']:.2f})", flush=True)
+        t = time.time()
+        yes = ask("Fix it?")
+        stage(stages, f"attempt {i}: the person decides to fix", t, t0)
+        answers.append({"attempt": i, "question": "Fix it?", "yes": yes, "seconds": round(time.time() - t, 1)})
+        return yes
+
+    # the first question while the replay before any change finishes in the background
+    go = approve(1, evdir)
     before = timed(stages, "wait for the replay before any change", t0, looked.result)
     pool.shutdown(wait=False)
-    done = {"run": str(run), "base": base, "kind": kind, "before": before, "attempts": [], "fixed": False}
+    done = {"run": str(run), "base": base, "kind": kind, "before": before, "attempts": [], "fixed": False,
+            "kept": False, "asked": bool(ask), "answers": answers}
+    if not go:
+        done["stopped"] = "the person said no before Muse Code wrote anything"
+        return finish(run, snapshot, evdir, ev, first_diag, done, stages, ledger, t0)
     if not (before["valid"] and before["incident"]):
         done["stopped"] = f"the replay without a change does not show the {kind}: " + says(before, obj, kind)
         return finish(run, snapshot, evdir, ev, first_diag, done, stages, ledger, t0)
@@ -374,6 +426,9 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
     diag_dir, history, tried = evdir, [], []
     for i in range(1, attempts + 1):
         a = run / f"attempt-{i}"
+        if i > 1 and not approve(i, diag_dir):
+            done["stopped"] = f"the person said no before attempt {i}"
+            break
         prompt = PROMPT.format(incident=INCIDENT[kind], diagnosis=diagnosis_text(diag_dir), **workspace_text(diag_dir))
         if history:
             prompt += HISTORY.format(attempts="\n\n".join(history))
@@ -399,9 +454,23 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
         stage(stages, f"attempt {i}: replay and look again", t, t0)
         rec["verdict"] = v
         if v["valid"] and not v["incident"]:
+            done["fixed"] = True
+            if ask:
+                print(f"\nReplay with the change: {says(v, obj, kind)}.\nBefore it: {says(before, obj, kind)}.\n"
+                      f"Change: {mc['change']['stat']} ({', '.join(mc['change']['files'])})", flush=True)
+                t = time.time()
+                keep = ask("Keep the fix?")
+                stage(stages, f"attempt {i}: the person decides to keep", t, t0)
+                answers.append({"attempt": i, "question": "Keep the fix?", "yes": keep,
+                                "seconds": round(time.time() - t, 1)})
+                if not keep:
+                    undo(base)
+                    rec["rolled_back"] = True
+                    done["stopped"] = "fixed and verified, but the person did not keep it: rolled back to the base commit"
+                    break
             git("commit", "-qm", f"fix: {rec['cause_key']}\n\n{mc['summary']}\n\nVerified by BlinkFlow replay: "
                 f"{says(v, obj, kind)}.")
-            rec["kept"], done["fixed"] = True, True
+            rec["kept"] = done["kept"] = True
             done["fix_commit"] = git("rev-parse", "HEAD").strip()
             break
         what = f"Attempt {i} changed:\n```diff\n{mc['change']['diff']}```\nIts note: {mc['summary']}\n" \
@@ -465,7 +534,11 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
     c, b = ev["first_contact"], done["before"]
     kept = next((a for a in done["attempts"] if a["kept"]), None)
     n = len(done["attempts"])
-    if kept:
+    rolled = next((a for a in done["attempts"] if a.get("rolled_back")), None)
+    if rolled:
+        head = (f"**Fixed and verified in attempt {rolled['attempt']} of {n}, then rolled back**: the person did not "
+                f"keep it ({done['seconds']:.0f} s).")
+    elif kept:
         head = (f"**Fixed and verified in attempt {kept['attempt']} of {n}.** Seen -> fixed and verified: "
                 f"**{done['seconds']:.0f} s** of wall time.")
     else:
@@ -525,7 +598,7 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
     out += ["## Attempts", ""]
     for a in done["attempts"]:
         v = a["verdict"]
-        out += [f"### Attempt {a['attempt']}: {'kept' if a['kept'] else 'undone (git reset --hard)'}", "",
+        out += [f"### Attempt {a['attempt']}: {'kept' if a['kept'] else 'rolled back (the person said no)' if a.get('rolled_back') else 'undone (git reset --hard)'}", "",
                 f"- diagnosis used: `{rel(run, a['diagnosis'])}` (cause `{a['cause_key']}`)",
                 f"- Muse Code: {a['muse_code']['outcome']}, {a['muse_code']['seconds']:.0f} s, "
                 f"{a['change']['stat'] or 'no change'}; files: {', '.join(a['change']['files']) or 'none'}",
@@ -553,6 +626,10 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
     out += ["", f"Total ${mdoc['total_cost_usd']:.3f}. Every call is in `models.json`; Muse Code's cost is the "
             "host's own estimate.", "",
             "## Guardrails", "",
+            "- the person decided: " + ("; ".join(f"{x['question']} {'yes' if x['yes'] else 'no'} (attempt "
+                                                  f"{x['attempt']}, {x['seconds']:.0f} s)" for x in done["answers"])
+                                        or "nothing was asked") if done.get("asked") else
+            "- run with --auto: no one was asked before Muse Code wrote or before the fix was kept.",
             "- Muse Code ran under the host's default sandboxed profile (not `:unrestricted`), approval mode "
             "`promptUnmatched`; edits are approved only when every path is inside the target.",
             f"- approval requests that reached BlinkFlow: "
@@ -572,11 +649,15 @@ def main():
     ap.add_argument("--attempts", type=int, default=3)
     ap.add_argument("--model", help="Muse Code's model (default: the host's)")
     ap.add_argument("--out", help=f"run folder (default: {RUNS}/<stamp>)")
+    ap.add_argument("--auto", action="store_true", help="ask no one: fix and keep on the proof alone (suite, watcher)")
     ap.add_argument("--compare", type=int, default=0, metavar="N",
                     help="first diagnosis: N runs each of Muse Wonder and Muse Spark (Wonder's majority is used)")
     a = ap.parse_args()
-    done = fix(a.snapshot, a.evidence, a.attempts, a.model, a.out, a.compare)
-    print(json.dumps({"run": done["run"], "fixed": done["fixed"], "seconds": done["seconds"],
+    if not (a.auto or sys.stdin.isatty()):
+        raise SystemExit("no one at a terminal to ask: run with --auto")
+    ask = None if a.auto else functools.partial(terminal_ask, tty=terminal())
+    done = fix(a.snapshot, a.evidence, a.attempts, a.model, a.out, a.compare, ask)
+    print(json.dumps({"run": done["run"], "fixed": done["fixed"], "kept": done["kept"], "seconds": done["seconds"],
                       "attempts": [{"attempt": x["attempt"], "files": x["change"]["files"],
                                     "incident": (x["verdict"] or {}).get("incident"), "kept": x["kept"]}
                                    for x in done["attempts"]]}, indent=1))

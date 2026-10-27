@@ -155,7 +155,7 @@ def run(label, suite=SUITE):
     env = {**os.environ, "BLINKFLOW_TARGET": str(target)}
     t = time.time()
     with open(d / "fix.log", "w") as log:
-        rc = subprocess.run([sys.executable, "-m", "blinkflow.fix", str(meta), "--out", str(d / "fix")]
+        rc = subprocess.run([sys.executable, "-m", "blinkflow.fix", str(meta), "--auto", "--out", str(d / "fix")]
                             + (["--compare", str(compare)] if compare else []),
                             cwd=REPO, env=env, stdout=log, stderr=subprocess.STDOUT).returncode
     fix_s = time.time() - t

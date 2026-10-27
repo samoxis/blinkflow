@@ -17,7 +17,7 @@ It runs Meta's **open-weight Muse Glimmer on this PC**, so the robot's camera ne
 |---|---|---|
 | Remember | The last 60 seconds of the simulator window are kept locally | — |
 | Watch | Or nobody says anything: about once a second the newest frame is checked locally for a robot touching, nearly touching, fallen or stuck; a raised hand is confirmed on pixels before the loop starts, and the moment comes from BlinkFlow's own clock (`results/watcher.md`) | Muse Glimmer (local), SAM 3.1 |
-| Listen | You say (or type) what you saw; the moment comes from BlinkFlow's own clock | Muse Voice Transcribe |
+| Listen | Hold F9 and say what you saw ("three seconds ago its right leg hit the purple box"), or type it; the moment is the key press on BlinkFlow's own clock minus the time you said; the sentence is read locally (`results/voice.md`) | Muse Voice Transcribe, Muse Glimmer (local) |
 | See | Objects in those seconds are named locally and then followed pixel by pixel; the masks become measurements (distance between objects per frame, first contact) | Muse Glimmer (local), SAM 3.1 |
 | Understand | Key frames + measurements + time-aligned logs + the robot's code → the cause, plus a plain-language explanation | Muse Wonder |
 | Fix | A coding agent patches the code inside its sandbox; a git commit is taken first | Muse Code (Python SDK) |
@@ -43,7 +43,7 @@ Existed before, used only as the test target, not part of this repo:
 
 ## Safety
 
-Muse Code runs inside its sandbox. BlinkFlow approves only edits to the chosen target folder and refuses everything else. Every fix starts from a git commit and can be undone with one command.
+Muse Code runs inside its sandbox. BlinkFlow approves only edits to the chosen target folder and refuses everything else. Every fix starts from a git commit and can be undone with one command. Before Muse Code writes, BlinkFlow shows the cause in two plain sentences and asks "Fix it?"; after the proof it asks "Keep the fix?", and a no rolls the change back. `--auto` runs without a person (the bug suites, the watcher).
 
 ## Credits and licence
 

@@ -30,9 +30,11 @@ class Sidecar:
         with urllib.request.urlopen(self.base + path, timeout=timeout) as r:
             return r.read()
 
-    def start(self, title="Viser", crop_top=45, crop_right=356, wait=30):
+    def start(self, title="Viser", crop_top=45, crop_right=356, wait=30, listen=False, mic=None, key="F9"):
+        """`listen`: push-to-talk too (hold `key`; `mic` a dshow device name, default the first real one)."""
         args = ["-u", unc(SIDECAR), "--host", self.host, "--port", str(self.port),
                 "--title", title, "--crop-top", str(crop_top), "--crop-right", str(crop_right)]
+        args += ["--listen", "--ptt-key", key] + (["--mic", mic] if mic else []) if listen else []
         arglist = ",".join(f"'{a}'" for a in args)
         subprocess.run(["powershell.exe", "-NoProfile", "-Command",
                         f"Start-Process -WindowStyle Hidden python -ArgumentList {arglist}"],
@@ -88,6 +90,21 @@ class Sidecar:
         """The newest frame: (epoch on the WSL clock, JPEG bytes). `skew` as from skew(), measured once."""
         with urllib.request.urlopen(f"{self.base}/frame?width={width}", timeout=5) as r:
             return float(r.headers["X-Frame-Epoch"]) - skew, r.read()
+
+    def listen(self, after=0, timeout=20, skew=0.0):
+        """The next push-to-talk utterance after id `after`, or None after `timeout` s. Press and release
+        on the WSL clock (`skew` as from skew()); its WAV is fetched with utterance()."""
+        u = json.loads(self._get(f"/listen?after={after}&timeout={timeout}", timeout=timeout + 10))
+        if "error" in u:
+            raise RuntimeError(u["error"])
+        if u["id"] is None:
+            return None
+        u["press"] -= skew
+        u["release"] -= skew
+        return u
+
+    def utterance(self, uid):
+        return self._get(f"/utterance/{uid}", timeout=10)
 
     def stop(self, close_window=False):
         req = urllib.request.Request(self.base + "/quit" + ("?close=1" if close_window else ""),
