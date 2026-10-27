@@ -1,9 +1,9 @@
 """BlinkFlow understands: from measured evidence to the cause in the target's code.
 
-  1. key frames chosen from the evidence: ~1 s before first contact, ~0.5 s before, just before, contact;
-     the masks, the object's base and the measured gap are drawn on each;
+  1. key frames chosen from the evidence: ~1 s before the incident (first contact, or the fall), ~0.5 s
+     before, just before, the incident; the masks, the object's base and the measured gap are drawn on each;
   2. Muse Glimmer, on this PC, says in one sentence what each key frame shows;
-  3. the brain's ticks from the last ~3 s before contact, as a compact table (command, pose, depth);
+  3. the brain's ticks from the last ~3 s before the incident, as a compact table (command, pose, depth);
   4. the target's source files and brain.toml, with line numbers;
   5. Muse Wonder reads it all and answers in JSON: the cause (file, function, lines), the evidence for
      it, its confidence, the direction of a fix (no patch) and a plain explanation;
@@ -32,7 +32,7 @@ from scipy import ndimage
 
 from . import TARGET, models, sam, see
 
-BEFORE_S = 3.0           # log window before contact
+BEFORE_S = 3.0           # log window before the incident
 AFTER_S = 0.25
 GRID_EVERY_S = 0.5       # full depth grids this often in the log window (plus at the key frames)
 IMAGE_WIDTH = 960
@@ -42,7 +42,7 @@ MAX_OUTPUT = 32000       # a fall into the ledge took Wonder 12000 reasoning tok
 
 DESCRIBE_PROMPT = (
     "This is one frame from a fixed camera in a robot simulator, {label}. The {robot} is a small "
-    "two-legged walking robot; the {object} is an object near it. In one sentence, say what the robot "
+    "two-legged walking robot; the {object} is {what} near it. In one sentence, say what the robot "
     "is doing (walking, turning, standing; where its legs are) and where the {object} is in the picture "
     "relative to the robot (picture left or right, above or below, how close). Say left and right as seen in "
     "the picture, not from the robot's point of view. Reply only with JSON: {{\"sentence\": \"...\"}}")
@@ -97,16 +97,28 @@ SCHEMA = {
 
 
 # ── key frames ───────────────────────────────────────────────────────────────
+def moment(ev):
+    """The incident's moment (frame, brain_s, ...) and its name: the fall for a fall, else the first contact."""
+    if ev.get("incident") == "fall":
+        return ev["fall"]["first"], "the fall"
+    return ev["first_contact"], "first contact"
+
+
+def hazard(ev):
+    return ev.get("incident") == "fall" or ev["names"].get("object_is") == "hazard"
+
+
 def key_frames(ev, snap):
-    """(tag, label, clip frame) for ~1 s before contact, ~0.5 s before, just before (~0.1 s), contact."""
-    c, start, n = ev["first_contact"], ev["shot"]["first_frame"], ev["shot"]["frames"]
+    """(tag, label, clip frame) for ~1 s before the incident, ~0.5 s before, just before (~0.1 s), the incident."""
+    (c, what), start, n = moment(ev), ev["shot"]["first_frame"], ev["shot"]["frames"]
     times = snap["brain_time"]
+    short = "the fall" if what == "the fall" else "contact"
 
     def at(t):
         return min(range(start, start + n), key=lambda i: abs(times[i] - t))
 
-    picks = [("1 s before contact", at(c["brain_s"] - 1.0)), ("0.5 s before contact", at(c["brain_s"] - 0.5)),
-             ("just before contact", max(start, c["frame"] - 3)), ("first contact", c["frame"])]
+    picks = [(f"1 s before {short}", at(c["brain_s"] - 1.0)), (f"0.5 s before {short}", at(c["brain_s"] - 0.5)),
+             (f"just before {short}", max(start, c["frame"] - 3)), (what, c["frame"])]
     out, seen = [], set()
     for label, f in picks:
         if f not in seen:
@@ -130,10 +142,10 @@ def annotate(frame_rgb, robot, obj, base, k, m, names):
     im = Image.fromarray((img * 255).astype(np.uint8))
     im = im.resize((IMAGE_WIDTH, round(im.height * IMAGE_WIDTH / im.width)))
     gap = "robot not found" if m is None else f"gap {m['gap_px']:.0f} px"
-    if m and m.get("feet_depth_px") is not None:
+    if base is not None and m and m.get("feet_depth_px") is not None:
         gap += f" · feet {m['feet_depth_px']:+.0f} px past the base's far edge"
     lines = [f"{k['tag']} · {k['label']} · t = {k['brain_s']:.2f} s after the brain starts · frame {k['frame']}",
-             f"{gap} · blue = {names[0]}, green = {names[1]}, red = its base (from pixels)"]
+             f"{gap} · blue = {names[0]}, green = {names[1]}" + (", red = its base (from pixels)" if base is not None else "")]
     font = ImageFont.load_default(size=18)
     bar = Image.new("RGB", (im.width, 52), (20, 20, 20))
     d = ImageDraw.Draw(bar)
@@ -152,7 +164,7 @@ def build_frames(evdir, ev, snap, ledger):
     start = ev["shot"]["first_frame"]
     robot_raw, obj_raw = sam.load_raw(evdir / "sam-robot.txt"), sam.load_raw(evdir / "sam-object.txt")
     base = None
-    if ev.get("base"):
+    if ev.get("base") and ev.get("incident") != "fall":
         fb = ev["base"]["from_frame"] - start
         base = see.base_of(see.union(obj_raw[fb], size), see.rgb(shot, fb))["mask"]
     by_frame = {p["frame"]: p for p in ev["gap_by_frame"]}
@@ -166,7 +178,8 @@ def build_frames(evdir, ev, snap, ledger):
         m = by_frame.get(k["frame"])
         path = evdir / "keyframes" / f"{k['tag']}.jpg"
         annotate(see.rgb(shot, f), r, o, base, k, m, names).save(path, quality=88)
-        reply = models.glimmer(DESCRIBE_PROMPT.format(label=k["label"], robot=names[0], object=names[1]),
+        what = "a hazard in the floor (an edge, a pit, a step)" if hazard(ev) else "an object"
+        reply = models.glimmer(DESCRIBE_PROMPT.format(label=k["label"], robot=names[0], object=names[1], what=what),
                                [see.jpeg(shot, f)], ledger, f"describe key frame {k['tag']}")
         try:
             sentence = json.loads(reply)["sentence"].strip()
@@ -207,10 +220,10 @@ def row_mins(f):
     return out
 
 
-def log_table(record, tc, key_times):
+def log_table(record, tc, key_times, event="first contact"):
     ticks = [k for k in read_ticks(record) if tc - BEFORE_S <= k["t"] <= tc + AFTER_S]
-    head = ("Brain log, every tick from {:.1f} s before first contact to {:.2f} s after. t = seconds after the "
-            "brain's first tick (same clock as the frames); dt = t minus first contact. cmd = kind, vx (m/s), "
+    head = ("Brain log, every tick from {:.1f} s before " + event + " to {:.2f} s after. t = seconds after the "
+            "brain's first tick (same clock as the frames); dt = t minus " + event + ". cmd = kind, vx (m/s), "
             "vyaw (rad/s); yaw (rad) and x, y (m) from odometry. depth: nearest valid reading in each sensor row, "
             "row 0 (top) to row 7 (bottom), in cm; '*' = a new depth frame arrived this tick, ' ' = the previous "
             "one is reused.").format(BEFORE_S, AFTER_S)
@@ -255,15 +268,61 @@ def code_text(files):
 
 
 # ── the incident, as text ────────────────────────────────────────────────────
+def fall_text(ev):
+    """The measurement lines of a fall: what the pixels and the brain's own log each saw."""
+    names, f = ev["names"], ev["fall"]
+    lines = []
+    if f["pixels"]:
+        p = f["pixels"]
+        lines.append(f"- Fall, from the robot's mask: frame {p['frame']}, t = {p['brain_s']:.3f} s; the mask "
+                     + (f"dropped {p['drop_px']} px (the robot is {p['robot_px']} px tall on screen) while its long "
+                        f"axis turned {p['turn_deg']} degrees, within half a second of frame "
+                        f"{ev['shot']['first_frame'] + p['from_shot_frame']}: it tipped over."
+                        if p["how"] == "dropped and tipped over" else "vanished mid-frame and did not come back."))
+    if f["brain_log"]:
+        b = f["brain_log"]
+        lines.append(f"- The brain's own log reports it at t = {b['brain_s']:.3f} s: \"{b['how']}\".")
+    w = ev["contacts"].get("whole_mask")
+    lines.append(f"- The robot's and the {names['object']}'s masks first touch on screen at t = {w['brain_s']:.3f} s."
+                 if w else f"- The robot's and the {names['object']}'s masks never touch on screen.")
+    return lines
+
+
 def incident_text(ev, frames, table):
     names = ev["names"]
-    c = ev["first_contact"]
-    w = ev["contacts"].get("whole_mask")
-    lines = [f"INCIDENT. A fixed camera filmed the robot ({names['robot']!r}) walking; it touched the "
-             f"{names['object']!r}. Clock: {ev['clock']}.",
+    c, what = moment(ev)
+    lines = [f"INCIDENT. A fixed camera filmed the robot ({names['robot']!r}) walking; "
+             + (f"it fell off the {names['object']!r}, a hazard in the floor." if ev.get("incident") == "fall" else
+                f"it touched the {names['object']!r}.") + f" Clock: {ev['clock']}.",
              "",
-             "Measurements (from SAM 3.1 segmentation masks, per video frame):",
-             f"- First contact ({c['reading']} reading): frame {c['frame']}, t = {c['brain_s']:.3f} s; mask gap "
+             "Measurements (from SAM 3.1 segmentation masks, per video frame):"]
+    if ev.get("incident") == "fall":
+        lines += fall_text(ev)
+    else:
+        lines += contact_text(ev, c)
+    # An object's base (where its feet must be for a touch to count) means nothing for a fall into a hazard.
+    feet = ev.get("base") and ev.get("incident") != "fall"
+    if feet:
+        lines.append(f"- The object's base was found from pixels ({ev['base']['method']}), "
+                     f"{ev['base']['thickness_px']} px thick.")
+    lines += ["", f"Gap over time (t, dt, gap px{', feet past base edge px' if feet else ''}), every 3rd frame "
+              f"from 3 s before {what}:"]
+    series = [p for p in ev["gap_by_frame"] if c["brain_s"] - BEFORE_S <= p["brain_s"] <= c["brain_s"] + AFTER_S]
+    lines += [f"  {p['brain_s']:.3f} {p['brain_s'] - c['brain_s']:+.3f} {p['gap_px']:6.1f}"
+              + (f" {p.get('feet_depth_px')}" if feet else "") for p in series[::3]]
+    lines += ["", "Key frames (images follow, in the same order; blue = robot mask, green = "
+              f"{'hazard' if hazard(ev) else 'object'} mask{', red = its base' if feet else ''}). Left and right in "
+              "the local model's sentences are directions in the picture, not the robot's own left and right:"]
+    for k in frames:
+        lines.append(f"- {k['tag']}, {k['label']}: frame {k['frame']}, t = {k['brain_s']:.3f} s, gap {k['gap_px']} px"
+                     + (f", feet past base edge {k['feet_depth_px']} px" if feet else "")
+                     + f". Local vision model: \"{k['glimmer']}\"")
+    return "\n".join(lines + ["", table])
+
+
+def contact_text(ev, c):
+    w = ev["contacts"].get("whole_mask")
+    lines = [f"- First contact ({c['reading']} reading): frame {c['frame']}, t = {c['brain_s']:.3f} s; mask gap "
              f"{c['gap_px']} px, robot's feet {c.get('feet_depth_px')} px past the base's far edge "
              + (f"(contact = gap <= {ev['contact_px']} px with the robot's lowest point within "
                 f"{ev['base']['reach_px']} px of the base, its own height {ev['base']['robot_height_px']} px: the "
@@ -274,27 +333,15 @@ def incident_text(ev, frames, table):
         lines.append(f"- The two masks first touch on screen earlier, at frame {w['frame']}, t = {w['brain_s']:.3f} s, "
                      "while the feet are not yet at the object's base (the object's top overlaps the robot "
                      "in the picture).")
-    if ev.get("base"):
-        lines.append(f"- The object's base was found from pixels ({ev['base']['method']}), "
-                     f"{ev['base']['thickness_px']} px thick.")
-    lines += ["", "Gap over time (t, dt, gap px, feet past base edge px), every 3rd frame from 3 s before contact:"]
-    series = [p for p in ev["gap_by_frame"] if c["brain_s"] - BEFORE_S <= p["brain_s"] <= c["brain_s"] + AFTER_S]
-    lines += [f"  {p['brain_s']:.3f} {p['brain_s'] - c['brain_s']:+.3f} {p['gap_px']:6.1f} {p.get('feet_depth_px')}"
-              for p in series[::3]]
-    lines += ["", "Key frames (images follow, in the same order; blue = robot mask, green = object mask, "
-              "red = object's base). Left and right in the local model's sentences are directions in the "
-              "picture, not the robot's own left and right:"]
-    for k in frames:
-        lines.append(f"- {k['tag']}, {k['label']}: frame {k['frame']}, t = {k['brain_s']:.3f} s, gap {k['gap_px']} px, "
-                     f"feet past base edge {k['feet_depth_px']} px. Local vision model: \"{k['glimmer']}\"")
-    return "\n".join(lines + ["", table])
+    return lines
 
 
 def content_for(code, ev, frames, table, evdir, control, context=None):
     head = INSTRUCTIONS + "\n\n" + code
     if control:
         return [{"type": "input_text", "text": head},
-                {"type": "input_text", "text": f"INCIDENT. While walking in the simulator, the robot touched the "
+                {"type": "input_text", "text": f"INCIDENT. While walking in the simulator, the robot "
+                 f"{'fell off' if ev.get('incident') == 'fall' else 'touched'} the "
                  f"{ev['names']['object']}. No video, measurements or log are available for this incident."}]
     parts = [{"type": "input_text", "text": head}, {"type": "input_text", "text": incident_text(ev, frames, table)}]
     if context:
@@ -382,7 +429,8 @@ def agreement(runs):
 def write_md(path, ev, frames, main, compare):
     d, chk = main["diagnosis"], main["check"]
     c = d["cause"]
-    out = [f"# Diagnosis: {ev['names']['robot']} touches the {ev['names']['object']}", "",
+    out = [f"# Diagnosis: {ev['names']['robot']} {'falls off' if ev.get('incident') == 'fall' else 'touches'} "
+           f"the {ev['names']['object']}", "",
            f"**Cause:** `{c['file']}`, `{c['function']}`, lines {c['lines']['start']}-{c['lines']['end']}. {c['what']}", "",
            f"**In plain words:** {d['explanation']}", "",
            f"**What happened:** {d['observed']}", "",
@@ -466,7 +514,7 @@ def rescore(evdir):
     old = json.loads((evdir / "diagnosis.json").read_text())
     frames, target = old["key_frames"], pathlib.Path(old["target"])
     snap = see.load_snapshot(ev["snapshot"])
-    _, tick_times = log_table(snap["record"], ev["first_contact"]["brain_s"], [k["brain_s"] for k in frames])
+    _, tick_times = log_table(snap["record"], moment(ev)[0]["brain_s"], [k["brain_s"] for k in frames], moment(ev)[1])
     files = target_files(target)
     results = json.loads((evdir / "diagnosis-runs.json").read_text())
     for r in results:
@@ -483,8 +531,8 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, c
     if evdir.name == "evidence.json":
         evdir = evdir.parent
     ev = json.loads((evdir / "evidence.json").read_text())
-    if not ev.get("first_contact"):
-        raise SystemExit("evidence.json has no first contact: nothing to diagnose")
+    if not moment(ev)[0]:
+        raise SystemExit("evidence.json has no first contact and no fall: nothing to diagnose")
     snap = see.load_snapshot(ev["snapshot"])
     meta = json.loads(pathlib.Path(ev["snapshot"]).read_text())
     target = pathlib.Path(target or meta.get("brain") or TARGET).expanduser().resolve()
@@ -493,7 +541,7 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, c
 
     ledger = models.Ledger()
     frames = build_frames(evdir, ev, snap, ledger)
-    table, tick_times = log_table(snap["record"], ev["first_contact"]["brain_s"], [k["brain_s"] for k in frames])
+    table, tick_times = log_table(snap["record"], moment(ev)[0]["brain_s"], [k["brain_s"] for k in frames], moment(ev)[1])
     files = target_files(target)
     code = code_text(files)
     (evdir / "diagnosis-input.txt").write_text(incident_text(ev, frames, table) + ("\n\n" + context if context else ""))

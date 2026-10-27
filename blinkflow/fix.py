@@ -3,13 +3,13 @@
   1. the target is committed first (a dirty tree as it is), so every attempt starts from a known
      state and a failed one is undone with `git reset --hard`;
   2. see and understand: blinkflow.see and blinkflow.diagnose on the incident (or reuse --evidence);
-  3. the replay of the incident's scenario in the twin, before any change, must show the contact too,
-     or there is nothing to prove;
+  3. the replay of the incident's scenario in the twin, before any change, must show the incident too
+     (the contact, or the fall), or there is nothing to prove;
   4. Muse Code (`muse serve`, the host's default sandboxed profile) gets diagnosis.md and makes the
      smallest change in the target. Only edits whose every path is inside the target are approved;
      after the turn every tool call is audited the same way, and the agent must not commit;
-  5. proof: the same scenario replayed with the change, SAM 3.1 on the rendered shot, contact or not.
-     Still a contact: git reset --hard, the new evidence goes back to Muse Wonder (with the change
+  5. proof: the same scenario replayed with the change, SAM 3.1 on the rendered shot, incident or not.
+     Still there: git reset --hard, the new evidence goes back to Muse Wonder (with the change
      in place, and said so), and Muse Code tries again with what failed. At most 3 attempts;
   6. report.md and models.json (every model call of the whole run) in ~/blinkflow-runs/fixes/<stamp>/.
 
@@ -40,7 +40,7 @@ PATH_KEYS = ("path", "file_path", "filePath", "paths", "file", "target", "destin
 SYSTEM_DIRS = ("/usr/", "/bin/", "/lib", "/etc/", "/dev/", "/proc/", "/tmp/", "/opt/")
 
 PROMPT = """You are fixing the brain of a small two-legged walking robot; this workspace is its code. In a \
-simulator the robot touched an object it should have kept clear of. BlinkFlow filmed it, measured it from the \
+simulator the robot {incident}. BlinkFlow filmed it, measured it from the \
 pixels and read the brain's own log; its diagnosis follows.
 
 Make the smallest change to this workspace that removes the cause. Rules:
@@ -63,7 +63,7 @@ Each one was undone: the workspace is back to its original state. Do not simply 
 {attempts}"""
 
 EARLIER = """NOTE. Earlier fixes did not remove this incident. Each was replayed in the same deterministic \
-scene and looked at again from the pixels; the robot still touched the {obj}.
+scene and looked at again from the pixels; the robot still {event}.
 
 {attempts}
 
@@ -256,28 +256,40 @@ def muse_code(prompt, out, base, ledger, purpose, model=None):
 
 
 # ── the loop ─────────────────────────────────────────────────────────────────
+INCIDENT = {"contact": "touched an object it should have kept clear of",
+            "fall": "fell off a hazard in the floor (an edge, a pit, a step) it should have kept clear of"}
+
+
+def event(kind, obj):
+    return f"fell off the {obj}" if kind == "fall" else f"touched the {obj}"
+
+
 def diagnosis_text(evdir):
     """diagnosis.md without its image links (Muse Code gets text)."""
     md = (pathlib.Path(evdir) / "diagnosis.md").read_text()
     return re.sub(r"^!\[[^\]]*\]\([^)]*\)\n?", "", md, flags=re.M).strip()
 
 
-def says(v, obj):
+def says(v, obj, kind="contact"):
     if not v["valid"]:
         return "no verdict (" + "; ".join(v["problems"]) + ")"
-    if v["contact"]:
+    if v["incident"] and kind == "fall":
+        return (f"the robot still fell off the {obj}, at t = {v['incident_s']:.3f} s after the brain starts "
+                f"({v['fall_reading']} reading)")
+    if v["incident"]:
         return (f"the robot still touched the {obj}, first contact at t = {v['first_contact_s']:.3f} s after the brain "
                 f"starts ({v['reading']} reading)")
-    return f"no contact; closest gap {v['closest_gap_px']:.0f} px at t = {v['closest_s']:.2f} s"
+    gap = "" if v["closest_gap_px"] is None else f"closest gap {v['closest_gap_px']:.0f} px at t = {v['closest_s']:.2f} s"
+    return f"no fall; the robot stayed on its feet{'; ' + gap if gap else ''}" if kind == "fall" else f"no contact; {gap}"
 
 
 def effect(v, before):
     """What a failed change did to the incident, against the replay without it (same scene, same clock)."""
-    if not (v["valid"] and v["contact"]):
+    if not (v["valid"] and v["incident"]):
         return ""
-    d = v["first_contact_s"] - before["first_contact_s"]
+    d = v["incident_s"] - before["incident_s"]
     if abs(d) < 0.1:
-        return (f"; before any change it was at t = {before['first_contact_s']:.3f} s, so this change did not "
+        return (f"; before any change it was at t = {before['incident_s']:.3f} s, so this change did not "
                 f"move the incident at all")
     return f", {abs(d):.2f} s {'later' if d > 0 else 'earlier'} than before any change"
 
@@ -308,20 +320,20 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
         stage(stages, "understand (Glimmer key frames, Muse Wonder)", t)
     first_diag = json.loads((evdir / "diagnosis.json").read_text())
     names = (ev["names"]["robot"], ev["names"]["object"])
-    obj = names[1]
+    obj, kind = names[1], ev.get("incident", "contact")
 
     t = time.time()
-    before = prove.prove(snapshot, run / "before", names)
+    before = prove.prove(snapshot, run / "before", names, kind=kind)
     stage(stages, "replay before any change (twin + SAM 3.1)", t)
-    done = {"run": str(run), "base": base, "before": before, "attempts": [], "fixed": False}
-    if not (before["valid"] and before["contact"]):
-        done["stopped"] = "the replay without a change does not show the contact: " + says(before, obj)
+    done = {"run": str(run), "base": base, "kind": kind, "before": before, "attempts": [], "fixed": False}
+    if not (before["valid"] and before["incident"]):
+        done["stopped"] = f"the replay without a change does not show the {kind}: " + says(before, obj, kind)
         return finish(run, snapshot, evdir, ev, first_diag, done, stages, ledger, t0)
 
     diag_dir, history, tried = evdir, [], []
     for i in range(1, attempts + 1):
         a = run / f"attempt-{i}"
-        prompt = PROMPT.format(diagnosis=diagnosis_text(diag_dir))
+        prompt = PROMPT.format(incident=INCIDENT[kind], diagnosis=diagnosis_text(diag_dir))
         if history:
             prompt += HISTORY.format(attempts="\n\n".join(history))
         t = time.time()
@@ -341,27 +353,27 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0):
             continue
         t = time.time()
         try:
-            v = prove.prove(snapshot, a, names, before["travel_m"])
+            v = prove.prove(snapshot, a, names, before["travel_m"], kind=kind)
         except subprocess.CalledProcessError as e:              # the patched brain did not run
-            v = {"valid": False, "contact": None, "problems": [f"the replay failed: {e}"]}
+            v = {"valid": False, "incident": None, "contact": None, "problems": [f"the replay failed: {e}"]}
         stage(stages, f"attempt {i}: replay and look again", t)
         rec["verdict"] = v
-        if v["valid"] and not v["contact"]:
+        if v["valid"] and not v["incident"]:
             git("commit", "-qm", f"fix: {rec['cause_key']}\n\n{mc['summary']}\n\nVerified by BlinkFlow replay: "
-                f"{says(v, obj)}.")
+                f"{says(v, obj, kind)}.")
             rec["kept"], done["fixed"] = True, True
             done["fix_commit"] = git("rev-parse", "HEAD").strip()
             break
         what = f"Attempt {i} changed:\n```diff\n{mc['change']['diff']}```\nIts note: {mc['summary']}\n" \
-               f"Replay of the same scene with this change: {says(v, obj)}{effect(v, before)}."
+               f"Replay of the same scene with this change: {says(v, obj, kind)}{effect(v, before)}."
         tried.append(f"Attempt {i}: the diagnosis named `{rec['cause_key']}` ({cause['what']}) The change:\n"
-                     f"```diff\n{mc['change']['diff']}```\nReplay of the same scene with it: {says(v, obj)}"
+                     f"```diff\n{mc['change']['diff']}```\nReplay of the same scene with it: {says(v, obj, kind)}"
                      f"{effect(v, before)}.")
         if i < attempts and v["valid"]:
             # Back to Muse Wonder with the new evidence, the change still in place so code and pixels agree,
             # and with every earlier cause and what its change did, so it can look elsewhere.
             t = time.time()
-            context = EARLIER.format(obj=obj, attempts="\n\n".join(tried), last=i)
+            context = EARLIER.format(event=event(kind, obj), attempts="\n\n".join(tried), last=i)
             try:
                 diagnose.diagnose(a / "evidence", context=context)
                 diag_dir = a / "evidence"
@@ -408,6 +420,7 @@ def rel(run, p):
 
 def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
     names, obj = ev["names"], ev["names"]["object"]
+    kind = done.get("kind", "contact")
     c, b = ev["first_contact"], done["before"]
     kept = next((a for a in done["attempts"] if a["kept"]), None)
     n = len(done["attempts"])
@@ -416,12 +429,18 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                 f"**{done['seconds']:.0f} s** of wall time.")
     else:
         head = f"**Not fixed** after {n} attempt(s), {done['seconds']:.0f} s. " + done.get("stopped", "")
-    out = [f"# BlinkFlow: {names['robot']} touches the {obj}", "", head, "",
+    if kind == "fall":
+        f, other = ev["fall"]["first"], ev["fall"]["brain_log" if ev["fall"]["first"]["reading"] == "pixels" else "pixels"]
+        seen = (f"robot = *{names['robot']}*, {names.get('object_is', 'object')} = *{obj}*. The robot fell off it "
+                f"({f['reading']} reading: {f['how']}) at frame {f['frame']}, t = {f['brain_s']:.3f} s after the brain starts"
+                + (f"; the {other['reading']} reading has it at t = {other['brain_s']:.3f} s" if other else "") + ".")
+    else:
+        seen = (f"robot = *{names['robot']}*, object = *{obj}*. First contact ({c['reading']} reading) at frame "
+                f"{c['frame']}, t = {c['brain_s']:.3f} s after the brain starts"
+                + (f", {c['wall_time']}" if c.get("wall_time") else "") + ".")
+    out = [f"# BlinkFlow: {names['robot']} {'falls off' if kind == 'fall' else 'touches'} the {obj}", "", head, "",
            "## What was seen", "",
-           f"Snapshot `{snapshot}` ({ev['kind']} run, {ev['clock']} clock). Named by {names['named_by']}: "
-           f"robot = *{names['robot']}*, object = *{obj}*. First contact ({c['reading']} reading) at frame "
-           f"{c['frame']}, t = {c['brain_s']:.3f} s after the brain starts"
-           + (f", {c['wall_time']}" if c.get("wall_time") else "") + ".", "",
+           f"Snapshot `{snapshot}` ({ev['kind']} run, {ev['clock']} clock). Named by {names['named_by']}: " + seen, "",
            f"![incident]({rel(run, evdir / 'evidence.png')})", "",
            "## Cause (Muse Wonder)", "",
            f"`{diag['cause']['file']}`, `{diag['cause']['function']}`, lines {diag['cause']['lines']['start']}-"
@@ -435,19 +454,25 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                 f"(base `{done['base'][:7]}`).", "", "```diff", kept["change"]["diff"].rstrip(), "```", ""]
     out += ["## Proof: the same scenario replayed in the twin, before and after", "",
             "The verdict comes from SAM 3.1 masks on the rendered incident shot, following the incident's robot "
-            "and object. Contact = masks touching with the robot's feet at the object's base (the base reading), or, "
-            "when the feet never get there, with the robot within reach of the base (body reading: another part "
-            "of it, such as its head).", "",
+            f"and {obj}. "
+            + ("Fall = the robot's mask drops by 0.6 of its own height while its long axis turns 35 degrees, within "
+               "half a second, or the mask vanishes for good mid-frame (pixels); or the brain's own log reports a "
+               "fall (brain log). The twin's record of falls is not read." if kind == "fall" else
+               "Contact = masks touching with the robot's feet at the object's base (the base reading), or, "
+               "when the feet never get there, with the robot within reach of the base (body reading: another part "
+               "of it, such as its head)."), "",
+            "| replay | fell | fall (s) | seen in | closest gap (px) | walked (m) |" if kind == "fall" else
             "| replay | contact | first contact (s) | masks touch on screen (s) | closest gap (px) | walked (m) |",
             "|---|---|---|---|---|---|"]
 
     def row(label, v):
-        if not v or v.get("contact") is None:
+        if not v or v.get("incident") is None:
             return f"| {label} | no verdict: {'; '.join((v or {}).get('problems', []))} | | | | |"
         fmt = lambda x, f: "-" if x is None else format(x, f)
-        return (f"| {label} | {'**yes**' if v['contact'] else '**no**'}{'' if v['valid'] else ' (invalid: ' + '; '.join(v['problems']) + ')'} "
-                f"| {fmt(v['first_contact_s'], '.3f')} | {fmt(v['whole_mask_touch_s'], '.3f')} "
-                f"| {fmt(v['closest_gap_px'], '.0f')} | {v['travel_m']:.2f} |")
+        cols = ((fmt(v["incident_s"], ".3f"), v["fall_reading"] or "-") if kind == "fall" else
+                (fmt(v["first_contact_s"], ".3f"), fmt(v["whole_mask_touch_s"], ".3f")))
+        return (f"| {label} | {'**yes**' if v['incident'] else '**no**'}{'' if v['valid'] else ' (invalid: ' + '; '.join(v['problems']) + ')'} "
+                f"| {cols[0]} | {cols[1]} | {fmt(v['closest_gap_px'], '.0f')} | {v['travel_m']:.2f} |")
 
     out.append(row("before (base commit)", b))
     for a in done["attempts"]:
@@ -465,7 +490,7 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                 f"{a['change']['stat'] or 'no change'}; files: {', '.join(a['change']['files']) or 'none'}",
                 f"- its note: {a['muse_code']['summary'] or '(none)'}",
                 f"- rejected before replay: {'; '.join(a['muse_code']['problems'])}" if a["muse_code"]["problems"]
-                else f"- replay: {says(v, obj) if v else 'not run'}", ""]
+                else f"- replay: {says(v, obj, kind) if v else 'not run'}", ""]
         if not a["kept"] and a["change"]["diff"].strip():
             out += ["```diff", a["change"]["diff"].rstrip(), "```", ""]
     out += ["## Time", "", "| stage | s |", "|---|---|"]
@@ -492,7 +517,8 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
             " (in-workspace reads and edits are allowed by the host's own rules and never ask).",
             "- every tool call was audited after each turn (file paths, paths named in shell commands); "
             "an attempt with a call outside the target, a commit of its own, or no change is undone unreplayed.",
-            "- the simulator's contact log is not read by BlinkFlow; tools/live_check.py (scorer) does that.", ""]
+            "- the simulator's contact log and the twin's record of falls are not read by BlinkFlow; the scorers "
+            "(tools/live_check.py, tools/bug_suite.py) do that.", ""]
     (run / "report.md").write_text("\n".join(out))
 
 
@@ -509,7 +535,7 @@ def main():
     done = fix(a.snapshot, a.evidence, a.attempts, a.model, a.out, a.compare)
     print(json.dumps({"run": done["run"], "fixed": done["fixed"], "seconds": done["seconds"],
                       "attempts": [{"attempt": x["attempt"], "files": x["change"]["files"],
-                                    "contact": (x["verdict"] or {}).get("contact"), "kept": x["kept"]}
+                                    "incident": (x["verdict"] or {}).get("incident"), "kept": x["kept"]}
                                    for x in done["attempts"]]}, indent=1))
 
 
