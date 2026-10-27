@@ -22,6 +22,7 @@ import argparse
 import csv
 import json
 import math
+import os
 import pathlib
 import sys
 import time
@@ -226,11 +227,12 @@ class Twin:
 class Video:
     """Offscreen render of one fixed camera at 30 fps of simulated time, piped to ffmpeg."""
 
-    def __init__(self, twin, path, pos, look, fov, size=(960, 720)):
+    def __init__(self, twin, path, pos, look, fov, size=(960, 720), renderer=True):
         import subprocess
         m = twin.world.model
         m.vis.global_.offwidth, m.vis.global_.offheight = max(size[0], 640), max(size[1], 480)
-        self.renderer = mujoco.Renderer(m, size[1], size[0])
+        self.size = size
+        self.renderer = mujoco.Renderer(m, size[1], size[0]) if renderer else None
         self.cam = mujoco.MjvCamera()
         self.cam.type = mujoco.mjtCamera.mjCAMERA_FREE
         d = np.array(look) - np.array(pos)
@@ -258,6 +260,64 @@ class Video:
         self.proc.wait()
 
 
+# What mjv_updateScene reads from MjData for this world (no flex, skin, tendons or mocap; contact,
+# frame and inertia drawing off). At a frame these are copied as they are at that instant, not
+# recomputed from qpos: after mj_step the poses still belong to the step's start.
+RENDER_FIELDS = ("qpos", "xpos", "xmat", "xquat", "xipos", "ximat", "geom_xpos", "geom_xmat", "site_xpos",
+                 "site_xmat", "light_xpos", "light_xdir", "cam_xpos", "cam_xmat", "subtree_com")
+_worker = {}
+
+
+def _render_init(model, size, cam, threads):
+    os.environ["LP_NUM_THREADS"] = str(threads)       # read by Mesa when this process makes its context
+    _worker.update(renderer=mujoco.Renderer(model, size[1], size[0]), data=mujoco.MjData(model), cam=cam)
+    mujoco.mj_forward(model, _worker["data"])
+
+
+def _render(states):
+    r, d = _worker["renderer"], _worker["data"]
+    out = []
+    for s in states:
+        for k, v in s.items():
+            getattr(d, k)[:] = v
+        r.update_scene(d, _worker["cam"])
+        out.append(r.render().tobytes())
+    return b"".join(out)
+
+
+class ParallelVideo(Video):
+    """The same shot as Video, rendered after the physics by `workers` processes.
+
+    The renderer here is Mesa's llvmpipe (software): ~110 ms a frame, and it does not get faster
+    with more threads in one context, only with more processes. Physics is ~1 ms a frame, so the run
+    keeps each frame's poses (RENDER_FIELDS, ~40 kB) and renders them afterwards, in order, into the
+    same ffmpeg encoder: the same frames, byte for byte (checked against Video, Oct 27)."""
+
+    CHUNK = 6
+
+    def __init__(self, twin, path, pos, look, fov, size=(960, 720), workers=12):
+        super().__init__(twin, path, pos, look, fov, size, renderer=False)
+        self.model, self.workers, self.states = twin.world.model, workers, []
+
+    def __call__(self, twin):
+        if twin.step_n % self.every:
+            return
+        d = twin.world.data
+        self.states.append({k: getattr(d, k).copy() for k in RENDER_FIELDS})
+        self.times.append(round(twin.t, 3))
+
+    def close(self):
+        import multiprocessing
+        chunks = [self.states[i:i + self.CHUNK] for i in range(0, len(self.states), self.CHUNK)]
+        threads = max(1, (os.cpu_count() or 2) // self.workers)
+        # fork: the workers inherit the model exactly as the run built it (scene, offscreen size, fov).
+        with multiprocessing.get_context("fork").Pool(self.workers, _render_init,
+                                                      (self.model, self.size, self.cam, threads)) as pool:
+            for frames in pool.imap(_render, chunks):
+                self.proc.stdin.write(frames)
+        super().close()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--brain", default=str(HOME / "duck-target"))
@@ -265,6 +325,8 @@ def main():
     ap.add_argument("--settle", type=float, default=3.0)
     ap.add_argument("--seconds", type=float, default=12.0)
     ap.add_argument("--video", action="store_true", help="render the incident's fixed shot")
+    ap.add_argument("--workers", type=int, default=min(12, os.cpu_count() or 1),
+                    help="processes rendering the shot (1: render during the run)")
     ap.add_argument("--out", default=str(HOME / "blinkflow-runs" / "twin"))
     a = ap.parse_args()
 
@@ -279,7 +341,9 @@ def main():
     video = None
     if a.video:
         # The scene's fixed shot (for `box`, the live incident's camera/shots_incident.json).
-        video = Video(twin, out / "twin.mp4", **scenes.get(a.scene).camera)
+        shot = scenes.get(a.scene).camera
+        video = (ParallelVideo(twin, out / "twin.mp4", **shot, workers=a.workers) if a.workers > 1
+                 else Video(twin, out / "twin.mp4", **shot))
     wall = time.time()
     brain_start = twin.run(a.settle, a.seconds, rec, video)
     rec.close()
