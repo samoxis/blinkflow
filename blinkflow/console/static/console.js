@@ -5,6 +5,10 @@
 (() => {
 const STATIC = window.BLINKFLOW_STATIC || null;
 const TEXT = window.BLINKFLOW_TEXT;
+// ?film=1: made to be filmed (no cursor, no buttons); &speed=N: a finished run replayed at N times its pace;
+// &script=1: the whole run loaded and held still, for a script to show (BLINKFLOW.seek / pin)
+const Q = new URLSearchParams(location.search);
+const FILM = Q.has("film"), SPEED = +Q.get("speed") || null, SCRIPTED = Q.has("script");
 
 // ── small helpers ──────────────────────────────────────────────────────────
 function h(tag, attrs, ...kids) {
@@ -73,13 +77,15 @@ const MODEL = {
   code: ["Muse Code", "writes the fix"],
   you: ["You", "decide"],
 };
+const BAND = [["voice", "Muse Voice", "listens"], ["glimmer", "Muse Glimmer", "watches, on this PC"],
+  ["sam", "SAM 3.1", "follows every object"], ["wonder", "Muse Wonder", "finds the cause"], ["code", "Muse Code", "writes the fix"]];
 const chip = (m) => h("span", { class: `model m-${m}` }, h("b", {}, MODEL[m][0]), ` · ${MODEL[m][1]}`);
 const plain = (t) => h("span", { class: "model plain" }, t);
 
 const STEPS = [
   { id: "watch", title: "The last 60 seconds", models: () => [plain("the screen, kept in a 60 s ring")] },
   { id: "heard", title: "Something went wrong",
-    models: () => (st.mode === "watch" ? [chip("glimmer")] : [chip("voice")]) },
+    models: () => (st.mode === "watch" ? [chip("glimmer")] : typed() ? [plain("typed by the person")] : [chip("voice")]) },
   { id: "see", title: "See what happened", models: () => [chip("glimmer"), chip("sam")] },
   { id: "cause", title: "Find the cause", models: () => [chip("wonder")] },
   { id: "ask", title: "Fix it?", models: () => [chip("you")] },
@@ -90,7 +96,7 @@ const STEPS = [
 const STEP = Object.fromEntries(STEPS.map((x, i) => [x.id, { ...x, n: i + 1 }]));
 
 // ── state, built from events ───────────────────────────────────────────────
-let st, skew = 0, shown = null, shownAt = 0, pinned = null, dirty = true;
+let st, skew = 0, shown = null, shownAt = 0, pinned = null, dirty = true, drawn = null;
 let replaying = null;               // static report: the replay in progress
 function fresh() {
   return {
@@ -100,6 +106,7 @@ function fresh() {
     code: {}, codeOrder: [], undos: [], commit: null, replays: {}, attemptTags: [],
     control: { start: null, rendered: {}, scenes: {}, done: null }, clock: { start: null, stop: null },
     seeing: null, stages: [], open: {}, models: [], cost: 0, done: null, loop: null, step: {}, current: null, lastT: null,
+    brainClock: null, vram: null,
   };
 }
 const see = (tag) => (st.sees[tag] ||= { tag, start: null, named: null, sam: {}, pieces: {}, evidence: null });
@@ -113,6 +120,8 @@ function on(e) {
     case "feed": st.feed = e; step = "watch"; break;
     case "brain.start": st.brainStart = e; step = "watch"; break;
     case "brain.stop": st.brainStop = e; break;
+    case "brain.clock": st.brainClock = e; break;
+    case "glimmer.vram": st.vram = e; break;
     case "listen": st.listen = e; step = "watch"; break;
     case "key": st.key = e; step = "heard"; break;
     case "said": st.said = e; step = "heard"; break;
@@ -193,12 +202,35 @@ function on(e) {
 // time on the loop's clock: live, the server's epoch; in a report replay, the replayed moment
 function now() {
   if (replaying) return replaying.now();
-  if (STATIC) return st.lastT || 0;
+  if (STATIC || EVENTS) return st.lastT || 0;      // a finished run: its last moment
   return Date.now() / 1000 + skew;
 }
 const toEpoch = (x) => (st.feed && st.feed.clock === "brain" ? st.feed.t_start + x : x);
-const since = (t) => (t == null ? null : t - (st.clock.start ? st.clock.start.at : st.run ? st.run.t : t));
 const pending = () => st.asks.filter((a) => !st.answers[a.id]);
+const typed = () => !!(st.key && st.key.typed) || String((st.said && st.said.heard_by) || "").startsWith("typed");
+
+// The clock counts the machine's time only. The person's share is the time a "Fix it?" waits for an answer
+// while no machine work is left (the replay before any change runs beside the first one), as blinkflow.fix
+// counts it; "Keep the fix?" comes after the clock has stopped.
+function held(upTo) {
+  const b = st.replays.before;
+  const busy = b && b.verdict ? b.verdict.t : b && b.start ? Infinity : -Infinity;
+  let s = 0;
+  for (const a of st.asks) {
+    if (a.question !== "Fix it?") continue;
+    const ans = st.answers[a.id];
+    s += Math.max(0, Math.min(ans ? ans.t : now(), upTo) - Math.max(a.t, busy));
+  }
+  return s;
+}
+function clockNow() {
+  const a = st.clock.start, b = st.clock.stop;
+  if (!a) return null;
+  if (b) return b.person_s != null ? b.seconds : b.at - a.at - held(b.at);   // older streams: worked out here
+  return Math.max(0, now() - a.at - held(now()));
+}
+const since = (t) => (t == null ? null : t - (st.clock.start ? st.clock.start.at : st.run ? st.run.t : t) - held(t));
+const tookFor = (a) => { const ans = st.answers[a.id]; return ans ? ans.seconds ?? ans.t - a.t : null; };
 
 function status(id) {
   if (id === "ask" && pending().some((a) => a.question === "Fix it?")) return "waiting";
@@ -230,10 +262,16 @@ class Player {
     this.label = h("span", { class: "label" });
     this.badge = h("span", { class: "badge", hidden: true });
     this.el = h("div", { class: "player" }, this.video, this.canvas, this.flash, this.label, this.badge);
+    this.slowTag = h("span", { class: "slow", hidden: true }, "¼× speed");
+    this.el.append(this.slowTag);
     this.layers = [];
     this.listeners = [];
     this.frame = 0;
     this.hit = null;                          // the contact frame: the edge flashes red there
+    this.crop = null;                         // [x1, y1, x2, y2], video pixels: the part that fills the pane
+    this.span = null;                         // [first, last] frame played in a loop
+    this.slow = null;                         // [first, last] frame played at quarter speed
+    this.lens = null;                         // {x, y, r}, video pixels: the spot the magnifier shows
     this.video.addEventListener("loadedmetadata", () => {
       this.canvas.width = this.video.videoWidth;
       this.canvas.height = this.video.videoHeight;
@@ -271,7 +309,57 @@ class Player {
       L.t.frame(f).forEach((m, i) => c.drawImage(tint(L, f, i, m), m.box[0], m.box[1]));
     }
     this.flash.classList.toggle("on", this.hit != null && Math.abs(f - this.hit) <= 2);
+    const d = this.video.duration;
+    if (this.span && d && (f < this.span[0] - 1 || f > this.span[1])) this.video.currentTime = (this.span[0] * d) / this.frames;
+    if (this.slow) {
+      const r = f >= this.slow[0] && f <= this.slow[1] ? 0.25 : 1;
+      if (this.video.playbackRate !== r) this.video.playbackRate = r;
+      this.slowTag.hidden = r === 1;
+    }
+    this.fit();
+    if (this.lens) this.magnify(f);
     for (const cb of this.listeners) cb(f);
+  }
+  // the crop fills the pane: widened to the pane's shape, kept inside the picture, no bars
+  fit() {
+    const v = this.video, vw = v.videoWidth, vh = v.videoHeight;
+    if (!this.crop || !vw) return;
+    const W = this.el.clientWidth, H = this.el.clientHeight;
+    if (!W || !H) return;
+    let [x1, y1, x2, y2] = this.crop, cw = x2 - x1, ch = y2 - y1;
+    const A = W / H;
+    if (cw / ch < A) cw = ch * A; else ch = cw / A;
+    if (cw > vw) { cw = vw; ch = cw / A; }
+    if (ch > vh) { ch = vh; cw = ch * A; }
+    const x = Math.max(0, Math.min(vw - cw, (x1 + x2) / 2 - cw / 2)), y = Math.max(0, Math.min(vh - ch, (y1 + y2) / 2 - ch / 2));
+    const k = W / cw;
+    this.view = { x, y, cw, ch };
+    const css = `position:absolute; max-width:none; max-height:none; object-fit:fill; left:${-x * k}px; top:${-y * k}px; width:${vw * k}px; height:${vh * k}px`;
+    if (this.fitted !== css) { v.style.cssText = css; this.canvas.style.cssText = css; this.fitted = css; }
+  }
+  // the magnifier: the spot around the first touch, from the same frame and the same masks
+  magnify(f) {
+    if (!this.inset) {
+      this.inset = h("canvas", { class: "lens" });
+      this.inset.width = this.inset.height = 360;
+      this.lensBox = h("div", { class: "lensbox" }, this.inset, h("span", {}, "magnified · where they touch"));
+      this.el.append(this.lensBox);
+    }
+    const { x, y, r } = this.lens, c = this.inset.getContext("2d"), n = this.inset.width;
+    c.clearRect(0, 0, n, n);
+    try {
+      c.drawImage(this.video, x - r, y - r, 2 * r, 2 * r, 0, 0, n, n);
+      c.drawImage(this.canvas, x - r, y - r, 2 * r, 2 * r, 0, 0, n, n);
+    } catch (e) { return; }
+    const on = this.hit != null && Math.abs(f - this.hit) <= 2;
+    c.strokeStyle = on ? "#ff4d5e" : "rgba(255,255,255,.75)";
+    c.lineWidth = on ? 6 : 2;
+    c.beginPath(); c.arc(n / 2, n / 2, n * 0.16, 0, 2 * Math.PI); c.stroke();
+    this.lensBox.classList.toggle("on", on);
+    // the inset sits in the corner away from the touch, never over it
+    const v = this.view || { x: 0, y: 0, cw: this.video.videoWidth || 1, ch: this.video.videoHeight || 1 };
+    this.lensBox.classList.toggle("r", (x - v.x) / v.cw < 0.5);
+    this.lensBox.classList.toggle("t", (y - v.y) / v.ch > 0.5);
   }
 }
 function tint(L, f, i, m) {
@@ -310,6 +398,42 @@ function evidencePlayer(tag) {
     p.hit = ev.first_contact ? ev.first_contact.shot_frame : null;
   }
   return p;
+}
+
+// Where the robot touches the object at the first contact, from SAM 3.1's masks of that frame: the closest
+// pair of edge pixels between the robot's lowest fifth ("down" from the object's faces, as see.py measures
+// it) and the object that was measured. {x, y} in video pixels, or null.
+const touches = new Map();
+function touchPoint(ev) {
+  const key = ev.sam.robot;
+  if (!touches.has(key)) touches.set(key, Promise.all([track(ev.sam.robot), track(ev.sam.object)]).then(([R, O]) => {
+    const f = ev.first_contact.shot_frame, [dy, dx] = (ev.base && ev.base.down) || [1, 0];
+    const ob = ev.object_box;
+    const near = (m) => !ob || (Math.min(m.box[2], ob[2]) > Math.max(m.box[0], ob[0]) && Math.min(m.box[3], ob[3]) > Math.max(m.box[1], ob[1]));
+    const edge = (ms) => {
+      const out = [];
+      for (const m of ms) for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
+        const o = y * m.w + x;
+        if (m.mask[o] && (x === 0 || y === 0 || x === m.w - 1 || y === m.h - 1 || !m.mask[o - 1] || !m.mask[o + 1] || !m.mask[o - m.w] || !m.mask[o + m.w]))
+          out.push([m.box[0] + x, m.box[1] + y]);
+      }
+      return out;
+    };
+    let r = edge(R.frame(f));
+    const o = edge(O.frame(f).filter(near));
+    if (!r.length || !o.length) return null;
+    const depth = (p) => p[0] * dx + p[1] * dy, lo = Math.max(...r.map(depth)), hi = Math.min(...r.map(depth));
+    const feet = r.filter((p) => depth(p) >= lo - 0.2 * (lo - hi));
+    if (feet.length) r = feet;
+    const thin = (a, n) => a.filter((_, i) => i % Math.ceil(a.length / n) === 0);
+    let best = null;
+    for (const a of thin(r, 700)) for (const b of thin(o, 1500)) {
+      const d = (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
+      if (!best || d < best[0]) best = [d, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    }
+    return best && { x: best[1], y: best[2] };
+  }).catch(() => null));
+  return touches.get(key);
 }
 
 // gap (px) between the robot's mask and the object's, over brain time; the contact in red
@@ -466,28 +590,98 @@ P.heard = () => {
   }
   if (!st.said) {
     box.append(h("div", {}, h("div", { class: "mic" }, st.listen ? st.listen.key || "F9" : "mic"),
-      h("div", { class: "wait", style: "height:auto" }, st.key ? h("div", {}, "transcribing", h("span", { class: "dots" }))
-        : `Hold ${st.listen ? st.listen.key || "F9" : "the key"} and say what you saw`)));
+      h("div", { class: "wait", style: "height:auto" }, st.key ? h("div", {}, typed() ? "reading" : "transcribing", h("span", { class: "dots" }))
+        : st.listen && st.listen.typed ? "Press Enter and type what you saw" : `Hold ${st.listen ? st.listen.key || "F9" : "the key"} and say what you saw`)));
     return [head("heard"), box];
   }
-  box.append(h("div", { class: `quote ${fx("quote@463")}` }, st.said.text || "(nothing heard)"));
-  const by = String(st.said.heard_by || "");
-  box.append(h("div", { class: "facts" },
-    fact(by.startsWith("typed") ? "typed" : "Muse Voice heard it", by.startsWith("typed") ? "text input" : `in ${secs(st.said.seconds)}`),
-    st.said.audio_s ? fact("speech", secs(st.said.audio_s)) : null));
-  if (st.read) {
-    const r = st.read;
+  const r = st.read;
+  if (!typed() && st.said.audio && url(st.said.audio)) box.append(wave(st.said));
+  box.append(h("div", { class: `quote ${fx("quote@463")}` }, marked(st.said.text || "(nothing heard)", r)));
+  if (r) {
+    const part = (cls, k, v) => h("div", { class: `fact part ${cls}` }, h("span", { class: "k" }, k), h("span", { class: "v" }, v));
     box.append(h("div", { class: `facts ${fx("facts@470")}` },
-      fact("what", r.event), fact("object", r.object || "–"), fact("robot", r.robot || "–"),
-      fact("when", `${num(r.seconds_ago)} s before the key`, "red"),
+      part("moment", "when", `${num(r.seconds_ago)} s before the key`), part("robot", "robot", r.robot || "–"),
+      part("event", "what happened", r.event), part("object", "object", r.object || "–"),
       fact("read by", `${r.read_by === "glimmer" ? "Muse Glimmer, on this PC" : r.read_by} · ${secs(r.seconds)}`)));
+    const bridge = bridgeLine(r);
+    if (bridge) box.append(bridge);
   }
   const c = last(st.confirmed);
   if (c) box.append(h("div", { class: `facts ${fx("facts@476")}` },
     fact("SAM 3.1 confirms", c.confirmed ? `${c.kind} at ${num(c.incident_s, 2)} s` : "nothing there", c.confirmed ? "red" : ""),
     c.names ? fact("in the pixels", c.names.join(" · ")) : null));
-  return [head("heard", st.key ? `key held ${num(st.key.release - st.key.press)} s` : null), box];
+  // typed: the step's own line already says "typed by the person"; only the voice gets a badge
+  const badge = typed() ? null : h("span", { class: "said-by voice" }, `heard by Muse Voice in ${secs(st.said.seconds)}`);
+  return [head("heard", badge), box];
 };
+
+// The sentence's own words, coloured by what was read from them: the moment, the robot, what happened, the
+// object. Only words that are there are coloured; the facts below say what the reader took from them.
+const NUMS = "\\d+(?:\\.\\d+)?|a|one|two|three|four|five|six|seven|eight|nine|ten|half a|a couple of|a few";
+const PARTS = [
+  ["moment", () => new RegExp(`\\b(?:just now|a (?:moment|second) ago|(?:about |around |roughly |maybe )?(?:${NUMS})\\s+(?:seconds?|secs?)\\s+ago)\\b`, "gi")],
+  ["object", (r) => r && r.object ? new RegExp(`\\b(?:the |a |that )?${r.object.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "gi") : null],
+  ["robot", () => /\b(?:(?:its|the|his|her|their)\s+)?(?:(?:left|right|front|back)\s+)?(?:legs?|foot|feet|knee|arm|head|body|side|hip|ankle|robot|duck)\b/gi],
+  ["event", () => /\b(?:hit|hits|touched|touches|touch|bumped|bumps|brushed|scraped|clipped|knocked|ran into|walked into|collided with|fell off|fell|falls|tripped|got stuck|stuck)\b/gi],
+];
+function marked(text, r) {
+  if (!r) return text;
+  const taken = new Array(text.length).fill(null);
+  for (const [cls, make] of PARTS) {
+    const re = make(r);
+    if (!re) continue;
+    for (const m of text.matchAll(re)) {
+      const a = m.index, b = a + m[0].length;
+      if (taken.slice(a, b).some((x) => x)) continue;
+      taken.fill(cls, a, b);
+    }
+  }
+  const out = [];
+  for (let i = 0; i < text.length;) {
+    let j = i;
+    while (j < text.length && taken[j] === taken[i]) j++;
+    out.push(taken[i] ? h("span", { class: `part ${taken[i]}` }, text.slice(i, j)) : text.slice(i, j));
+    i = j;
+  }
+  return out;
+}
+// the key on the robot's own clock, minus the delay said, is the moment: one line of arithmetic
+let brainT0 = null;
+function bridgeLine(r) {
+  const k = st.key, live = st.feed && st.feed.clock !== "brain";
+  let t0 = !live ? 0 : st.brainClock ? st.brainClock.start : brainT0;
+  if (live && t0 == null && st.snapshot && !bridgeLine.asked) {
+    bridgeLine.asked = true;          // a stream from before brain.clock: the snapshot has the brain's start
+    text(st.snapshot.snapshot).then((t) => { brainT0 = JSON.parse(t).brain_start ?? null; dirty = true; }).catch(() => {});
+  }
+  if (!k || t0 == null) return null;
+  const said = (String(st.said.text || "").match(PARTS[0][1]()) || [])[0] || `${num(r.seconds_ago)} s ago`;
+  const c = last(st.confirmed);
+  return h("div", { class: `bridge ${fx("bridge")}` },
+    h("span", {}, "key at ", h("b", {}, `${num(k.press - t0, 2)} s`)), h("span", { class: "op" }, "−"),
+    h("span", { class: "part moment" }, `“${said}”`), h("span", { class: "op" }, "="),
+    h("b", {}, `${num(r.moment - t0, 2)} s`), h("span", { class: "mute" }, "on the robot's clock"),
+    c && c.confirmed ? h("span", { class: "then" }, `→ SAM 3.1 finds the first ${c.kind} at `, h("b", {}, `${num(c.incident_s, 2)} s`)) : null);
+}
+// the recording, drawn from the file Muse Voice heard
+function wave(said) {
+  const cv = kept(`wave:${said.audio}`, () => {
+    const c = h("canvas", { class: "wave" });
+    c.width = 1600; c.height = 140;
+    fetch(url(said.audio)).then((r) => r.arrayBuffer()).then((b) => new AudioContext().decodeAudioData(b)).then((a) => {
+      const d = a.getChannelData(0), g = c.getContext("2d"), n = c.width, step = Math.ceil(d.length / n);
+      g.fillStyle = getComputedStyle(document.body).getPropertyValue("--m-voice");
+      for (let i = 0; i < n; i++) {
+        let m = 0;
+        for (let j = i * step; j < Math.min(d.length, (i + 1) * step); j++) m = Math.max(m, Math.abs(d[j]));
+        const hh = Math.max(2, m * c.height * 0.95);
+        g.fillRect(i, (c.height - hh) / 2, 1, hh);
+      }
+    }).catch((e) => console.warn("wave", e));
+    return c;
+  });
+  return h("div", { class: "wavebox" }, cv, h("span", { class: "mute" }, `${secs(said.audio_s)} of speech · held ${secs(st.key ? st.key.release - st.key.press : null)}`));
+}
 
 P.see = () => {
   const tags = Object.keys(st.sees).filter((t) => !isProof(t));
@@ -499,6 +693,13 @@ P.see = () => {
   const fc = ev && ev.first_contact;
   if (p) {
     p.set(ev ? "SAM 3.1 masks, every frame" : "the incident shot", fc ? `contact · frame ${fc.shot_frame}` : null, fc ? "hit" : null);
+    if (fc) {
+      p.slow = [fc.shot_frame - 12, fc.shot_frame + 8];         // the touch itself, at quarter speed
+      if (!p.lens && !p.lensAsked) {
+        p.lensAsked = true;
+        touchPoint(ev).then((pt) => { if (pt) p.lens = { ...pt, r: 70 }; });
+      }
+    }
     box.append(p.el);
   } else box.append(h("div", { class: "player" }, wait("cutting the shot")));
   const side = h("div", { class: "side" });
@@ -545,78 +746,81 @@ P.cause = () => {
   const tag = last(st.wonderOrder) || last(Object.keys(st.keyframes));
   if (!tag) return [head("cause"), h("div", { class: "body" }, wait("waiting for the evidence"))];
   const w = st.wonder[tag] || {}, d = w.diagnosis, kf = st.keyframes[tag], log = st.logs[tag];
-  const box = h("div", { class: "body cause" });
-  const story = h("div", { class: "story" });
-  if (d) {
-    story.append(h("div", { class: "card", style: "flex:none" }, h("h3", {}, "the cause, in plain words"),
-      h("div", { class: `explain ${fx("explain@542")}` }, d.explanation)));
-  } else {
+  const m = d && d.model;
+  const aside = m ? `${secs(m.seconds)} · ${usd(m.cost_usd)}` : tag !== "incident" ? tag : null;
+  const k = kf && (kf.frames.find((f) => /contact|fall/.test(f.label || "") && !/before/.test(f.label || "")) || last(kf.frames));
+  if (!d) {
+    const box = h("div", { class: "body cause" });
     const ex = partial(w.text, "explanation"), ob = partial(w.text, "observed"), what = partial(w.text, "what");
     const sw = w.start;
-    story.append(h("div", { class: "card", style: "flex:none" },
+    box.append(h("div", { class: "story" }, h("div", { class: "card", style: "flex:none" },
       h("h3", {}, sw ? `Muse Wonder reads ${sw.key_frames} key frames, ${sw.log_ticks} log ticks and ${sw.files} code files` : "Muse Wonder"),
       ex ? h("div", { class: "explain streaming" }, ex)
         : what ? h("div", { class: "explain streaming" }, what)
           : ob ? h("div", { class: "explain streaming", style: "color:var(--ink2)" }, ob)
-            : h("div", { class: "reading" }, (w.thinking || w.text || "").slice(-900) || "thinking…")));
+            : h("div", { class: "reading" }, (w.thinking || w.text || "").slice(-900) || "thinking…")),
+      log ? logCard(log, "flex:1") : null));
+    box.append(k ? h("div", { class: "card keyframe" }, h("h3", {}, `key frame · ${k.label} · ${num(k.brain_s, 2)} s`), pic(url(k.image)))
+      : h("div", { class: "card" }, wait("choosing key frames")));
+    return [head("cause", aside), box];
   }
-  if (d && d.code) {
-    const c = d.code;
-    const pre = h("pre", { class: "code" });
-    for (const [n, line] of c.lines) pre.append(h("div", { class: n >= c.start && n <= c.end ? "hl" : "" }, h("span", { class: "ln" }, n), line || " "));
-    story.append(h("div", { class: `card ${fx("card@557")}`, style: "flex:1" },
-      h("h3", {}, "the line it cites"),
-      h("div", { class: "where", style: "margin-bottom:.4rem" }, `${c.file} · line${c.end > c.start ? "s" : ""} ${c.start}${c.end > c.start ? "–" + c.end : ""}${d.cause && d.cause.function ? " · " + d.cause.function : ""}`),
-      pre));
-  } else if (log) {
-    story.append(logCard(log, "flex:1"));
-  }
-  box.append(story);
-  // right: the key frame at contact and the log row of that moment
-  const k = kf && (kf.frames.find((f) => /contact|fall/.test(f.label || "") && !/before/.test(f.label || "")) || last(kf.frames));
-  box.append(k ? h("div", { class: "card keyframe" }, h("h3", {}, `key frame · ${k.label} · ${num(k.brain_s, 2)} s`),
-    pic(url(k.image)),
-    h("div", { class: "mute", style: "font-size:.88rem" }, k.glimmer ? `Muse Glimmer: “${k.glimmer}”` : ""))
-    : h("div", { class: "card" }, wait("choosing key frames")));
-  if (d) {
-    box.append(h("div", { style: "display:flex; flex-direction:column; gap:1rem; min-height:0" },
-      log ? logCard(log, "flex:1", 2, 0) : null,
-      h("div", { class: "card conf" }, h("span", {}, "confidence"), h("b", { class: "mono" }, num(d.confidence, 2)),
-        h("span", { class: "meterbar" }, h("i", { style: `width:${(d.confidence || 0) * 100}%` })),
-        h("span", { class: "mute" }, d.grounded ? "file, lines and evidence checked" : "not grounded"))));
-  } else if (log && d == null && w.text) box.append(h("div"));
-  const m = d && d.model;
-  return [head("cause", m ? `${secs(m.seconds)} · ${usd(m.cost_usd)}` : tag !== "incident" ? tag : null), box];
+  // three plain rows, each beside the evidence it rests on: the key frame, the log row, the code line
+  const first = (x) => String(x || "").split(/(?<=[.;:])\s/)[0].replace(/[:;]$/, ".");
+  const pl = d.plain || { camera: first(d.observed), robot: first((d.evidence || []).find((e) => e.source === "log")?.shows),
+    why: first(d.cause && d.cause.what) };
+  const c = d.code;
+  const where = c ? `${c.file}:${c.start}${c.end > c.start ? "–" + c.end : ""}` : d.cause ? `${d.cause.file}:${d.cause.lines.start}` : "";
+  const code = c && h("pre", { class: "code" }, c.lines.filter(([n]) => n >= c.start - 1 && n <= c.end + 1)
+    .map(([n, line]) => h("div", { class: n >= c.start && n <= c.end ? "hl" : "" }, h("span", { class: "ln" }, n), line || " ")));
+  const rows = [
+    ["saw", "What the camera saw", pl.camera, k ? h("div", { class: "ev keyframe" }, pic(url(k.image)),
+      h("span", { class: "cap" }, `key frame · ${k.label} · ${num(k.brain_s, 2)} s`)) : null],
+    ["believed", "What the robot believed", pl.robot, log ? h("div", { class: "ev" }, logRows(log, 2, 0),
+      h("span", { class: "cap" }, `the robot's own log at ${num(log.moment, 2)} s`)) : null],
+    ["why", "Why", [pl.why, h("span", { class: "where" }, where)], code ? h("div", { class: "ev" }, code,
+      h("span", { class: "cap" }, `${where}${d.cause && d.cause.function ? " · " + d.cause.function : ""}`)) : null],
+  ];
+  const box = h("div", { class: "body cause3" });
+  rows.forEach(([cls, label, said, ev], i) => box.append(h("div", { class: `row3 ${cls} ${fx("row3@" + cls)}`, style: `animation-delay:${i * 0.25}s` },
+    h("div", { class: "say" }, h("span", { class: "no" }, i + 1), h("div", {}, h("div", { class: "lab" }, label), h("div", { class: "txt" }, said))),
+    h("div", { class: "link" }), ev || h("div", { class: "ev" }))));
+  box.append(h("div", { class: "tech" }, `confidence ${num(d.confidence, 2)} · ${d.grounded ? "file, lines and cited evidence checked" : "not grounded"}`,
+    m ? ` · Muse Wonder ${secs(m.seconds)}, ${m.input_tokens} tokens in (${m.cached_input_tokens || 0} cached), ${m.output_tokens} out, ${usd(m.cost_usd)}` : "",
+    h("details", {}, h("summary", {}, "the full explanation"), d.explanation)));
+  return [head("cause", aside), box];
 };
 
-function logCard(log, style, before = 6, after = 2) {
+function logRows(log, before, after) {
   const rows = log.rows || [];
   let at = 0;
   rows.forEach((r, i) => { if (Math.abs(r[0] - log.moment) < Math.abs(rows[at][0] - log.moment)) at = i; });
   const pre = h("pre", { class: "log" }, h("div", { class: "hd" }, log.head));
   for (const [i, r] of rows.entries()) if (i >= at - before && i <= at + after) pre.append(h("div", { class: i === at ? "hl" : "" }, r[1]));
-  return h("div", { class: "card", style }, h("h3", {}, `the robot's own log at ${num(log.moment, 2)} s · ${log.event || ""}`), pre);
+  return pre;
+}
+function logCard(log, style, before = 6, after = 2) {
+  return h("div", { class: "card", style }, h("h3", {}, `the robot's own log at ${num(log.moment, 2)} s · ${log.event || ""}`), logRows(log, before, after));
 }
 
 function askCard(a, big) {
   const ans = st.answers[a.id];
   const ctx = a.question === "Fix it?"
-    ? [a.cause, a.file ? h("div", { class: "where", style: "margin-top:.6rem" }, `${a.file} · lines ${a.lines.join("–")} · confidence ${num(a.confidence, 2)}`) : null]
+    ? [a.cause, a.file ? h("div", { class: "where", style: "margin-top:.6rem" }, `${a.file} · ${a.lines[0] === a.lines[1] ? `line ${a.lines[0]}` : `lines ${a.lines.join("–")}`} · confidence ${num(a.confidence, 2)}`) : null]
     : [`With the fix: ${a.after}.`, h("br"), `Before it: ${a.before}.`, a.stat ? h("div", { class: "mono mute", style: "margin-top:.5rem; font-size:1rem" }, `${a.stat} · ${(a.files || []).join(", ")}`) : null];
   return h("div", { class: big ? `ask ${fx("ask@" + a.id)}` : "" },
     h("div", { class: "q" }, a.question),
     h("div", { class: "ctx" }, ctx),
     ans ? h("div", { class: `answered ${ans.yes ? "y" : "n"}` }, ans.yes ? "Yes" : "No",
-      h("small", {}, `answered in the ${ans.by} · +${num(since(ans.t))} s`))
+      h("small", {}, `in the ${ans.by} · you took ${secs(tookFor(a))} to answer, not on the clock`))
       : buttons(a));
 }
 function buttons(a) {
   const local = answering.get(a.id);
-  const off = !!STATIC || local != null;
+  const off = !!STATIC || !!EVENTS || local != null;
   return h("div", { class: "answer" }, h("div", { class: "btns" },
     h("button", { class: "yes", disabled: off, onclick: () => answer(a.id, true) }, local === true ? "Yes…" : "Yes"),
     h("button", { class: "no", disabled: off, onclick: () => answer(a.id, false) }, local === false ? "No…" : "No")),
-    STATIC ? null : h("div", { class: "hint" }, "or y / n in the terminal: whichever comes first"));
+    STATIC || EVENTS ? null : h("div", { class: "hint" }, "or y / n in the terminal: whichever comes first"));
 }
 const answering = new Map();
 async function answer(id, yes) {
@@ -686,59 +890,102 @@ function says(v) {
   if (!v) return null;
   if (!v.valid) return "no verdict";
   if (v.kind === "fall") return v.incident ? `falls at ${num(v.fell_s, 2)} s` : "does not fall";
-  return v.contact ? `contact at ${num(v.first_contact_s, 2)} s` : `no contact · closest ${num(v.closest_gap_px)} px`;
+  return v.contact ? `contact at ${num(v.first_contact_s, 2)} s` : `no contact · closest ${num(v.closest_gap_px, 0)} px`;
 }
 
 P.proof = () => {
   const box = h("div", { class: "body proof" });
   const atag = last(st.attemptTags);
   const before = st.replays.before, after = atag && st.replays[atag];
-  const panes = [];
-  for (const [tag, r, label] of [["before", before, "before the fix"], [atag, after, "with the fix"]]) {
-    const v = r && r.verdict;
-    let p = tag && st.sees[tag] && evidencePlayer(tag);
-    if (!p && r && r.rendered && url(r.rendered.video)) p = kept(`twin:${r.rendered.video}`, () => new Player(url(r.rendered.video), null));
-    if (p) {
-      p.set(`${label}${tag && tag !== "before" ? " · " + tag : ""}`, v ? says(v) : null, v ? (v.incident ? "hit" : "clean") : null);
-      panes.push(p);
-      box.append(p.el);
-    } else box.append(h("div", { class: "player" }, wait(r && r.start ? `the twin replays ${r.start.seconds} s` : tag ? "waiting" : "the replay with the fix comes after Muse Code")));
-  }
-  // keep the two in step: the one with the fix follows the one before it
-  if (panes.length === 2) {
-    const [a, b] = panes;
-    a.listeners = [() => {
-      if (b.video.duration && Math.abs(b.video.currentTime - a.video.currentTime) > 0.08) b.video.currentTime = a.video.currentTime;
-      if (b.video.paused) b.video.play().catch(() => {});
-    }];
-  }
   const vb = before && before.verdict, va = after && after.verdict;
+  const fall = (vb && vb.kind === "fall") || (va && va.kind === "fall");
+  const panes = [];
+  for (const [tag, r, side] of [["before", before, "before"], [atag, after, "after"]]) {
+    const v = r && r.verdict;
+    const p = tag && st.sees[tag] && evidencePlayer(tag);
+    const label = side === "before"
+      ? (v ? `BEFORE · ${v.incident ? (fall ? `falls at ${num(v.fell_s, 2)} s` : `1 contact at ${num(v.first_contact_s, 2)} s`) : says(v)}` : "BEFORE")
+      : (v ? (v.valid && !v.incident ? `FIXED · ${fall ? "no fall" : `no contact · closest ${num(v.closest_gap_px, 0)} px`}` : `WITH THE FIX · ${says(v)}`) : "WITH THE FIX");
+    const good = side === "after" && v && v.valid && !v.incident;
+    const pane = h("div", { class: `pane ${side} ${v ? (good ? "good" : v.incident ? "bad" : "") : ""}` }, h("div", { class: "tag" }, label));
+    if (p) {
+      p.set(null, null);
+      pane.append(p.el);
+      panes.push([p, tag]);
+    } else pane.append(h("div", { class: "player" }, wait(r && r.start ? `the twin replays ${num(r.start.seconds)} s of the scene` : tag ? "SAM 3.1 follows" : "the replay with the fix comes after Muse Code")));
+    box.append(pane);
+  }
+  if (panes.length === 2) frame(panes[0], panes[1]);
   const keep = last(st.asks.filter((a) => a.question !== "Fix it?" && (!atag || a.attempt === +atag.split("-")[1])));
   const count = (v) => (v ? (v.incident ? 1 : 0) : "?");
-  box.append(h("div", { class: "card counter" }, h("h3", {}, vb && vb.kind === "fall" ? "falls" : "contacts"),
+  box.append(h("div", { class: "card counter" }, h("h3", {}, fall ? "falls" : "contacts"),
     h("div", { class: "n" }, h("span", { class: "a" }, count(vb)), h("span", { class: "arrow" }, "→"), h("span", { class: "b", style: va && va.incident ? "color:var(--red)" : "" }, count(va))),
-    h("div", { class: "v" }, va ? (va.valid && !va.incident ? h("b", { style: "color:var(--green)" }, "Fixed: the same scene, no contact.") : h("b", { style: "color:var(--red)" }, "Not fixed yet.")) : "the verdict comes from the pixels, as before",
-      va ? h("div", { class: "mute", style: "margin-top:.4rem; font-size:.9rem" }, `robot walked ${num(va.travel_m, 2)} m (before: ${num(vb && vb.travel_m, 2)} m)`) : null),
+    h("div", { class: "v" }, va ? (va.valid && !va.incident ? h("b", { style: "color:var(--green)" }, `Fixed: the same scene, no ${fall ? "fall" : "contact"}.`) : h("b", { style: "color:var(--red)" }, "Not fixed yet.")) : "the verdict comes from the pixels, as before",
+      va ? h("div", { class: "mute", style: "margin-top:.4rem; font-size:.9rem" }, `same inputs, replayed in the twin · robot walked ${num(va.travel_m, 2)} m (before: ${num(vb && vb.travel_m, 2)} m)`) : null),
     keep ? h("div", { class: "keep" }, askCard(keep, false)) : null));
-  const lines = [];
-  for (const [tag, color, label] of [["before", "var(--red)", "before"], [atag, "var(--green)", "with the fix"]]) {
-    const ev = tag && st.sees[tag] && st.sees[tag].evidence;
-    if (ev) lines.push({ series: ev.series, color, label, contact: ev.first_contact });
-  }
-  const c = chart(null, null, { lines, h: 150, title: "gap robot ↔ object (pixels), before and with the fix" });
-  box.append(h("div", { class: "card both" }, c.el));
-  if (panes[0] && st.sees.before && st.sees.before.start) {
-    const t = st.sees.before.start.times;
-    panes[0].listeners.push((f) => c.at(t[f]));
-  }
   box.append(controls(va));
   return [head("proof", after && after.rendered ? `twin replay ${secs(after.rendered.seconds)}` : null), box];
 };
 
+// Both replays framed on the robot and the object, the same crop (same camera), looped over the seconds
+// around the contact, the one with the fix kept on the same brain time as the one before it.
+const framed = new Map();
+function frame([a, ta], [b, tb]) {
+  const A = st.sees[ta], B = st.sees[tb];
+  if (!A.evidence || !B.evidence || !A.start || !B.start) return;
+  const key = `${ta}|${tb}`;
+  if (!framed.has(key)) framed.set(key, Promise.all([A, B].flatMap((v) => [track(v.evidence.sam.robot), track(v.evidence.sam.object)])).then(([ra, oa, rb, ob]) => {
+    const ea = A.evidence, at = (ea.first_contact || ea.closest || {}).brain_s;
+    if (at == null) return null;
+    const ta_ = A.start.times, tb_ = B.start.times;
+    const near = (times, t) => times.reduce((k, x, i) => (Math.abs(x - t) < Math.abs(times[k] - t) ? i : k), 0);
+    // from just before the contact until the fixed robot has been in the shot for 2 s (a fix that slows
+    // the robot down brings it into the picture later, on the same brain clock), 1.5 to 4 s after it
+    const seenB = tb_.findIndex((x, g) => x >= at - 1 && rb.frame(g).length);
+    const until = seenB < 0 ? at + 1.5 : Math.min(at + 4, Math.max(at + 1.5, tb_[seenB] + 2));
+    const f0 = near(ta_, at - 1), f1 = near(ta_, until);
+    let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+    const grow = (ms) => { for (const m of ms) { x1 = Math.min(x1, m.box[0]); y1 = Math.min(y1, m.box[1]); x2 = Math.max(x2, m.box[2]); y2 = Math.max(y2, m.box[3]); } };
+    for (let f = f0; f <= f1; f += 3) {
+      grow(ra.frame(f)); grow(oa.frame(f).filter((m) => !ea.object_box || overlaps(m.box, ea.object_box)));
+      const g = near(tb_, ta_[f]);
+      grow(rb.frame(g)); grow(ob.frame(g).filter((m) => !B.evidence.object_box || overlaps(m.box, B.evidence.object_box)));
+    }
+    if (!isFinite(x1)) return null;
+    const px = 0.08 * (x2 - x1), py = 0.08 * (y2 - y1);
+    return { crop: [x1 - px, y1 - py, x2 + px, y2 + py], span: [f0, f1] };
+  }).catch(() => null));
+  framed.get(key).then((fr) => {
+    if (!fr) return;
+    a.crop = b.crop = fr.crop;
+    a.span = fr.span;
+  });
+  const ta_ = A.start.times, tb_ = B.start.times;
+  a.listeners = [(f) => {
+    const d = b.video.duration;
+    if (!d) return;
+    let g = 0;
+    for (let i = 0; i < tb_.length; i++) if (Math.abs(tb_[i] - ta_[f]) < Math.abs(tb_[g] - ta_[f])) g = i;
+    if (Math.abs(b.frame - g) > 2) b.video.currentTime = (g * d) / b.frames;
+    if (b.video.playbackRate !== a.video.playbackRate) b.video.playbackRate = a.video.playbackRate;
+    if (b.video.paused) b.video.play().catch(() => {});
+  }];
+}
+const overlaps = (p, q) => Math.min(p[2], q[2]) > Math.max(p[0], q[0]) && Math.min(p[3], q[3]) > Math.max(p[1], q[1]);
+
+// A control scene without a verdict (the robot or the object not found) is neither clean nor dirty: not measured.
+// Older logs carry no "valid", only the reason.
+const unmeasured = (r) => r && !r.clean && (r.valid === false || /^no verdict|not found|robot found in only|robot walked/.test(r.why || ""));
+
 function controls(va) {
   const C = st.control;
+  const all = ["box", ...((C.start && C.start.scenes) || [])];
+  const clean = (va && va.valid && !va.incident ? 1 : 0) + Object.values(C.scenes).filter((c) => c.clean).length;
+  const open = Object.values(C.scenes).filter(unmeasured).length;
   const el = h("div", { class: "controls" },
-    h("div", { class: "lead" }, h("b", {}, "Control"), C.start ? "the same brain in every other scene, judged in pixels" : st.done || !va ? "the other scenes come after the verdict" : "waiting"));
+    C.done ? h("div", { class: `banner ${clean === all.length ? "good" : clean + open === all.length ? "" : "bad"} ${fx("banner")}` }, "Same fix, other scenes",
+      h("b", {}, `${clean}/${all.length} clean`), open ? h("span", { class: "mute" }, `${open} not measured`) : "")
+      : h("div", { class: "lead" }, h("b", {}, "Same fix, other scenes"), C.start ? "the same brain in every other scene, judged in pixels" : st.done || !va ? "they come after the verdict" : "waiting"));
   const scenes = ["box", ...((C.start && C.start.scenes) || ["low_cube", "ledge", "corner", "doorway"])];
   for (const sc of scenes) {
     if (sc === "box") {
@@ -748,8 +995,9 @@ function controls(va) {
       continue;
     }
     const r = C.scenes[sc], ev = st.sees[`control-${sc}`], img = ev && ev.evidence && url(ev.evidence.image);
-    const state = r ? (r.clean ? "clean" : "dirty") : "";
-    const what = r ? (r.clean ? `clean${r.closest_gap_px != null ? ` · closest ${num(r.closest_gap_px)} px` : ""}` : r.why || "not clean")
+    const state = r ? (r.clean ? "clean" : unmeasured(r) ? "unmeasured" : "dirty") : "";
+    const what = r ? (r.clean ? `clean${r.closest_gap_px != null ? ` · closest ${num(r.closest_gap_px, 0)} px` : ""}`
+      : unmeasured(r) ? `not measured · ${r.why}` : r.why || "not clean")
       : ev ? "SAM 3.1 follows" : C.rendered[sc] ? "rendered" : C.start ? "rendering" : "";
     el.append(h("div", { class: `scene ${state}` },
       img ? pic(img) : h("div", { style: "width:5.6rem; height:4.2rem; border-radius:.35rem; background:#000" }),
@@ -764,27 +1012,43 @@ P.done = () => {
   const big = h("div", { class: "v" });
   const g = h("div");
   tickers.push(() => {
-    const c = st.clock.stop ? st.clock.stop.seconds : st.clock.start ? Math.max(0, now() - st.clock.start.at) : null;
+    const c = clockNow();
     big.textContent = c == null ? "–" : `${num(c)} s`;
     big.style.color = st.clock.stop ? "" : "var(--cyan)";
     if (Object.keys(st.open).length || !g.firstChild) g.replaceChildren(gantt());
   });
+  const answered = st.asks.filter((a) => st.answers[a.id]);
   box.append(h("div", { class: "bigclock" },
-    h("div", {}, h("div", { class: "k" }, `seen → fixed and verified${st.clock.start ? ` · from “${st.clock.start.why}”` : ""}`),
-      big),
-    h("div", { class: "cost" }, h("div", { class: "k" }, "cost of the whole run"), h("div", { class: "v" }, usd(st.cost))),
+    h("div", {}, h("div", { class: "k" }, "seen → fixed and verified · the machine's time"), big,
+      answered.length ? h("div", { class: "you" }, answered.map((a) => `you took ${secs(tookFor(a))} to answer “${a.question}”`).join(" · "), ", not on the clock") : null),
     d ? h("div", {}, h("div", { class: "k" }, "outcome"),
       h("div", { class: `outcome ${d.fixed ? "ok" : "bad"}` }, d.kept ? `fixed, verified, kept · ${(d.fix_commit || "").slice(0, 10)}` : d.fixed ? "fixed and verified, not kept" : "not fixed"),
       d.stopped ? h("div", { class: "mute" }, d.stopped) : null) : null));
+  // where the work ran, from the model calls the stream saw
+  const local = st.models.filter((m) => m.where === "local"), cloud = st.models.filter((m) => m.where !== "local");
+  const billed = local.reduce((x, m) => x + (m.cost_usd || 0), 0);
+  const names = [];
+  for (const m of cloud) { const n = friendly(m); if (!names.includes(n)) names.push(n); }
+  box.append(h("div", { class: "where2" },
+    h("div", { class: "pc" }, h("span", { class: "k" }, "On this PC"),
+      h("span", {}, `${[...new Set(local.map(friendly))].join(", ") || "Muse Glimmer"}${st.vram && st.vram.vram_gb ? `, ${num(st.vram.vram_gb)} GB VRAM` : ""}, `,
+        h("b", {}, billed === 0 ? "0 tokens billed" : `${usd(billed)} billed`), ".")),
+    h("div", { class: "cloud" }, h("span", { class: "k" }, "In the cloud"),
+      h("span", {}, names.join(", ") || "–", " · ", h("b", {}, usd(cloud.reduce((x, m) => x + (m.cost_usd || 0), 0)))))));
   const rows = manifest(st.models);     // the stream sees every call: the voice, the look, the control
   const tb = h("table", { class: "models" }, h("tr", {}, ["model", "where", "calls", "tokens in / out", "frames", "seconds", "cost"].map((k) => h("th", {}, k))));
   for (const m of rows) tb.append(h("tr", {}, h("td", {}, m.model), h("td", { class: "mute" }, m.where),
     h("td", { class: "num" }, m.calls), h("td", { class: "num" }, m.input_tokens || m.output_tokens ? `${m.input_tokens} / ${m.output_tokens}` : "–"),
     h("td", { class: "num" }, m.frames || "–"), h("td", { class: "num" }, num(m.seconds)), h("td", { class: "num" }, m.cost_usd ? usd(m.cost_usd) : "$0")));
-  box.append(h("div", { class: "card" }, h("h3", {}, "every model call, with its cost"), tb));
-  box.append(h("div", { class: "card" }, h("h3", {}, "where the time went (from the snapshot)"), g));
-  return [head("done", d ? `run took ${secs(d.seconds)}` : null), box];
+  box.append(h("div", { class: "card small" }, h("h3", {}, "every model call, with its cost"), tb));
+  box.append(h("div", { class: "card small" }, h("h3", {}, "where the time went (from the snapshot)"), g));
+  return [head("done", d ? `run took ${secs(d.seconds)} in all` : null), box];
 };
+function friendly(m) {
+  if (/Muse Code/.test(m.where || "")) return "Muse Code";
+  return { "sam-3.1": "SAM 3.1", "muse-wonder-1.0": "Muse Wonder", "muse-spark-1.3": "Muse Spark", "muse-glimmer": "Muse Glimmer",
+    "muse-voice-transcribe-1.0": "Muse Voice" }[m.model] || m.model;
+}
 
 function manifest(calls) {
   const out = new Map();
@@ -822,13 +1086,18 @@ function render() {
     dirty = true;
   }
   if (!shown) shown = st.current || "watch";
-  document.getElementById("mode").textContent = STATIC ? (replaying ? "replay" : "report") : st.mode ? `live · ${st.mode}` : "live";
-  document.getElementById("mode").className = `pill ${STATIC ? "" : "live"}`;
+  const fromFile = STATIC || SCRIPTED || SPEED;
+  document.getElementById("mode").textContent = SPEED ? `replay · ${SPEED}×` : fromFile ? (replaying ? "replay" : "report") : st.mode ? `live · ${st.mode}` : "live";
+  document.getElementById("mode").className = `pill ${fromFile ? "" : "live"} ${SPEED ? "speed" : ""}`;
   const clock = document.getElementById("clock");
-  const c = st.clock.stop ? st.clock.stop.seconds : st.clock.start ? Math.max(0, now() - st.clock.start.at) : null;
+  const c = clockNow();
   clock.textContent = c == null ? "–" : clockText(c);
   clock.classList.toggle("stopped", !!st.clock.stop);
+  const answered = st.asks.filter((a) => st.answers[a.id] && a.question === "Fix it?");
+  document.getElementById("youm").hidden = !answered.length;
+  document.getElementById("you").textContent = answered.map((a) => secs(tookFor(a))).join(" + ");
   document.getElementById("cost").textContent = usd(st.cost);
+  document.getElementById("privacy").hidden = st.mode !== "watch";
   if (!dirty) return;
   dirty = false;
   const rail = document.getElementById("rail");
@@ -843,6 +1112,10 @@ function render() {
   const stage = document.getElementById("stage");
   tickers = [];
   stage.replaceChildren(...P[shown]());
+  if (shown !== drawn) {                 // a new step fades in; a redraw of the same one does not
+    drawn = shown;
+    stage.animate([{ opacity: 0, transform: "translateY(.6rem)" }, { opacity: 1, transform: "none" }], { duration: 500, easing: "ease-out" });
+  }
   for (const v of stage.querySelectorAll("video")) if (v.paused && v.autoplay) v.play().catch(() => {});
   const bar = document.getElementById("askbar");
   const open = pending();
@@ -872,8 +1145,9 @@ function result(id) {
     case "cause": return d ? `${d.code ? `${d.code.file}:${d.code.start}` : d.cause_key} · ${num(d.confidence, 2)}` : st.wonderOrder.length ? "reading" : "";
     case "ask": return fixA ? `${fixA.yes ? "yes" : "no"} · in the ${fixA.by}` : fixQ ? "waiting for you" : "";
     case "fix": return ch ? `${ch.stat}${st.commit ? " · kept" : st.undos.length ? " · rolled back" : ""}` : st.checkpoint ? `safety save ${st.checkpoint.commit.slice(0, 7)}` : "";
-    case "proof": return va ? `contacts ${vb && vb.incident ? 1 : 0} → ${va.incident ? 1 : 0}${nctl ? ` · control ${Object.values(ctl).filter((c) => c.clean).length + (va.valid && !va.incident ? 1 : 0)}/${nctl + 1} clean` : ""}` : "";
-    case "done": return st.clock.stop ? `${num(st.clock.stop.seconds)} s · ${usd(st.cost)}` : "";
+    case "proof": return va ? `contacts ${vb && vb.incident ? 1 : 0} → ${va.incident ? 1 : 0}${nctl ? ` · control ${Object.values(ctl).filter((c) => c.clean).length + (va.valid && !va.incident ? 1 : 0)}/${nctl + 1} clean` : ""}${
+      Object.values(ctl).some(unmeasured) ? `, ${Object.values(ctl).filter(unmeasured).length} not measured` : ""}` : "";
+    case "done": return st.clock.stop ? `${num(clockNow())} s machine time · ${usd(st.cost)}` : "";
   }
   return "";
 }
@@ -918,13 +1192,24 @@ function reset() {
   shown = null; shownAt = 0; pinned = null; dirty = true;
 }
 reset();
+document.getElementById("band").prepend(...BAND.map(([m, name, what]) => h("span", { class: `model m-${m}` }, h("b", {}, name), ` · ${what}`)));
+if (FILM) document.body.classList.add("film");
+let EVENTS = STATIC ? STATIC.events : null;
 if (STATIC) {
   for (const e of STATIC.events) on(e);
   shown = st.done ? "done" : st.current;
   const btn = document.getElementById("replay");
-  btn.hidden = false;
-  btn.onclick = replay;
+  btn.hidden = FILM;
+  btn.onclick = () => replay();
   document.title = `BlinkFlow report · ${tilde(STATIC.source).split("/").slice(-2, -1)[0] || "run"}`;
+  if (SPEED) replay(SPEED);
+} else if (SPEED || SCRIPTED) {
+  // a finished run from the server, replayed at SPEED times its pace, or loaded whole for a script
+  fetch("/events.json").then((r) => r.json()).then((evs) => {
+    EVENTS = evs;
+    if (SPEED) replay(SPEED);
+    else { for (const e of evs) on(e); shown = st.done ? "done" : st.current; }
+  });
 } else {
   const es = new EventSource("/events");
   es.addEventListener("stream", (m) => {
@@ -941,19 +1226,36 @@ if (STATIC) {
 }
 requestAnimationFrame(loop);
 // for scripts driving the page (screenshots, tests): what is shown and what waits for an answer
-window.BLINKFLOW = { state: () => ({ shown, current: st.current, pending: pending().map((a) => a.question), done: !!st.done }), pin };
+window.BLINKFLOW = {
+  state: () => ({ shown, current: st.current, pending: pending().map((a) => a.question), done: !!st.done }), pin,
+  // the run as it stood at stream time t, held still (the rewind and the fades start from there)
+  seek(t, id) {
+    reset();
+    for (const e of EVENTS || []) if (e.t <= t) on(e);
+    replaying = { now: () => t };
+    if (id) pin(id);
+  },
+  events: () => EVENTS,
+  player: (key) => keep.get(key),
+  players: () => [...keep.entries()].filter(([, v]) => v instanceof Player).map(([k]) => k),
+};
 
-// a static report replays its run: long waits shortened to `cap` s, the clock still showing the real times
+// A finished run replayed: at `speed` times its pace (on screen as "N×"), or, from the report's button,
+// with long waits shortened to `cap` s; the clocks always show the real times.
 let replays = 0;
-function replay() {
-  const evs = STATIC.events;
-  if (!evs.length) return;
+function replay(speed) {
+  const evs = EVENTS;
+  if (!evs || !evs.length) return;
   reset();
   const run = ++replays;                // a second click starts over: the first replay stops feeding events
   const cap = 1.6;
   const plan = [];
   let d = 0;
-  evs.forEach((e, i) => { if (i) d += Math.min(cap, Math.max(0, e.t - evs[i - 1].t)); plan.push(d); });
+  evs.forEach((e, i) => {
+    const dt = i ? Math.max(0, e.t - evs[i - 1].t) : 0;
+    d += speed ? dt / speed : Math.min(cap, dt);
+    plan.push(d);
+  });
   const t0 = performance.now();
   let i = 0;
   replaying = {

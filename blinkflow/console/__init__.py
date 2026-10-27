@@ -5,6 +5,7 @@ the stream names; the loop runs the same without it. The one thing it writes is 
 "Fix it?" or "Keep the fix?", to answers.jsonl beside the stream; the terminal's answer is as good.
 
     python3 -m blinkflow.console serve [--port 8777] [--events PATH]   # default: follow the newest run
+    python3 -m blinkflow.console serve --film [--speed 4] [--events PATH]   # full screen on Windows, to film
     python3 -m blinkflow.console report [EVENTS] [--out DIR]           # the same page, static, from a run
 
 A static report is a folder: the same page, the stream embedded, and every file it shows copied in.
@@ -19,12 +20,13 @@ import pathlib
 import re
 import shutil
 import socketserver
+import subprocess
 import threading
 import time
 import urllib.parse
 import urllib.request
 
-from .. import events
+from .. import events, sim
 
 HOME = pathlib.Path.home()
 STATIC = pathlib.Path(__file__).resolve().parent / "static"
@@ -138,6 +140,9 @@ def handler(fixed, frames):
                     return self.send(200, f.read_bytes(), mimetypes.guess_type(f.name)[0] or "text/plain")
                 if u.path == "/events":
                     return self.events()
+                if u.path == "/events.json":                    # the whole stream at once (a replay)
+                    p = stream()
+                    return self.send(200, json.dumps(read_events(p) if p else []).encode(), "application/json")
                 if u.path == "/file":
                     p = stream()
                     f = p and servable(q.get("p", ""), read_events(p))
@@ -219,10 +224,32 @@ class Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
     allow_reuse_address = True
 
 
-def serve(port, fixed=None):
+def serve(port, fixed=None, film=False, speed=None):
     srv = Server(("127.0.0.1", port), handler(fixed and pathlib.Path(fixed).expanduser().resolve(), Frames()))
     print(f"BlinkFlow console: http://localhost:{port}/  (following {fixed or 'the newest run'})", flush=True)
+    if film:
+        open_film(port, speed)
     srv.serve_forever()
+
+
+def open_film(port, speed=None):
+    """The console full screen at 1920x1080 on the Windows desktop, in a profile of its own: no browser bars,
+    no cursor (the page hides it), no buttons. With `speed`, the stream is a finished run replayed at that
+    pace, which the page shows ("4x")."""
+    q = "film=1" + (f"&speed={speed:g}" if speed else "")
+    # full screen on any monitor, laid out at 1920x1080 CSS pixels: the scale is the screen's physical width
+    # over 1920 (a 4K screen at 150 % would otherwise give the page 2560x1440)
+    r = subprocess.run(["powershell.exe", "-NoProfile", "-Command", "(Get-CimInstance Win32_VideoController | "
+                        "Where-Object CurrentHorizontalResolution | Select-Object -First 1).CurrentHorizontalResolution"],
+                       capture_output=True, text=True)
+    width = int(r.stdout.strip() or 1920)
+    args = [f"--app=http://localhost:{port}/?{q}", r"--user-data-dir=$env:LOCALAPPDATA\BlinkFlow\film",
+            "--no-first-run", "--no-default-browser-check", "--window-position=0,0",
+            f"--force-device-scale-factor={width / 1920:g}", "--start-fullscreen",
+            "--autoplay-policy=no-user-gesture-required", "--hide-scrollbars"]
+    arglist = ",".join(f'"{a}"' for a in args)   # double quotes: PowerShell expands $env:
+    subprocess.run(["powershell.exe", "-NoProfile", "-Command", f"Start-Process '{sim.CHROME}' -ArgumentList {arglist}"],
+                   check=True)
 
 
 # ── a static report ──────────────────────────────────────────────────────────
@@ -265,11 +292,15 @@ def main():
     s = sub.add_parser("serve", help="the live console")
     s.add_argument("--port", type=int, default=8777)
     s.add_argument("--events", help="this stream only (default: follow the newest run)")
+    s.add_argument("--film", action="store_true", help="open it full screen on Windows, made to be filmed")
+    s.add_argument("--speed", type=float, help="replay the (finished) stream at this pace, e.g. 1 or 4")
     r = sub.add_parser("report", help="a static report of a finished run")
     r.add_argument("events", nargs="?", help="its events.jsonl (default: the newest run's)")
     r.add_argument("--out", help="default: console-report/ beside the stream")
     a = ap.parse_args()
     if a.cmd == "serve":
-        serve(a.port, a.events)
+        if a.speed and not a.events:
+            ap.error("--speed replays a finished run: give its --events")
+        serve(a.port, a.events, a.film, a.speed)
     else:
         report(a.events or latest(), a.out)
