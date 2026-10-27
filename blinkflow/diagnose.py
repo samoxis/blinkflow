@@ -601,10 +601,15 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, c
             results.append({"model": m, "mode": mode, "error": "skipped: daily budget reached"})
             continue
         content = content_for(code, ev, frames, table, evdir, mode == "code-only", context)
-        try:
-            r = ask(m, content, ledger, f"diagnose ({mode}, run {i + 1})", files, frames, tick_times, tag)
-        except RuntimeError as e:
-            r = {"model": m, "error": str(e)}
+        for again in (False, True):
+            try:
+                r = ask(m, content, ledger, f"diagnose ({mode}, run {i + 1}{', asked again' if again else ''})", files,
+                        frames, tick_times, tag)
+            except RuntimeError as e:
+                r = {"model": m, "error": str(e)}
+            # a reply cut off at the token cap (once: 32000 tokens of blank lines) is asked for once more
+            if again or "ended incomplete" not in r.get("error", ""):
+                break
         r["mode"] = mode
         results.append(r)
         print(json.dumps({"model": m, "mode": mode, "key": r.get("key"), "error": r.get("error"),

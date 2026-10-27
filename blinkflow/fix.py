@@ -477,87 +477,94 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
         return finish(run, snapshot, evdir, ev, first_diag, done, stages, ledger, t0)
 
     diag_dir, history, tried = evdir, [], []
-    for i in range(1, attempts + 1):
-        a = run / f"attempt-{i}"
-        if i > 1 and not approve(i, diag_dir):
-            done["stopped"] = f"the person said no before attempt {i}"
-            break
-        prompt = PROMPT.format(incident=INCIDENT[kind], diagnosis=diagnosis_text(diag_dir), **workspace_text(diag_dir))
-        if history:
-            prompt += HISTORY.format(attempts="\n\n".join(history))
-        mc = timed(stages, f"attempt {i}: Muse Code edits the target", t0, muse_code, prompt, a, base, ledger,
-                   f"fix attempt {i}", model)
-        rec = {"attempt": i, "diagnosis": str(diag_dir / "diagnosis.md"),
-               "cause_key": json.loads((diag_dir / "diagnosis.json").read_text())["cause_key"],
-               "muse_code": {k: mc[k] for k in ("seconds", "outcome", "summary", "problems", "session")},
-               "change": mc["change"], "verdict": None, "kept": False}
-        done["attempts"].append(rec)
-        cause = json.loads((diag_dir / "diagnosis.json").read_text())["cause"]
-        if mc["problems"]:
-            undo(base, "the change was rejected before any replay")
-            history.append(f"Attempt {i} was rejected before any replay: {'; '.join(mc['problems'])}.")
-            tried.append(f"Attempt {i}: the diagnosis named `{rec['cause_key']}` ({cause['what']}) The change was "
-                         f"rejected before any replay ({'; '.join(mc['problems'])}), so that idea is untested.")
-            continue
-        t = time.time()
-        try:
-            v = prove.prove(snapshot, a, names, before["travel_m"], kind=kind)
-        except subprocess.CalledProcessError as e:              # the patched brain did not run
-            v = {"valid": False, "incident": None, "contact": None, "problems": [f"the replay failed: {e}"]}
-        stage(stages, f"attempt {i}: replay and look again", t, t0)
-        rec["verdict"] = v
-        if v["valid"] and not v["incident"]:
-            done["fixed"] = True
-            # the machine's time only: the seconds the loop sat waiting for the person are shown apart
-            done["person_s"] = round(held(), 1)
-            done["verified_s"] = round(time.time() - seen - held(), 1)
-            events.emit("clock.stop", at=time.time(), seconds=done["verified_s"], wall_s=round(time.time() - seen, 1),
-                        person_s=done["person_s"], why="fixed and verified", attempt=i)
-            if control:
-                done["control"] = timed(stages, f"attempt {i}: control, every other scene (pixels)", t0,
-                                        prove.control, a / "control")
-            if ask:
-                print(f"\nReplay with the change: {says(v, obj, kind)}.\nBefore it: {says(before, obj, kind)}.\n"
-                      f"Change: {mc['change']['stat']} ({', '.join(mc['change']['files'])})", flush=True)
-                if control:
-                    print("Control: " + "; ".join(f"{s} {'clean' if c['clean'] else 'NOT clean: ' + c['why']}"
-                                                  for s, c in done["control"].items()), flush=True)
-                t = time.time()
-                keep = ask("Keep the fix?", attempt=i, after=says(v, obj, kind), before=says(before, obj, kind),
-                           stat=mc["change"]["stat"], files=mc["change"]["files"])
-                stage(stages, f"attempt {i}: the person decides to keep", t, t0)
-                answers.append({"attempt": i, "question": "Keep the fix?", "yes": keep,
-                                "seconds": round(time.time() - t, 1), "asked": t, "answered": time.time()})
-                if not keep:
-                    undo(base, "the person did not keep the fix")
-                    rec["rolled_back"] = True
-                    done["stopped"] = "fixed and verified, but the person did not keep it: rolled back to the base commit"
-                    break
-            git("commit", "-qm", f"fix: {rec['cause_key']}\n\n{mc['summary']}\n\nVerified by BlinkFlow replay: "
-                f"{says(v, obj, kind)}.")
-            rec["kept"] = done["kept"] = True
-            done["fix_commit"] = git("rev-parse", "HEAD").strip()
-            events.emit("commit", commit=done["fix_commit"], base=base, subject=f"fix: {rec['cause_key']}")
-            break
-        what = f"Attempt {i} changed:\n```diff\n{mc['change']['diff']}```\nIts note: {mc['summary']}\n" \
-               f"Replay of the same scene with this change: {says(v, obj, kind)}{effect(v, before)}."
-        tried.append(f"Attempt {i}: the diagnosis named `{rec['cause_key']}` ({cause['what']}) The change:\n"
-                     f"```diff\n{mc['change']['diff']}```\nReplay of the same scene with it: {says(v, obj, kind)}"
-                     f"{effect(v, before)}.")
-        if i < attempts and v["valid"]:
-            # Back to Muse Wonder with the new evidence, the change still in place so code and pixels agree,
-            # and with every earlier cause and what its change did, so it can look elsewhere.
+    # Whatever stops the loop midway (a model's service down, a crash), the target goes back to its
+    # safety commit unless a fix was kept: nothing half-done stays in it.
+    try:
+        for i in range(1, attempts + 1):
+            a = run / f"attempt-{i}"
+            if i > 1 and not approve(i, diag_dir):
+                done["stopped"] = f"the person said no before attempt {i}"
+                break
+            prompt = PROMPT.format(incident=INCIDENT[kind], diagnosis=diagnosis_text(diag_dir), **workspace_text(diag_dir))
+            if history:
+                prompt += HISTORY.format(attempts="\n\n".join(history))
+            mc = timed(stages, f"attempt {i}: Muse Code edits the target", t0, muse_code, prompt, a, base, ledger,
+                       f"fix attempt {i}", model)
+            rec = {"attempt": i, "diagnosis": str(diag_dir / "diagnosis.md"),
+                   "cause_key": json.loads((diag_dir / "diagnosis.json").read_text())["cause_key"],
+                   "muse_code": {k: mc[k] for k in ("seconds", "outcome", "summary", "problems", "session")},
+                   "change": mc["change"], "verdict": None, "kept": False}
+            done["attempts"].append(rec)
+            cause = json.loads((diag_dir / "diagnosis.json").read_text())["cause"]
+            if mc["problems"]:
+                undo(base, "the change was rejected before any replay")
+                history.append(f"Attempt {i} was rejected before any replay: {'; '.join(mc['problems'])}.")
+                tried.append(f"Attempt {i}: the diagnosis named `{rec['cause_key']}` ({cause['what']}) The change was "
+                             f"rejected before any replay ({'; '.join(mc['problems'])}), so that idea is untested.")
+                continue
             t = time.time()
-            context = EARLIER.format(event=event(kind, obj), attempts="\n\n".join(tried), last=i)
             try:
-                diagnose.diagnose(a / "evidence", context=context, tag=a.name)
-                diag_dir = a / "evidence"
-                what += " A new diagnosis of that replay, made with the change in place, is the DIAGNOSIS above."
-            except (SystemExit, RuntimeError) as e:
-                what += f" (no new diagnosis: {e})"
-            stage(stages, f"attempt {i}: understand the replay (Glimmer, Muse Wonder)", t, t0)
-        undo(base, f"attempt {i} did not remove the incident")
-        history.append(what)
+                v = prove.prove(snapshot, a, names, before["travel_m"], kind=kind)
+            except subprocess.CalledProcessError as e:              # the patched brain did not run
+                v = {"valid": False, "incident": None, "contact": None, "problems": [f"the replay failed: {e}"]}
+            stage(stages, f"attempt {i}: replay and look again", t, t0)
+            rec["verdict"] = v
+            if v["valid"] and not v["incident"]:
+                done["fixed"] = True
+                # the machine's time only: the seconds the loop sat waiting for the person are shown apart
+                done["person_s"] = round(held(), 1)
+                done["verified_s"] = round(time.time() - seen - held(), 1)
+                events.emit("clock.stop", at=time.time(), seconds=done["verified_s"], wall_s=round(time.time() - seen, 1),
+                            person_s=done["person_s"], why="fixed and verified", attempt=i)
+                if control:
+                    done["control"] = timed(stages, f"attempt {i}: control, every other scene (pixels)", t0,
+                                            prove.control, a / "control")
+                if ask:
+                    print(f"\nReplay with the change: {says(v, obj, kind)}.\nBefore it: {says(before, obj, kind)}.\n"
+                          f"Change: {mc['change']['stat']} ({', '.join(mc['change']['files'])})", flush=True)
+                    if control:
+                        print("Control: " + "; ".join(f"{s} {'clean' if c['clean'] else 'NOT clean: ' + c['why']}"
+                                                      for s, c in done["control"].items()), flush=True)
+                    t = time.time()
+                    keep = ask("Keep the fix?", attempt=i, after=says(v, obj, kind), before=says(before, obj, kind),
+                               stat=mc["change"]["stat"], files=mc["change"]["files"])
+                    stage(stages, f"attempt {i}: the person decides to keep", t, t0)
+                    answers.append({"attempt": i, "question": "Keep the fix?", "yes": keep,
+                                    "seconds": round(time.time() - t, 1), "asked": t, "answered": time.time()})
+                    if not keep:
+                        undo(base, "the person did not keep the fix")
+                        rec["rolled_back"] = True
+                        done["stopped"] = "fixed and verified, but the person did not keep it: rolled back to the base commit"
+                        break
+                git("commit", "-qm", f"fix: {rec['cause_key']}\n\n{mc['summary']}\n\nVerified by BlinkFlow replay: "
+                    f"{says(v, obj, kind)}.")
+                rec["kept"] = done["kept"] = True
+                done["fix_commit"] = git("rev-parse", "HEAD").strip()
+                events.emit("commit", commit=done["fix_commit"], base=base, subject=f"fix: {rec['cause_key']}")
+                break
+            what = f"Attempt {i} changed:\n```diff\n{mc['change']['diff']}```\nIts note: {mc['summary']}\n" \
+                   f"Replay of the same scene with this change: {says(v, obj, kind)}{effect(v, before)}."
+            tried.append(f"Attempt {i}: the diagnosis named `{rec['cause_key']}` ({cause['what']}) The change:\n"
+                         f"```diff\n{mc['change']['diff']}```\nReplay of the same scene with it: {says(v, obj, kind)}"
+                         f"{effect(v, before)}.")
+            if i < attempts and v["valid"]:
+                # Back to Muse Wonder with the new evidence, the change still in place so code and pixels agree,
+                # and with every earlier cause and what its change did, so it can look elsewhere.
+                t = time.time()
+                context = EARLIER.format(event=event(kind, obj), attempts="\n\n".join(tried), last=i)
+                try:
+                    diagnose.diagnose(a / "evidence", context=context, tag=a.name)
+                    diag_dir = a / "evidence"
+                    what += " A new diagnosis of that replay, made with the change in place, is the DIAGNOSIS above."
+                except (SystemExit, RuntimeError) as e:
+                    what += f" (no new diagnosis: {e})"
+                stage(stages, f"attempt {i}: understand the replay (Glimmer, Muse Wonder)", t, t0)
+            undo(base, f"attempt {i} did not remove the incident")
+            history.append(what)
+    except BaseException as e:
+        if not done["kept"]:
+            undo(base, f"the loop stopped: {type(e).__name__}: {e}"[:300])
+        raise
     return finish(run, snapshot, evdir, ev, first_diag, done, stages, ledger, t0)
 
 

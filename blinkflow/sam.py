@@ -26,6 +26,7 @@ FRAME = re.compile(r"^<(\d+)f(?:;[^>]*)?>(.*)$")
 RECORD = re.compile(r",?(\d+)((?:<\|[^|]*\|>)+)")
 TOKEN = re.compile(r"<\|([A-Za-z][\w.-]*)(?:;([^|]*))?\|>")
 MASK_DATA = re.compile(r"^(\d+),(\d+),([!~][^|]+)$")
+RETRY = [5, 15, 40]                 # seconds before asking SAM 3.1 again when it is overloaded (429, 5xx)
 
 
 class Instance:
@@ -119,8 +120,13 @@ def track(clip, concept, frames, raw_path=None):
         if FRAME.match(line.strip()):
             pending.append(decoders().submit(parse_line, line))
 
-    with requests.post(API, json=body, stream=True, timeout=900,
-                       headers={"Authorization": "Bearer " + api_key()}) as r:
+    for wait in RETRY + [None]:             # an overloaded service is asked again; the budget was spent once
+        r = requests.post(API, json=body, stream=True, timeout=900, headers={"Authorization": "Bearer " + api_key()})
+        if r.status_code not in (429, 500, 502, 503, 504) or wait is None:
+            break
+        r.close()
+        time.sleep(wait)
+    with r:
         if r.status_code != 200:
             raise RuntimeError(f"SAM HTTP {r.status_code}: {r.text[:500]}")
         for line in r.iter_lines(decode_unicode=True):
