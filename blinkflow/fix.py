@@ -139,8 +139,10 @@ def expands(p):
 
 def outside_refs(command):
     """Paths in a shell command that point outside the target (system directories aside)."""
-    refs = re.findall(r"(?<![\w.*])((?:~|/)[^\s'\"|;&<>()]*)", command)
+    # A path starts where a shell word can: not after "x[i]" or ")" (`distance_mm[i]/1000.0` is a division).
+    refs = re.findall(r"(?<![^\s'\"=:(<>|;&,\[{`])((?:~|/)[^\s'\"|;&<>()]*)", command)
     refs = [r for r in refs if not re.match(r"~[^/]", r) or expands(r)]   # "~0.3 m" in a heredoc is no path
+    refs = [r for r in refs if not re.fullmatch(r"/[\d.]+", r)]          # "d /1000.0" divides
     bad = [r for r in refs if not inside(r) and not r.startswith(SYSTEM_DIRS) and r not in ("/", "~")]
     if "microduck-brain" in command:
         bad.append("microduck-brain")
