@@ -31,7 +31,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy import ndimage
 
-from . import TARGET, models, sam, see
+from . import TARGET, events, models, sam, see
 
 BEFORE_S = 3.0           # log window before the incident
 AFTER_S = 0.25
@@ -414,8 +414,17 @@ def cause_key(d, chk, files):
     return f"{name}::[{section}] {key}" if key else f"{name}::lines {a}-{b}"
 
 
-def ask(model, content, ledger, purpose, files, frames, tick_times):
-    reply = models.respond(MODELS[model], content, ledger, purpose, EFFORT, SCHEMA, MAX_OUTPUT)
+def ask(model, content, ledger, purpose, files, frames, tick_times, tag="incident"):
+    events.emit("wonder.start", tag=tag, model=MODELS[model], effort=EFFORT, purpose=purpose,
+                key_frames=len(frames), log_ticks=len(tick_times), files=len(files),
+                images=sum(c["type"] == "input_image" for c in content))
+    text, thinking = (events.Batcher(k, tag=tag, model=MODELS[model]) for k in ("wonder.text", "wonder.thinking"))
+    try:
+        reply = models.respond(MODELS[model], content, ledger, purpose, EFFORT, SCHEMA, MAX_OUTPUT,
+                               on_text=text, on_thinking=thinking)
+    finally:
+        text.flush()
+        thinking.flush()
     call = ledger.calls[-1]
     try:
         d = json.loads(re.sub(r"^```(?:json)?|```$", "", reply.strip()))
@@ -543,8 +552,17 @@ def warm(ledger, model="wonder"):
                    "warm the prompt cache (instructions + code)", EFFORT, SCHEMA, warm=True)
 
 
-def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, context=None):
-    """`context`: extra text sent after the incident (a replay with a fix in place says what it changed)."""
+def snippet(files, cause, around=6):
+    """The cause's lines and a few on each side, numbered, for the console."""
+    lines = files.get(cause["file"], "").splitlines()
+    a, b = cause["lines"]["start"], cause["lines"]["end"]
+    lo, hi = max(1, a - around), min(len(lines), b + around)
+    return {"file": cause["file"], "start": a, "end": b, "lines": [[i, lines[i - 1]] for i in range(lo, hi + 1)]}
+
+
+def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, context=None, tag="incident"):
+    """`context`: extra text sent after the incident (a replay with a fix in place says what it changed).
+    `tag`: which look this is, in the event stream."""
     evdir = pathlib.Path(evdir).expanduser()
     if evdir.name == "evidence.json":
         evdir = evdir.parent
@@ -559,7 +577,11 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, c
 
     ledger = models.Ledger()
     frames = build_frames(evdir, ev, snap, ledger)
+    events.emit("keyframes", tag=tag, frames=[{**k, "image": str(evdir / k["image"])} for k in frames])
     table, tick_times = log_table(snap["record"], moment(ev)[0]["brain_s"], [k["brain_s"] for k in frames], moment(ev)[1])
+    rows = table.split("\n\n")[1].splitlines()
+    events.emit("log", tag=tag, moment=moment(ev)[0]["brain_s"], event=moment(ev)[1], head=rows[0],
+                rows=[[t, r] for t, r in zip(tick_times, rows[1:])])
     files = target_files(target)
     code = code_text(files)
     (evdir / "diagnosis-input.txt").write_text(incident_text(ev, frames, table) + ("\n\n" + context if context else ""))
@@ -574,7 +596,7 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, c
             continue
         content = content_for(code, ev, frames, table, evdir, mode == "code-only", context)
         try:
-            r = ask(m, content, ledger, f"diagnose ({mode}, run {i + 1})", files, frames, tick_times)
+            r = ask(m, content, ledger, f"diagnose ({mode}, run {i + 1})", files, frames, tick_times, tag)
         except RuntimeError as e:
             r = {"model": m, "error": str(e)}
         r["mode"] = mode
@@ -589,7 +611,13 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, c
     calls = json.loads(prior.read_text())["calls"] if prior.exists() else []
     ledger.calls = calls + ledger.calls
     ledger.write(prior)
-    return report(evdir, ev, frames, target, results, "wonder" if compare else model)
+    doc = report(evdir, ev, frames, target, results, "wonder" if compare else model)
+    events.emit("diagnosis", tag=tag, **{k: doc[k] for k in ("observed", "cause", "evidence", "ruled_out", "confidence",
+                                                             "fix_direction", "explanation", "cause_key")},
+                grounded=doc["check"]["grounded"], code=snippet(files, doc["cause"]),
+                model={k: doc["model"].get(k) for k in ("model", "seconds", "cost_usd", "input_tokens",
+                                                        "cached_input_tokens", "output_tokens", "reasoning_tokens")})
+    return doc
 
 
 def main():

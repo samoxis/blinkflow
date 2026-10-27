@@ -36,7 +36,7 @@ import threading
 import time
 import wave
 
-from . import TARGET, fix, models, prove, see, sim, watch
+from . import TARGET, events, fix, models, prove, see, sim, watch
 from .capture import Sidecar
 
 HOME = pathlib.Path.home()
@@ -94,15 +94,19 @@ def hear(u, ledger):
     """An utterance ({press, release, wav} or {press, release, text}) -> what was said and when it happened.
     None if nothing was said."""
     t = time.time()
+    events.emit("key", press=u["press"], release=u["release"], typed="text" in u)
     if "text" in u:
         text, audio_s, how = u["text"].strip(), None, "typed"
     else:
         text, audio_s = models.transcribe(u["wav"], ledger, "what the person said (push-to-talk)")
         how = models.VOICE
     t_heard = time.time()
+    events.emit("said", text=text, heard_by=how, audio_s=audio_s, seconds=round(t_heard - t, 2))
     if not text:
         return None
     p, reader, tried = parse(text, ledger)
+    events.emit("read", **p, read_by=reader, seconds=round(time.time() - t_heard, 2),
+                moment=round(u["press"] - p["seconds_ago"], 3))
     return {"said": text, "heard_by": how, "audio_s": audio_s, **p, "read_by": reader, "read_attempts": tried,
             "press": u["press"], "release": u["release"], "moment": round(u["press"] - p["seconds_ago"], 3),
             "transcribe_s": round(t_heard - t, 2), "read_s": round(time.time() - t_heard, 2)}
@@ -131,6 +135,8 @@ def confirm(snap, evdir, h, ledger):
     kind = None if not robot_ok else "fall" if fall else "contact" if hit else None
     at = fall or hit
     spoken = set(h["object"].lower().split()) - {"the", "a", "an", "its", "that", "this"}
+    events.emit("confirmed", kind=kind, confirmed=kind is not None, names=names, robot_moved=mo["moved"],
+                incident_s=at and round(at["brain_s"], 3), evidence=str(evdir), snapshot=str(snap))
     return {"kind": kind, "confirmed": kind is not None, "names": names, "robot_moved": mo["moved"],
             "object_as_said": h["object"], "names_agree": bool(spoken & set(names[1].split())) if spoken else None,
             "incident_s": round(at["brain_s"], 3) if at else None,
@@ -184,6 +190,7 @@ def finish(out, doc, h, c, brain, with_loop, auto, tty=None):
 def clip(path, press, out, wav=None, text=None, with_loop=True, auto=False, brain=None, tty=None):
     """`brain`: the loop's target (default: the clip's own brain)."""
     out.mkdir(parents=True)
+    events.begin(out, "voice", feed="clip", clip=str(path), brain=str(brain or ""))
     ledger = models.Ledger()
     models.warm_glimmer()
     feed = watch.ClipFeed(path)
@@ -192,10 +199,13 @@ def clip(path, press, out, wav=None, text=None, with_loop=True, auto=False, brai
     if release > feed.times[-1]:
         raise SystemExit(f"the clip ends at {feed.times[-1]:.2f} s, before the key is let go ({release:.2f} s)")
     feed.start()
+    watch.tell_feed(feed)
+    events.emit("listen", key=KEY, typed=not data)
     while feed.now() - feed.lag < release:
         time.sleep(0.02)
     u = {"press": press, "release": release, **({"wav": data} if data else {"text": text})}
     t = feed.now()
+    events.clock_start(feed.t_start + release, "the person let go of the key")
     h = hear(u, ledger)
     doc = {"feed": "clip", "clip": str(feed.path), "brain": feed.meta.get("brain"), "clock": "brain time",
            "window_s": [BEFORE, AFTER]}
@@ -204,7 +214,9 @@ def clip(path, press, out, wav=None, text=None, with_loop=True, auto=False, brai
         return finish(out, doc, None, None, None, False, auto)
     h.update(moment_brain_s=h["moment"], heard_after_release_s=round(feed.now() - t, 2))
     t0, t1 = window(h)
+    events.emit("rewind", moment=h["moment"], window=[t0, t1], press=h["press"], release=h["release"])
     snap = feed.window(t0, t1, out / "window")
+    events.emit("snapshot", snapshot=str(snap), video=str(out / "window" / "window.mp4"), window=[t0, t1])
     if brain:                       # a copy of the clip's brain: the loop reads and fixes that one
         m = json.loads(snap.read_text())
         m.update(recorded_brain=m.get("brain"), brain=str(pathlib.Path(brain).expanduser().resolve()))
@@ -230,6 +242,7 @@ def typed(box, stop, tty):
 def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=None, port=8090, settle=10, tty=None):
     env = sim.sim_env(cam, port)
     out.mkdir(parents=True)
+    events.begin(out, "voice", feed="live", brain=str(brain))
     ledger = models.Ledger()
     record = sim.RUNS / f"run-{time.strftime('%Y%m%d-%H%M%S')}.jsonl.gz"
     models.warm_glimmer()
@@ -242,11 +255,14 @@ def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=
         if not type_ and not health.get("listening"):
             raise RuntimeError(f"the sidecar is not listening: {health}")
         skew = cap.skew()
+        events.emit("feed", kind="live", clock="epoch", sidecar=cap.base, buffer_s=60)
         time.sleep(settle)
         launched = time.time()
         proc = subprocess.Popen(["uv", "run", "-q", "microduck-brain", "--duration", str(seconds), "--record",
                                  str(record)], cwd=brain, env=env, stdout=subprocess.DEVNULL,
                                 stderr=subprocess.DEVNULL, start_new_session=True)
+        events.emit("brain.start", at=launched, seconds=seconds)
+        events.emit("listen", key=KEY, typed=type_)
         print(f"The robot is walking ({seconds:g} s). " + ("Type what you see." if type_ else
               f"When it goes wrong, hold {KEY} and say what you saw and when, e.g. "
               "\"two seconds ago its right leg hit the purple box\"."), flush=True)
@@ -264,18 +280,23 @@ def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=
                     last = u["id"]
                     u["wav"] = cap.utterance(u["id"])
             if u:
+                events.clock_start(u["release"], "the person let go of the key" if not type_ else "the person typed it")
                 h = hear(u, ledger)
                 if not h:
                     print("heard nothing; hold the key and speak again", flush=True)
         stop.set()
         if h:
             t0, t1 = window(h)
+            events.emit("rewind", moment=h["moment"], window=[t0, t1], press=h["press"], release=h["release"])
             snap_meta = cap.snapshot(t1 - t0, out / "window", end=t1)
             snap = out / "window" / "snapshot.json"
             snap.write_text(json.dumps(snap_meta))
+            events.emit("snapshot", snapshot=str(snap), video=snap_meta["path"], window=[t0, t1],
+                        t0_epoch=snap_meta["t0_epoch"], fps=snap_meta["fps"])
         if proc.poll() is None:               # heard: the robot is stopped, as a person would
             os.killpg(proc.pid, signal.SIGINT)
         proc.wait(30)
+        events.emit("brain.stop", at=time.time())
     finally:
         if proc and proc.poll() is None:
             os.killpg(proc.pid, signal.SIGTERM)

@@ -23,6 +23,17 @@ It runs Meta's **open-weight Muse Glimmer on this PC**, so the robot's camera ne
 | Fix | A coding agent patches the code inside its sandbox; a git commit is taken first | Muse Code (Python SDK) |
 | Prove | The identical scenario is replayed and checked again on pixels; failed fixes are rolled back and retried | SAM 3.1, Muse Code |
 
+## The console
+
+A local page that shows the loop live, one step at a time, with the model behind each step: the last 60 seconds rewinding to the moment, the sentence, SAM 3.1's masks and the distance to first contact, Muse Wonder's cause as it streams with the key frame, the log row and the code line, the change and the safety commit, the replay before | after, the control scenes, the clock and the bill. "Fix it?" and "Keep the fix?" can be answered there or in the terminal, whichever comes first.
+
+```bash
+python3 -m blinkflow.console serve                # http://localhost:8777, follows the newest run
+python3 -m blinkflow.console report <run>/events.jsonl   # the same page as static files, for the report
+```
+
+The console only reads the loop's event log (`events.jsonl`); the loop runs the same without it. It serves only files the log names, and never the scorer's files. Keep it off the simulator window while recording: the buffer films that window.
+
 ## Pre-existing vs built during the hackathon
 
 The rules ask entrants to separate earlier work from new work. **Everything in this repository was written after the kickoff session on Oct 26, 2026.**

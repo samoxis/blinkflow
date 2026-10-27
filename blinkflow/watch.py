@@ -42,7 +42,7 @@ import sys
 import threading
 import time
 
-from . import TARGET, models, prove, sam, see, sim
+from . import TARGET, events, models, prove, sam, see, sim
 from .capture import Sidecar
 
 HOME = pathlib.Path.home()
@@ -107,6 +107,14 @@ def jpegs(clip, width=WIDTH):
 
 
 # ── feeds: where the newest frame comes from, on whose clock ─────────────────
+def tell_feed(feed):
+    """The feed, in the event stream: a clip's video and when its brain time 0 is played (the console plays
+    the same clip alongside)."""
+    t = feed.times
+    events.emit("feed", kind="clip", clock="brain", t_start=feed.t_start, clip=str(feed.clip), times0=t[0],
+                fps=round((len(t) - 1) / (t[-1] - t[0]), 3), frames=len(t), end=t[-1], lag=feed.lag, buffer_s=60)
+
+
 class ClipFeed:
     """A recorded clip played back as if it were the buffer. Clock: brain time (s after its first tick)."""
 
@@ -252,8 +260,10 @@ class Watcher:
                                           "watch", schema=schema))
         except (OSError, ValueError) as e:
             return {"t": now[0], "error": str(e)}
-        return {"t": round(now[0], 3), "dt": dt and round(dt, 2), "asked_at": round(self.feed.now(), 3),
-                "seconds": round(time.time() - t, 2), **{k: bool(a.get(k)) for k in schema["required"]}}
+        r = {"t": round(now[0], 3), "dt": dt and round(dt, 2), "asked_at": round(self.feed.now(), 3),
+             "seconds": round(time.time() - t, 2), **{k: bool(a.get(k)) for k in schema["required"]}}
+        events.emit("look", **r)
+        return r
 
     def confirm(self, raised):
         """SAM 3.1 on the window around a raised frame: the incident it shows, if any."""
@@ -263,7 +273,8 @@ class Watcher:
         t0 = time.time()
         snap = self.feed.window(t - BEFORE, t + AFTER, d)
         evdir = d / "evidence"
-        ev = see.see(snap, evdir)
+        events.emit("confirm.start", n=k, raised=raised, window=[t - BEFORE, t + AFTER])
+        ev = see.see(snap, evdir, tag=f"confirm-{k}")
         cost = json.loads((evdir / "models.json").read_text())["total_cost_usd"]
         mo = motion(evdir, snap)
         names = [ev["names"]["robot"], ev["names"]["object"]]
@@ -286,6 +297,8 @@ class Watcher:
     def run(self):
         """Watch until a confirmed incident or the end of the feed. Returns the confirmation, or None."""
         self.feed.start()
+        if isinstance(self.feed, ClipFeed):
+            tell_feed(self.feed)
         history = collections.deque()
         pool = concurrent.futures.ThreadPoolExecutor(2)
         looking = confirming = None
@@ -305,7 +318,8 @@ class Watcher:
                 signs = [s for s in SIGNS if r.get(s) and (s == "fallen" or r["robot_visible"])
                          and (s != "stuck" or (r["t"] >= STUCK_GRACE + STUCK_S and streak >= STUCK_LOOKS))]
                 if signs:
-                    self.raises.append({**r, "signs": signs})
+                    self.raises.append({**r, "signs": signs, "wall": round(time.time(), 3)})
+                    events.emit("raise", t=r["t"], signs=signs)
             if confirming and confirming.done():
                 try:
                     c = confirming.result()
@@ -317,8 +331,11 @@ class Watcher:
                 self.confirms.append(c)
                 print(json.dumps({k: c[k] for k in ("n", "kind", "incident_s", "window", "names", "seconds")}),
                       flush=True)
+                events.emit("confirmed", **{k: c.get(k) for k in ("n", "kind", "confirmed", "names", "incident_s",
+                                                                  "reading", "evidence", "snapshot", "window")})
                 if c["confirmed"]:
                     found = c
+                    events.clock_start(c["raised"]["wall"], "the watcher raised a hand")
                     break
             if not confirming and len(self.confirms) < MAX_CONFIRM:
                 nxt = next((r for r in self.raises if r["t"] > covered), None)
@@ -425,6 +442,7 @@ def finish_live(found, feed, record):
 def live(brain, seconds, cam, out, with_loop, port=8090, settle=10):
     env = sim.sim_env(cam, port)
     out.mkdir(parents=True)
+    events.begin(out, "watch", feed="live", brain=str(brain))
     record = sim.RUNS / f"run-{time.strftime('%Y%m%d-%H%M%S')}.jsonl.gz"
     samples, stop = [], threading.Event()
     threading.Thread(target=vram, args=(samples, stop), daemon=True).start()
@@ -435,11 +453,13 @@ def live(brain, seconds, cam, out, with_loop, port=8090, settle=10):
     try:
         sim.open_viser(port)
         cap.start()
+        events.emit("feed", kind="live", clock="epoch", sidecar=cap.base, buffer_s=60)
         time.sleep(settle)                       # scene loaded, duck standing
         launched = time.time()
         proc = subprocess.Popen(["uv", "run", "-q", "microduck-brain", "--duration", str(seconds), "--record",
                                  str(record)], cwd=brain, env=env, stdout=subprocess.DEVNULL,
                                 stderr=subprocess.DEVNULL, start_new_session=True)
+        events.emit("brain.start", at=launched, seconds=seconds)
         feed = LiveFeed(cap, brain, proc, launched)
         w = Watcher(feed, out)
         found = w.run()
@@ -478,6 +498,7 @@ def live(brain, seconds, cam, out, with_loop, port=8090, settle=10):
 def clip(path, out, with_loop, lag=LAG):
     feed = ClipFeed(path, lag)
     out.mkdir(parents=True)
+    events.begin(out, "watch", feed="clip", clip=str(path), brain=feed.meta.get("brain"))
     models.warm_glimmer()
     w = Watcher(feed, out)
     found = w.run()

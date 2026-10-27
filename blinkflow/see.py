@@ -30,7 +30,7 @@ import urllib.error
 import numpy as np
 from scipy import ndimage, spatial
 
-from . import models, sam
+from . import events, models, sam
 
 CONTACT_PX = 2           # masks this close (or overlapping) count as touching
 BASE_TOL = 0.1           # the robot's feet may be this fraction of the base's thickness short of it
@@ -108,7 +108,8 @@ def last_shot(frames):
 def trim(clip, start, out, end=None):
     """Frames `start`.. (to `end`, exclusive) of the clip, re-encoded once."""
     pick = f"select=gte(n\\,{start})" if end is None else f"select=between(n\\,{start}\\,{end - 1})"
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", clip, "-vf", pick,
+    # timestamps from zero: a browser plays an mp4 that starts later from its first frame, frames off
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", clip, "-vf", pick + ",setpts=PTS-STARTPTS",
                     "-fps_mode", "passthrough", "-c:v", "libx264", "-preset", "fast", "-crf", "18",
                     "-pix_fmt", "yuv420p", str(out)], check=True)
 
@@ -416,13 +417,15 @@ def draw(path, frame_rgb, robot_mask, object_mask, base_mask, names, series, con
     plt.close(fig)
 
 
-def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow=None, said=None):
+def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow=None, said=None, tag=None):
     """`reuse`: take the names and SAM replies of an earlier run in `out_dir` instead of new calls.
     `follow`: (robot, object) names to track as given, no naming (a replay follows the incident's).
-    `said`: the person's own words about the incident, handed to the namer."""
+    `said`: the person's own words about the incident, handed to the namer.
+    `tag`: what this look is, in the event stream (default: "incident", or for a replay its folder's name)."""
     snap = load_snapshot(snapshot_path)
     out = pathlib.Path(out_dir).expanduser()
     out.mkdir(parents=True, exist_ok=True)
+    tag = tag or ("incident" if not follow else out.parent.name)
     ledger = models.Ledger()
     shot = out / "shot.mp4"
 
@@ -432,6 +435,11 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
     n = len(gray_frames(str(shot)))
     size = probe_size(str(shot))
     picks = [round((n - 1) * f) for f in (1 / 3, 2 / 3, 1.0)]
+    times = [snap["brain_time"][start + f] for f in range(n)]
+    if not reuse:
+        events.emit("see.start", tag=tag, evidence=str(out), shot=str(shot), clip=snap["clip"], frames=n,
+                    size=list(size), fps=round((n - 1) / (times[-1] - times[0]), 3) if n > 1 else None,
+                    times=[round(t, 3) for t in times], naming_frames=picks)
 
     plan = pieces(n)
     clips = [shot] if len(plan) == 1 else None
@@ -444,7 +452,10 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
             what = f"track '{concept}'" + (f" (frames {a}-{b - 1}, sent from {lo})" if len(plan) > 1 else "")
             ledger.add("sam-3.1", "Meta Model API", what, r["seconds"], r["cost_usd"],
                        frames=b - lo, frames_returned=len(r["frames"]), usage=r["usage"])
+            events.emit("sam.piece", tag=tag, concept=concept, piece=i, pieces=len(plan), first=a, end=b,
+                        found=sum(1 for f, v in r["frames"].items() if v and a <= lo + f < b))
             return r
+        events.emit("sam.start", tag=tag, concept=concept, pieces=len(plan), frames=n)
         with concurrent.futures.ThreadPoolExecutor(len(plan)) as pool:
             parts = list(pool.map(piece, range(len(plan))))
         raw = "\n".join(sam.renumber(r["raw"], lo, range(a - lo, b - lo)) for r, (lo, a, b) in zip(parts, plan))
@@ -474,6 +485,8 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
             (robot, nearest), kind, namer, tried = follow, "as in the incident", "incident", []
         else:
             ((robot, nearest), kind), namer, tried = name_objects(images, ledger, namers, said)
+        events.emit("named", tag=tag, robot=robot, object=nearest, object_is=kind, named_by=namer, said=said,
+                    frames=picks)
         with concurrent.futures.ThreadPoolExecutor(2) as pool:
             tr, to = pool.map(run, (robot, nearest), ("robot", "object"))
         trouble = object_trouble(to, size[0] * size[1], n)
@@ -483,6 +496,8 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
             tried += more
             if nearest2 != nearest:
                 nearest, kind = nearest2, kind2
+                events.emit("named", tag=tag, robot=robot, object=nearest, object_is=kind, named_by=namer,
+                            said=said, frames=picks, why=f"SAM 3.1: {trouble}")
                 to = run(nearest, "object")
                 trouble = object_trouble(to, size[0] * size[1], n)
     names = (robot, nearest)
@@ -534,7 +549,6 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
                                      and p["feet_depth_px"] >= -REACH * height), None)
 
     ticks = brain_ticks(snap["record"])
-    times = [snap["brain_time"][start + f] for f in range(n)]
     falls = {"pixels": fall_from_pixels(tr["frames"], size, n, times), "brain_log": fall_from_log(ticks, times)}
     seen = [c for c in falls.values() if c]
     for c in seen:
@@ -586,6 +600,15 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
     }
     (out / "evidence.json").write_text(json.dumps(evidence, indent=1))
     ledger.write(out / "models.json")
+    events.emit("evidence", tag=tag, evidence=str(out), shot=str(shot), image=str(out / "evidence.png"),
+                sam={"robot": str(out / "sam-robot.txt"), "object": str(out / "sam-object.txt")},
+                first_frame=start, frames=n, size=list(size), names=evidence["names"] | {"attempts": None},
+                incident=evidence["incident"], first_contact=first and {k: first.get(k) for k in (
+                    "frame", "shot_frame", "brain_s", "gap_px", "wall_time")} | {"reading": reading},
+                fall=fall["first"] and {k: fall["first"].get(k) for k in ("reading", "how", "frame", "shot_frame",
+                                                                          "brain_s")},
+                closest=closest, frames_with_mask={k: v["frames_with_mask"] for k, v in evidence["tracking"].items()},
+                series=[[p["shot_frame"], p["brain_s"], p["gap_px"]] for p in series])
     return evidence
 
 

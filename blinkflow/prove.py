@@ -11,13 +11,14 @@ tips over again, or the brain's own log says it fell.
 The simulator's contact log and the twin's record of falls are never read here; the scorers do that.
 """
 import argparse
+import concurrent.futures
 import json
 import math
 import pathlib
 import subprocess
 import time
 
-from . import TARGET, diagnose, see
+from . import TARGET, diagnose, events, see
 
 HOME = pathlib.Path.home()
 REPO = pathlib.Path(__file__).resolve().parent.parent
@@ -26,6 +27,10 @@ MIN_ROBOT_FRAMES = 10     # the robot must be found in at least this many frames
                           # shot sees it only near the object, ~70 of 520 frames in the incident)
 MIN_TRAVEL = 0.5          # ...and walk at least this fraction of the incident's distance
 EXTRA_S = 8.0             # the replay runs this long past the incident's end
+CONTROL_SCENES = ("low_cube", "ledge", "corner", "doorway")   # every twin scene but the box: the proof is that
+CONTROL_S = 20.0          # each control replay's length (the scorer's control is as long)
+CONTROL_EVERY = 3         # SAM 3.1 follows every 3rd frame of a control shot (9.5 fps): a third of the cost
+CONTROL_WORKERS = 6       # render processes per control scene (four scenes at once on 24 threads)
 
 
 def scenario(snapshot_path):
@@ -39,12 +44,13 @@ def scenario(snapshot_path):
     return {"from": "live", "scene": None, "settle": 3.0, "seconds": m["seconds"] + EXTRA_S}   # sim.py: scene "demo"
 
 
-def replay(scen, out, brain=TARGET, nice=0):
+def replay(scen, out, brain=TARGET, nice=0, workers=None):
     """Run the twin with the incident's camera shot rendered; returns the replay's meta.json.
     `nice`: a replay rendered in the background yields the CPU to the work in front of it."""
     out.mkdir(parents=True, exist_ok=True)
     args = ["nice", "-n", str(nice)] * bool(nice) + [str(RL_PYTHON), "-m", "blinkflow.twin", "--brain", str(brain), "--settle", str(scen["settle"]),
             "--seconds", str(scen["seconds"]), "--video", "--out", str(out)]
+    args += ["--workers", str(workers)] if workers else []
     if scen["scene"]:
         args += ["--scene", scen["scene"]]
     # The twin prints its own contact count; that is ground truth, so its output is not read.
@@ -103,8 +109,14 @@ def verdict(ev, record, reference_travel=None, kind="contact"):
 def render(snapshot, out, brain=TARGET, nice=0):
     """The snapshot's scenario replayed in the twin with the brain as it is now: (meta.json, seconds)."""
     t = time.time()
-    meta = replay(scenario(snapshot), pathlib.Path(out) / "twin", brain, nice)
-    return meta, round(time.time() - t, 1)
+    scen = scenario(snapshot)
+    events.emit("replay.start", tag=pathlib.Path(out).name, scene=scen["scene"] or "box", seconds=scen["seconds"],
+                brain=str(brain))
+    meta = replay(scen, pathlib.Path(out) / "twin", brain, nice)
+    seconds = round(time.time() - t, 1)
+    events.emit("replay.rendered", tag=pathlib.Path(out).name, video=json.loads(meta.read_text())["video"],
+                seconds=seconds)
+    return meta, seconds
 
 
 def look(meta, out, follow, reference_travel=None, kind="contact", replay_s=None):
@@ -115,6 +127,7 @@ def look(meta, out, follow, reference_travel=None, kind="contact", replay_s=None
     v = verdict(ev, json.loads(meta.read_text())["record"], reference_travel, kind)
     v.update(meta=str(meta), evidence=str(out / "evidence"), replay_s=replay_s, see_s=round(time.time() - t, 1))
     (out / "verdict.json").write_text(json.dumps(v, indent=1))
+    events.emit("verdict", tag=out.name, **v)
     return v
 
 
@@ -123,6 +136,69 @@ def prove(snapshot, out, follow, reference_travel=None, brain=TARGET, kind="cont
     incident of this `kind`."""
     meta, seconds = render(snapshot, out, brain)
     return look(meta, out, follow, reference_travel, kind, seconds)
+
+
+def every_nth(meta, n, out):
+    """A twin replay with only every n-th frame of its shot (a cheaper look): a meta.json of its own."""
+    m = json.loads(pathlib.Path(meta).read_text())
+    out.mkdir(parents=True, exist_ok=True)
+    video = out / "every.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", m["video"], "-vf", f"select=not(mod(n\\,{n}))",
+                    "-fps_mode", "passthrough", "-c:v", "libx264", "-preset", "fast", "-crf", "18",
+                    "-pix_fmt", "yuv420p", str(video)], check=True)
+    m.update(video=str(video), video_times=m["video_times"][::n], every=n)
+    p = out / "meta.json"
+    p.write_text(json.dumps(m))
+    return p
+
+
+def control(out, brain=TARGET):
+    """The brain as it is now in every other twin scene for CONTROL_S, judged from pixels only: Glimmer
+    names what is near the robot in each shot, SAM 3.1 follows it and the robot (every CONTROL_EVERY-th
+    frame), and the scene is clean when the proof's rules see no contact and no fall. A scene where the
+    robot was not followed has no verdict and is not clean. {scene: {clean, why, names, ...}}"""
+    out = pathlib.Path(out)
+    events.emit("control.start", scenes=list(CONTROL_SCENES), seconds=CONTROL_S, every=CONTROL_EVERY)
+
+    def render_one(scene):
+        t = time.time()
+        meta = replay({"scene": scene, "settle": 3.0, "seconds": CONTROL_S}, out / scene / "twin", brain,
+                      workers=CONTROL_WORKERS)
+        events.emit("control.rendered", scene=scene, video=json.loads(meta.read_text())["video"],
+                    seconds=round(time.time() - t, 1))
+        return every_nth(meta, CONTROL_EVERY, out / scene / "look"), round(time.time() - t, 1)
+
+    def look_one(scene, meta):
+        t = time.time()
+        try:
+            ev = see.see(meta, out / scene / "evidence", tag=f"control-{scene}")
+        except RuntimeError as e:                    # nothing near the robot could be named or found
+            return {"clean": False, "why": f"no verdict: {e}"[:300], "names": None}
+        kind = "fall" if ev["names"]["object_is"] == "hazard" else "contact"
+        v = verdict(ev, json.loads(meta.read_text())["record"], kind=kind)
+        hit = v["contact"] and kind == "contact"
+        why = ("; ".join(v["problems"]) if not v["valid"] else
+               f"fell at t = {v['fell_s']:.2f} s ({v['fall_reading']})" if v["fell_s"] is not None else
+               f"touched the {ev['names']['object']} at t = {v['first_contact_s']:.2f} s" if hit else
+               "no contact, no fall" + (f"; closest gap {v['closest_gap_px']:.0f} px" if v["closest_gap_px"] is not None
+                                        else ""))
+        return {**v, "clean": v["valid"] and not hit and v["fell_s"] is None, "why": why,
+                "names": [ev["names"]["robot"], ev["names"]["object"]], "evidence": str(out / scene / "evidence"),
+                "see_s": round(time.time() - t, 1)}
+
+    with concurrent.futures.ThreadPoolExecutor(len(CONTROL_SCENES)) as pool:
+        rendered = dict(zip(CONTROL_SCENES, pool.map(render_one, CONTROL_SCENES)))
+    with concurrent.futures.ThreadPoolExecutor(2) as pool:          # 2 at a time: SAM gets ~28 pieces at once
+        looked = dict(zip(CONTROL_SCENES, pool.map(lambda s: look_one(s, rendered[s][0]), CONTROL_SCENES)))
+    result = {}
+    for s in CONTROL_SCENES:
+        result[s] = {**looked[s], "render_s": rendered[s][1]}
+        events.emit("control.scene", scene=s, **{k: result[s].get(k) for k in (
+            "clean", "why", "names", "evidence", "render_s", "see_s", "robot_frames", "closest_gap_px")})
+    (out / "control.json").write_text(json.dumps(result, indent=1))
+    events.emit("control.done", clean=all(c["clean"] for c in result.values()),
+                scenes={s: c["clean"] for s, c in result.items()})
+    return result
 
 
 def main():

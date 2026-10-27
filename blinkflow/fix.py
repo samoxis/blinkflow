@@ -28,6 +28,7 @@ import json
 import os
 import pathlib
 import re
+import select
 import subprocess
 import sys
 import time
@@ -35,7 +36,7 @@ import time
 from muse_code import (ApprovalDecisionInput, MuseClient, MuseClientSpawnOptions, SendUserTurnOptions,
                        StartSessionOptions)
 
-from . import TARGET, diagnose, models, prove, see
+from . import TARGET, diagnose, events, models, prove, see
 
 HOME = pathlib.Path.home()
 RUNS = HOME / "blinkflow-runs" / "fixes"
@@ -92,15 +93,20 @@ def git(*args, check=True):
 
 def checkpoint():
     """Commit whatever the target holds now; returns the commit every attempt starts from."""
-    if git("status", "--porcelain").strip():
+    dirty = bool(git("status", "--porcelain").strip())
+    if dirty:
         git("add", "-A")
         git("commit", "-qm", "checkpoint before BlinkFlow's fix")
-    return git("rev-parse", "HEAD").strip()
+    base = git("rev-parse", "HEAD").strip()
+    events.emit("checkpoint", commit=base, committed_now=dirty, target=str(TARGET),
+                subject=git("log", "-1", "--format=%s").strip())
+    return base
 
 
-def undo(base):
+def undo(base, why=""):
     git("reset", "-q", "--hard", base)
     git("clean", "-qfd")
+    events.emit("undo", to=base, why=why)
 
 
 def change(base):
@@ -206,7 +212,7 @@ def audit(calls):
     return bad
 
 
-async def turn(prompt, model, log):
+async def turn(prompt, model, log, tag=""):
     args = ["serve"] + (["--model", model] if model else [])
     client = await MuseClient.spawn(MuseClientSpawnOptions(muse_bin="muse", args=args,
                                                            client_info={"name": "blinkflow", "version": "0.1.0"}))
@@ -217,9 +223,13 @@ async def turn(prompt, model, log):
         s.on_approval(lambda req: decide(req, log))
         t = await s.send_user_turn(SendUserTurnOptions(input=[{"type": "text", "text": prompt}],
                                                        composer_input=prompt))
-        items = {}
+        items, told = {}, {}
         async for it in t.items():
             items[it["itemId"]] = dict(it)          # the last revision of each item wins
+            if it.get("kind") == "toolCall" and told.get(it["itemId"]) != it.get("status"):
+                told[it["itemId"]] = it.get("status")
+                events.emit("musecode.tool", tag=tag, id=it["itemId"], tool=it.get("tool"),
+                            args=str(it.get("args"))[:400], status=it.get("status"))
         outcome = await t.completed
         st = s.fold.session_state
         usage = st.get("session/tokenUsage") if st.has("session/tokenUsage") else {}
@@ -235,8 +245,9 @@ def muse_code(prompt, out, base, ledger, purpose, model=None):
     out.mkdir(parents=True, exist_ok=True)
     (out / "muse-code-prompt.txt").write_text(prompt)
     log, t = [], time.time()
+    events.emit("musecode.start", tag=out.name, model=model or "the host's default", prompt_chars=len(prompt))
     try:
-        r = asyncio.run(asyncio.wait_for(turn(prompt, model, log), TURN_TIMEOUT))
+        r = asyncio.run(asyncio.wait_for(turn(prompt, model, log, out.name), TURN_TIMEOUT))
     except Exception as e:                                      # the host died, timed out, refused...
         r = {"items": [], "outcome": f"error: {type(e).__name__}: {e}", "params": {}, "usage": {}}
     seconds = time.time() - t
@@ -264,6 +275,8 @@ def muse_code(prompt, out, base, ledger, purpose, model=None):
            "change": ch, "problems": problems}
     (out / "muse-code.json").write_text(json.dumps(rec, indent=1))
     (out / "change.diff").write_text(ch["diff"])
+    events.emit("change", tag=out.name, diff=ch["diff"], files=ch["files"], stat=ch["stat"], summary=rec["summary"],
+                problems=problems, seconds=rec["seconds"], tool_calls=len(calls), sandbox=r.get("sandbox"))
     return rec
 
 
@@ -329,36 +342,57 @@ def terminal():
     return tty
 
 
-def terminal_ask(question, tty):
-    """y or n from the person at the terminal; anything else asks again."""
+def terminal_ask(question, tty, **context):
+    """y or n from the person at the terminal, or the same answer from the console (blinkflow.console),
+    whichever comes first; anything else asks again. `context` goes to the console with the question."""
+    qid = f"q{time.time_ns()}"
+    events.emit("ask", id=qid, question=question, **context)
+    print(f"{question} [y/n] ", end="", flush=True)
     while True:
-        print(f"{question} [y/n] ", end="", flush=True)
-        a = tty.readline()
-        if not a:
-            raise EOFError("the terminal closed before an answer")
-        if a.strip().lower() in ("y", "yes", "n", "no"):
-            return a.strip().lower()[0] == "y"
+        if select.select([tty], [], [], 0.25)[0]:
+            a = tty.readline()
+            if not a:
+                raise EOFError("the terminal closed before an answer")
+            if a.strip().lower() in ("y", "yes", "n", "no"):
+                yes, by = a.strip().lower()[0] == "y", "terminal"
+                break
+            print(f"{question} [y/n] ", end="", flush=True)
+        elif (yes := events.answer(qid)) is not None:
+            by = "console"
+            print(f"{'y' if yes else 'n'} (answered in the console)", flush=True)
+            break
+    events.emit("answer", id=qid, question=question, yes=yes, by=by)
+    return yes
 
 
 def stage(stages, name, t, t0):
     stages.append({"stage": name, "start": round(t - t0, 1), "seconds": round(time.time() - t, 1)})
+    events.emit("stage", **stages[-1])
 
 
 def timed(stages, name, t0, fn, *args, **kw):
     """fn(*args, **kw), its wall time kept as a stage (stages may overlap: some run in the background)."""
     t = time.time()
+    events.emit("stage.start", stage=name, start=round(t - t0, 1))
     try:
         return fn(*args, **kw)
     finally:
         stage(stages, name, t, t0)
 
 
-def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, ask=None):
-    """`ask`: question -> True/False, the person's answer (terminal_ask); None runs with no one asked."""
+def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, ask=None, control=None):
+    """`ask`: question -> True/False, the person's answer (terminal_ask); None runs with no one asked.
+    `control`: after a fix is verified, replay the brain in every other scene and look for an incident
+    there from pixels, before the person decides to keep it (default: when a person is asked)."""
     snapshot = pathlib.Path(snapshot).expanduser().resolve()
     run = pathlib.Path(out).expanduser() if out else RUNS / time.strftime("%Y%m%d-%H%M%S")
     run.mkdir(parents=True)
     t0 = time.time()
+    control = bool(ask) if control is None else control
+    events.begin(run, "fix", snapshot=str(snapshot), target=str(TARGET))
+    events.emit("loop.start", run=str(run), snapshot=str(snapshot), target=str(TARGET), asked=bool(ask),
+                control=control, attempts=attempts)
+    seen = events.clock() or events.clock_start(t0, "the loop starts on the snapshot")
     stages, ledger = [], models.Ledger()
     base = checkpoint()
     evdir = pathlib.Path(evidence).expanduser().resolve() if evidence else run / "incident"
@@ -405,7 +439,8 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
         print(f"\nCause: {two_sentences(d['explanation'])}\n({c['file']}, lines {c['lines']['start']}-"
               f"{c['lines']['end']}; confidence {d['confidence']:.2f})", flush=True)
         t = time.time()
-        yes = ask("Fix it?")
+        yes = ask("Fix it?", attempt=i, cause=two_sentences(d["explanation"]), file=c["file"],
+                  lines=[c["lines"]["start"], c["lines"]["end"]], confidence=d["confidence"])
         stage(stages, f"attempt {i}: the person decides to fix", t, t0)
         answers.append({"attempt": i, "question": "Fix it?", "yes": yes, "seconds": round(time.time() - t, 1)})
         return yes
@@ -415,7 +450,7 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
     before = timed(stages, "wait for the replay before any change", t0, looked.result)
     pool.shutdown(wait=False)
     done = {"run": str(run), "base": base, "kind": kind, "before": before, "attempts": [], "fixed": False,
-            "kept": False, "asked": bool(ask), "answers": answers}
+            "kept": False, "asked": bool(ask), "answers": answers, "seen_s": round(t0 - seen, 1)}
     if not go:
         done["stopped"] = "the person said no before Muse Code wrote anything"
         return finish(run, snapshot, evdir, ev, first_diag, done, stages, ledger, t0)
@@ -441,7 +476,7 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
         done["attempts"].append(rec)
         cause = json.loads((diag_dir / "diagnosis.json").read_text())["cause"]
         if mc["problems"]:
-            undo(base)
+            undo(base, "the change was rejected before any replay")
             history.append(f"Attempt {i} was rejected before any replay: {'; '.join(mc['problems'])}.")
             tried.append(f"Attempt {i}: the diagnosis named `{rec['cause_key']}` ({cause['what']}) The change was "
                          f"rejected before any replay ({'; '.join(mc['problems'])}), so that idea is untested.")
@@ -455,16 +490,26 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
         rec["verdict"] = v
         if v["valid"] and not v["incident"]:
             done["fixed"] = True
+            done["verified_s"] = round(time.time() - seen, 1)
+            events.emit("clock.stop", at=time.time(), seconds=done["verified_s"], why="fixed and verified",
+                        attempt=i)
+            if control:
+                done["control"] = timed(stages, f"attempt {i}: control, every other scene (pixels)", t0,
+                                        prove.control, a / "control")
             if ask:
                 print(f"\nReplay with the change: {says(v, obj, kind)}.\nBefore it: {says(before, obj, kind)}.\n"
                       f"Change: {mc['change']['stat']} ({', '.join(mc['change']['files'])})", flush=True)
+                if control:
+                    print("Control: " + "; ".join(f"{s} {'clean' if c['clean'] else 'NOT clean: ' + c['why']}"
+                                                  for s, c in done["control"].items()), flush=True)
                 t = time.time()
-                keep = ask("Keep the fix?")
+                keep = ask("Keep the fix?", attempt=i, after=says(v, obj, kind), before=says(before, obj, kind),
+                           stat=mc["change"]["stat"], files=mc["change"]["files"])
                 stage(stages, f"attempt {i}: the person decides to keep", t, t0)
                 answers.append({"attempt": i, "question": "Keep the fix?", "yes": keep,
                                 "seconds": round(time.time() - t, 1)})
                 if not keep:
-                    undo(base)
+                    undo(base, "the person did not keep the fix")
                     rec["rolled_back"] = True
                     done["stopped"] = "fixed and verified, but the person did not keep it: rolled back to the base commit"
                     break
@@ -472,6 +517,7 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
                 f"{says(v, obj, kind)}.")
             rec["kept"] = done["kept"] = True
             done["fix_commit"] = git("rev-parse", "HEAD").strip()
+            events.emit("commit", commit=done["fix_commit"], base=base, subject=f"fix: {rec['cause_key']}")
             break
         what = f"Attempt {i} changed:\n```diff\n{mc['change']['diff']}```\nIts note: {mc['summary']}\n" \
                f"Replay of the same scene with this change: {says(v, obj, kind)}{effect(v, before)}."
@@ -484,13 +530,13 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
             t = time.time()
             context = EARLIER.format(event=event(kind, obj), attempts="\n\n".join(tried), last=i)
             try:
-                diagnose.diagnose(a / "evidence", context=context)
+                diagnose.diagnose(a / "evidence", context=context, tag=a.name)
                 diag_dir = a / "evidence"
                 what += " A new diagnosis of that replay, made with the change in place, is the DIAGNOSIS above."
             except (SystemExit, RuntimeError) as e:
                 what += f" (no new diagnosis: {e})"
             stage(stages, f"attempt {i}: understand the replay (Glimmer, Muse Wonder)", t, t0)
-        undo(base)
+        undo(base, f"attempt {i} did not remove the incident")
         history.append(what)
     return finish(run, snapshot, evdir, ev, first_diag, done, stages, ledger, t0)
 
@@ -500,7 +546,8 @@ def all_calls(run, evdir, ledger):
     """Every model call of the run, from each evidence folder's models.json and Muse Code's."""
     calls = []
     for role, d in [("incident", evdir), ("before", run / "before" / "evidence")] + \
-            [(p.name, p / "evidence") for p in sorted(run.glob("attempt-*"))]:
+            [(p.name, p / "evidence") for p in sorted(run.glob("attempt-*"))] + \
+            [(f"{p.parent.parent.parent.name} control {p.parent.name}", p) for p in sorted(run.glob("attempt-*/control/*/evidence"))]:
         f = d / "models.json"
         if f.exists():
             calls += [{**c, "stage": role} for c in json.loads(f.read_text())["calls"]]
@@ -517,7 +564,26 @@ def finish(run, snapshot, evdir, ev, diag, done, stages, ledger, t0):
     mdoc = full.write(run / "models.json")
     (run / "fix.json").write_text(json.dumps(done, indent=1))
     write_report(run, snapshot, evdir, ev, diag, done, mdoc)
+    events.emit("done", fixed=done["fixed"], kept=done["kept"], stopped=done.get("stopped"),
+                seconds=done["seconds"], verified_s=done.get("verified_s"), seen_s=done.get("seen_s"),
+                attempts=len(done["attempts"]), base=done["base"], fix_commit=done.get("fix_commit"),
+                report=str(run / "report.md"), cost_usd=mdoc["total_cost_usd"],
+                models=manifest(mdoc["calls"]))
     return done
+
+
+def manifest(calls):
+    """Per model: where it ran, calls, tokens, cost (the console's table)."""
+    out = {}
+    for c in calls:
+        m = out.setdefault(c["model"], {"model": c["model"], "where": c["where"], "calls": 0, "input_tokens": 0,
+                                        "output_tokens": 0, "frames": 0, "cost_usd": 0.0, "seconds": 0.0})
+        m["calls"] += 1
+        m["seconds"] = round(m["seconds"] + (c.get("seconds") or 0), 1)
+        for k in ("input_tokens", "output_tokens", "frames"):
+            m[k] += c.get(k) or 0
+        m["cost_usd"] = round(m["cost_usd"] + (c.get("cost_usd") or 0), 5)
+    return list(out.values())
 
 
 def rel(run, p):
@@ -540,7 +606,9 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                 f"keep it ({done['seconds']:.0f} s).")
     elif kept:
         head = (f"**Fixed and verified in attempt {kept['attempt']} of {n}.** Seen -> fixed and verified: "
-                f"**{done['seconds']:.0f} s** of wall time.")
+                f"**{done.get('verified_s', done['seconds']):.0f} s** of wall time"
+                + (f" ({done['seconds']:.0f} s with the control and the person's answers)." if done.get("asked")
+                   or done.get("control") else "."))
     else:
         head = f"**Not fixed** after {n} attempt(s), {done['seconds']:.0f} s. " + done.get("stopped", "")
     if kind == "fall":
@@ -595,6 +663,14 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
     out += [f"![before]({rel(run, b['evidence'] + '/evidence.png')})", ""] if b.get("evidence") else []
     if kept:
         out += [f"![after]({rel(run, kept['verdict']['evidence'] + '/evidence.png')})", ""]
+    if done.get("control"):
+        out += ["## Control: the same brain in every other scene", "",
+                "Replayed in the twin, each scene's shot followed by SAM 3.1 (every 3rd frame) with the names "
+                "Glimmer gave it; clean = no contact and no fall, from pixels only.", "",
+                "| scene | named | clean | why |", "|---|---|---|---|"]
+        out += [f"| {s} | {c.get('names') and ' / '.join(c['names'])} | {'yes' if c['clean'] else '**no**'} | "
+                f"{c['why']} |" for s, c in done["control"].items()]
+        out += [""]
     out += ["## Attempts", ""]
     for a in done["attempts"]:
         v = a["verdict"]
@@ -650,13 +726,15 @@ def main():
     ap.add_argument("--model", help="Muse Code's model (default: the host's)")
     ap.add_argument("--out", help=f"run folder (default: {RUNS}/<stamp>)")
     ap.add_argument("--auto", action="store_true", help="ask no one: fix and keep on the proof alone (suite, watcher)")
+    ap.add_argument("--control", action=argparse.BooleanOptionalAction, default=None,
+                    help="after a verified fix, look for an incident in every other scene (default: when asking)")
     ap.add_argument("--compare", type=int, default=0, metavar="N",
                     help="first diagnosis: N runs each of Muse Wonder and Muse Spark (Wonder's majority is used)")
     a = ap.parse_args()
     if not (a.auto or sys.stdin.isatty()):
         raise SystemExit("no one at a terminal to ask: run with --auto")
     ask = None if a.auto else functools.partial(terminal_ask, tty=terminal())
-    done = fix(a.snapshot, a.evidence, a.attempts, a.model, a.out, a.compare, ask)
+    done = fix(a.snapshot, a.evidence, a.attempts, a.model, a.out, a.compare, ask, a.control)
     print(json.dumps({"run": done["run"], "fixed": done["fixed"], "kept": done["kept"], "seconds": done["seconds"],
                       "attempts": [{"attempt": x["attempt"], "files": x["change"]["files"],
                                     "incident": (x["verdict"] or {}).get("incident"), "kept": x["kept"]}

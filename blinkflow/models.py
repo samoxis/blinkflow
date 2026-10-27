@@ -15,6 +15,8 @@ import urllib.request
 
 import requests
 
+from . import events
+
 API = "https://api.meta.ai/v1/responses"
 ASR = "https://api.meta.ai/v1/asr/transcribe"
 OLLAMA = "http://127.0.0.1:11434/api/chat"
@@ -54,6 +56,7 @@ class Ledger:
         self.calls.append({"model": model, "where": where, "purpose": purpose,
                            "seconds": round(seconds, 2), **amounts,
                            "cost_usd": None if cost_usd is None else round(cost_usd, 5)})
+        events.emit("model", **{k: v for k, v in self.calls[-1].items() if k != "usage"})
 
     def write(self, path):
         known = [c["cost_usd"] for c in self.calls if c["cost_usd"] is not None]
@@ -169,12 +172,14 @@ def transcribe(wav, ledger, purpose, mode="PUSH_TO_TALK"):
     return d.get("transcript", "").strip(), audio_s
 
 
-def respond(model, content, ledger, purpose, effort="medium", schema=None, max_output=16000, warm=False):
+def respond(model, content, ledger, purpose, effort="medium", schema=None, max_output=16000, warm=False,
+            on_text=None, on_thinking=None):
     """One Responses API call with text and images (`content` as input_text / input_image parts),
     streamed (long non-streaming calls end in HTTP 504). JSON reply, held to `schema` when given.
     Muse Wonder first reserves the most the call can cost against its daily budget.
     `warm`: only read `content` into the prompt cache (same model, format and cache key as the real
-    call, so its prefix matches); the reply is cut off after a few tokens and not returned."""
+    call, so its prefix matches); the reply is cut off after a few tokens and not returned.
+    `on_text`, `on_thinking`: called with each piece of the reply, and of any reasoning the stream shows."""
     if warm:
         max_output = WARM_OUTPUT
     pin, pcached, pout = PRICES[model]
@@ -208,6 +213,10 @@ def respond(model, content, ledger, purpose, effort="medium", schema=None, max_o
                 kind = ev.get("type")
                 if kind == "response.output_text.delta":
                     text.append(ev.get("delta", ""))
+                    if on_text:
+                        on_text(ev.get("delta", ""))
+                elif on_thinking and kind and "reasoning" in kind and kind.endswith(".delta"):
+                    on_thinking(ev.get("delta", ""))
                 elif kind in ("response.completed", "response.incomplete", "response.failed"):
                     usage, status = (ev.get("response") or {}).get("usage") or {}, kind.split(".")[1]
                 elif kind == "error":
