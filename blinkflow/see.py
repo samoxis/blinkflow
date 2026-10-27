@@ -28,7 +28,7 @@ import subprocess
 import urllib.error
 
 import numpy as np
-from scipy import ndimage
+from scipy import ndimage, spatial
 
 from . import models, sam
 
@@ -44,6 +44,11 @@ FALL_S = 0.5             # (b5-b7's falls into the pit: 0.8-1.4 heights and 65-9
 GONE_S = 0.5             # or its mask vanishes for good, this long before the shot ends, away from the
 EDGE_PX = 10             # frame's edges and not shrinking (a robot walking out of view leaves at an edge)
 CUT_SCALE = (160, 125)
+PIECE_FRAMES = 90        # SAM 3.1 takes longer the more frames it answers for: a longer shot is tracked as
+                         # pieces of about this many frames, all at once (a 658-frame replay: 44 s whole,
+                         # 14 s in 180-frame pieces, 12 s in 90; the verdict and first contact unchanged)
+WARMUP = 15              # every piece but the first starts this many frames early, so SAM's tracker has
+                         # seen the scene before the frames that count; the warm-up frames are dropped
 SCENERY = ("wall", "floor", "ground", "background", "shadow", "sky", "ceiling", "grid", "tile", "room")
 
 HAZARD_WORDS = ("edge", "hole", "pit", "step", "steps", "stairs", "drop", "gap", "ledge", "trench", "ditch")
@@ -100,10 +105,27 @@ def last_shot(frames):
     return int(cuts[-1]) + 1 if len(cuts) else 0
 
 
-def trim(clip, start, out):
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", clip, "-vf", f"select=gte(n\\,{start})",
+def trim(clip, start, out, end=None):
+    """Frames `start`.. (to `end`, exclusive) of the clip, re-encoded once."""
+    pick = f"select=gte(n\\,{start})" if end is None else f"select=between(n\\,{start}\\,{end - 1})"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", clip, "-vf", pick,
                     "-fps_mode", "passthrough", "-c:v", "libx264", "-preset", "fast", "-crf", "18",
                     "-pix_fmt", "yuv420p", str(out)], check=True)
+
+
+def pieces(n):
+    """(first frame sent, first frame kept, end) of each piece of an n-frame shot, in shot frames."""
+    k = max(1, round(n / PIECE_FRAMES))
+    edges = [round(i * n / k) for i in range(k + 1)]
+    return [(max(0, a - WARMUP), a, b) for a, b in zip(edges, edges[1:])]
+
+
+def cut_pieces(clip, start, plan, out):
+    """Each piece cut from the source clip like shot.mp4 (one re-encode, not two), in parallel."""
+    paths = [out / f"piece-{i}.mp4" for i in range(len(plan))]
+    with concurrent.futures.ThreadPoolExecutor(len(plan)) as pool:
+        list(pool.map(lambda pp: trim(clip, start + pp[1][0], pp[0], start + pp[1][2]), zip(paths, plan)))
+    return paths
 
 
 def jpeg(clip, n, width=640):
@@ -188,14 +210,28 @@ def union(instances, size):
     return out
 
 
+def bounds(mask):
+    rows, cols = np.flatnonzero(mask.any(1)), np.flatnonzero(mask.any(0))
+    return rows[0], rows[-1] + 1, cols[0], cols[-1] + 1
+
+
+def edge(mask):
+    """The mask's pixels with a 4-neighbour outside it, as (y, x) rows."""
+    return np.argwhere(mask & ~ndimage.binary_erosion(mask))
+
+
 def gap(a, b):
-    """Smallest Euclidean pixel distance between two masks (0 when they overlap)."""
+    """Smallest Euclidean pixel distance between two masks (0 when they overlap). The closest pair
+    always lies on both edges, so only edge pixels inside the pair's bounding box are compared
+    (the same value as a distance transform, 3x faster)."""
+    if not (a.any() and b.any()):
+        return float("inf")
+    (ay0, ay1, ax0, ax1), (by0, by1, bx0, bx1) = bounds(a), bounds(b)
+    y0, y1, x0, x1 = min(ay0, by0), max(ay1, by1), min(ax0, bx0), max(ax1, bx1)
+    a, b = a[y0:y1, x0:x1], b[y0:y1, x0:x1]
     if (a & b).any():
         return 0.0
-    ys, xs = np.nonzero(a | b)
-    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
-    a, b = a[y0:y1, x0:x1], b[y0:y1, x0:x1]
-    return float(ndimage.distance_transform_edt(~b)[a].min())
+    return float(spatial.cKDTree(edge(b)).query(edge(a), k=1)[0].min())
 
 
 def base_of(mask, frame_rgb):
@@ -391,11 +427,26 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
     size = probe_size(str(shot))
     picks = [round((n - 1) * f) for f in (1 / 3, 2 / 3, 1.0)]
 
+    plan = pieces(n)
+    clips = [shot] if len(plan) == 1 else None
+
     def run(concept, tag):
-        r = sam.track(str(shot), concept, n, raw_path=out / f"sam-{tag}.txt")
-        ledger.add("sam-3.1", "Meta Model API", f"track '{concept}'", r["seconds"], r["cost_usd"],
-                   frames=n, frames_returned=len(r["frames"]), usage=r["usage"])
-        return r
+        """`concept` tracked through the shot, its pieces in parallel; one reply, numbered as the shot."""
+        def piece(i):
+            lo, a, b = plan[i]
+            r = sam.track(str(clips[i]), concept, b - lo)
+            what = f"track '{concept}'" + (f" (frames {a}-{b - 1}, sent from {lo})" if len(plan) > 1 else "")
+            ledger.add("sam-3.1", "Meta Model API", what, r["seconds"], r["cost_usd"],
+                       frames=b - lo, frames_returned=len(r["frames"]), usage=r["usage"])
+            return r
+        with concurrent.futures.ThreadPoolExecutor(len(plan)) as pool:
+            parts = list(pool.map(piece, range(len(plan))))
+        raw = "\n".join(sam.renumber(r["raw"], lo, range(a - lo, b - lo)) for r, (lo, a, b) in zip(parts, plan))
+        (out / f"sam-{tag}.txt").write_text(raw)
+        frames = {lo + f: inst for r, (lo, a, b) in zip(parts, plan) for f, inst in r["frames"].items()
+                  if a <= lo + f < b}
+        return {"concept": concept, "frames": frames,
+                "status": next((r["status"] for r in parts if r["status"] != "completed"), "completed")}
 
     if reuse:
         before = json.loads((out / "evidence.json").read_text())
@@ -409,6 +460,8 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
             ledger.calls.append({**c, "reused": True, "original_cost_usd": c.get("original_cost_usd", c["cost_usd"]),
                                  "cost_usd": 0.0})
     else:
+        if clips is None:
+            clips = cut_pieces(snap["clip"], start, plan, out)
         images = [jpeg(str(shot), i) for i in picks]
         if follow:
             (robot, nearest), kind, namer, tried = follow, "as in the incident", "incident", []
@@ -426,6 +479,8 @@ def see(snapshot_path, out_dir, namers=("glimmer", "spark"), reuse=False, follow
                 to = run(nearest, "object")
                 trouble = object_trouble(to, size[0] * size[1], n)
     names = (robot, nearest)
+    for f in out.glob("piece-*.mp4"):               # the replies are kept; the pieces are the shot again
+        f.unlink()
 
     # The object stands still in a fixed shot: find its base once, on the frame where it is seen
     # whole (largest mask among frames with the robot absent, or failing that, any frame).

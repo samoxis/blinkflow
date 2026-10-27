@@ -8,7 +8,10 @@ Box corners are inclusive; the mask covers exactly the box. Lines can be split a
 so text is buffered until a newline.
 """
 import base64
+import concurrent.futures
 import json
+import multiprocessing
+import os
 import pathlib
 import re
 import time
@@ -71,14 +74,33 @@ def parse_line(line):
     return frame, found
 
 
-def load_raw(path):
+_decoders = None
+
+
+def decoders():
+    """Processes that decode masks. Each mask is a range-coded stream of its own, decoded pixel by pixel
+    in Python: ~40 ms for a box, 26 s for one followed through 658 frames, all of it holding the GIL
+    while the replies stream in. Frames are independent, so they are decoded side by side."""
+    global _decoders
+    if _decoders is None:
+        # forkserver: the callers are threaded, and a fork of a threaded process can inherit a held lock
+        _decoders = concurrent.futures.ProcessPoolExecutor(max(1, (os.cpu_count() or 2) // 2),
+                                                           mp_context=multiprocessing.get_context("forkserver"))
+    return _decoders
+
+
+def parse_lines(lines, only=None):
+    """{frame: [Instance]} for the frame lines among `lines` (those numbered in `only`, if given),
+    decoded in parallel."""
+    lines = [line for line in lines if (m := FRAME.match(line.strip())) and (only is None or int(m.group(1)) in only)]
+    if only is not None:
+        return dict(p for p in map(parse_line, lines) if p)
+    return dict(p for p in decoders().map(parse_line, lines, chunksize=4) if p)
+
+
+def load_raw(path, only=None):
     """Per-frame instances from a reply saved by `track`, without calling the API again."""
-    per_frame = {}
-    for line in pathlib.Path(path).read_text().split("\n"):
-        parsed = parse_line(line)
-        if parsed:
-            per_frame[parsed[0]] = parsed[1]
-    return per_frame
+    return parse_lines(pathlib.Path(path).read_text().split("\n"), only)
 
 
 def track(clip, concept, frames, raw_path=None):
@@ -91,12 +113,11 @@ def track(clip, concept, frames, raw_path=None):
                 {"type": "input_text", "text": concept},
                 {"type": "input_video", "video_url": video}]}]}
     t0 = time.time()
-    first, buf, raw, per_frame, usage, status = None, "", [], {}, None, "eof"
+    first, buf, raw, pending, usage, status = None, "", [], [], None, "eof"
 
-    def take(line):
-        parsed = parse_line(line)
-        if parsed:
-            per_frame[parsed[0]] = parsed[1]
+    def take(line):                         # decoded in the background while the reply streams on
+        if FRAME.match(line.strip()):
+            pending.append(decoders().submit(parse_line, line))
 
     with requests.post(API, json=body, stream=True, timeout=900,
                        headers={"Authorization": "Bearer " + api_key()}) as r:
@@ -128,8 +149,20 @@ def track(clip, concept, frames, raw_path=None):
                 status = kind
                 break
     take(buf)
+    per_frame = dict(p for p in (f.result() for f in pending) if p)
     if raw_path:
         open(raw_path, "w").write("".join(raw))
-    return {"concept": concept, "frames": per_frame, "status": status, "usage": usage,
+    return {"concept": concept, "frames": per_frame, "status": status, "usage": usage, "raw": "".join(raw),
             "seconds": time.time() - t0, "seconds_to_first_frame": first,
             "frames_sent": frames, "cost_usd": cost, "price_per_frame": SAM_PER_FRAME}
+
+
+def renumber(raw, offset, keep):
+    """The frame lines of a reply for one piece of a shot, only those in `keep` (the piece's own frame
+    numbers), numbered as in the whole shot (+ `offset`)."""
+    out = []
+    for line in raw.split("\n"):
+        m = FRAME.match(line.strip())
+        if m and int(m.group(1)) in keep:
+            out.append(re.sub(r"^<(\d+)f", lambda x: f"<{int(x.group(1)) + offset}f", line.strip()))
+    return "\n".join(out)
