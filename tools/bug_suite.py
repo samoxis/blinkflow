@@ -242,7 +242,22 @@ def incident(r):
     return ", ".join(out + ([f"fall {r['fell_s']:.2f} s"] if r.get("fell_s") is not None else []))
 
 
-ROUND1 = "round-1"          # a rerun keeps the first run's folders here
+ROUNDS = "round-*"          # a rerun keeps the earlier runs' folders in round-1, round-2, ... (round-1 = the first)
+RERUNS = {
+    1: "After three changes to BlinkFlow (any-part contact reading, a retry's diagnosis sees every earlier "
+       "attempt, the audit no longer reads a division as a path), the bugs that failed above were run "
+       "again from scratch, with the same sealed copies. The first run stays in the table above.",
+    2: "After a fall became an incident of its own (seen from pixels: the robot's mask drops and tips over, "
+       "or vanishes mid-frame; or from the brain's own log; never from the twin's record of the fall), with "
+       "Glimmer asked for hazards in the floor (edges, pits, steps) as well as objects, the two ledge bugs "
+       "that were still not fixed were run once more, from scratch, with the same sealed copies.",
+}
+
+
+def rounds(d):
+    """A bug's runs in order: the archived rounds, then the latest (in the bug's own folder)."""
+    old = sorted(d.glob(ROUNDS), key=lambda x: int(x.name.split("-")[1]))
+    return old + [d] if (d / "result.json").exists() else old
 
 
 LAYER_HEAD = ["| bug | layer (scene) | mutation (revealed) | incident before (twin) | Muse Wonder's cause (confidence) | "
@@ -296,33 +311,33 @@ def report_layers():
     suite = inject_bug.SUITE_LAYERS
     val = json.loads((suite / "validation.json").read_text())
     truth = inject_bug.reveal(name="layers")
-    rows, rerun_rows, total = [], [], {"sam": 0.0, "wonder": 0.0, "other": 0.0}
+    rows, reruns, total = [], {}, {"sam": 0.0, "wonder": 0.0, "other": 0.0}
     n = {"a": 0, "b": 0, "c": 0, "abc": 0, "located": 0, "run": 0, "retried": 0, "api": 0}
-    final = {"a": 0, "b": 0, "c": 0, "abc": 0}
+    finals = {}                 # after rerun i: the latest run of each bug up to it
     per_model, layers = {}, {}
     for label in val["kept"]:
         t = truth[label]
         layers.setdefault(t["layer"], []).append(label)
-        first = suite / label / ROUND1 if (suite / label / ROUND1).exists() else suite / label
-        if not (first / "result.json").exists():
+        runs = rounds(suite / label)
+        if not runs:
             rows.append(f"| {label} | {t['layer']} ({t['scene']}) | {t['mutation']}: `{t['change']}` | not run |"
                         + " |" * 10)
             continue
         n["run"] += 1
-        runs = [(first, rows)] + ([(suite / label, rerun_rows)] if first != suite / label else [])
-        for d, out in runs:
+        flags = []
+        for i, d in enumerate(runs):
             row, f, c, pm = layer_row(label, t, d, suite)
-            out.append(row)
+            (rows if i == 0 else reruns.setdefault(i, [])).append(row)
+            flags.append(f)
             if c:
                 total = {k: total[k] + c[k] for k in total}
             for m, (x, y) in pm.items():
                 q = per_model.setdefault(m, [0, 0])
                 q[0], q[1] = q[0] + x, q[1] + y
-            if d == first:
-                for k in f:
-                    n[k] += f[k]
-        for k in final:                     # the last run of each bug
-            final[k] += f[k]
+        for k in n:
+            if k in flags[0]:
+                n[k] += flags[0][k]
+        finals[label] = flags
     k = len(val["kept"])
     ctl = ", ".join(f"{s} {'clean' if c['clean'] else 'NOT clean'}" for s, c in val["control"].items())
     out = [LAYERS_MARK, "", "# Layered bug suite", "",
@@ -346,14 +361,14 @@ def report_layers():
            "", f"Model cost of the runs: ${sum(total.values()):.2f} (SAM 3.1 ${total['sam']:.2f}, Muse Wonder "
            f"${total['wonder']:.2f}, other ${total['other']:.2f}). Time = rendering the incident + the whole loop.",
            ""]
-    if rerun_rows:
-        out += ["## Rerun of the failures", "",
-                "After three changes to BlinkFlow (any-part contact reading, a retry's diagnosis sees every earlier "
-                "attempt, the audit no longer reads a division as a path), the bugs that failed above were run "
-                "again from scratch, with the same sealed copies. The first run stays in the table above.", "",
-                *LAYER_HEAD, *rerun_rows, "",
-                f"**After the rerun: (a) {final['a']}/{k}, (b) {final['b']}/{k}, (c) {final['c']}/{k}, all three "
-                f"{final['abc']}/{k}.**", ""]
+    for i in sorted(reruns):
+        now = {x: sum(fl[min(i, len(fl) - 1)][x] for fl in finals.values()) for x in ("a", "b", "c", "abc")}
+        out += [f"## Rerun {i} of the failures" if len(reruns) > 1 else "## Rerun of the failures", "",
+                RERUNS.get(i, "Run again from scratch, with the same sealed copies.")
+                + " Earlier runs stay in the tables above.", "",
+                *LAYER_HEAD, *reruns[i], "",
+                f"**After rerun {i}: (a) {now['a']}/{k}, (b) {now['b']}/{k}, (c) {now['c']}/{k}, all three "
+                f"{now['abc']}/{k}.**", ""]
     if val["rejected"]:
         out += ["## Layered mutations without an incident in their scene (not in the set)", ""]
         out += [f"- {v['layer']} ({v['scene']}): {v['mutation']}: `{v['change']}`" for v in val["rejected"].values()]
