@@ -45,6 +45,17 @@ Measured during the hackathon; each number links to the file it comes from.
 
 Every run writes a `models.json`: each model call with the model, where it ran (this PC, Meta, Baseten, the cache), tokens or frames, seconds and cost.
 
+## Where this could go (not built or tested yet)
+
+BlinkFlow needs three things: a screen, a log and a folder of code. Nothing in the loop is specific to the duck, so the same loop could serve:
+
+- **Warehouse and delivery robots**, tested every day in simulation before they touch a real shelf.
+- **Home robots**, like a vacuum that keeps getting stuck under the same sofa.
+- **Open-source robots for hobbyists and schools** (Microduck, LeRobot arms, Reachy), whose owners are not robotics experts.
+- **Game characters** that walk through walls or get stuck in doorways: also pixels, logs and code.
+
+On a real robot the proof changes: the real world never repeats exactly, but the robot's recorded sensor log can be replayed through the fixed brain ("with exactly what it saw, would it turn now?"), then checked in simulation, then on the robot, and only with a person's "Keep the fix?".
+
 ## Try it without a GPU
 
 A recorded run of the demo incident is in [`examples/purple-box/`](examples/purple-box): the 60 s snapshot, the evidence, Muse Wonder's diagnosis, Muse Code's change, the replays before and after, and the model calls. No GPU, no simulator, no key.
