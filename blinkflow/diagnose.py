@@ -38,7 +38,7 @@ GRID_EVERY_S = 0.5       # full depth grids this often in the log window (plus a
 IMAGE_WIDTH = 960
 MODELS = {"wonder": models.WONDER, "spark": models.SPARK}
 EFFORT = "medium"
-MAX_OUTPUT = 12000
+MAX_OUTPUT = 32000       # a fall into the ledge took Wonder 12000 reasoning tokens with no answer left
 
 DESCRIBE_PROMPT = (
     "This is one frame from a fixed camera in a robot simulator, {label}. The {robot} is a small "
@@ -442,7 +442,8 @@ def report(evdir, ev, frames, target, results, main_model):
 
     # The diagnosis kept: the majority cause of the main model's evidence runs, first run that gave it.
     maj = summary.get(f"{main_model}/evidence", {}).get("majority")
-    main = next((r for r in groups.get(f"{main_model}/evidence", []) if r.get("key") == maj), None)
+    main = next((r for r in groups.get(f"{main_model}/evidence", []) if "diagnosis" in r and r.get("key") == maj),
+                None)
     (evdir / "diagnosis-runs.json").write_text(json.dumps(results, indent=1))
     if main is None:
         raise SystemExit(f"no usable diagnosis: {[r.get('error') for r in results]}")
