@@ -6,8 +6,9 @@
   3. the replay of the incident's scenario in the twin, before any change, must show the incident too
      (the contact, or the fall), or there is nothing to prove;
   4. Muse Code (`muse serve`, the host's default sandboxed profile) gets diagnosis.md and makes the
-     smallest change in the target. Only edits whose every path is inside the target are approved;
-     after the turn every tool call is audited the same way, and the agent must not commit;
+     smallest change in the target. Before each tool call, BlinkFlow's gate (muse-gate/, a PreToolUse
+     hook) denies it if it names a path outside the target; after the turn every tool call is audited
+     the same way, and the agent must not commit;
   5. proof: the same scenario replayed with the change, SAM 3.1 on the rendered shot, incident or not.
      Still there: git reset --hard, the new evidence goes back to Muse Wonder (with the change
      in place, and said so), and Muse Code tries again with what failed. At most 3 attempts;
@@ -44,7 +45,13 @@ TURN_TIMEOUT = 900
 IDENTITY = ["-c", "user.name=BlinkFlow", "-c", "user.email=blinkflow@localhost"]
 EDIT_WORDS = ("edit", "write", "patch", "create", "delete", "remove", "move", "rename")
 PATH_KEYS = ("path", "file_path", "filePath", "paths", "file", "target", "destination", "source")
-SYSTEM_DIRS = ("/usr/", "/bin/", "/lib", "/etc/", "/dev/", "/proc/", "/tmp/", "/opt/")
+SYSTEM_DIRS = ("/usr/", "/bin/", "/lib", "/etc/", "/dev/", "/proc/", "/opt/")   # a shell command may read these
+SCRATCH_DIRS = ("/tmp", "/var/tmp", "/dev/shm")                                  # ...but not name these
+REPO = pathlib.Path(__file__).resolve().parent.parent
+GATE_BUNDLE = REPO / "muse-gate"
+GATE_PLUGIN = "blinkflow_gate"
+GATE_HOME = HOME / ".local" / "share" / "blinkflow" / "muse-host"     # XDG_DATA_HOME of the muse host BlinkFlow starts
+GATE_CONF = "blinkflow-gate.json"                                      # the hook's target and stream, per turn
 
 PROMPT = """You are fixing the brain of a small two-legged walking robot; this workspace is its code. In a \
 simulator the robot {incident}. BlinkFlow filmed it, measured it from the \
@@ -170,7 +177,8 @@ def outside_refs(command):
     refs = re.findall(r"(?<![^\s'\"=:(<>|;&,\[{`])((?:~|/)[^\s'\"|;&<>()]*)", command)
     refs = [r for r in refs if not re.match(r"~[^/]", r) or expands(r)]   # "~0.3 m" in a heredoc is no path
     refs = [r for r in refs if not re.fullmatch(r"/[\d.]+", r)]          # "d /1000.0" divides
-    bad = [r for r in refs if not inside(r) and not r.startswith(SYSTEM_DIRS) and r not in ("/", "~")]
+    bad = [r for r in refs if not inside(r) and (r.startswith(SCRATCH_DIRS) or not r.startswith(SYSTEM_DIRS))
+           and r not in ("/", "~")]
     # Paths the pattern above cannot see: $HOME, a "~/" inside a word, and relative paths that climb,
     # resolved against the target (the session's workspace root).
     for w in re.split(r"[\s'\"|;&<>()`]+", command):
@@ -202,28 +210,52 @@ def decide(req, log):
     return ApprovalDecisionInput(choice_id=pick["choiceId"])
 
 
+def outside(tool, args):
+    """What one tool call names outside the target: a shell command's paths (outside_refs) and its
+    workdir, or the paths in a file tool's arguments. The gate asks it before the call, audit() after."""
+    if tool == "bash":
+        try:
+            d = json.loads(args) if isinstance(args, str) else args
+            cmd, workdir = d.get("command", ""), d.get("workdir")
+        except (ValueError, AttributeError):
+            cmd, workdir = str(args), None
+        return outside_refs(cmd) + ([workdir] if workdir and not inside(workdir) else [])
+    return [p for p in arg_paths(args) if not inside(p)]
+
+
 def audit(calls):
     """Every tool call of the turn, checked after the fact: file tools inside the target, shell
     commands naming no path outside it."""
     bad = []
     for c in calls:
-        if c["tool"] == "bash":
-            try:
-                cmd = json.loads(c["args"]).get("command", "")
-            except (ValueError, AttributeError):
-                cmd = str(c["args"])
-            if refs := outside_refs(cmd):
-                bad.append(f"bash names paths outside the target: {refs}")
-        else:
-            out = [p for p in arg_paths(c["args"]) if not inside(p)]
-            if out:
-                bad.append(f"{c['tool']} outside the target: {out}")
+        if refs := outside(c["tool"], c["args"]):
+            bad.append(f"bash names paths outside the target: {refs}" if c["tool"] == "bash"
+                       else f"{c['tool']} outside the target: {refs}")
     return bad
 
 
+def gate():
+    """`muse serve` arguments and environment that load BlinkFlow's gate (muse-gate/, a PreToolUse hook)
+    from the host's own data home, trusted for this host only. Refuses if it is missing or stale."""
+    env = {**os.environ, "XDG_DATA_HOME": str(GATE_HOME)}
+    r = subprocess.run(["muse", "plugins", "inspect", GATE_PLUGIN, "--json"], env=env, capture_output=True, text=True)
+    if r.returncode:
+        raise RuntimeError("BlinkFlow's gate is not installed: python3 -m blinkflow.gate install")
+    info = json.loads(r.stdout)
+    hook = "hooks/pre_tool_use.py"
+    if (pathlib.Path(info["record"]["cache_path"]) / hook).read_bytes() != (GATE_BUNDLE / hook).read_bytes():
+        raise RuntimeError("BlinkFlow's gate is stale: python3 -m blinkflow.gate install")
+    cap = info["runtime_capabilities"][0]["candidate"]
+    trust = {cap["stable_id"]: {"enabled": True, "trusted_definition_hash": cap["definition_hash"]}}
+    return ["-c", "runtime_capabilities=" + json.dumps(trust)], env
+
+
 async def turn(prompt, model, log, tag=""):
-    args = ["serve"] + (["--model", model] if model else [])
-    client = await MuseClient.spawn(MuseClientSpawnOptions(muse_bin="muse", args=args,
+    gate_args, env = gate()
+    (GATE_HOME / GATE_CONF).write_text(json.dumps({"repo": str(REPO), "target": str(TARGET),
+                                                   "events": str(events.path() or ""), "tag": tag}))
+    args = ["serve", *gate_args] + (["--model", model] if model else [])
+    client = await MuseClient.spawn(MuseClientSpawnOptions(muse_bin="muse", args=args, env=env,
                                                            client_info={"name": "blinkflow", "version": "0.1.0"}))
     try:
         info = client.initialize_result
@@ -279,7 +311,7 @@ def muse_code(prompt, out, base, ledger, purpose, model=None):
     if r["outcome"] != "completed":
         problems.append(f"turn ended {r['outcome']}")
     rec = {"seconds": round(seconds, 1), "outcome": r["outcome"], "session": r["params"].get("sessionId"),
-           "host": r.get("host"), "sandbox": r.get("sandbox"), "approval_mode": "promptUnmatched",
+           "host": r.get("host"), "sandbox": r.get("sandbox"), "approval_mode": "promptUnmatched", "target": str(TARGET),
            "approvals": log, "tool_calls": calls, "summary": "\n".join(final).strip(), "usage": u,
            "change": ch, "problems": problems}
     (out / "muse-code.json").write_text(json.dumps(rec, indent=1))

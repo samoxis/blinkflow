@@ -161,11 +161,12 @@ function on(e) {
     case "ask": st.asks.push(e); step = e.question === "Fix it?" ? "ask" : "proof"; break;
     case "answer": st.answers[e.id] = e; step = "ask"; follow = false; break;
     case "checkpoint": st.checkpoint = e; step = "fix"; follow = false; break;
-    case "musecode.start": case "musecode.tool": case "change": {
+    case "musecode.start": case "musecode.tool": case "musecode.blocked": case "change": {
       const c = st.code[e.tag] ||= { tag: e.tag, start: null, tools: new Map(), change: null };
       if (!st.codeOrder.includes(e.tag)) st.codeOrder.push(e.tag);
       if (e.type === "musecode.start") c.start = e;
       else if (e.type === "musecode.tool") c.tools.set(e.id, e);
+      else if (e.type === "musecode.blocked") c.tools.set(`blocked-${e.id}`, { ...e, status: "blocked" });
       else c.change = e;
       step = "fix";
       break;
@@ -862,9 +863,10 @@ P.fix = () => {
   const tools = h("div", { class: "tools" });
   if (c) {
     for (const t of [...c.tools.values()].slice(-16)) {
-      const ok = /complete|done|success/i.test(t.status || ""), bad = /fail|error|declin|reject/i.test(t.status || "");
+      const ok = /complete|done|success/i.test(t.status || ""), bad = /fail|error|declin|reject|block/i.test(t.status || "");
       tools.append(h("div", {}, h("span", { class: `st ${ok ? "ok" : bad ? "bad" : ""}` }, ok ? "✓" : bad ? "✗" : "…"),
-        h("span", {}, t.tool || "tool"), h("span", { class: "args" }, brief(t.args))));
+        h("span", {}, t.tool || "tool"),
+        h("span", { class: "args" }, t.reason ? `blocked before it ran: ${t.reason}` : brief(t.args))));
     }
     if (!c.tools.size) tools.append(wait("Muse Code reads the diagnosis and the code"));
   }

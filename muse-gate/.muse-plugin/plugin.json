@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "name": "blinkflow_gate",
+  "displayName": "BlinkFlow gate",
+  "version": "0.1.0",
+  "description": "Denies a tool call that names a path outside BlinkFlow's target, before it runs.",
+  "compat": {"source": "native", "manifestDir": ".muse-plugin"},
+  "capabilities": {
+    "skills": [], "commands": [], "mcpServers": [], "reminders": [],
+    "hooks": [{"id": "outside-target", "event": "PreToolUse", "command": ["python3", "hooks/pre_tool_use.py"],
+               "timeoutMs": 10000, "statusMessage": "BlinkFlow checks the paths"}]
+  }
+}
