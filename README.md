@@ -133,6 +133,7 @@ Existed before, used only as the test target, not part of this repo:
 - [microduck-brain](https://github.com/samoxis/microduck-brain), an autonomy layer for the open-source Microduck biped (Apache-2.0), by the same author. BlinkFlow works on a clean copy of it (no README, no tests, no history, hint comments rewritten), so it cannot read the answer.
 - The Microduck MuJoCo simulation and walking policies by [Pollen Robotics / Hugging Face](https://github.com/pollen-robotics/microduck) (Apache-2.0), and a recoloured demo scene.
 - A screen-recording and camera-direction script used to film the simulator (Oct 22).
+- The script that strips the brain's README, tests and hint comments to make the target. It predates the kickoff and is not in this repo.
 - Preparation tests made before the kickoff on Oct 26: a first API call, SAM 3.1 tracking on an old clip, a headless Muse Code session, a Muse Glimmer test and a prototype screen buffer. None of that code is included; the buffer was rewritten from scratch here.
 
 ## Honesty notes
