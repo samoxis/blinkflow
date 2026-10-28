@@ -300,7 +300,7 @@ def muse_code(prompt, out, base, ledger, purpose, model=None):
     cum = u.get("cumulative") or {}
     mid = u.get("modelId", model or "muse code default")
     cost, note = (cum.get("cost") or {}).get("usd"), "estimate reported by the Muse Code host"
-    if cost is None and mid in models.PRICES and cum.get("promptTokens") is not None:   # host 1.4.14 reports none
+    if cost is None and mid in models.PRICES and cum.get("promptTokens") is not None:   # the gated host reports none
         pin, pcached, pout = models.PRICES[mid]
         cached = cum.get("cacheReadTokens") or 0
         cost = ((cum["promptTokens"] - cached) * pin + cached * pcached + (cum.get("outputTokens") or 0) * pout) / 1e6
