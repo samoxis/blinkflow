@@ -29,7 +29,11 @@ BASETEN_MODEL = "meta-models/" + SPARK
 WONDER = "muse-wonder-1.0"
 VOICE = "muse-voice-transcribe-1.0"
 VOICE_PER_MIN = 3.00 / 1000
-PRICES = {SPARK: (1.25, 0.15, 4.25), WONDER: (4.0, 0.20, 20.0)}   # per 1M tokens: input, cached input, output
+# Muse Code's model (muse serve, Meta). The contributor lane is ~10x cheaper because its conversations may be
+# used for training; fine here, the target and this repo are public. BLINKFLOW_MUSE_MODEL=muse-spark-1.3 goes back.
+MUSE_CODE = os.environ.get("BLINKFLOW_MUSE_MODEL", "muse-spark-1.3-contributor")
+PRICES = {SPARK: (1.25, 0.15, 4.25), WONDER: (4.0, 0.20, 20.0),    # per 1M tokens: input, cached input, output
+          "muse-spark-1.3": (1.25, 0.15, 4.25), "muse-spark-1.3-contributor": (0.10, 0.002, 0.20)}
 WARM_OUTPUT = 16         # output tokens of a call that only fills the prompt cache
 GLIMMER_KEEP = "30m"     # Ollama unloads an idle model after 5 min; a cold Glimmer is a ~20 GB load
 SAM_PER_FRAME = 0.20 / 1000
@@ -72,6 +76,10 @@ class Ledger:
                "prices": {"sam-3.1": "$0.20 per 1000 frames",
                           SPARK: "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
                           WONDER: "$4.00 / 1M input, $0.20 / 1M cached input, $20.00 / 1M output",
+                          "muse-spark-1.3": "Muse Code on Meta: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+                          "muse-spark-1.3-contributor": "Muse Code on Meta: $0.10 / 1M input, $0.002 / 1M cached input, "
+                                                        "$0.20 / 1M output; the conversations may be used for training "
+                                                        "(the target and this repo are public)",
                           VOICE: "$3.00 per 1000 audio minutes",
                           GLIMMER: "local (Ollama on this PC), $0",
                           "cached": "a SAM 3.1 reply for the same video bytes, concept and parameters, $0"}}

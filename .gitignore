@@ -10,4 +10,5 @@ footage/
 *.jsonl.gz
 tools/.bugseal*
 !examples/**/*.mp4
+!docs/report/**/*.mp4
 !examples/**/*.jsonl.gz

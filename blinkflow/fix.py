@@ -298,10 +298,17 @@ def muse_code(prompt, out, base, ledger, purpose, model=None):
              and i.get("messagePhase") == "finalAnswer"]
     u = r["usage"]
     cum = u.get("cumulative") or {}
-    ledger.add(u.get("modelId", model or "muse code default"), "Muse Code (muse serve, sandboxed) -> Meta Model API",
-               purpose, seconds, (cum.get("cost") or {}).get("usd"), input_tokens=cum.get("promptTokens"),
+    mid = u.get("modelId", model or "muse code default")
+    cost, note = (cum.get("cost") or {}).get("usd"), "estimate reported by the Muse Code host"
+    if cost is None and mid in models.PRICES and cum.get("promptTokens") is not None:   # host 1.4.14 reports none
+        pin, pcached, pout = models.PRICES[mid]
+        cached = cum.get("cacheReadTokens") or 0
+        cost = ((cum["promptTokens"] - cached) * pin + cached * pcached + (cum.get("outputTokens") or 0) * pout) / 1e6
+        note = "from the host's token counts and the model catalog's prices"
+    ledger.add(mid, "Muse Code (muse serve, sandboxed) -> Meta Model API",
+               purpose, seconds, cost, input_tokens=cum.get("promptTokens"),
                cached_input_tokens=cum.get("cacheReadTokens"), output_tokens=cum.get("outputTokens"),
-               cost_note="estimate reported by the Muse Code host")
+               cost_note=note)
     ch = change(base)
     problems = audit(calls)
     if ch["agent_commits"]:
@@ -426,6 +433,7 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
     `control`: after a fix is verified, replay the brain in every other scene and look for an incident
     there from pixels, before the person decides to keep it (default: when a person is asked)."""
     snapshot = pathlib.Path(snapshot).expanduser().resolve()
+    model = model or models.MUSE_CODE
     run = pathlib.Path(out).expanduser() if out else RUNS / time.strftime("%Y%m%d-%H%M%S")
     run.mkdir(parents=True)
     t0 = time.time()
@@ -793,7 +801,8 @@ def main():
     ap.add_argument("snapshot", help="the incident's snapshot (.json from blinkflow.sim, or a twin meta.json)")
     ap.add_argument("--evidence", help="reuse this evidence dir (and its diagnosis) instead of seeing again")
     ap.add_argument("--attempts", type=int, default=3)
-    ap.add_argument("--model", help="Muse Code's model (default: the host's)")
+    ap.add_argument("--model", default=models.MUSE_CODE,
+                    help=f"Muse Code's model (default: BLINKFLOW_MUSE_MODEL or {models.MUSE_CODE})")
     ap.add_argument("--out", help=f"run folder (default: {RUNS}/<stamp>)")
     ap.add_argument("--auto", action="store_true", help="ask no one: fix and keep on the proof alone (suite, watcher)")
     ap.add_argument("--control", action=argparse.BooleanOptionalAction, default=None,

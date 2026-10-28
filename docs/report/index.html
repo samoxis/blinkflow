@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlinkFlow console</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="console.css">
+</head>
+<body>
+<header id="top">
+  <div class="brand">
+    <img src="icon.png" alt="">
+    <div><b>BlinkFlow</b><span>agent console</span></div>
+    <span id="mode" class="pill"></span>
+  </div>
+  <div class="meters">
+    <div class="meter clock"><span class="k">seen → fixed and verified · machine time</span><span id="clock" class="v">–</span></div>
+    <div class="meter you" id="youm" hidden><span class="k">you took to answer · not counted</span><span id="you" class="v">–</span></div>
+    <div class="meter"><span class="k">cost so far</span><span id="cost" class="v">$0.00</span></div>
+  </div>
+  <div class="right">
+    <button id="replay" hidden>replay the run</button>
+    <span class="built">built during the hackathon · Oct 26 – Nov 4, 2026</span>
+  </div>
+</header>
+<div id="band"><span id="privacy" hidden>Nothing leaves this PC until Muse Glimmer sees something go wrong.</span></div>
+<main>
+  <nav id="rail"></nav>
+  <section id="stage"></section>
+</main>
+<div id="askbar" hidden></div>
+<script>window.BLINKFLOW_TEXT = {};</script>
+<script src="static.js"></script>
+<script src="maskcodec.js"></script>
+<script src="console.js"></script>
+</body>
+</html>

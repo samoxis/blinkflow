@@ -256,6 +256,14 @@ def open_film(port, speed=None):
 
 
 # ── a static report ──────────────────────────────────────────────────────────
+def rel(path):
+    """The stream's path as the page names it: relative to here when it can be, so no home folder ships."""
+    try:
+        return str(path.relative_to(pathlib.Path.cwd()))
+    except ValueError:
+        return f"{path.parent.name}/{path.name}"
+
+
 def report(path, out=None):
     """The page with the stream embedded and every file it names copied beside it. Texts the page reads
     (SAM replies) are wrapped as scripts, so the report also opens from disk (file://)."""
@@ -282,7 +290,7 @@ def report(path, out=None):
             shutil.copy(f, out / dest)
         files[p] = dest
     (out / "static.js").write_text("window.BLINKFLOW_STATIC = " + json.dumps({"events": evs, "files": files,
-                                                                              "source": str(path)}) + ";\n")
+                                                                              "source": rel(path)}) + ";\n")
     size = sum(f.stat().st_size for f in out.rglob("*") if f.is_file())
     print(json.dumps({"report": str(out / "index.html"), "events": len(evs), "files": len(files),
                       "mb": round(size / 1e6, 1)}))

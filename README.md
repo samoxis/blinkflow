@@ -4,6 +4,8 @@
 
 **The robot did something wrong? Just say what you saw.**
 
+**[See a real run, no install](https://samoxis.github.io/blinkflow/report/)**: the purple-box incident from the snapshot to the proof, the static report built from `examples/purple-box/`.
+
 <p align="center"><img src="docs/blinkflow.gif" width="640" alt="The robot's right leg brushes the purple box; after BlinkFlow's fix, contacts go from 1 to 0"></p>
 
 For people who write robot software and test it in a simulator: you say what went wrong on screen, BlinkFlow finds the cause in the robot's code, fixes it, and proves the fix on the same scene.
