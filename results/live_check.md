@@ -17,7 +17,7 @@ The two revisions, in `~/duck-target` (the target's own repo on the author's PC)
 ```
 
 That `brain.toml` is byte-identical to the one Muse Code wrote in the packed example (blob `a2deec7` in both
-diffs, `examples/purple-box/fix.json`); Muse Code's added regression test is left out.
+diffs, `examples/purple-box/fix/fix.json`); Muse Code's added regression test is left out.
 
 ## The check (`live_check/20261028-075435.json`)
 

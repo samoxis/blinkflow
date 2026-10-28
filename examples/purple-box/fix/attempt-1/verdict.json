@@ -1,0 +1,22 @@
+{
+ "kind": "contact",
+ "incident": false,
+ "incident_s": null,
+ "fell_s": null,
+ "fall_reading": null,
+ "contact": false,
+ "valid": true,
+ "problems": [],
+ "reading": "base",
+ "first_contact_s": null,
+ "first_contact_frame": null,
+ "whole_mask_touch_s": null,
+ "closest_gap_px": 106.4,
+ "closest_s": 12.89,
+ "robot_frames": 100,
+ "travel_m": 2.783,
+ "meta": "./twin/20261028-213038/meta.json",
+ "evidence": "~/blinkflow-runs/voice/20261028-212723/fix/attempt-1/evidence",
+ "replay_s": 25.0,
+ "see_s": 14.9
+}

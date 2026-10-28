@@ -14,16 +14,18 @@ BlinkFlow's clock: the seconds a person takes to answer "Fix it?" are not counte
 | `voice/console-20261027-204427` | typed sentence, console | **166.4** | 0.0 | 73.5 | 63.8 / 8349 | 25.9 | 38.6 | 0/60 | $1.65 |
 | `quick/cache-1` | recorded live clip, `profile_loop` | **177.3** | 38.6 | 72.8 | 64.9 / 6582 | 32.6 | 33.2 | 6/32 | $0.93 |
 | `quick/cache-2` | the same again (SAM 3.1 from the cache) | **191.0** | 15.6 | 73.4 | 64.2 / 6063 | 71.5 | 30.6 | 32/32 | $0.34 |
+| `voice/20261028-212723` | live simulator, typed sentence, terminal (scripted; `examples/purple-box/`) | **196.7** | 32.9 | 77.5 | 66.6 / 6701 | 42.2 | 39.9 | 22/56 | $0.99 |
 
-**135.8-191.0 s over 8 runs, median 166.6 s.** What moves it:
+**135.8-196.7 s over 9 runs, median 166.8 s.** What moves it:
 Muse Wonder (its answer runs 4.7k-8.4k output tokens at ~85 tokens/s) and Muse Code (cache-2 also wrote a
-regression test, 71.5 s). The console runs also measure the four other scenes on pixels after the fix (the cost includes it):
+regression test, 71.5 s). The console runs and the last run also measure the four other scenes on pixels after the fix (the cost includes it):
 
 | run | box (the incident) | low_cube | ledge | corner | doorway | clean / measured |
 |---|---|---|---|---|---|---|
 | `voice/console-20261027-181434` | 0 contacts | clean | contact 18.11 s (a false alarm: the rule was corrected after, `control.md`) | clean | clean | 4/5 then, 5/5 re-measured |
 | `voice/console-20261027-201137` | 0 contacts | clean | not measured: SAM 3.1 found no "white block" | clean | clean | 4/4, 4/5 measured |
 | `voice/console-20261027-204427` | 0 contacts | clean | clean (closest gap 0 px whole mask, base apart) | clean | clean | **5/5, all measured** |
+| `voice/20261028-212723` | 0 contacts | clean | clean (closest gap 0 px) | clean | clean | **5/5, all measured** |
 
 The twin's own log (scorer only) has no touch in any of these scenes.
 
@@ -34,4 +36,6 @@ cache-1 and cache-2 are the same loop on the same recorded clip, one after the o
 The second took every SAM 3.1 reply from the cache: the same video bytes, concept and parameters (the twin is
 deterministic). Model cost $0.93 -> $0.34. The first already took 6 of its 32 from the cache: the replay after
 the fix is byte-identical to the replay before it until the box is beside the robot. Both models.json files
-are in `examples/purple-box/` (`models-first-run.json`, `models.json`), every cached call with its hash.
+are in [`examples/purple-box/`](https://github.com/samoxis/blinkflow/tree/49a9695/examples/purple-box) as it was at 49a9695 (`models-first-run.json`, `models.json`), every cached
+call with its hash. `examples/purple-box/` now holds `voice/20261028-212723`, a live run (Oct 28, 21:27): the sentence
+typed and both questions answered yes at the terminal by a script, 2.0 s after each.

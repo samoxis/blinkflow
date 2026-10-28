@@ -17,6 +17,8 @@ runs here used, and its `src/` matches this PC's `~/microduck_rl/src/`.
 
 ## One loop
 
+On the clip [`examples/purple-box/`](https://github.com/samoxis/blinkflow/tree/49a9695/examples/purple-box) held then (it now holds a later live run).
+
 ```bash
 BLINKFLOW_SAM_CACHE=0 BLINKFLOW_SAM_BUDGET=8 python3 -m blinkflow.voice clip examples/purple-box/outside/snapshot.json \
   --press 12.4 --text "just now its right leg hit the purple box" --brain <new target> --auto
@@ -38,7 +40,7 @@ had already spent $3.95 on SAM 3.1 that day, close to the default $5 guard. Run 
 | Model cost (`fix/models.json`) | **$0.83**: SAM 3.1 $0.672 (32 calls, 3360 frames, none cached), Muse Wonder $0.155, Muse Code $0.0061, Muse Glimmer 6 calls on this PC, $0 |
 
 Within the 135.8–191.0 s of the earlier purple-box loops (`results/loop_times.md`); the cost is close to the $0.93 of
-the first, uncached run in `examples/purple-box/models-first-run.json`.
+the first, uncached run in [`examples/purple-box/models-first-run.json`](https://github.com/samoxis/blinkflow/tree/49a9695/examples/purple-box/models-first-run.json) as it was then.
 
 ## Not checked from scratch
 

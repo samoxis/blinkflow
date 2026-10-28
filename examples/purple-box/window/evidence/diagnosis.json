@@ -1,0 +1,170 @@
+{
+ "incident": "~/blinkflow-runs/voice/20261028-212723/window/evidence/evidence.json",
+ "target": "~/duck-target",
+ "key_frames": [
+  {
+   "tag": "K1",
+   "label": "1 s before contact",
+   "frame": 172,
+   "shot_frame": 111,
+   "brain_s": 11.503,
+   "image": "keyframes/K1.jpg",
+   "glimmer": "The robot is walking forward with its legs apart and slightly splayed, and the purple box is to the left of the robot in the picture, just in front of its left leg and very close to it.",
+   "gap_px": 36.1,
+   "feet_depth_px": 101.3
+  },
+  {
+   "tag": "K2",
+   "label": "0.5 s before contact",
+   "frame": 187,
+   "shot_frame": 126,
+   "brain_s": 12.003,
+   "image": "keyframes/K2.jpg",
+   "glimmer": "The robot is walking forward with its legs positioned under its body, and the purple box is to the left of the robot, slightly above it in the picture and very close to its left side.",
+   "gap_px": 22.0,
+   "feet_depth_px": 165.5
+  },
+  {
+   "tag": "K3",
+   "label": "just before contact",
+   "frame": 199,
+   "shot_frame": 138,
+   "brain_s": 12.403,
+   "image": "keyframes/K3.jpg",
+   "glimmer": "The robot is standing with its legs together and slightly forward, and the purple box is to the left of the robot, just in front of it and very close.",
+   "gap_px": 26.0,
+   "feet_depth_px": 235.1
+  },
+  {
+   "tag": "K4",
+   "label": "first contact",
+   "frame": 202,
+   "shot_frame": 141,
+   "brain_s": 12.503,
+   "image": "keyframes/K4.jpg",
+   "glimmer": "The white robot is standing still with its orange legs positioned under its body, and the purple box is to the left of the robot, slightly above it in the picture and close to its left side.",
+   "gap_px": 2.0,
+   "feet_depth_px": 249.3
+  }
+ ],
+ "cause": {
+  "file": "brain.toml",
+  "function": "[obstacle] configuration",
+  "lines": {
+   "end": 29,
+   "start": 29
+  },
+  "what": "side_memory_seconds is set to 0.0"
+ },
+ "confidence": 0.82,
+ "evidence": [
+  {
+   "ref": "K1",
+   "shows": "At t=11.503 s, 1 s before contact, the purple box is beside and just in front of the robot's leg, very close; the gap is 36.1 px and the feet are already 101.3 px past the base's far edge, so this was a side approach, not a head-on approach.",
+   "source": "frame",
+   "value": "K1"
+  },
+  {
+   "ref": "K2/K3",
+   "shows": "At t=12.003 s (K2) and t=12.403 s (K3) the box remains very close to the robot's left side while the robot continues past it.",
+   "source": "frame",
+   "value": "K2, K3"
+  },
+  {
+   "ref": "K4",
+   "shows": "At t=12.503 s the mask gap is 2.0 px, the first-contact reading, with the feet 249.3 px past the base's far edge: the robot touched the box while passing alongside it.",
+   "source": "frame",
+   "value": "K4"
+  },
+  {
+   "ref": "log",
+   "shows": "From t=9.527 to t=12.490 (just before contact) every tick is state=forward with cmd move vx=0.24 and only small vyaw; the robot never brakes or turns in place, so nothing ever made the passing box count as blocking.",
+   "source": "log",
+   "value": "t=9.527..12.490"
+  },
+  {
+   "ref": "log",
+   "shows": "At t=9.527 the leftmost wall-row depth readings are about 67-74 cm with valid frames arriving (marked *), and safe=yes throughout; the sensor was delivering close returns on that side.",
+   "source": "log",
+   "value": "t=9.527"
+  },
+  {
+   "ref": "hazards.py",
+   "shows": "Side ('wall returns near the body') memory is enabled only when obstacle.side_memory_seconds > 0 (lines 62-66); side hazards are detected from all wall-row columns within 0.8 m ahead and 0.30 m of the axis (lines 96-107), remembered (lines 171-205) and merged into the view so a close one blocks (lines 209-226).",
+   "source": "code",
+   "value": "hazards.py:62-66,96-107"
+  },
+  {
+   "ref": "brain.toml",
+   "shows": "brain.toml sets side_memory_seconds = 0.0, switching that side memory off; the built-in default in config.py:46 is 3.0 s.",
+   "source": "code",
+   "value": "brain.toml:29"
+  },
+  {
+   "ref": "brain.py",
+   "shows": "Forward only stops when the ahead view is blocked (lines 143-148) and otherwise keeps moving forward (line 170), so with side memory off the alongside box could never trigger a stop.",
+   "source": "code",
+   "value": "brain.py:143-170"
+  }
+ ],
+ "explanation": "The robot walked forward past a box that sat beside it, outside the patch directly ahead that it uses to decide to stop. A separate safeguard was meant to remember close objects at its sides while it passed them, but that safeguard was turned off in its settings, so it kept walking straight until its side touched the box.",
+ "fix_direction": "Turn the side-hazard memory back on in the configuration (a few seconds, as in the built-in default) so close side returns are remembered and can stop or steer the robot while it is passing an object, then confirm with a replay or simulator run of this approach.",
+ "observed": "The robot walked forward alongside the purple box and touched its side at t=12.503 s (K4, gap 2.0 px) without ever braking or turning away.",
+ "plain": {
+  "camera": "Camera: the purple box sat close beside the robot.",
+  "robot": "Robot: its log shows it kept walking straight forward.",
+  "why": "Why: it was set to forget things beside it."
+ },
+ "ruled_out": [
+  {
+   "because": "At t=12.390 and t=12.490 the wall-row readings ahead are around 1.0-3.0 m in the full depth frames, well beyond the stop distance; the box was beside, not in the front columns (depth.py:93-112 only judges blocked from the front columns). The failure is the disabled side path, not a missed reading of something dead ahead.",
+   "cause": "A missed obstacle dead ahead in the front wall rows"
+  },
+  {
+   "because": "In the bottom rows of the full frames (e.g. t=11.989, t=12.490) the readings are smooth floor-like values around 50-100 cm, and contact was with the tall box's side (K1-K4) at leg/body height, not with a small floor-level object in front.",
+   "cause": "A low object on the floor missed by the bottom-row detector"
+  },
+  {
+   "because": "safe=yes on every tick from t=9.527 to t=12.741, new depth frames keep arriving (marked *), and the state never leaves forward for hold; the guard in brain.py:360-371 was never triggered.",
+   "cause": "A fall, unhealthy robot, or blind/missing depth causing a hold"
+  },
+  {
+   "because": "Small vyaw corrections (within about +/-0.2 rad/s) are present throughout the log and the heading stays in a narrow band (yaw about +0.13 to +0.42 rad); the robot held roughly its course. It hit the box because the alongside hazard was never made blocking, not because it steered the wrong way.",
+   "cause": "Heading control steering the wrong way"
+  }
+ ],
+ "cause_key": "brain.toml::[obstacle] side_memory_seconds",
+ "check": {
+  "file": "brain.toml",
+  "file_ok": true,
+  "lines_ok": true,
+  "function_ok": true,
+  "frames_cited": [
+   "K1",
+   "K2",
+   "K3",
+   "K4"
+  ],
+  "log_ticks_cited": [],
+  "bad_refs": [
+   "log",
+   "log"
+  ],
+  "grounded": false
+ },
+ "model": {
+  "model": "muse-wonder-1.0",
+  "where": "Meta Model API",
+  "purpose": "diagnose (evidence, run 1)",
+  "seconds": 66.62,
+  "effort": "medium",
+  "status": "completed",
+  "images": 4,
+  "input_tokens": 41239,
+  "cached_input_tokens": 30182,
+  "output_tokens": 6701,
+  "reasoning_tokens": 5526,
+  "cost_usd": 0.18428
+ },
+ "repeatability": null
+}

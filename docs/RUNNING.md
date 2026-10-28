@@ -6,7 +6,7 @@ Moved here unchanged from the README's [Run the full loop](../README.md#run-the-
 
 The quickstart replays a recorded run. This runs the loop itself on a new machine: BlinkFlow sees the incident, Muse Wonder finds the cause, Muse Code fixes the target, the twin replays the scene and SAM 3.1 checks it again.
 
-Checked on Oct 28 from a fresh clone, a new venv and a target made by `tools/make_target.py` (same files as the one every run used): the purple-box loop below, without the SAM cache, fixed it in attempt 1, contacts 1 → 0, in 167.3 s for **$0.83** ([`results/fresh_setup.md`](../results/fresh_setup.md), which also says what was not redone from scratch).
+Checked on Oct 28 from a fresh clone, a new venv and a target made by `tools/make_target.py` (same files as the one every run used): the purple-box loop below (on the clip the example held then), without the SAM cache, fixed it in attempt 1, contacts 1 → 0, in 167.3 s for **$0.83** ([`results/fresh_setup.md`](../results/fresh_setup.md), which also says what was not redone from scratch).
 
 **1. What you need**
 
@@ -59,11 +59,11 @@ sh ~/microduck/scripts/seed-policies.sh ~/.cache/duck-sim/policies
 
 **4. One loop on the purple box**
 
-Without the sidecar (any Linux, no simulator window): the recorded live clip in [`examples/purple-box/outside/`](../examples/purple-box/outside) plays on the clock as if it were the 60 s buffer, the key goes down at 12.4 s of the brain's time (the leg touches the box at ~12.0 s), and the sentence is typed. From there on it is the same loop as live; only the proof needs the twin.
+Without the sidecar (any Linux, no simulator window): the recorded live clip in [`examples/purple-box/window/`](../examples/purple-box/window) plays on the clock as if it were the 60 s buffer, the key goes down at 13.58 s of the brain's time (the leg touches the box at 12.50 s), and the sentence is typed. From there on it is the same loop as live; only the proof needs the twin.
 
 ```bash
-python3 -m blinkflow.voice clip examples/purple-box/outside/snapshot.json --press 12.4 \
-  --text "just now its right leg hit the purple box" --brain ~/duck-target --auto
+python3 -m blinkflow.voice clip examples/purple-box/window/snapshot.json --press 13.58 \
+  --text "two seconds ago its right leg hit the purple box" --brain ~/duck-target --auto
 ```
 
 Live (Windows 11 + WSL2). On the Windows side: Python 3 on the PATH as `python` (the sidecar, [`sidecar/capture.py`](../sidecar/capture.py), uses only the standard library), an `ffmpeg` with `ddagrab` and NVENC on the PATH, and Google Chrome. The browser view and the camera of the simulator go into `microduck_rl`'s environment once:

@@ -61,12 +61,12 @@ Measured during the hackathon; each number links to the file it comes from.
 | Same suite, held-out pass: a new seed, the code frozen, one pass, no reruns. 7 of the 8 kept bugs are a first-pass mutation with the same value; 1 is new | **8/8**: incidents gone, control clean in all five scenes. Changes on the mutated line: **7/8** | [`results/bug_suite.md`](results/bug_suite.md#held-out-pass-oct-28) |
 | First suite (6 bugs), blind to the mutation, one pass | 6/6 fixed; Muse Wonder's cause on the mutated line in 5/6 | [`results/bug_suite.md`](results/bug_suite.md) |
 | Live simulator, the demo incident, 20 s per run | contact in **5/5** runs without the fix, **0/5** with it (an earlier pass, with a CPU-heavy job beside it: 3/5, 0/5) | [`results/live_check.md`](results/live_check.md) |
-| Seen → fixed and verified (machine time) | **135.8–191.0 s** over 8 purple-box loops, median 166.6 s; the spread is mostly Muse Wonder (55–97 s) | [`results/loop_times.md`](results/loop_times.md), [`results/quick_loop.md`](results/quick_loop.md) |
+| Seen → fixed and verified (machine time) | **135.8–196.7 s** over 9 purple-box loops, median 166.8 s; the spread is mostly Muse Wonder (55–97 s) | [`results/loop_times.md`](results/loop_times.md), [`results/quick_loop.md`](results/quick_loop.md) |
 | Control after the fix, on pixels | **5/5 scenes clean, all 5 measured** (the 166.4 s run); the twin's log agrees | [`results/loop_times.md`](results/loop_times.md), [`results/console/`](results/console) |
 | Watcher (nobody speaks) | **0 false alarms** in 16 runs without an incident; **14/17** incidents caught. Optimistic: the suite gave Glimmer a look every 0.97 s, live beside the simulator it is ~1.45 s | [`results/watcher.md`](results/watcher.md) |
 | Voice | **5/5** sentences from a TTS heard, read and seen; the real microphone not yet tested | [`results/voice.md`](results/voice.md) |
 | Pixel rule against ground truth | 92 saved looks re-measured: 60/64 incidents caught, false alarms 1 → 0 after one correction | [`results/control.md`](results/control.md) |
-| Cost of one loop (model calls) | **$0.88** for the profiled loop; $0.34–$1.71 over the 8 runs (measuring the four control scenes adds SAM 3.1; replies from the cache cost $0) | [`results/quick_loop.md`](results/quick_loop.md), [`results/loop_times.md`](results/loop_times.md) |
+| Cost of one loop (model calls) | **$0.88** for the profiled loop; $0.34–$1.71 over the 9 runs (measuring the four control scenes adds SAM 3.1; replies from the cache cost $0) | [`results/quick_loop.md`](results/quick_loop.md), [`results/loop_times.md`](results/loop_times.md) |
 
 Every run writes a `models.json`: each model call with the model, where it ran (this PC, Meta, Baseten, the cache), tokens or frames, seconds and cost. Cost details (the SAM 3.1 cache, Muse Code's model, `tools/spend.py`): [`docs/RUNNING.md`](docs/RUNNING.md#cost).
 
@@ -75,7 +75,7 @@ Every run writes a `models.json`: each model call with the model, where it ran (
 
 ## Try it in ~2 min, no GPU
 
-A recorded run of the demo incident is in [`examples/purple-box/`](examples/purple-box): the 60 s snapshot, the evidence, Muse Wonder's diagnosis, Muse Code's change, the replays before and after, and the model calls. No GPU, no simulator, no key.
+A recorded live run of the demo incident is in [`examples/purple-box/`](examples/purple-box): the 60 s snapshot, the sentence, the evidence, Muse Wonder's diagnosis, both answers, Muse Code's change, the replays before and after, the control scenes and the model calls. No GPU, no simulator, no key. The sentence was typed at the terminal and "Fix it?" and "Keep the fix?" answered yes there by a script that drove the terminal, 2 s after each question; everything else is the loop as it runs with a person.
 
 **1. The report.** Python 3 (tested on 3.12), standard library only:
 
@@ -92,10 +92,10 @@ Open `report/index.html` over a local server (`python3 -m http.server -d report 
 ```bash
 pip install -r requirements-judge.txt
 cp -r examples/purple-box /tmp/pb
-python3 -m blinkflow.see /tmp/pb/outside/snapshot.json --out /tmp/pb/incident --reuse
+python3 -m blinkflow.see /tmp/pb/window/snapshot.json --out /tmp/pb/window/evidence --reuse
 ```
 
-`/tmp/pb/incident/evidence.json` comes out identical to `examples/purple-box/incident/evidence.json` (first contact, closest gap, the gap in every frame) except for the two paths it names. It writes into the evidence folder, hence the copy.
+`/tmp/pb/window/evidence/evidence.json` comes out identical to `examples/purple-box/window/evidence/evidence.json` (first contact, closest gap, the gap in every frame) except for the two paths it names. It writes into the evidence folder, hence the copy.
 
 **What needs a key.** Nothing above. Asking the models again does: SAM 3.1 and Muse Wonder need `MODEL_API_KEY` (Meta Model API), a diagnosis with Muse Spark needs `BASETEN_API_KEY` (Baseten), and both also need the robot's code. Keys are read from the environment or `~/.config/blinkflow/env`, never from the repo.
 
@@ -114,8 +114,7 @@ Checked on Oct 28 from a fresh clone, a new venv and a target made by `tools/mak
 
 Glimmer is the open-weight model that names objects, describes key frames and reads the person's sentence, on an RTX 4090 through Ollama. To check that without this PC, [`examples/purple-box/`](examples/purple-box) carries:
 
-- [`models.json`](examples/purple-box/models.json): every model call of the run. Glimmer's five are `muse-glimmer`, `local`, with tokens in and out and seconds; the 32 SAM 3.1 calls are `cached, $0`, each with the hash of the video bytes, concept and parameters it answers.
-- [`models-first-run.json`](examples/purple-box/models-first-run.json): the same loop on the same clip three minutes earlier, when SAM 3.1 was still paid for ($0.93 against $0.34).
+- [`models.json`](examples/purple-box/models.json): every model call of the run. Glimmer's ten are `muse-glimmer`, `local`, with tokens in and out and seconds (the sentence, the names, four key frames, the names in four control scenes). Of the 56 SAM 3.1 calls, 34 were paid ($0.77 of the run's $0.99) and 22 are `cached, $0`, each with the hash of the video bytes, concept and parameters it answers.
 - [`provenance.txt`](examples/purple-box/provenance.txt): `ollama ps` and `nvidia-smi` sampled every ~3 s while the run ran, with timestamps that line up with Glimmer's calls: `muse-glimmer`, 16 GB, 100% GPU, context 8192.
 - [`glimmer.jsonl`](examples/purple-box/glimmer.jsonl): Glimmer's raw replies from the run, each with what it was asked and the image it saw.
 

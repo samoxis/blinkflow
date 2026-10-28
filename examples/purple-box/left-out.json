@@ -1,1 +1,34 @@
-[]
+[
+ {
+  "path": "./fix/attempt-1/control/corner/evidence/sam-object.txt",
+  "bytes": 1809820
+ },
+ {
+  "path": "./fix/attempt-1/control/corner/evidence/sam-robot.txt",
+  "bytes": 360046
+ },
+ {
+  "path": "./fix/attempt-1/control/doorway/evidence/sam-object.txt",
+  "bytes": 1340580
+ },
+ {
+  "path": "./fix/attempt-1/control/doorway/evidence/sam-robot.txt",
+  "bytes": 205420
+ },
+ {
+  "path": "./fix/attempt-1/control/ledge/evidence/sam-object.txt",
+  "bytes": 4404648
+ },
+ {
+  "path": "./fix/attempt-1/control/ledge/evidence/sam-robot.txt",
+  "bytes": 369630
+ },
+ {
+  "path": "./fix/attempt-1/control/low_cube/evidence/sam-object.txt",
+  "bytes": 95877
+ },
+ {
+  "path": "./fix/attempt-1/control/low_cube/evidence/sam-robot.txt",
+  "bytes": 411232
+ }
+]

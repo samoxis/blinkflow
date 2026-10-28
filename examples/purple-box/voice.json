@@ -1,0 +1,86 @@
+{
+ "feed": "live",
+ "brain": "~/duck-target",
+ "record": "~/blinkflow-runs/run-20261028-212723.jsonl.gz",
+ "brain_start": 1793222863.9865253,
+ "clock": "WSL epoch",
+ "heard_by": "typed",
+ "window_s": [
+  5.0,
+  3.0
+ ],
+ "heard": {
+  "said": "two seconds ago its right leg hit the purple box",
+  "heard_by": "typed",
+  "audio_s": null,
+  "seconds_ago": 2.0,
+  "event": "contact",
+  "robot": "robot",
+  "object": "purple box",
+  "read_by": "glimmer",
+  "read_attempts": [
+   {
+    "reader": "glimmer",
+    "reply": "{\"seconds_ago\": 2, \"event\": \"contact\", \"robot\": \"robot\", \"object\": \"purple box\"}",
+    "rejected": null
+   }
+  ],
+  "press": 1793222877.5679832,
+  "release": 1793222879.0682864,
+  "moment": 1793222875.568,
+  "transcribe_s": 0.0,
+  "read_s": 1.53,
+  "moment_brain_s": 11.581,
+  "press_brain_s": 13.581
+ },
+ "incident": {
+  "kind": "contact",
+  "confirmed": true,
+  "names": [
+   "white robot",
+   "purple box"
+  ],
+  "robot_moved": true,
+  "object_as_said": "purple box",
+  "names_agree": true,
+  "incident_s": 12.503,
+  "reading": "base",
+  "seconds": 29.4,
+  "evidence": "~/blinkflow-runs/voice/20261028-212723/window/evidence",
+  "snapshot": "./window/snapshot.json",
+  "see_cost_usd": 0.0896,
+  "window_brain_s": [
+   6.581,
+   14.581
+  ]
+ },
+ "loop": {
+  "started": true,
+  "asked": true,
+  "rc": 0,
+  "seconds": 442.1,
+  "run": "~/blinkflow-runs/voice/20261028-212723/fix",
+  "fixed": true,
+  "kept": true,
+  "attempts": 1,
+  "answers": [
+   {
+    "attempt": 1,
+    "question": "Fix it?",
+    "yes": true,
+    "seconds": 2.0,
+    "asked": 1793222993.7080553,
+    "answered": 1793222995.7084532
+   },
+   {
+    "attempt": 1,
+    "question": "Keep the fix?",
+    "yes": true,
+    "seconds": 2.0,
+    "asked": 1793223351.7373624,
+    "answered": 1793223353.7378006
+   }
+  ],
+  "stopped": null
+ }
+}

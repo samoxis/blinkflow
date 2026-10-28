@@ -1,0 +1,177 @@
+{
+ "calls": [
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "when it happened and what it touched, from the person's words",
+   "seconds": 1.53,
+   "images": 0,
+   "input_tokens": 239,
+   "output_tokens": 28,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "name the robot and the object or hazard nearest to it",
+   "seconds": 2.24,
+   "images": 3,
+   "input_tokens": 1528,
+   "output_tokens": 42,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'white robot' (frames 0-103, sent from 0)",
+   "seconds": 8.15,
+   "frames": 104,
+   "frames_returned": 64,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 104
+   },
+   "cache_key": "ae34b4531883a8d010a53303c0d5d1a845d2939b5a192e03977518f15d92a010",
+   "cost_usd": 0.0208
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'purple box' (frames 104-208, sent from 89)",
+   "seconds": 12.16,
+   "frames": 120,
+   "frames_returned": 120,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 120
+   },
+   "cache_key": "58bc6eeb8fb49e02b2f71a4074da5b0265acd8cf4a7a9c136f39a5128c33e972",
+   "cost_usd": 0.024
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'purple box' (frames 0-103, sent from 0)",
+   "seconds": 15.9,
+   "frames": 104,
+   "frames_returned": 90,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 104
+   },
+   "cache_key": "9128c43f1ee427539b508d976da61d19e2cd4b53ead98dfc0de4a58a528680d8",
+   "cost_usd": 0.0208
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'white robot' (frames 104-208, sent from 89)",
+   "seconds": 18.82,
+   "frames": 120,
+   "frames_returned": 120,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 120
+   },
+   "cache_key": "f889f9a782b25af73e4a30d704cbbd8d4b11823db9b85add1aa151e09080065f",
+   "cost_usd": 0.024
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "describe key frame K1",
+   "seconds": 2.3,
+   "images": 1,
+   "input_tokens": 589,
+   "output_tokens": 48,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "describe key frame K3",
+   "seconds": 3.71,
+   "images": 1,
+   "input_tokens": 587,
+   "output_tokens": 39,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "describe key frame K4",
+   "seconds": 5.53,
+   "images": 1,
+   "input_tokens": 586,
+   "output_tokens": 46,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "describe key frame K2",
+   "seconds": 7.43,
+   "images": 1,
+   "input_tokens": 591,
+   "output_tokens": 45,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "muse-wonder-1.0",
+   "where": "Meta Model API",
+   "purpose": "diagnose (evidence, run 1)",
+   "seconds": 66.62,
+   "effort": "medium",
+   "status": "completed",
+   "images": 4,
+   "input_tokens": 41239,
+   "cached_input_tokens": 30182,
+   "output_tokens": 6701,
+   "reasoning_tokens": 5526,
+   "cost_usd": 0.18428
+  }
+ ],
+ "total_cost_usd": 0.27388,
+ "prices": {
+  "sam-3.1": "$0.20 per 1000 frames",
+  "muse-spark-open-1026": "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+  "muse-wonder-1.0": "$4.00 / 1M input, $0.20 / 1M cached input, $20.00 / 1M output",
+  "muse-spark-1.3": "Muse Code on Meta: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+  "muse-spark-1.3-contributor": "Muse Code on Meta: $0.10 / 1M input, $0.002 / 1M cached input, $0.20 / 1M output; the conversations may be used for training (the target and this repo are public)",
+  "muse-voice-transcribe-1.0": "$3.00 per 1000 audio minutes",
+  "muse-glimmer": "local (Ollama on this PC), $0",
+  "cached": "a SAM 3.1 reply for the same video bytes, concept and parameters, $0"
+ }
+}

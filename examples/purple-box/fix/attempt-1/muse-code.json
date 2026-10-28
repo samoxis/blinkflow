@@ -1,0 +1,88 @@
+{
+ "seconds": 42.2,
+ "outcome": "completed",
+ "session": "01a1846b-6fbb-7d02-bbca-32c109835e36",
+ "host": "muse-build/1.4.14 (serve; linux-x86_64; build dec7d7497fecdad135ec5835a8161dbc92e55b58)",
+ "sandbox": "available",
+ "approval_mode": "promptUnmatched",
+ "target": "~/duck-target",
+ "approvals": [],
+ "tool_calls": [
+  {
+   "tool": "read_file",
+   "args": "{\"path\":\"brain.toml\"}",
+   "status": "completed"
+  },
+  {
+   "tool": "read_file",
+   "args": "{\"path\":\"src/microduck_brain/config.py\"}",
+   "status": "completed"
+  },
+  {
+   "tool": "read_file",
+   "args": "{\"path\":\"src/microduck_brain/hazards.py\"}",
+   "status": "completed"
+  },
+  {
+   "tool": "edit_file",
+   "args": "{\"find\":\"side_memory_seconds = 0.0 # remember wall returns near the body for this long (s)\",\"path\":\"brain.toml\",\"replace\":\"side_memory_seconds = 3.0 # remember wall returns near the body for this long (s)\"}",
+   "status": "completed"
+  },
+  {
+   "tool": "bash",
+   "args": "{\"command\":\"python3 -c \\\"import tomllib; d=tomllib.load(open('brain.toml','rb')); print(d['obstacle']['side_memory_seconds']); from src.microduck_brain.config import load; c=load('brain.toml'); print(c.obstacle.side_memory_seconds)\\\" && python3 -m py_compile src/microduck_brain/config.py src/microduck_brain/hazards.py\",\"description\":\"Validate config parses and loads\"}",
+   "status": "completed"
+  }
+ ],
+ "summary": "Changed `side_memory_seconds` in brain.toml from 0.0 to 3.0, restoring the built-in default. This re-enables the side-hazard memory so close wall returns beside the robot are remembered while passing and can block forward motion.",
+ "usage": {
+  "cumulative": {
+   "cacheReadTokens": 153796,
+   "cost": {
+    "partial": false,
+    "usd": 0.004696892
+   },
+   "outputTokens": 651,
+   "promptTokens": 196387,
+   "totalTokens": 197038
+  },
+  "durationMs": 2619,
+  "modelId": "muse-spark-1.3-contributor",
+  "promptTokens": 42361,
+  "sessionId": "01a1846b-6fbb-7d02-bbca-32c109835e36",
+  "sourceRange": {
+   "first": {
+    "id": "01a1846b-ba8e-7e20-96a0-345eaacd7cd9",
+    "sequence": 223
+   },
+   "last": {
+    "id": "01a1846b-ba8e-7e20-96a0-345eaacd7cd9",
+    "sequence": 223
+   },
+   "stream": {
+    "id": "01a1846b-6fbb-7d02-bbca-32c109835e36",
+    "kind": "session"
+   }
+  },
+  "totalTokens": 42462,
+  "turnId": "01a1846b-70b0-7000-ada9-e3a43e17605f",
+  "usage": {
+   "cacheReadTokens": 42097,
+   "cacheWriteTokens": 0,
+   "cachedTokens": 42097,
+   "inputTokens": 42361,
+   "outputTokens": 101,
+   "reasoningTokens": 40
+  },
+  "viewCursor": "v4:01a1846b-6fbb-7d02-bbca-32c109835e36:56"
+ },
+ "change": {
+  "diff": "diff --git a/brain.toml b/brain.toml\nindex 86c6b1c..a2deec7 100644\n--- a/brain.toml\n+++ b/brain.toml\n@@ -26,7 +26,7 @@ first_row = 0             # frame rows used for walls (0 = top). Rows below last\n last_row = 4              # they are handled separately, as low objects and drops.\n corridor_half_width = 0.14 # half-width of the robot's swept corridor (m): body width + margin\n sensor_lateral = 0.0224   # the sensor sits this far left of the robot's axis (m; MJCF `tof` site)\n-side_memory_seconds = 0.0 # remember wall returns near the body for this long (s)\n+side_memory_seconds = 3.0 # remember wall returns near the body for this long (s)\n front_first_col = 1       # central columns used to decide whether the sensor is blind (0 = the sensor's left)\n front_last_col = 6\n min_zones = 2             # how many zones must be close for it to count (rejects single-zone noise)\n",
+  "files": [
+   "brain.toml"
+  ],
+  "stat": "1 file changed, 1 insertion(+), 1 deletion(-)",
+  "agent_commits": false
+ },
+ "problems": []
+}
