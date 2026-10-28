@@ -1,0 +1,149 @@
+[
+ {
+  "variant": "a1",
+  "request": {
+   "model": "muse-image-1.0",
+   "prompt": "Flat vector app icon. A rounded square with rounded corners filling the canvas, solid dark indigo (#1A1240); outside the rounded square plain white. Exactly three colours on the indigo: white, violet (#7C4DFF) and orange only on the beak. Thick uniform outlines, rounded shapes, no text, no letters, no gradients, no texture. Subject large and centred with a 15% margin; it must read at 48x48 pixels. The head of a white robot duck, three-quarter view: ONE solid filled white shape with a single outline, a smooth rounded top with nothing on it: no double outline, no bumps, no ears, no crest, no feathers. One large round camera-lens eye with 2 to 3 concentric violet rings, its pupil looking down and to the right. A small orange beak pointing down-right toward the box. A solid violet (#7C4DFF) box in the lower-right corner, about a quarter of the icon's width, clearly visible.",
+   "n": 1,
+   "size": "1024x1024"
+  },
+  "sent_utc": "2026-10-28T20:09:05+00:00",
+  "seconds": 15.3,
+  "response_headers": {
+   "x-request-id": "e873889c-0079-48b0-a8ee-c9258d172988",
+   "Date": "Wed, 28 Oct 2026 20:09:20 GMT"
+  },
+  "response": {
+   "created": 1793218160,
+   "data": [
+    {
+     "b64_json": "<99160 base64 chars>"
+    }
+   ],
+   "output_format": "webp",
+   "background": "opaque",
+   "usage": {
+    "input_tokens": 19262,
+    "output_tokens": 2168,
+    "total_tokens": 21430
+   }
+  },
+  "api_image": {
+   "format": "WEBP",
+   "size": [
+    1600,
+    1600
+   ],
+   "bytes": 74368,
+   "sha256": "9741cf8ed28975c8c0acde8c9d3294d734888de074e7a5157ea114a1ba16f698"
+  },
+  "saved_png": {
+   "file": "icon_a1.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 230605,
+   "sha256": "3c10946210bea34cffafe7df517f9a71d164435c7da2a999c590c8716bd96711",
+   "processing": "white outside the rounded square made transparent (alpha, antialiased rim kept); cropped to the square (1338 px of 1600) and resized to 1024 (Lanczos)"
+  }
+ },
+ {
+  "variant": "a2",
+  "request": {
+   "model": "muse-image-1.0",
+   "prompt": "Flat vector app icon. A rounded square with rounded corners filling the canvas, solid dark indigo (#1A1240); outside the rounded square plain white. Exactly three colours on the indigo: white, violet (#7C4DFF) and orange only on the beak. Thick uniform outlines, rounded shapes, no text, no letters, no gradients, no texture. Subject large and centred with a 15% margin; it must read at 48x48 pixels. The head of a white robot duck, three-quarter view: ONE solid filled white shape with a single outline, a smooth rounded top with nothing on it: no double outline, no bumps, no ears, no crest, no feathers. One large round camera-lens eye with 2 to 3 concentric violet rings, its pupil looking down and to the right. A small orange beak pointing down-right toward the box. A solid violet (#7C4DFF) box in the lower-right corner, about a quarter of the icon's width, clearly visible. Make the eye even larger, about half the head.",
+   "n": 1,
+   "size": "1024x1024"
+  },
+  "sent_utc": "2026-10-28T20:09:20+00:00",
+  "seconds": 15.8,
+  "response_headers": {
+   "x-request-id": "3bfe1ce6-cbf4-49fa-848f-2510f16a9f9b",
+   "Date": "Wed, 28 Oct 2026 20:09:36 GMT"
+  },
+  "response": {
+   "created": 1793218176,
+   "data": [
+    {
+     "b64_json": "<83040 base64 chars>"
+    }
+   ],
+   "output_format": "webp",
+   "background": "opaque",
+   "usage": {
+    "input_tokens": 19108,
+    "output_tokens": 2050,
+    "total_tokens": 21158
+   }
+  },
+  "api_image": {
+   "format": "WEBP",
+   "size": [
+    1600,
+    1600
+   ],
+   "bytes": 62278,
+   "sha256": "c9f14fe3358cf53fd505515f37c0d8b5bef253b50aeb0857494c433779ebcc93"
+  },
+  "saved_png": {
+   "file": "icon_a2.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 162908,
+   "sha256": "9e8bca86046d2e7865c833406929680e4cf5e4f5a2284ec8dfeb266017ddf08a",
+   "processing": "white outside the rounded square made transparent (alpha, antialiased rim kept); cropped to the square (1468 px of 1600) and resized to 1024 (Lanczos)"
+  }
+ },
+ {
+  "variant": "a3",
+  "request": {
+   "model": "muse-image-1.0",
+   "prompt": "Flat vector app icon. A rounded square with rounded corners filling the canvas, solid dark indigo (#1A1240); outside the rounded square plain white. Exactly three colours on the indigo: white, violet (#7C4DFF) and orange only on the beak. Thick uniform outlines, rounded shapes, no text, no letters, no gradients, no texture. Subject large and centred with a 15% margin; it must read at 48x48 pixels. The head of a white robot duck, three-quarter view: ONE solid filled white shape with a single outline, a smooth rounded top with nothing on it: no double outline, no bumps, no ears, no crest, no feathers. One large round camera-lens eye with 2 to 3 concentric violet rings, its pupil looking down and to the right. A small orange beak pointing down-right toward the box. A solid violet (#7C4DFF) box in the lower-right corner, about a quarter of the icon's width, clearly visible. A flat shadow under the head, a slightly darker indigo ellipse, no blur.",
+   "n": 1,
+   "size": "1024x1024"
+  },
+  "sent_utc": "2026-10-28T20:09:36+00:00",
+  "seconds": 10.4,
+  "response_headers": {
+   "x-request-id": "92602e14-bc37-4c75-bc07-a51655c30887",
+   "Date": "Wed, 28 Oct 2026 20:09:46 GMT"
+  },
+  "response": {
+   "created": 1793218186,
+   "data": [
+    {
+     "b64_json": "<67564 base64 chars>"
+    }
+   ],
+   "output_format": "webp",
+   "background": "opaque",
+   "usage": {
+    "input_tokens": 10877,
+    "output_tokens": 1349,
+    "total_tokens": 12226
+   }
+  },
+  "api_image": {
+   "format": "WEBP",
+   "size": [
+    1600,
+    1600
+   ],
+   "bytes": 50672,
+   "sha256": "f0eec24b659fba0822624709a9d81bd366bacc776bebca65f69ab15653b176f6"
+  },
+  "saved_png": {
+   "file": "icon_a3.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 139810,
+   "sha256": "c062460526140a27789a0f2a592f9aa53895ee138dc1310e3f37750cb0c21dda",
+   "processing": "white outside the rounded square made transparent (alpha, antialiased rim kept); cropped to the square (1442 px of 1600) and resized to 1024 (Lanczos)"
+  }
+ }
+]
