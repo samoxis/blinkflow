@@ -1,11 +1,12 @@
 """Talks to the Windows capture sidecar: start it, ask for the last N seconds, stop it."""
 import json
+import os
 import pathlib
 import subprocess
 import time
 import urllib.request
 
-PORT = 8771
+PORT = int(os.environ.get("BLINKFLOW_SIDECAR_PORT", "8771"))   # another port if 8771 is taken on Windows
 SIDECAR = pathlib.Path(__file__).resolve().parent.parent / "sidecar" / "capture.py"
 
 
