@@ -89,6 +89,33 @@ After a fall became an incident of its own (seen from pixels: the robot's mask d
 - corridor (doorway): corridor too narrow (doorway): `[obstacle] corridor_half_width = 0.05`
 - stop threshold (corner): stop distance too short: `[obstacle] stop_distance = 0.16`
 <!-- layered notes -->
+## Held-out pass (Oct 28)
+
+A new seed (`tools/inject_bug.py draw --set layers --force`, Oct 28 09:15), the same 11 mutation kinds, one pass, with BlinkFlow frozen at `4c07bfb`: no rule changed before, during or after it, and no bug was rerun. The SAM 3.1 cache was on. Validation kept 8 of 11 again; the same three kinds gave no incident (stop distance 0.16 in the corner, the corridor at 0.05 in the doorway, the freer side inverted). Muse Spark ran beside Wonder on b3 and b6.
+
+**The seed is new, the bugs mostly are not.** 7 of the 8 kept bugs are exactly a first-pass mutation, same kind and same value, only under a new label: three of them have a single value, and the other four drew the value they drew before. Only b3 (`[low] range_margin = 0.4`, was 0.45) is new. So this pass shows that the rules revised between the first pass and rerun 2 fix these bugs on the first pass without anyone touching them. It shows little about bugs the rules were not revised on.
+
+| bug | layer (scene) | mutation (revealed) | incident before (twin) | Muse Wonder's cause (confidence) | at the mutated line? | Muse Code attempts | loop's verdict | (a) incident gone | (b) control clean in all 5 scenes | (c) change touches mutated lines | time | cost |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| b3 | low objects (low_cube) | low-object margin too wide: `[low] range_margin = 0.4` | contact 10.56 s | `src/microduck_brain/depth.py` 257-265 (0.74) | no | 1 | fixed | yes | yes | 1/2 (restored 0/2) | 364 s | $1.37 (SAM 0.71, Wonder 0.36) |
+| b4 | low objects (low_cube) | wall-foot margin too wide: `[low] wall_margin = 2.5` | contact 10.56 s | `src/microduck_brain/depth.py` 250-267 (0.78) | no | 2 | fixed | yes | yes | 2/2 (restored 2/2) | 352 s | $0.99 (SAM 0.26, Wonder 0.27) |
+| b6 | side memory (box) | side memory too short: `[obstacle] side_memory_seconds = 0.05` | contact 12.38 s | `brain.toml` 29-29 (0.60) | yes | 1 | fixed | yes | yes | 1/2 (restored 0/2) | 272 s | $1.31 (SAM 0.72, Wonder 0.37) |
+| b7 | drops (ledge) | drop position swapped: `depth.drop_zones: DropZone(..., nominal*by, nominal*bx, ...)` | contact 9.34 s, fall 10.25 s | `src/microduck_brain/depth.py` 294-321 (0.78) | yes | 1 | fixed | yes | yes | 1/1 (restored 1/1) | 152 s | $0.98 (SAM 0.70, Wonder 0.21) |
+| b8 | corridor (box) | corridor too narrow: `[obstacle] corridor_half_width = 0.05` | contact 18.43 s | `src/microduck_brain/hazards.py` 209-226 (0.62) | no | 3 | fixed | yes | yes | 0/2 (restored 0/2) | 986 s | $3.16 (SAM 1.23, Wonder 1.14) |
+| b9 | low objects (low_cube) | low-object position swapped: `depth.low_obstacles: LowObstacle(..., d*by, d*bx, ...)` | contact 10.56 s | `src/microduck_brain/depth.py` 268-273 (0.90) | yes | 1 | fixed | yes | yes | 1/1 (restored 1/1) | 156 s | $0.31 (SAM 0.00, Wonder 0.22) |
+| b10 | drops (ledge) | drop margin too wide: `[drop] range_margin = 0.6` | contact 9.34 s, fall 10.25 s | `src/microduck_brain/depth.py` 309-320 (0.55) | no | 1 | fixed | yes | yes | 2/2 (restored 0/2) | 286 s | $0.62 (SAM 0.12, Wonder 0.32) |
+| b11 | drops (ledge) | drop check too short: `[drop] max_expected = 0.3` | contact 9.34 s, fall 10.25 s | `brain.toml` 60-60 (0.66) | yes | 1 | fixed | yes | yes | 1/2 (restored 0/2) | 273 s | $0.65 (SAM 0.21, Wonder 0.28) |
+
+**(a) incident gone: 8/8. (b) no regression in any scene: 8/8. (c) the change touches a mutated line: 7/8. All three: 7/8.** Wonder's cause contained a mutated line in 4/8. 2 bug(s) needed more than one Muse Code attempt; 0 loop(s) were rerun after an API error. 8/8 bugs ran. Incidents and the control are the twin's own log (scorer); the loop decides from pixels only.
+
+Wonder and Spark on the same evidence (bugs b3, b6), runs whose cause contains a mutated line: wonder 4/8, spark 0/2.
+
+Model cost of the runs: $9.41 (SAM 3.1 $3.95, Muse Wonder $3.17, other $2.28). Time = rendering the incident + the whole loop. The suite ran with `BLINKFLOW_SAM_BUDGET=25 BLINKFLOW_WONDER_BUDGET=30` from the environment; the code defaults are still $5 and $15.
+
+Beside the first pass: (a) incident gone 5/8 on the first pass, 8/8 after two reruns with rule changes, **8/8 held-out**; (b) control clean 5/8, 8/8, **8/8**; (c) change on a mutated line 5/8, 6/8, **7/8**. b8 (corridor) needed 3 Muse Code attempts and b4 needed 2; the change in b8 widened the corridor in code and left the mutated value alone, so (c) is 0 there, as in rerun 1.
+
+The first pass's folders are now in `~/blinkflow-runs/suite-layers-pass1` (seal `tools/.bugseal-layers-pass1`); `~/blinkflow-runs/suite-layers` holds this pass, so `tools/bug_suite.py --set layers report` now regenerates this pass, not the tables above.
+
 ## What the layered suite shows
 
 - **Control.** The repaired brain stayed clean in all five scenes for 20 s, so every scene stayed in. Two of them, corner and doorway, are still control-only: none of their own layer's mutations produced an incident there. Stop distance 0.12/0.16, the freer side inverted, and the corridor at 0.04/0.05 m all gave the same result, with the duck meandering and never touching anything. The stop decision is made twice, once in the wall view and once again when side memory is merged back in, so weakening one layer leaves the other still holding. A stuck robot is not counted, because in the box the clean brain already lingers for about 10 s. A blocking detector would mostly be detecting patience. That is why the corridor layer's bug comes from the box scene.

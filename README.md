@@ -36,6 +36,7 @@ Measured during the hackathon; each number links to the file it comes from.
 | What | Result | Source |
 |---|---|---|
 | Bug suite, stratified by layer (11 mutations drawn with a sealed seed, 8 gave an incident); blind to the mutation; perception rules were revised between passes | **5/8 on the first pass, 8/8 on the third**: incidents gone, control clean in all five scenes. Changes on the mutated line: **5/8 on the first pass, 6/8 on the third** | [`results/bug_suite.md`](results/bug_suite.md) |
+| Same suite, held-out pass: a new seed, the code frozen, one pass, no reruns. 7 of the 8 kept bugs are a first-pass mutation with the same value; 1 is new | **8/8**: incidents gone, control clean in all five scenes. Changes on the mutated line: **7/8** | [`results/bug_suite.md`](results/bug_suite.md#held-out-pass-oct-28) |
 | First suite (6 bugs), blind to the mutation, one pass | 6/6 fixed; Muse Wonder's cause on the mutated line in 5/6 | [`results/bug_suite.md`](results/bug_suite.md) |
 | Live simulator, the demo incident, 20 s per run | contact in **5/5** runs without the fix, **0/5** with it (an earlier pass, with a CPU-heavy job beside it: 3/5, 0/5) | [`results/live_check.md`](results/live_check.md) |
 | Seen → fixed and verified (machine time) | **135.8–191.0 s** over 8 purple-box loops, median 166.6 s; the spread is mostly Muse Wonder (55–97 s) | [`results/loop_times.md`](results/loop_times.md), [`results/quick_loop.md`](results/quick_loop.md) |
