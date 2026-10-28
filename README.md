@@ -75,7 +75,7 @@ Open `report/index.html` over a local server (`python3 -m http.server -d report 
 **2. Measure it again.** The contact is re-derived from SAM 3.1's saved replies, offline (needs `ffmpeg`):
 
 ```bash
-pip install numpy scipy requests matplotlib
+pip install -r requirements-judge.txt
 cp -r examples/purple-box /tmp/pb
 python3 -m blinkflow.see /tmp/pb/outside/snapshot.json --out /tmp/pb/incident --reuse
 ```
