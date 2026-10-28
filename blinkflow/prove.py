@@ -88,6 +88,10 @@ def verdict(ev, record, reference_travel=None, kind="contact"):
     found = ev["tracking"]["robot"]["frames_with_mask"]
     walked = travel(record)
     problems = []
+    # A reply cut short (a 503 mid-stream) may hold the robot but not the frames of the contact.
+    for k in ("robot", "object") if kind == "contact" else ("robot",):
+        if (st := ev["tracking"][k].get("status", "completed")) != "completed":
+            problems.append(f"SAM 3.1 tracking of the {k} {st}")
     if found < MIN_ROBOT_FRAMES:
         problems.append(f"robot found in only {found} frames")
     # A fall is read from the robot's mask and the brain's log; the hazard need not be segmented
