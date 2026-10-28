@@ -1,0 +1,125 @@
+{
+ "seconds": 20.0,
+ "summary": {
+  "before": {
+   "rev": "b2fe90a",
+   "runs": 5,
+   "contacts": 5,
+   "first_contact_s": [
+    11.099,
+    11.629,
+    10.41,
+    11.611,
+    11.518
+   ]
+  },
+  "after": {
+   "rev": "215f024",
+   "runs": 5,
+   "contacts": 0,
+   "first_contact_s": []
+  }
+ },
+ "runs": [
+  {
+   "side": "before",
+   "rev": "b2fe90a",
+   "run": 1,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-075435/before/20261028-075517-623a2c.mp4",
+   "record": "~/blinkflow-runs/run-20261028-075435.jsonl.gz",
+   "contact": true,
+   "first_contact_s": 11.099,
+   "body": "jaw_soft"
+  },
+  {
+   "side": "after",
+   "rev": "215f024",
+   "run": 1,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-075435/after/20261028-075601-3d24a7.mp4",
+   "record": "~/blinkflow-runs/run-20261028-075520.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  },
+  {
+   "side": "before",
+   "rev": "b2fe90a",
+   "run": 2,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-075435/before/20261028-075645-3b959c.mp4",
+   "record": "~/blinkflow-runs/run-20261028-075603.jsonl.gz",
+   "contact": true,
+   "first_contact_s": 11.629,
+   "body": "upper_leg_right"
+  },
+  {
+   "side": "after",
+   "rev": "215f024",
+   "run": 2,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-075435/after/20261028-075729-027886.mp4",
+   "record": "~/blinkflow-runs/run-20261028-075647.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  },
+  {
+   "side": "before",
+   "rev": "b2fe90a",
+   "run": 3,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-075435/before/20261028-075813-9f8260.mp4",
+   "record": "~/blinkflow-runs/run-20261028-075732.jsonl.gz",
+   "contact": true,
+   "first_contact_s": 10.41,
+   "body": "ankle_right"
+  },
+  {
+   "side": "after",
+   "rev": "215f024",
+   "run": 3,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-075435/after/20261028-075857-98c319.mp4",
+   "record": "~/blinkflow-runs/run-20261028-075815.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  },
+  {
+   "side": "before",
+   "rev": "b2fe90a",
+   "run": 4,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-075435/before/20261028-075941-46a320.mp4",
+   "record": "~/blinkflow-runs/run-20261028-075859.jsonl.gz",
+   "contact": true,
+   "first_contact_s": 11.611,
+   "body": "upper_leg_right"
+  },
+  {
+   "side": "after",
+   "rev": "215f024",
+   "run": 4,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-075435/after/20261028-080025-b36ed8.mp4",
+   "record": "~/blinkflow-runs/run-20261028-075943.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  },
+  {
+   "side": "before",
+   "rev": "b2fe90a",
+   "run": 5,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-075435/before/20261028-080109-dffe48.mp4",
+   "record": "~/blinkflow-runs/run-20261028-080027.jsonl.gz",
+   "contact": true,
+   "first_contact_s": 11.518,
+   "body": "ankle_right"
+  },
+  {
+   "side": "after",
+   "rev": "215f024",
+   "run": 5,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-075435/after/20261028-080153-5639d2.mp4",
+   "record": "~/blinkflow-runs/run-20261028-080111.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  }
+ ]
+}

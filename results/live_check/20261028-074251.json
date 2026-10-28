@@ -1,0 +1,123 @@
+{
+ "seconds": 20.0,
+ "summary": {
+  "before": {
+   "rev": "b2fe90a",
+   "runs": 5,
+   "contacts": 3,
+   "first_contact_s": [
+    10.737,
+    11.574,
+    10.83
+   ]
+  },
+  "after": {
+   "rev": "215f024",
+   "runs": 5,
+   "contacts": 0,
+   "first_contact_s": []
+  }
+ },
+ "runs": [
+  {
+   "side": "before",
+   "rev": "b2fe90a",
+   "run": 1,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-074251/before/20261028-074335-b7893c.mp4",
+   "record": "~/blinkflow-runs/run-20261028-074251.jsonl.gz",
+   "contact": true,
+   "first_contact_s": 10.737,
+   "body": "jaw_soft"
+  },
+  {
+   "side": "after",
+   "rev": "215f024",
+   "run": 1,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-074251/after/20261028-074419-a916f3.mp4",
+   "record": "~/blinkflow-runs/run-20261028-074336.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  },
+  {
+   "side": "before",
+   "rev": "b2fe90a",
+   "run": 2,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-074251/before/20261028-074502-93e933.mp4",
+   "record": "~/blinkflow-runs/run-20261028-074421.jsonl.gz",
+   "contact": true,
+   "first_contact_s": 11.574,
+   "body": "upper_leg_right"
+  },
+  {
+   "side": "after",
+   "rev": "215f024",
+   "run": 2,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-074251/after/20261028-074548-d1b129.mp4",
+   "record": "~/blinkflow-runs/run-20261028-074504.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  },
+  {
+   "side": "before",
+   "rev": "b2fe90a",
+   "run": 3,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-074251/before/20261028-074633-632469.mp4",
+   "record": "~/blinkflow-runs/run-20261028-074550.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  },
+  {
+   "side": "after",
+   "rev": "215f024",
+   "run": 3,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-074251/after/20261028-074718-a80beb.mp4",
+   "record": "~/blinkflow-runs/run-20261028-074635.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  },
+  {
+   "side": "before",
+   "rev": "b2fe90a",
+   "run": 4,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-074251/before/20261028-074805-4e258d.mp4",
+   "record": "~/blinkflow-runs/run-20261028-074721.jsonl.gz",
+   "contact": true,
+   "first_contact_s": 10.83,
+   "body": "upper_leg_right"
+  },
+  {
+   "side": "after",
+   "rev": "215f024",
+   "run": 4,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-074251/after/20261028-074851-21f164.mp4",
+   "record": "~/blinkflow-runs/run-20261028-074808.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  },
+  {
+   "side": "before",
+   "rev": "b2fe90a",
+   "run": 5,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-074251/before/20261028-074936-e79e23.mp4",
+   "record": "~/blinkflow-runs/run-20261028-074853.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  },
+  {
+   "side": "after",
+   "rev": "215f024",
+   "run": 5,
+   "snapshot": "~/blinkflow-runs/live-check/20261028-074251/after/20261028-075021-6026f1.mp4",
+   "record": "~/blinkflow-runs/run-20261028-074938.jsonl.gz",
+   "contact": false,
+   "first_contact_s": null,
+   "body": null
+  }
+ ]
+}
