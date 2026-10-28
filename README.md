@@ -138,6 +138,7 @@ Existed before, used only as the test target, not part of this repo:
 ## Honesty notes
 
 - The simulator's own contact log is never given to BlinkFlow. It is used only as ground truth to score whether a fix worked.
+- The twin loads the scene to simulate it; perception, diagnosis and the fix receive only pixels, the brain's own log and the code — never the contact log, truth.json or the scene geometry.
 - Results are measured during the hackathon, on BlinkFlow's own fixes, including bugs injected blind into the robot's code.
 - Every incident report lists each model call: model, where it ran, tokens.
 - Speed-ups in the demo video are labelled on screen.
