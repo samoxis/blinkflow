@@ -8,18 +8,35 @@
 
 <p align="center"><img src="docs/blinkflow.gif" width="640" alt="The robot's right leg brushes the purple box; after BlinkFlow's fix, contacts go from 1 to 0"></p>
 
+## For the judges (5 minutes)
+
+| Criterion | What it shows | Where |
+|---|---|---|
+| **Impact** (30%) | Say what went wrong on screen, get a proven fix in the robot's code: 8/8 held-out bugs fixed blind; live, contact in 5/5 runs before the fix, 0/5 after | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
+| **Use of Meta tooling** (25%) | One job per model: Muse Glimmer (open weights, this PC) watches and names, SAM 3.1 tracks, Muse Wonder finds the cause, Muse Code fixes, Muse Voice Transcribe listens. Every call is logged | [How it works](#how-it-works), [`models.json`](examples/purple-box/models.json) |
+| **Technical depth** (20%) | Distances from SAM 3.1's masks, a diagnosis whose citations are checked, an exact replay in a deterministic twin, rollback and retry, a gate before each tool call | [`results/bug_suite.md`](results/bug_suite.md), [Safety](#safety) |
+| **Demo** (25%) | The purple-box incident from the sentence to the proof, as a page anyone can open, and the live console | [The report](https://samoxis.github.io/blinkflow/report/), [The console](#the-console) |
+
+**Open weights:** Muse Glimmer runs on this PC → [provenance](#muse-glimmer-on-this-pc--provenance).
+**Try it in ~2 min, no GPU** → [quickstart](#try-it-in-2-min-no-gpu).
+
+## What is new here
+
+- **Pixels, not the simulator's API.** BlinkFlow watches the window, as the developer does. Deterministic checks first, then the model: SAM 3.1's masks become distances and a first contact before Muse Wonder sees anything, and its answer is checked against what was sent.
+- **The proof is the same scene.** Replayed exactly in a deterministic twin and measured again on pixels; a failed fix is rolled back and retried, and the person answers "Keep the fix?".
+- **A referee the agent never sees, and a gate.** Results are scored from contact logs BlinkFlow never receives. The agent's tools are the perimeter: a Muse Code call naming a path outside the target is blocked before it runs.
+
+## Contents
+
+[For the judges](#for-the-judges-5-minutes) · [What is new](#what-is-new-here) · [How it works](#how-it-works) · [Results](#results) · [Try it in ~2 min](#try-it-in-2-min-no-gpu) · [Run the full loop](#run-the-full-loop-3060-min-gpu) · [Glimmer provenance](#muse-glimmer-on-this-pc--provenance) · [Limits](#limits) · [Pre-existing vs built](#pre-existing-vs-built-during-the-hackathon) · [Safety](#safety)
+
+## How it works
+
 For people who write robot software and test it in a simulator: you say what went wrong on screen, BlinkFlow finds the cause in the robot's code, fixes it, and proves the fix on the same scene.
 
 BlinkFlow watches a robot simulator the way you do: through the screen. When the robot does something wrong, you say what you saw. BlinkFlow rewinds to that moment, works out which part of the robot's program caused it, writes the fix, and plays the same scene again to prove the problem is gone. If the fix doesn't work, it undoes it and tries again.
 
 What it films is the simulator's window on your screen, not a camera on the robot. It runs Meta's **open-weight Muse Glimmer on this PC**, so that window never leaves the machine until there is something worth fixing.
-
-> Built during the [Meta Global AI Developer Hackathon](https://cerebralvalley.ai/e/meta-ai-developer-hackathon), Oct 26 – Nov 4, 2026. Indie Developer track, theme: Push the Frontier.
-> **Work in progress.** This README grows as each piece starts working. The build log is in [`DEVLOG.md`](DEVLOG.md).
-
-**New vs pre-existing:** everything in this repo was written after the kickoff on Oct 26, 2026; the robot, its simulator and its brain existed before — see [Pre-existing vs built during the hackathon](#pre-existing-vs-built-during-the-hackathon).
-
-## How it works
 
 | Step | What happens | Meta model |
 |---|---|---|
@@ -30,6 +47,9 @@ What it films is the simulator's window on your screen, not a camera on the robo
 | Understand | Key frames + measurements + time-aligned logs + the robot's code → the cause, plus a plain-language explanation. Every claim cites its source: a key frame, a measurement, a log tick or a code line, and the answer is checked against what was sent (the file, function and lines exist; the cited frames and ticks exist) | Muse Wonder |
 | Fix | A coding agent patches the code inside its sandbox; a git commit is taken first | Muse Code (Python SDK) |
 | Prove | The same scene, replayed exactly in a deterministic twin, and checked again on pixels; failed fixes are rolled back and retried. For the demo incident, then confirmed on the live simulator (`results/live_check.md`) | SAM 3.1, Muse Code |
+
+<p align="center"><img src="docs/console-see.png" width="720" alt="The console's See step: masks on the robot and the purple box, a magnifier on the contact"></p>
+<p align="center"><em>See: SAM 3.1 follows both objects on every frame; the gap in pixels gives the first contact (the 166.4 s run).</em></p>
 
 ## Results
 
@@ -48,20 +68,12 @@ Measured during the hackathon; each number links to the file it comes from.
 | Pixel rule against ground truth | 92 saved looks re-measured: 60/64 incidents caught, false alarms 1 → 0 after one correction | [`results/control.md`](results/control.md) |
 | Cost of one loop (model calls) | **$0.88** for the profiled loop; $0.34–$1.71 over the 8 runs (measuring the four control scenes adds SAM 3.1; replies from the cache cost $0) | [`results/quick_loop.md`](results/quick_loop.md), [`results/loop_times.md`](results/loop_times.md) |
 
-Every run writes a `models.json`: each model call with the model, where it ran (this PC, Meta, Baseten, the cache), tokens or frames, seconds and cost.
+Every run writes a `models.json`: each model call with the model, where it ran (this PC, Meta, Baseten, the cache), tokens or frames, seconds and cost. Cost details (the SAM 3.1 cache, Muse Code's model, `tools/spend.py`): [`docs/RUNNING.md`](docs/RUNNING.md#cost).
 
-## Where this could go (not built or tested yet)
+<p align="center"><img src="docs/console-prove.png" width="720" alt="The console's Prove it step: before the fix in red with 1 contact, after it in green with none"></p>
+<p align="center"><em>Prove it: the same scene replayed before (red) and after the fix (green), measured on pixels: contacts 1 → 0.</em></p>
 
-BlinkFlow needs three things: a screen, a log and a folder of code. Only the deterministic twin and the target are specific to the duck; the rest of the loop is not, so it could serve:
-
-- **Warehouse and delivery robots**, tested every day in simulation before they touch a real shelf.
-- **Home robots**, like a vacuum that keeps getting stuck under the same sofa.
-- **Open-source robots for hobbyists and schools** (Microduck, LeRobot arms, Reachy), whose owners are not robotics experts.
-- **Game characters** that walk through walls or get stuck in doorways: also pixels, logs and code.
-
-On a real robot the proof changes: the real world never repeats exactly, but the robot's recorded sensor log can be replayed through the fixed brain ("with exactly what it saw, would it turn now?"), then checked in simulation, then on the robot, and only with a person's "Keep the fix?".
-
-## Try it without a GPU
+## Try it in ~2 min, no GPU
 
 A recorded run of the demo incident is in [`examples/purple-box/`](examples/purple-box): the 60 s snapshot, the evidence, Muse Wonder's diagnosis, Muse Code's change, the replays before and after, and the model calls. No GPU, no simulator, no key.
 
@@ -87,97 +99,16 @@ python3 -m blinkflow.see /tmp/pb/outside/snapshot.json --out /tmp/pb/incident --
 
 **What needs a key.** Nothing above. Asking the models again does: SAM 3.1 and Muse Wonder need `MODEL_API_KEY` (Meta Model API), a diagnosis with Muse Spark needs `BASETEN_API_KEY` (Baseten), and both also need the robot's code. Keys are read from the environment or `~/.config/blinkflow/env`, never from the repo.
 
-## Run the full loop (GPU)
+## Run the full loop (~30–60 min, GPU)
 
-The quickstart replays a recorded run. This runs the loop itself on a new machine: BlinkFlow sees the incident, Muse Wonder finds the cause, Muse Code fixes the target, the twin replays the scene and SAM 3.1 checks it again.
+The loop itself on a new machine: BlinkFlow sees the incident, Muse Wonder finds the cause, Muse Code fixes the target, the twin replays the scene and SAM 3.1 checks it again. Step by step in [`docs/RUNNING.md`](docs/RUNNING.md):
 
-Checked on Oct 28 from a fresh clone, a new venv and a target made by `tools/make_target.py` (same files as the one every run used): the purple-box loop below, without the SAM cache, fixed it in attempt 1, contacts 1 → 0, in 167.3 s for **$0.83** ([`results/fresh_setup.md`](results/fresh_setup.md), which also says what was not redone from scratch).
+1. Linux or WSL2, Python 3.12, `ffmpeg`, an NVIDIA GPU that holds Muse Glimmer (Ollama), the Muse Code CLI, `MODEL_API_KEY`.
+2. `pip install -r requirements.txt`, then `python3 -m blinkflow.gate install`.
+3. The target, `python3 tools/make_target.py ~/duck-target`, and Pollen Robotics' simulator with the demo scene ([`blinkflow-demo-scene`](https://github.com/samoxis/microduck_rl/tree/blinkflow-demo-scene)).
+4. One loop on the purple box, from the recorded clip (no sidecar) or live (Windows 11 + WSL2).
 
-**1. What you need**
-
-- Linux or WSL2 (tested on WSL2 Ubuntu 24.04), Python 3.12, git, `ffmpeg`, [uv](https://docs.astral.sh/uv/).
-- An NVIDIA GPU that holds Muse Glimmer. The runs here used an RTX 4090 (24 GB); with the live simulator beside it the peak was 20.5 of 24.6 GB ([`results/watcher.md`](results/watcher.md)). Glimmer is required: Muse Spark Open on Baseten (`BASETEN_API_KEY`) stands in only when Glimmer's answer for naming the objects or reading the sentence cannot be used. No setting replaces Glimmer, and the key-frame descriptions have no fallback, so without such a GPU use the quickstart above.
-- [Ollama](https://ollama.com) serving on `127.0.0.1:11434` (on WSL2, Ollama for Windows works), with Glimmer:
-
-  ```bash
-  ollama pull muse-glimmer
-  ```
-
-- The Muse Code CLI and its Python SDK, both 1.4.14 (the SDK must match `muse --version`). The launcher installs `muse` in `~/.local/bin` and signs you in with your Meta account:
-
-  ```bash
-  curl -fsSL https://api.meta.ai/muse-launcher.sh | bash
-  ```
-
-- Keys in `~/.config/blinkflow/env` (or the environment), never in the repo:
-
-  ```
-  MODEL_API_KEY=...       # Meta Model API: SAM 3.1, Muse Wonder, Muse Voice Transcribe
-  BASETEN_API_KEY=...     # optional: Muse Spark Open, the fallback
-  ```
-
-**2. BlinkFlow and its gate**
-
-```bash
-git clone https://github.com/samoxis/blinkflow && cd blinkflow
-python3 -m venv .venv && . .venv/bin/activate
-pip install -r requirements.txt
-python3 -m blinkflow.gate install
-```
-
-The gate is Muse Code's PreToolUse hook (see [Safety](#safety)); BlinkFlow will not start Muse Code without it.
-
-**3. The target and the simulator** (pre-existing, outside this repo; the paths below are the ones BlinkFlow expects)
-
-```bash
-python3 tools/make_target.py ~/duck-target
-git clone -b blinkflow-demo-scene https://github.com/samoxis/microduck_rl ~/microduck_rl
-(cd ~/microduck_rl && uv sync)
-git clone https://github.com/pollen-robotics/microduck ~/microduck
-git -C ~/microduck checkout ded2f7c980217049817580562b2bbc7393b16de4
-sh ~/microduck/scripts/seed-policies.sh ~/.cache/duck-sim/policies
-```
-
-- `tools/make_target.py` clones [microduck-brain](https://github.com/samoxis/microduck-brain) at `e1e157d`, keeps only the code (no README, docs, tests, tools, CI or history), puts in the demo bug (the robot judges "ahead" from the front columns only and forgets what it passed: its right leg brushes the purple box) and rewrites the comments that would name it, then makes one base commit. The result is the same, file for file, as the target every run in `results/` used.
-- `microduck_rl` is Pollen Robotics' simulation (MuJoCo, the walking policies' runtime) on the branch [`blinkflow-demo-scene`](https://github.com/samoxis/microduck_rl/tree/blinkflow-demo-scene): upstream `8d0db74` plus the recoloured demo scene with the purple box. The twin loads that scene.
-- `microduck` is Pollen Robotics' robot stack; `seed-policies.sh` downloads the walking policies from the Hugging Face Hub. The live simulator also builds its daemons from it with `cargo` the first time it starts.
-
-**4. One loop on the purple box**
-
-Without the sidecar (any Linux, no simulator window): the recorded live clip in [`examples/purple-box/outside/`](examples/purple-box/outside) plays on the clock as if it were the 60 s buffer, the key goes down at 12.4 s of the brain's time (the leg touches the box at ~12.0 s), and the sentence is typed. From there on it is the same loop as live; only the proof needs the twin.
-
-```bash
-python3 -m blinkflow.voice clip examples/purple-box/outside/snapshot.json --press 12.4 \
-  --text "just now its right leg hit the purple box" --brain ~/duck-target --auto
-```
-
-Live (Windows 11 + WSL2). On the Windows side: Python 3 on the PATH as `python` (the sidecar, [`sidecar/capture.py`](sidecar/capture.py), uses only the standard library), an `ffmpeg` with `ddagrab` and NVENC on the PATH, and Google Chrome. The browser view and the camera of the simulator go into `microduck_rl`'s environment once:
-
-```bash
-cp ~/microduck_rl/blinkflow-demo/duck_viser_hook.* ~/microduck_rl/blinkflow-demo/duck_cam_director.py \
-  ~/microduck_rl/.venv/lib/python3.12/site-packages/
-uv pip install --python ~/microduck_rl/.venv/bin/python viser==1.0.30 mjviser==0.0.14
-python3 -m blinkflow.voice live --type --auto
-```
-
-BlinkFlow starts the simulator in the demo scene, the Viser window in Chrome and the sidecar itself, and the robot walks for 30 s: press Enter when you see it go wrong, then type what you saw. Without `--type`, hold F9 and say it. Without `--auto`, BlinkFlow asks "Fix it?" before Muse Code writes and "Keep the fix?" after the proof.
-
-**5. What comes out**
-
-One folder per run, `~/blinkflow-runs/voice/<stamp>/` (or `--out DIR`):
-
-| File | What it holds |
-|---|---|
-| `voice.json` | what was heard, the moment, the incident as seen, the loop's outcome |
-| `events.jsonl` | every step, for the console: `python3 -m blinkflow.console report <run>/events.jsonl --out report` |
-| `window/` | the snapshot cut from the buffer, and `evidence/`: SAM 3.1's masks, the distance per frame, first contact, the key frames, Muse Wonder's diagnosis (`diagnosis.md`) |
-| `fix/fix.json` | the base commit, each attempt, fixed or not, kept or not |
-| `fix/attempt-N/` | Muse Code's prompt and turn (`muse-code.json`), `change.diff`, the replay in the twin and its `verdict.json` |
-| `fix/before/` | the same scene replayed before the fix, measured the same way |
-| `fix/models.json` | every model call: model, where it ran, tokens or frames, seconds, cost |
-| `fix/report.md` | the run in plain words |
-
-The fix itself is a commit in `~/duck-target`, on top of the base commit. With `--auto` it is kept; `git -C ~/duck-target reset --hard <base commit>` undoes it (the base is in `fix/fix.json`).
+Checked on Oct 28 from a fresh clone, a new venv and a target made by `tools/make_target.py` (same files as the one every run used): the purple-box loop, without the SAM cache, fixed it in attempt 1, contacts 1 → 0, in 167.3 s for **$0.83** ([`results/fresh_setup.md`](results/fresh_setup.md), which also says what was not redone from scratch).
 
 ## Muse Glimmer, on this PC — provenance
 
@@ -190,6 +121,24 @@ Glimmer is the open-weight model that names objects, describes key frames and re
 
 `python3 tools/pack_example.py <run>/events.jsonl examples/<name>` packs any run the same way: paths made relative to the example, the home folder written as `~`, no keys, and never the scorer's ground truth.
 
+## The console
+
+A local page that shows the loop live, one step at a time, with the model behind each step, from the last 60 seconds rewinding to the moment to the replay before | after, the clock and the bill. "Fix it?" and "Keep the fix?" can be answered there or in the terminal. `python3 -m blinkflow.console serve` (http://localhost:8777); the other commands (the static report, the film mode, the teaser, the side shot) are in [`docs/RUNNING.md`](docs/RUNNING.md#the-console).
+
+<p align="center"><img src="docs/console-fix.png" width="720" alt="The console's fix step: the safety commit, Muse Code's tool calls and its one-line diff"></p>
+<p align="center"><em>Write the fix: a safety commit first, then Muse Code's tool calls and its one-line change.</em></p>
+
+## Where this could go (not built or tested yet)
+
+BlinkFlow needs three things: a screen, a log and a folder of code. Only the deterministic twin and the target are specific to the duck; the rest of the loop is not, so it could serve:
+
+- **Warehouse and delivery robots**, tested every day in simulation before they touch a real shelf.
+- **Home robots**, like a vacuum that keeps getting stuck under the same sofa.
+- **Open-source robots for hobbyists and schools** (Microduck, LeRobot arms, Reachy), whose owners are not robotics experts.
+- **Game characters** that walk through walls or get stuck in doorways: also pixels, logs and code.
+
+On a real robot the proof changes: the real world never repeats exactly, but the robot's recorded sensor log can be replayed through the fixed brain ("with exactly what it saw, would it turn now?"), then checked in simulation, then on the robot, and only with a person's "Keep the fix?".
+
 ## Limits
 
 - **The twin is not the live simulator.** It starts the robot standing (no sit-to-stand boot) and re-states robotd's controller in Python, so robotd itself is bypassed.
@@ -199,25 +148,10 @@ Glimmer is the open-weight model that names objects, describes key frames and re
 - **"Stuck" has no real case.** The watcher checks for it, but no run has had a robot stuck.
 - **The real microphone is untested.** This PC has only a virtual one; voice was measured with TTS sentences.
 
-## Cost
+> Built during the [Meta Global AI Developer Hackathon](https://cerebralvalley.ai/e/meta-ai-developer-hackathon), Oct 26 – Nov 4, 2026. Indie Developer track, theme: Push the Frontier.
+> **Work in progress.** This README grows as each piece starts working. The build log is in [`DEVLOG.md`](DEVLOG.md).
 
-The SAM 3.1 replies are cached by the exact hash of the video bytes, the concept and the parameters: the twin is deterministic, so an unchanged scene gives the same video and is not paid twice. Muse Spark runs on Baseten (`meta-models/muse-spark-open-1026`); Muse Wonder stays on the Meta Model API. Muse Code now runs on `muse-spark-1.3-contributor` ($0.10 / $0.20 per 1M tokens in / out, against $1.25 / $4.25; its conversations may be used for training, and the target and this repo are public): one purple-box loop gave the same fix, 1 → 0, control 5/5, and $0.0053 for Muse Code instead of $0.070 (`BLINKFLOW_MUSE_MODEL=muse-spark-1.3` goes back). The loop costs in Results were all measured on `muse-spark-1.3`, Muse Code included. `python3 tools/spend.py --day YYYY-MM-DD` sums the `models.json` of every run that day, per model and per provider.
-
-## The console
-
-A local page that shows the loop live, one step at a time, with the model behind each step: the last 60 seconds rewinding to the moment, the sentence, SAM 3.1's masks and the distance to first contact, Muse Wonder's cause as it streams with the key frame, the log row and the code line, the change and the safety commit, the replay before | after, the control scenes, the clock and the bill. "Fix it?" and "Keep the fix?" can be answered there or in the terminal, whichever comes first.
-
-```bash
-python3 -m blinkflow.console serve                # http://localhost:8777, follows the newest run
-python3 -m blinkflow.console report <run>/events.jsonl   # the same page as static files, for the report
-python3 -m blinkflow.console serve --film --speed 4 --events <run>/events.jsonl   # full screen at 1920x1080 on Windows, replayed at 4x
-python3 tools/teaser.py <run>/events.jsonl        # the 20 s phone teaser, 16:9 and 1:1, filmed headless, subtitles from the run
-python3 tools/side_shot.py                        # the first touch, low from behind-right, slowed 4x, held 0.5 s; one clip per angle and a sheet (scorer side: twin truth)
-```
-
-The clock counts machine time only: the seconds a person takes to answer "Fix it?" are shown apart and not counted.
-
-The console only reads the loop's event log (`events.jsonl`); the loop runs the same without it. It serves only files the log names, and never the scorer's files. Keep it off the simulator window while recording: the buffer films that window.
+**New vs pre-existing:** everything in this repo was written after the kickoff on Oct 26, 2026; the robot, its simulator and its brain existed before — see [Pre-existing vs built during the hackathon](#pre-existing-vs-built-during-the-hackathon).
 
 ## Pre-existing vs built during the hackathon
 
@@ -242,7 +176,7 @@ Existed before, used only as the test target, not part of this repo:
 
 ## Safety
 
-Muse Code runs under `muse serve`'s default sandboxed profile (not `:unrestricted`). That sandbox does not stop a read or a write outside the target: on Oct 28 one Muse Code turn ($0.05) in a throwaway workspace ran `cat ../canary.txt` without an approval prompt and returned the file's random token, and BlinkFlow's approval handler was never called in the 53 saved turns, edits included. So a tool call that names a path outside the target is **blocked before it runs, by a Muse Code PreToolUse hook** (`muse-gate/`, installed with `python3 -m blinkflow.gate install`). It lives in the data home of the `muse serve` BlinkFlow starts (`~/.local/share/blinkflow/muse-host`) and is trusted for that host only, so your own muse sessions never load it and `~/.config/muse` is not written; BlinkFlow refuses to start Muse Code if it is missing or older than the repo copy. The hook denies with a reason Muse Code reads ("outside the target: /tmp/x. The target is …; work only inside it.") and adds a `musecode.blocked` event that the console shows as "blocked before it ran". File tools may name only paths inside the target; a shell command may also read `/usr`, `/etc`, `/bin`, `/lib`, `/dev`, `/proc` and `/opt`, and may not name `/tmp`, `/var/tmp` or `/dev/shm` at all. If the hook itself fails, the call is denied. How it was measured, Oct 28: (a) offline, $0: all 497 saved tool calls (153 shell commands) from the 53 saved turns through the hook. 9 are refused: the 4 scratch scripts written to `/tmp` and the 5 shell commands that ran them; no call inside the target is refused. (b) Three Muse Code turns (~$0.15) through BlinkFlow's own host, each asked for one thing: `cat ../canary.txt`, `write_file` to `/tmp`, `echo x > /tmp/x`. All three were refused before they ran; neither file exists, and the canary's new token appears in no reply, event or host file. (c) One loop on the purple-box incident with `--auto` (`tools/profile_loop.py run gate-1`, $0.34: its `models.json` says $0.27 because it left Muse Code out, the host having reported no cost, and Muse Code's $0.070 comes from its tokens at the catalog's prices): 1 → 0 contacts, control clean in all 5 scenes, the same fix as before (`side_memory_seconds` 0.0 → 3.0) in attempt 1, nothing blocked, 136.9 s, inside the 135.8–191.0 s of the 8 earlier loops. The hook costs ~0.33 s per tool call (a fresh Python), ~1.7 s of that loop's 23.5 s of Muse Code. The after-turn audit still runs and rejects an attempt for the same reasons; the suites in `results/` ran before the gate existed. Every fix starts from a git commit and can be undone with one command. Before Muse Code writes, BlinkFlow shows the cause in two plain sentences and asks "Fix it?"; after the proof it asks "Keep the fix?", and a no rolls the change back. To undo a fix you kept: `git -C <target> reset --hard <base commit>` (the base commit is the console's "safety save"). `--auto` runs without a person (the bug suites, the watcher).
+Muse Code runs under `muse serve`'s default sandboxed profile, which does not stop a read or a write outside the target, so a PreToolUse hook (`muse-gate/`, `python3 -m blinkflow.gate install`) blocks any tool call that names a path outside the target before it runs. Every fix starts from a git commit; BlinkFlow asks "Fix it?" before Muse Code writes and "Keep the fix?" after the proof, and a no rolls the change back. How it was measured, and how to undo a kept fix: [`docs/SAFETY.md`](docs/SAFETY.md).
 
 ## Credits and licence
 
