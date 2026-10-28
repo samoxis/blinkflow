@@ -91,6 +91,8 @@ python3 -m blinkflow.see /tmp/pb/outside/snapshot.json --out /tmp/pb/incident --
 
 The quickstart replays a recorded run. This runs the loop itself on a new machine: BlinkFlow sees the incident, Muse Wonder finds the cause, Muse Code fixes the target, the twin replays the scene and SAM 3.1 checks it again.
 
+Checked on Oct 28 from a fresh clone, a new venv and a target made by `tools/make_target.py` (same files as the one every run used): the purple-box loop below, without the SAM cache, fixed it in attempt 1, contacts 1 → 0, in 167.3 s for **$0.83** ([`results/fresh_setup.md`](results/fresh_setup.md), which also says what was not redone from scratch).
+
 **1. What you need**
 
 - Linux or WSL2 (tested on WSL2 Ubuntu 24.04), Python 3.12, git, `ffmpeg`, [uv](https://docs.astral.sh/uv/).
