@@ -31,7 +31,8 @@ from .. import events, sim
 
 HOME = pathlib.Path.home()
 STATIC = pathlib.Path(__file__).resolve().parent / "static"
-ICON = pathlib.Path(__file__).resolve().parents[2] / "docs" / "icon.png"
+DOCS = pathlib.Path(__file__).resolve().parents[2] / "docs"
+ICONS = ("icon.png", "favicon-32.png", "icon-180.png")   # header, tab, home screen
 ROOTS = (HOME / "blinkflow-runs",)
 NEVER = re.compile(r"(^contacts.*\.csv$|^truth\.json$|\.xml$|^cam-.*\.csv$)")
 PAGE_FILES = ("index.html", "console.css", "console.js", "maskcodec.js")
@@ -136,8 +137,8 @@ def handler(fixed, frames):
                     return self.send(200, (STATIC / "index.html").read_bytes(), "text/html; charset=utf-8")
                 if u.path == "/static.js":                      # the static report's data; none when live
                     return self.send(200, b"window.BLINKFLOW_STATIC = null;", "text/javascript")
-                if u.path == "/icon.png":
-                    return self.send(200, ICON.read_bytes(), "image/png")
+                if u.path.lstrip("/") in ICONS:
+                    return self.send(200, (DOCS / u.path.lstrip("/")).read_bytes(), "image/png")
                 if u.path.lstrip("/") in PAGE_FILES:
                     f = STATIC / u.path.lstrip("/")
                     return self.send(200, f.read_bytes(), mimetypes.guess_type(f.name)[0] or "text/plain")
@@ -275,7 +276,8 @@ def report(path, out=None):
     (out / "assets").mkdir(parents=True)
     for name in PAGE_FILES:
         shutil.copy(STATIC / name, out / name)
-    shutil.copy(ICON, out / "icon.png")
+    for name in ICONS:
+        shutil.copy(DOCS / name, out / name)
     files, n = {}, 0
     for p in sorted(named_paths(evs)):
         f = servable(p, evs, path)

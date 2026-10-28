@@ -29,5 +29,7 @@ Sorin's entry for the Meta Global AI Developer Hackathon (Oct 26 – Nov 4, 2026
 ## Judging (official participant guide)
 Impact 30% · Use of Meta AI tooling 25% · Technical depth 20% · Demo 25% (0–10). The 3-minute video is a primary artifact; finalists' videos are watched live. Bonus: Open Weights $10k (Glimmer on own hardware counts; flagged in round one, partner verifies), Agentic $5k (autonomy, effectiveness, usefulness), Creative $5k (Muse Image or Muse Wonder). Keep a model manifest in every report.
 
+The icon was made with Meta's Muse Image; provenance in results/icon/.
+
 ## Plan
 Full plan, judging criteria and video script live in the Claude project "BlinkFlow" (`plan.md`, `plan-filmare.md`, `hackathon-reguli.md`). Order: buffer → SAM evidence → Wonder diagnosis → Muse Code fix + replay proof (loop closed by Thu Oct 29) → blind bug set → voice + Glimmer watcher → judge package → video. Features freeze Mon Nov 2 evening.

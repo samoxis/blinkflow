@@ -180,7 +180,7 @@ Muse Code runs under `muse serve`'s default sandboxed profile, which does not st
 
 ## Credits and licence
 
-The icon was generated with Meta's Muse Image.
+The icon was made with Meta's Muse Image; provenance in results/icon/.
 
 The deterministic twin (`blinkflow/twin.py`) is new code, but the physics, the scenes, the depth sensor and the walking policies it runs are imported from [Pollen Robotics' Microduck](https://github.com/pollen-robotics/microduck) (`microduck_rl`), not copied.
 
