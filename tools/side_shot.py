@@ -17,6 +17,7 @@ import argparse
 import csv
 import json
 import math
+import os
 import pathlib
 import subprocess
 import tempfile
@@ -28,8 +29,8 @@ from PIL import Image, ImageDraw, ImageFont
 HOME = pathlib.Path.home()
 REPO = pathlib.Path(__file__).resolve().parent.parent
 TWIN_PY = HOME / "microduck_rl" / ".venv" / "bin" / "python"
-FOOTAGE = pathlib.Path("/mnt/c/Users/sorin/blinkflow/footage")
-FONT = "/mnt/c/Windows/Fonts/arialbd.ttf"
+FOOTAGE = pathlib.Path(os.environ.get("BLINKFLOW_FOOTAGE", "/mnt/c/Users/sorin/blinkflow/footage"))
+FONT = os.environ.get("BLINKFLOW_FONT", "/mnt/c/Windows/Fonts/arialbd.ttf")
 W, H = 1920, 1080
 SRC_FPS, OUT_FPS = 200, 50      # every 5 ms physics step is a frame: 1/4 speed still plays at 50 fps
 DIST, HEIGHT, FOV = 0.28, 0.07, 50   # m from the point of contact (further, a table leg comes between), height, vertical fov

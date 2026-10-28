@@ -19,7 +19,7 @@ HOME = pathlib.Path.home()
 SIM = HOME / "microduck"
 RUNS = HOME / "blinkflow-runs"
 CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-CAM_DIR = "/mnt/c/Users/sorin/blinkflow/camera"
+CAM_DIR = os.environ.get("BLINKFLOW_CAM_DIR", "/mnt/c/Users/sorin/blinkflow/camera")
 
 
 def sim_env(cam_script, port):

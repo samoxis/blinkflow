@@ -19,6 +19,7 @@ import argparse
 import base64
 import io
 import json
+import os
 import pathlib
 import socket
 import subprocess
@@ -35,8 +36,8 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import side_shot  # noqa: E402
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
-FOOTAGE = pathlib.Path("/mnt/c/Users/sorin/blinkflow/footage")
-FONT = "/mnt/c/Windows/Fonts/arialbd.ttf"
+FOOTAGE = pathlib.Path(os.environ.get("BLINKFLOW_FOOTAGE", "/mnt/c/Users/sorin/blinkflow/footage"))
+FONT = os.environ.get("BLINKFLOW_FONT", "/mnt/c/Windows/Fonts/arialbd.ttf")
 FPS = 30
 BG = (10, 11, 14)                      # the console's --bg
 ZOOM = 2                               # the console is filmed at 3840x2160 with the page zoomed 2x: real pixels to crop
