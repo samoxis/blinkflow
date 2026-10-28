@@ -145,7 +145,7 @@ Existed before, used only as the test target, not part of this repo:
 
 ## Safety
 
-Muse Code runs inside its sandbox. Edits outside the target folder are refused by BlinkFlow; reads outside it are stopped by Muse Code's sandbox. After each turn BlinkFlow also checks every shell command Muse Code ran and rejects the attempt if one names a path outside the target. Every fix starts from a git commit and can be undone with one command. Before Muse Code writes, BlinkFlow shows the cause in two plain sentences and asks "Fix it?"; after the proof it asks "Keep the fix?", and a no rolls the change back. `--auto` runs without a person (the bug suites, the watcher).
+Muse Code runs inside its sandbox. Edits outside the target folder are refused by BlinkFlow; reads outside it are stopped by Muse Code's sandbox. After each turn BlinkFlow also checks every shell command Muse Code ran and rejects the attempt if one names a path outside the target. Every fix starts from a git commit and can be undone with one command. Before Muse Code writes, BlinkFlow shows the cause in two plain sentences and asks "Fix it?"; after the proof it asks "Keep the fix?", and a no rolls the change back. To undo a fix you kept: `git -C <target> reset --hard <base commit>` (the base commit is the console's "safety save"). `--auto` runs without a person (the bug suites, the watcher).
 
 ## Credits and licence
 
