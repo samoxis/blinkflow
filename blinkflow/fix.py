@@ -171,6 +171,15 @@ def outside_refs(command):
     refs = [r for r in refs if not re.match(r"~[^/]", r) or expands(r)]   # "~0.3 m" in a heredoc is no path
     refs = [r for r in refs if not re.fullmatch(r"/[\d.]+", r)]          # "d /1000.0" divides
     bad = [r for r in refs if not inside(r) and not r.startswith(SYSTEM_DIRS) and r not in ("/", "~")]
+    # Paths the pattern above cannot see: $HOME, a "~/" inside a word, and relative paths that climb,
+    # resolved against the target (the session's workspace root).
+    for w in re.split(r"[\s'\"|;&<>()`]+", command):
+        if re.search(r"\$\{?HOME\b|.~/", w):
+            bad.append(w)
+        elif "../" in w or w == "..":
+            if not inside(re.sub(r"^[^/]*?[=:]", "", w)):            # "--file=../x" names "../x"
+                bad.append(w)
+    bad = list(dict.fromkeys(bad))
     if "microduck-brain" in command:
         bad.append("microduck-brain")
     return bad
