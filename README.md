@@ -12,7 +12,7 @@
 
 | Criterion | What it shows | Where |
 |---|---|---|
-| **Impact** (30%) | Say what went wrong on screen, get a proven fix in the robot's code: 8/8 held-out bugs fixed blind; live, contact in 5/5 runs before the fix, 0/5 after | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
+| **Impact** (30%) | Say what went wrong on screen, get a proven fix in the robot's code: 8/8 held-out bugs fixed (new seed, code frozen); live, contact in 5/5 runs before the fix, 0/5 after | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
 | **Use of Meta tooling** (25%) | One job per model: Muse Glimmer (open weights, this PC) watches and names, SAM 3.1 tracks, Muse Wonder finds the cause, Muse Code fixes, Muse Voice Transcribe listens. Every call is logged | [How it works](#how-it-works), [`models.json`](examples/purple-box/models.json) |
 | **Technical depth** (20%) | Distances from SAM 3.1's masks, a diagnosis whose citations are checked, an exact replay in a deterministic twin, rollback and retry, a gate before each tool call | [`results/bug_suite.md`](results/bug_suite.md), [Safety](#safety) |
 | **Demo** (25%) | The purple-box incident from the sentence to the proof, as a page anyone can open, and the live console | [The report](https://samoxis.github.io/blinkflow/report/), [The console](#the-console) |

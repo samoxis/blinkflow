@@ -1,0 +1,131 @@
+[
+ {
+  "variant": "m1",
+  "request": {
+   "model": "muse-image-1.0",
+   "prompt": "The head of a white robot duck, three-quarter view, with one large round eye like a camera lens, looking attentively at a small violet (#7C4DFF) box in the lower-right corner. Flat vector app icon. Rounded square with rounded corners, solid dark indigo background (#1A1240). Stylized, rounded shapes, thick uniform outlines. Exactly three colours on the background: white, violet (#7C4DFF) and an orange accent only on the beak. No text, no letters, no gradients, no shading, no texture. Subject large and centred with a 15% margin on every side; it must stay readable at 48x48 pixels.",
+   "n": 1,
+   "size": "1024x1024"
+  },
+  "sent_utc": "2026-10-28T20:03:53+00:00",
+  "seconds": 16.1,
+  "response_headers": {
+   "x-request-id": "e2bf6b0e-b925-426d-bbbc-9218349889ef",
+   "Date": "Wed, 28 Oct 2026 20:04:09 GMT"
+  },
+  "response": {
+   "created": 1793217849,
+   "data": [
+    {
+     "b64_json": "<109056 base64 chars, saved as icon_m1.png>"
+    }
+   ],
+   "output_format": "webp",
+   "background": "opaque",
+   "usage": {
+    "input_tokens": 19068,
+    "output_tokens": 2109,
+    "total_tokens": 21177
+   }
+  },
+  "api_bytes_webp": {
+   "bytes": 81790,
+   "sha256": "b601ef952040b2b1764fc2f339a2c08cf93e956e8a6eace111b843fe81331ff7"
+  },
+  "saved_png": {
+   "file": "icon_m1.png",
+   "bytes": 198872,
+   "sha256": "e5ae2345e25216a3f47a80e6a9f17d45c15ac4e5259056cdd4cf45c8f8d1e8fe",
+   "size": [
+    1024,
+    1024
+   ]
+  }
+ },
+ {
+  "variant": "m2",
+  "request": {
+   "model": "muse-image-1.0",
+   "prompt": "A whole white robot duck built from simple geometric shapes, standing beside a small violet (#7C4DFF) box, looking at it attentively; one large round eye like a camera lens. Flat vector app icon. Rounded square with rounded corners, solid dark indigo background (#1A1240). Stylized, rounded shapes, thick uniform outlines. Exactly three colours on the background: white, violet (#7C4DFF) and an orange accent only on the beak. No text, no letters, no gradients, no shading, no texture. Subject large and centred with a 15% margin on every side; it must stay readable at 48x48 pixels.",
+   "n": 1,
+   "size": "1024x1024"
+  },
+  "sent_utc": "2026-10-28T20:04:09+00:00",
+  "seconds": 24.5,
+  "response_headers": {
+   "x-request-id": "7c78f67a-8c6e-4ca2-bb6a-0db54a99126f",
+   "Date": "Wed, 28 Oct 2026 20:04:33 GMT"
+  },
+  "response": {
+   "created": 1793217873,
+   "data": [
+    {
+     "b64_json": "<85652 base64 chars, saved as icon_m2.png>"
+    }
+   ],
+   "output_format": "webp",
+   "background": "opaque",
+   "usage": {
+    "input_tokens": 29211,
+    "output_tokens": 2766,
+    "total_tokens": 31977
+   }
+  },
+  "api_bytes_webp": {
+   "bytes": 64238,
+   "sha256": "647f1dc4a43b55fe5a60f08a481e03464357a28e44921b93e3acee97a89d0fd8"
+  },
+  "saved_png": {
+   "file": "icon_m2.png",
+   "bytes": 159626,
+   "sha256": "a4d41481bdad34413f1c8dc7f905bf91fa14058bc627e9a27995c0314f088da5",
+   "size": [
+    1024,
+    1024
+   ]
+  }
+ },
+ {
+  "variant": "m3",
+  "request": {
+   "model": "muse-image-1.0",
+   "prompt": "One large round camera-lens eye of a white robot duck filling the icon; in the lens a small reflection of a white duck and a small violet (#7C4DFF) box. Flat vector app icon. Rounded square with rounded corners, solid dark indigo background (#1A1240). Stylized, rounded shapes, thick uniform outlines. Exactly three colours on the background: white, violet (#7C4DFF) and an orange accent only on the beak. No text, no letters, no gradients, no shading, no texture. Subject large and centred with a 15% margin on every side; it must stay readable at 48x48 pixels.",
+   "n": 1,
+   "size": "1024x1024"
+  },
+  "sent_utc": "2026-10-28T20:04:33+00:00",
+  "seconds": 12.1,
+  "response_headers": {
+   "x-request-id": "a5bd166d-74f3-443c-bda3-30ad68df9a88",
+   "Date": "Wed, 28 Oct 2026 20:04:45 GMT"
+  },
+  "response": {
+   "created": 1793217885,
+   "data": [
+    {
+     "b64_json": "<127492 base64 chars, saved as icon_m3.png>"
+    }
+   ],
+   "output_format": "webp",
+   "background": "opaque",
+   "usage": {
+    "input_tokens": 10514,
+    "output_tokens": 1166,
+    "total_tokens": 11680
+   }
+  },
+  "api_bytes_webp": {
+   "bytes": 95618,
+   "sha256": "dadaa9ae381fef1dde281c9edb808f86105bf86915a7a2637006ea270f8a9344"
+  },
+  "saved_png": {
+   "file": "icon_m3.png",
+   "bytes": 249208,
+   "sha256": "218aeea8a65da8e8d3dc7f8e9f96ed371349043392de0a14400210e34781f295",
+   "size": [
+    1024,
+    1024
+   ]
+  }
+ }
+]
