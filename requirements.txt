@@ -1,0 +1,5 @@
+# The full loop (README: Run the full loop). The judge's quickstart needs only requirements-judge.txt.
+-r requirements-judge.txt
+pillow==12.1.1
+muse-code-sdk==1.4.14
+muse-code-msp==1.4.14

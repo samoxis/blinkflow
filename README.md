@@ -87,6 +87,96 @@ python3 -m blinkflow.see /tmp/pb/outside/snapshot.json --out /tmp/pb/incident --
 
 **What needs a key.** Nothing above. Asking the models again does: SAM 3.1 and Muse Wonder need `MODEL_API_KEY` (Meta Model API), a diagnosis with Muse Spark needs `BASETEN_API_KEY` (Baseten), and both also need the robot's code. Keys are read from the environment or `~/.config/blinkflow/env`, never from the repo.
 
+## Run the full loop (GPU)
+
+The quickstart replays a recorded run. This runs the loop itself on a new machine: BlinkFlow sees the incident, Muse Wonder finds the cause, Muse Code fixes the target, the twin replays the scene and SAM 3.1 checks it again.
+
+**1. What you need**
+
+- Linux or WSL2 (tested on WSL2 Ubuntu 24.04), Python 3.12, git, `ffmpeg`, [uv](https://docs.astral.sh/uv/).
+- An NVIDIA GPU that holds Muse Glimmer. The runs here used an RTX 4090 (24 GB); with the live simulator beside it the peak was 20.5 of 24.6 GB ([`results/watcher.md`](results/watcher.md)). Glimmer is required: Muse Spark Open on Baseten (`BASETEN_API_KEY`) stands in only when Glimmer's answer for naming the objects or reading the sentence cannot be used. No setting replaces Glimmer, and the key-frame descriptions have no fallback, so without such a GPU use the quickstart above.
+- [Ollama](https://ollama.com) serving on `127.0.0.1:11434` (on WSL2, Ollama for Windows works), with Glimmer:
+
+  ```bash
+  ollama pull muse-glimmer
+  ```
+
+- The Muse Code CLI and its Python SDK, both 1.4.14 (the SDK must match `muse --version`). The launcher installs `muse` in `~/.local/bin` and signs you in with your Meta account:
+
+  ```bash
+  curl -fsSL https://api.meta.ai/muse-launcher.sh | bash
+  ```
+
+- Keys in `~/.config/blinkflow/env` (or the environment), never in the repo:
+
+  ```
+  MODEL_API_KEY=...       # Meta Model API: SAM 3.1, Muse Wonder, Muse Voice Transcribe
+  BASETEN_API_KEY=...     # optional: Muse Spark Open, the fallback
+  ```
+
+**2. BlinkFlow and its gate**
+
+```bash
+git clone https://github.com/samoxis/blinkflow && cd blinkflow
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r requirements.txt
+python3 -m blinkflow.gate install
+```
+
+The gate is Muse Code's PreToolUse hook (see [Safety](#safety)); BlinkFlow will not start Muse Code without it.
+
+**3. The target and the simulator** (pre-existing, outside this repo; the paths below are the ones BlinkFlow expects)
+
+```bash
+python3 tools/make_target.py ~/duck-target
+git clone -b blinkflow-demo-scene https://github.com/samoxis/microduck_rl ~/microduck_rl
+(cd ~/microduck_rl && uv sync)
+git clone https://github.com/pollen-robotics/microduck ~/microduck
+git -C ~/microduck checkout ded2f7c980217049817580562b2bbc7393b16de4
+sh ~/microduck/scripts/seed-policies.sh ~/.cache/duck-sim/policies
+```
+
+- `tools/make_target.py` clones [microduck-brain](https://github.com/samoxis/microduck-brain) at `e1e157d`, keeps only the code (no README, docs, tests, tools, CI or history), puts in the demo bug (the robot judges "ahead" from the front columns only and forgets what it passed: its right leg brushes the purple box) and rewrites the comments that would name it, then makes one base commit. The result is the same, file for file, as the target every run in `results/` used.
+- `microduck_rl` is Pollen Robotics' simulation (MuJoCo, the walking policies' runtime) on the branch [`blinkflow-demo-scene`](https://github.com/samoxis/microduck_rl/tree/blinkflow-demo-scene): upstream `8d0db74` plus the recoloured demo scene with the purple box. The twin loads that scene.
+- `microduck` is Pollen Robotics' robot stack; `seed-policies.sh` downloads the walking policies from the Hugging Face Hub. The live simulator also builds its daemons from it with `cargo` the first time it starts.
+
+**4. One loop on the purple box**
+
+Without the sidecar (any Linux, no simulator window): the recorded live clip in [`examples/purple-box/outside/`](examples/purple-box/outside) plays on the clock as if it were the 60 s buffer, the key goes down at 12.4 s of the brain's time (the leg touches the box at ~12.0 s), and the sentence is typed. From there on it is the same loop as live; only the proof needs the twin.
+
+```bash
+python3 -m blinkflow.voice clip examples/purple-box/outside/snapshot.json --press 12.4 \
+  --text "just now its right leg hit the purple box" --brain ~/duck-target --auto
+```
+
+Live (Windows 11 + WSL2). On the Windows side: Python 3 on the PATH as `python` (the sidecar, [`sidecar/capture.py`](sidecar/capture.py), uses only the standard library), an `ffmpeg` with `ddagrab` and NVENC on the PATH, and Google Chrome. The browser view and the camera of the simulator go into `microduck_rl`'s environment once:
+
+```bash
+cp ~/microduck_rl/blinkflow-demo/duck_viser_hook.* ~/microduck_rl/blinkflow-demo/duck_cam_director.py \
+  ~/microduck_rl/.venv/lib/python3.12/site-packages/
+uv pip install --python ~/microduck_rl/.venv/bin/python viser==1.0.30 mjviser==0.0.14
+python3 -m blinkflow.voice live --type --auto
+```
+
+BlinkFlow starts the simulator in the demo scene, the Viser window in Chrome and the sidecar itself, and the robot walks for 30 s: press Enter when you see it go wrong, then type what you saw. Without `--type`, hold F9 and say it. Without `--auto`, BlinkFlow asks "Fix it?" before Muse Code writes and "Keep the fix?" after the proof.
+
+**5. What comes out**
+
+One folder per run, `~/blinkflow-runs/voice/<stamp>/` (or `--out DIR`):
+
+| File | What it holds |
+|---|---|
+| `voice.json` | what was heard, the moment, the incident as seen, the loop's outcome |
+| `events.jsonl` | every step, for the console: `python3 -m blinkflow.console report <run>/events.jsonl --out report` |
+| `window/` | the snapshot cut from the buffer, and `evidence/`: SAM 3.1's masks, the distance per frame, first contact, the key frames, Muse Wonder's diagnosis (`diagnosis.md`) |
+| `fix/fix.json` | the base commit, each attempt, fixed or not, kept or not |
+| `fix/attempt-N/` | Muse Code's prompt and turn (`muse-code.json`), `change.diff`, the replay in the twin and its `verdict.json` |
+| `fix/before/` | the same scene replayed before the fix, measured the same way |
+| `fix/models.json` | every model call: model, where it ran, tokens or frames, seconds, cost |
+| `fix/report.md` | the run in plain words |
+
+The fix itself is a commit in `~/duck-target`, on top of the base commit. With `--auto` it is kept; `git -C ~/duck-target reset --hard <base commit>` undoes it (the base is in `fix/fix.json`).
+
 ## Muse Glimmer, on this PC — provenance
 
 Glimmer is the open-weight model that names objects, describes key frames and reads the person's sentence, on an RTX 4090 through Ollama. To check that without this PC, [`examples/purple-box/`](examples/purple-box) carries:
@@ -135,8 +225,9 @@ Existed before, used only as the test target, not part of this repo:
 
 - [microduck-brain](https://github.com/samoxis/microduck-brain), an autonomy layer for the open-source Microduck biped (Apache-2.0), by the same author. BlinkFlow works on a clean copy of it (no README, no tests, no history, hint comments rewritten), so it cannot read the answer.
 - The Microduck MuJoCo simulation and walking policies by [Pollen Robotics / Hugging Face](https://github.com/pollen-robotics/microduck) (Apache-2.0), and a recoloured demo scene.
-- A screen-recording and camera-direction script used to film the simulator (Oct 22).
-- The script that strips the brain's README, tests and hint comments to make the target. It predates the kickoff and is not in this repo.
+- The recoloured demo scene with the purple box, the hook that shows the simulator in the browser (Viser) and the camera-direction script that films it (all Oct 22). Published unchanged, after the kickoff and labelled as pre-existing, on the branch [`blinkflow-demo-scene`](https://github.com/samoxis/microduck_rl/tree/blinkflow-demo-scene) of the author's `microduck_rl` fork: `scene_demo.xml`, `apartment_demo.xml`, `duck_viser_hook.py` + `.pth`, `duck_cam_director.py` and the incident's camera script `shots_incident.json`.
+- The demo bug in the brain: the author's commit "demo: reintroduce finding 6" (Oct 22), never pushed. `tools/make_target.py` re-states it as text edits.
+- The script that first made the target (strip the README, tests and hint comments). Not in this repo. It was started before the kickoff (Oct 26, 14:42) and its list of hint comments was last edited at 19:32 that day. **`tools/make_target.py` replaces it: rewritten from scratch on Oct 28, no code copied**, and it makes the same target file for file.
 - Preparation tests made before the kickoff on Oct 26: a first API call, SAM 3.1 tracking on an old clip, a headless Muse Code session, a Muse Glimmer test and a prototype screen buffer. None of that code is included; the buffer was rewritten from scratch here.
 
 ## Honesty notes
