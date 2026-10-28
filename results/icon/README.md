@@ -35,3 +35,22 @@ then the image is cropped to the rounded square and resized to 1024×1024 (Lancz
 How each kept the brief: a1 still draws a double outline around the head; a2 has one shape, two violet rings and the
 pupil down-right, but its beak is a lighter orange than the others; a3 has the largest box and the shadow, but its eye
 adds a second violet shade and a white highlight instead of rings.
+
+## Round 3: an edit of a reference
+
+Oct 28. The reference is an earlier reference image supplied by the author, a 2048×2048 JPEG, SHA-256
+`8044abb22790cf860ca7dada4bf42472650e0c020f5a8659a4629f6ce88c2272`; it is not in the repo. Three calls to
+`muse-image-1.0` through `POST /v1/images/edits` (multipart, the reference as `image`, `n` 1, `size` "1024x1024"),
+the same prompt each time: redraw it cleanly, not a pixel copy, same composition (the head and neck of a white robot
+duck, a large violet eye with two highlights, an orange beak pointing at a violet cube in the lower right, a dark
+indigo rounded square), the same flat style with thick even outlines, white, violet and orange only, no shading, no
+text. [`muse-image-r3.json`](muse-image-r3.json) keeps the prompt, the input's hash, `created`, `usage`,
+`x-request-id`, and the SHA-256 of each reply and saved PNG.
+
+The endpoint took the JPEG. The replies were opaque 1600×1600 WebP; the white outside the rounded square was made
+transparent and the result saved at 1024×1024, as in round 2. The sheet puts the reference above the three, each at
+1024, 128, 48 and 32 px on light and on dark.
+
+All three keep the reference's composition almost exactly. e2 drops its lavender shading on the head and neck (no
+light grey-violet in its main colours); e1 and e3 keep that shading, as the reference has it. All three, like the
+reference, draw the outline in a darker indigo and the cube's faces in two violets.
