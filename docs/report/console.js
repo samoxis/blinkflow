@@ -1031,9 +1031,11 @@ P.done = () => {
   const billed = local.reduce((x, m) => x + (m.cost_usd || 0), 0);
   const names = [];
   for (const m of cloud) { const n = friendly(m); if (!names.includes(n)) names.push(n); }
+  const quant = (st.vram && st.vram.quantization) || (STATIC && STATIC.glimmer_quantization);
+  const mine = [...new Set(local.map(friendly))].map((n) => n === "Muse Glimmer" && quant ? `${n} ${quant}` : n);
   box.append(h("div", { class: "where2" },
     h("div", { class: "pc" }, h("span", { class: "k" }, "On this PC"),
-      h("span", {}, `${[...new Set(local.map(friendly))].join(", ") || "Muse Glimmer"}${st.vram && st.vram.vram_gb ? `, ${num(st.vram.vram_gb)} GB VRAM` : ""}, `,
+      h("span", {}, `${mine.join(", ") || "Muse Glimmer"}${st.vram && st.vram.vram_gb ? `, ${num(st.vram.vram_gb)} GB VRAM` : ""}, `,
         h("b", {}, billed === 0 ? "0 tokens billed" : `${usd(billed)} billed`), ".")),
     h("div", { class: "cloud" }, h("span", { class: "k" }, "In the cloud"),
       h("span", {}, names.join(", ") || "–", " · ", h("b", {}, usd(cloud.reduce((x, m) => x + (m.cost_usd || 0), 0)))))));

@@ -291,8 +291,10 @@ def report(path, out=None):
         else:
             shutil.copy(f, out / dest)
         files[p] = dest
-    (out / "static.js").write_text("window.BLINKFLOW_STATIC = " + json.dumps({"events": evs, "files": files,
-                                                                              "source": rel(path)}) + ";\n")
+    model = path.parent / "glimmer-model.txt"     # `ollama show` saved beside a packed example
+    quant = re.search(r"^\s*quantization\s+(\S+)", model.read_text(), re.M) if model.is_file() else None
+    (out / "static.js").write_text("window.BLINKFLOW_STATIC = " + json.dumps({
+        "events": evs, "files": files, "source": rel(path), "glimmer_quantization": quant and quant[1]}) + ";\n")
     size = sum(f.stat().st_size for f in out.rglob("*") if f.is_file())
     print(json.dumps({"report": str(out / "index.html"), "events": len(evs), "files": len(files),
                       "mb": round(size / 1e6, 1)}))

@@ -114,6 +114,9 @@ Checked on Oct 28 from a fresh clone, a new venv and a target made by `tools/mak
 
 Glimmer is the open-weight model that names objects, describes key frames and reads the person's sentence, on an RTX 4090 through Ollama. To check that without this PC, [`examples/purple-box/`](examples/purple-box) carries:
 
+**The model:** `muse-glimmer`, 27.9B, quantization **Q4_K_M**, projector clip 1.9B, served by Ollama 0.40.11, digest `de878ce33ad8`. The weights are Ollama's public library model [`muse-glimmer:30b-q4_K_M`](https://ollama.com/library/muse-glimmer) (also its `latest`), unchanged: the public manifest's SHA-256 is that digest, and its model and projector layers are the SHA-256 of the two weight files on this PC.
+
+- [`glimmer-model.txt`](examples/purple-box/glimmer-model.txt): `ollama show muse-glimmer` on this PC, the SHA-256 of both weight files, the public manifest, and the one `curl | sha256sum` that checks it without a GPU.
 - [`models.json`](examples/purple-box/models.json): every model call of the run. Glimmer's ten are `muse-glimmer`, `local`, with tokens in and out and seconds (the sentence, the names, four key frames, the names in four control scenes). Of the 56 SAM 3.1 calls, 34 were paid ($0.77 of the run's $0.99) and 22 are `cached, $0`, each with the hash of the video bytes, concept and parameters it answers.
 - [`provenance.txt`](examples/purple-box/provenance.txt): `ollama ps` and `nvidia-smi` sampled every ~3 s while the run ran, with timestamps that line up with Glimmer's calls: `muse-glimmer`, 16 GB, 100% GPU, context 8192.
 - [`glimmer.jsonl`](examples/purple-box/glimmer.jsonl): Glimmer's raw replies from the run, each with what it was asked and the image it saw.

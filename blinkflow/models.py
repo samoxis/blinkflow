@@ -152,11 +152,11 @@ def warm_glimmer():
 
 
 def glimmer_vram():
-    """Glimmer as Ollama holds it now: {"vram_gb", "size_gb", "context"} (None when it is not loaded)."""
+    """Glimmer as Ollama holds it now: {"vram_gb", "size_gb", "context", "quantization"} (None when it is not loaded)."""
     with urllib.request.urlopen(OLLAMA.replace("/api/chat", "/api/ps"), timeout=5) as r:
         m = next((m for m in json.load(r)["models"] if m["name"].split(":")[0] == GLIMMER), None)
     return m and {"vram_gb": round(m["size_vram"] / 1e9, 1), "size_gb": round(m["size"] / 1e9, 1),
-                  "context": m.get("context_length")}
+                  "context": m.get("context_length"), "quantization": (m.get("details") or {}).get("quantization_level")}
 
 
 def chat_content(content):

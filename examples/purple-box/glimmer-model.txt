@@ -1,0 +1,85 @@
+# Muse Glimmer as this PC runs it (Windows 11, Ollama for Windows, RTX 4090), read Oct 29, 2026: the same
+# model ID that `ollama ps` shows in provenance.txt while this example ran (de878ce33ad8).
+#
+# Checkable without our GPU. The weights are Ollama's public library model muse-glimmer:30b-q4_K_M, which is
+# also its `latest`:
+#   curl -s -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+#     https://registry.ollama.ai/v2/library/muse-glimmer/manifests/30b-q4_K_M | sha256sum
+# prints de878ce33ad81d06..., the ID `ollama list` gives this model here (Ollama's ID is that manifest's SHA-256).
+# The manifest's model and projector layers are the SHA-256 of the two weight files on this PC (below).
+
+=== ollama --version
+ollama version is 0.40.11
+
+=== ollama show muse-glimmer
+  Model
+    architecture        muse-glimmer       
+    parameters          27.9B              
+    context length      131072             
+    embedding length    6656               
+    quantization        Q4_K_M             
+    requires            0.32.8             
+    renderer            glimmer            
+    parser              glimmer            
+    template source     renderer_parser    
+
+  Capabilities
+    completion     
+    vision         
+    tools          
+    thinking       
+        levels     false, low, medium, high, max    
+        default    high                             
+
+  Projector
+    architecture        clip    
+    parameters          1.9B    
+    embedding length    1536    
+    dimensions          6656    
+
+  Parameters
+    temperature    1       
+    top_k          64      
+    top_p          0.95    
+
+=== ollama list (this model)
+NAME                                                            ID              SIZE      MODIFIED     
+muse-glimmer:latest                                             de878ce33ad8    18 GB     3 days ago      
+
+=== SHA-256 of the two weight files in Ollama's store on this PC (Get-FileHash; folder left out), bytes
+model      71b5c9c9abbc2a9e7c13550b6f9fe1f062650117a24490b15a310cbd7de03f8b  16756681056
+projector  f48b452316f9b213758e8659444029b961a24a07f99a1abb2a9f88b06f7c00c6  1400328928
+
+=== sha256 of the public manifests (Oct 29)
+de878ce33ad81d060001db1469a02eebe4d86f0ad58cfe52dc062fdcbe4464c1  library/muse-glimmer:30b-q4_K_M
+de878ce33ad81d060001db1469a02eebe4d86f0ad58cfe52dc062fdcbe4464c1  library/muse-glimmer:latest
+
+=== the public manifest, https://registry.ollama.ai/v2/library/muse-glimmer/manifests/30b-q4_K_M
+{
+    "schemaVersion": 2,
+    "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+    "config": {
+        "mediaType": "application/vnd.docker.container.image.v1+json",
+        "digest": "sha256:57b82200bf7c0d7d7051c1349e584f193db42799c74529a96c83addd0fa80147",
+        "size": 226
+    },
+    "layers": [
+        {
+            "mediaType": "application/vnd.ollama.image.projector",
+            "digest": "sha256:f48b452316f9b213758e8659444029b961a24a07f99a1abb2a9f88b06f7c00c6",
+            "size": 1400328928,
+            "from": "muse-glimmer:30b-q4_K_M"
+        },
+        {
+            "mediaType": "application/vnd.ollama.image.model",
+            "digest": "sha256:71b5c9c9abbc2a9e7c13550b6f9fe1f062650117a24490b15a310cbd7de03f8b",
+            "size": 16756681056,
+            "from": "muse-glimmer:30b-q4_K_M"
+        },
+        {
+            "mediaType": "application/vnd.ollama.image.params",
+            "digest": "sha256:56380ca2ab89f1f68c283f4d50863c0bcab52ae3f1b9a88e4ab5617b176f71a3",
+            "size": 42
+        }
+    ]
+}
