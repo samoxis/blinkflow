@@ -5,12 +5,11 @@
 (() => {
 const STATIC = window.BLINKFLOW_STATIC || null;
 const TEXT = window.BLINKFLOW_TEXT;
-// ?film=1: made to be filmed (no cursor, no buttons, the three verbs on top, bigger badges); &speed=N: a finished
-// run replayed at N times its pace; &script=1: the whole run loaded and held still, for a script to show
-// (BLINKFLOW.seek / pin); &mic=…: in the film, the microphone as the person filming names it (the stream does
-// not carry the device; the run's voice.json does)
+// ?film=1: made to be filmed (no cursor, no buttons, the three verbs on top, bigger badges, the clock in seconds);
+// &speed=N: a finished run replayed at N times its pace; &script=1: the whole run loaded and held still, for a
+// script to show (BLINKFLOW.seek / pin)
 const Q = new URLSearchParams(location.search);
-const FILM = Q.has("film"), SPEED = +Q.get("speed") || null, SCRIPTED = Q.has("script"), MIC = Q.get("mic");
+const FILM = Q.has("film"), SPEED = +Q.get("speed") || null, SCRIPTED = Q.has("script");
 
 // ── small helpers ──────────────────────────────────────────────────────────
 function h(tag, attrs, ...kids) {
@@ -167,10 +166,11 @@ function on(e) {
     case "ask": st.asks.push(e); step = e.question === "Fix it?" ? "ask" : "proof"; break;
     case "answer": st.answers[e.id] = e; step = "ask"; follow = false; break;
     case "checkpoint": st.checkpoint = e; step = "fix"; follow = false; break;
-    case "musecode.start": case "musecode.tool": case "musecode.blocked": case "change": {
+    case "musecode.start": case "musecode.gate": case "musecode.tool": case "musecode.blocked": case "change": {
       const c = st.code[e.tag] ||= { tag: e.tag, start: null, tools: new Map(), change: null };
       if (!st.codeOrder.includes(e.tag)) st.codeOrder.push(e.tag);
       if (e.type === "musecode.start") c.start = e;
+      else if (e.type === "musecode.gate") c.gate = e;
       else if (e.type === "musecode.tool") c.tools.set(e.id, e);
       else if (e.type === "musecode.blocked") c.tools.set(`blocked-${e.id}`, { ...e, status: "blocked" });
       else c.change = e;
@@ -623,11 +623,13 @@ P.heard = () => {
   const badge = typed() ? null : h("span", { class: "said-by voice" }, `heard by ${MODEL.voice[0]} in ${secs(st.said.seconds)}`);
   return [head("heard", badge), box];
 };
-// film: the key and, when the person filming names it, the microphone (none, or one line to append)
+// film: the key and the microphone the stream names (voice live writes the device into its listen event;
+// older streams have none, and no chip); none, or one line to append
 function keyLine() {
   if (!FILM || typed() || (st.listen && st.listen.typed)) return [];
+  const mic = st.listen && st.listen.mic;
   return [h("div", { class: "keyline" }, h("span", {}, h("b", {}, (st.listen && st.listen.key) || "F9"), " · hold and speak"),
-    MIC ? h("span", {}, "mic: ", h("b", {}, MIC)) : null)];
+    mic ? h("span", { title: mic }, "mic: ", h("b", {}, /RB Meta/i.test(mic) ? "Ray-Ban Meta glasses" : mic)) : null)];
 }
 
 // The sentence's own words, coloured by what was read from them: the moment, the robot, what happened, the
@@ -896,9 +898,9 @@ P.fix = () => {
         h("span", { class: "args" }, t.reason ? `blocked before it ran: ${t.reason}` : brief(t.args))));
     }
     if (!c.tools.size) tools.append(wait("Muse Code reads the diagnosis and the code"));
-    // film: BlinkFlow's gate (muse-gate/, required by fix.py since Oct 28) asks before every tool call
+    // film: BlinkFlow's gate asks before every tool call; shown only when the stream says which hook was loaded
     const blocked = [...c.tools.values()].filter((t) => t.status === "blocked").length;
-    if (FILM && c.start) tools.append(h("div", { class: `gatebadge ${blocked ? "hit" : ""}` }, h("b", {}, "gate: target folder only"),
+    if (FILM && c.gate) tools.append(h("div", { class: `gatebadge ${blocked ? "hit" : ""}`, title: `${c.gate.hook} sha256 ${c.gate.hook_sha256}` }, h("b", {}, "gate: target folder only"),
       ` · ${c.tools.size} call${c.tools.size === 1 ? "" : "s"} checked · ${blocked} blocked`));
   }
   box.append(h("div", { class: "card" }, h("h3", {}, c ? `Muse Code at work · ${tag}${c.start && c.start.model ? " · " + c.start.model : ""}` : "Muse Code"),
@@ -1196,7 +1198,7 @@ function render() {
   document.getElementById("mode").className = `pill ${fromFile ? "" : "live"} ${SPEED ? "speed" : ""}`;
   const clock = document.getElementById("clock");
   const c = clockNow();
-  clock.textContent = c == null ? "–" : clockText(c);
+  clock.textContent = c == null ? "–" : FILM ? `${num(c)} s` : clockText(c);     // the film says the seconds aloud
   clock.classList.toggle("stopped", !!st.clock.stop);
   const answered = st.asks.filter((a) => st.answers[a.id] && a.question === "Fix it?");
   document.getElementById("youm").hidden = !answered.length;

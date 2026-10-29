@@ -267,7 +267,7 @@ def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=
                                  str(record)], cwd=brain, env=env, stdout=subprocess.DEVNULL,
                                 stderr=subprocess.DEVNULL, start_new_session=True)
         events.emit("brain.start", at=launched, seconds=seconds)
-        events.emit("listen", key=KEY, typed=type_)
+        events.emit("listen", key=KEY, typed=type_, mic=None if type_ else health.get("mic"))   # the device recording
         print(f"The robot is walking ({seconds:g} s). " + ("Type what you see." if type_ else
               f"When it goes wrong, hold {KEY} and say what you saw and when, e.g. "
               "\"two seconds ago its right leg hit the purple box\"."), flush=True)

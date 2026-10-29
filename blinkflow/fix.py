@@ -25,6 +25,7 @@ import argparse
 import asyncio
 import concurrent.futures
 import functools
+import hashlib
 import json
 import os
 import pathlib
@@ -236,22 +237,27 @@ def audit(calls):
 
 def gate():
     """`muse serve` arguments and environment that load BlinkFlow's gate (muse-gate/, a PreToolUse hook)
-    from the host's own data home, trusted for this host only. Refuses if it is missing or stale."""
+    from the host's own data home, trusted for this host only, and what was loaded (for the stream).
+    Refuses if it is missing or stale."""
     env = {**os.environ, "XDG_DATA_HOME": str(GATE_HOME)}
     r = subprocess.run(["muse", "plugins", "inspect", GATE_PLUGIN, "--json"], env=env, capture_output=True, text=True)
     if r.returncode:
         raise RuntimeError("BlinkFlow's gate is not installed: python3 -m blinkflow.gate install")
     info = json.loads(r.stdout)
     hook = "hooks/pre_tool_use.py"
-    if (pathlib.Path(info["record"]["cache_path"]) / hook).read_bytes() != (GATE_BUNDLE / hook).read_bytes():
+    code = (pathlib.Path(info["record"]["cache_path"]) / hook).read_bytes()
+    if code != (GATE_BUNDLE / hook).read_bytes():
         raise RuntimeError("BlinkFlow's gate is stale: python3 -m blinkflow.gate install")
     cap = info["runtime_capabilities"][0]["candidate"]
     trust = {cap["stable_id"]: {"enabled": True, "trusted_definition_hash": cap["definition_hash"]}}
-    return ["-c", "runtime_capabilities=" + json.dumps(trust)], env
+    loaded = {"plugin": GATE_PLUGIN, "hook": hook, "hook_sha256": hashlib.sha256(code).hexdigest(),
+              "definition_hash": cap["definition_hash"]}
+    return ["-c", "runtime_capabilities=" + json.dumps(trust)], env, loaded
 
 
 async def turn(prompt, model, log, tag=""):
-    gate_args, env = gate()
+    gate_args, env, loaded = gate()
+    events.emit("musecode.gate", tag=tag, **loaded)    # the hook that asks before every tool call of this turn
     (GATE_HOME / GATE_CONF).write_text(json.dumps({"repo": str(REPO), "target": str(TARGET),
                                                    "events": str(events.path() or ""), "tag": tag}))
     args = ["serve", *gate_args] + (["--model", model] if model else [])
