@@ -1,0 +1,36 @@
+# README "Try it in ~2 min, no GPU", step by step, on a clean machine: no keys, no GPU, no simulator.
+name: judge path
+on: push
+permissions:
+  contents: read
+jobs:
+  judge-path:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: ffmpeg
+        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+      - name: "1. The report (standard library only)"
+        run: |
+          python3 -m blinkflow.console report examples/purple-box/events.jsonl --out report
+          test -s report/index.html
+      - name: "2. Measure it again, offline"
+        run: |
+          pip install -r requirements-judge.txt
+          cp -r examples/purple-box /tmp/pb
+          python3 -m blinkflow.see /tmp/pb/window/snapshot.json --out /tmp/pb/window/evidence --reuse > /dev/null
+      - name: The same evidence as the repo's, but for the two paths it names
+        run: |
+          python3 - <<'PY'
+          import json
+          a = json.load(open("/tmp/pb/window/evidence/evidence.json"))
+          b = json.load(open("examples/purple-box/window/evidence/evidence.json"))
+          diff = sorted(k for k in a.keys() | b.keys() if a.get(k) != b.get(k))
+          print("differs only in:", diff)
+          assert diff == ["clip", "snapshot"], diff  # both paths differ: the file was written again, here
+          assert a["first_contact"]["brain_s"] == 11.202, a["first_contact"]
+          PY

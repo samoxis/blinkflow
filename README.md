@@ -4,7 +4,7 @@
 
 **The robot did something wrong? Just say what you saw.**
 
-**[See a real run, no install](https://samoxis.github.io/blinkflow/report/)**: the purple-box incident from the snapshot to the proof, the static report built from `examples/purple-box/`.
+**[See a real run, no install](https://samoxis.github.io/blinkflow/report/)**: the purple-box incident, from the snapshot to the proof. It is the static report of `examples/purple-box/`.
 
 <p align="center"><img src="docs/blinkflow.gif" width="640" alt="The robot's right leg brushes the purple box; after BlinkFlow's fix, contacts go from 1 to 0"></p>
 
@@ -12,9 +12,9 @@
 
 | Criterion | What it shows | Where |
 |---|---|---|
-| **Impact** (30%) | Say what went wrong on screen, get a proven fix in the robot's code: 8/8 bugs fixed on a held-out pass (new seed, code frozen; 7 of the 8 repeat first-pass mutations, 1 is new); live, contact in 5/5 runs before the fix, 0/5 after | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
-| **Use of Meta tooling** (25%) | One job per model: Muse Glimmer (open weights, this PC) watches and names, SAM 3.1 tracks, Muse Wonder finds the cause, Muse Code fixes, Muse Voice Transcribe listens. Every call is logged | [How it works](#how-it-works), [`models.json`](examples/purple-box/models.json) |
-| **Technical depth** (20%) | Distances from SAM 3.1's masks, a diagnosis whose citations are checked, an exact replay in a deterministic twin, rollback and retry, a gate before each tool call | [`results/bug_suite.md`](results/bug_suite.md), [Safety](#safety) |
+| **Impact** (30%) | Say what went wrong on screen, get a proven fix in the robot's code. 8/8 bugs fixed on a held-out pass: new seed, code frozen. 7 of the 8 repeat first-pass mutations; 1 is new. Live: contact in 5/5 runs before the fix, 0/5 after | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
+| **Use of Meta tooling** (25%) | One job per model. Muse Glimmer (open weights, on this PC) watches and names. SAM 3.1 tracks. Muse Wonder finds the cause. Muse Code fixes. Muse Voice Transcribe listens. Every call is logged | [How it works](#how-it-works), [`models.json`](examples/purple-box/models.json) |
+| **Technical depth** (20%) | Distances from SAM 3.1's masks. A diagnosis whose citations are checked. An exact replay in a deterministic twin. Rollback and retry. A gate before each tool call | [`results/bug_suite.md`](results/bug_suite.md), [Safety](#safety) |
 | **Demo** (25%) | The purple-box incident from the sentence to the proof, as a page anyone can open, and the live console | [The report](https://samoxis.github.io/blinkflow/report/), [The console](#the-console) |
 
 **Open weights:** Muse Glimmer runs on this PC → [provenance](#muse-glimmer-on-this-pc--provenance).
@@ -22,13 +22,13 @@
 
 ## What is new here
 
-- **Pixels, not the simulator's API.** BlinkFlow watches the window, as the developer does. Deterministic checks first, then the model: SAM 3.1's masks become distances and a first contact before Muse Wonder sees anything, and its answer is checked against what was sent.
-- **The proof is the same scene.** Replayed exactly in a deterministic twin and measured again on pixels; a failed fix is rolled back and retried, and the person answers "Keep the fix?".
-- **A referee the agent never sees, and a gate.** Results are scored from contact logs BlinkFlow never receives. The agent's tools are the perimeter: a Muse Code call naming a path outside the target is blocked before it runs.
+- **It watches pixels, not the simulator's insides.** BlinkFlow looks at the window, as the developer does. Plain measurements come first: SAM 3.1's masks become distances and a first contact. Only then does Muse Wonder look, and its answer is checked against what it was sent.
+- **The proof is the same scene, played again.** A deterministic twin replays it exactly, and it is measured again on pixels. A fix that fails is undone and tried again. Then the person answers "Keep the fix?".
+- **A referee the agent never sees, and a gate.** Results are scored from contact logs that BlinkFlow never gets. Every Muse Code tool call is checked first: one that names a path outside the target is blocked before it runs.
 
 ## Contents
 
-[For the judges](#for-the-judges-5-minutes) · [What is new](#what-is-new-here) · [The robot](#the-robot-in-the-demo) · [How it works](#how-it-works) · [Results](#results) · [Try it in ~2 min](#try-it-in-2-min-no-gpu) · [Run the full loop](#run-the-full-loop-3060-min-gpu) · [Glimmer provenance](#muse-glimmer-on-this-pc--provenance) · [Limits](#limits) · [Pre-existing vs built](#pre-existing-vs-built-during-the-hackathon) · [Safety](#safety)
+[For the judges](#for-the-judges-5-minutes) · [What is new](#what-is-new-here) · [The robot](#the-robot-in-the-demo) · [How it works](#how-it-works) · [The code](#where-it-is-in-the-code) · [Results](#results) · [Try it in ~2 min](#try-it-in-2-min-no-gpu) · [Run the full loop](#run-the-full-loop-3060-min-gpu) · [Glimmer provenance](#muse-glimmer-on-this-pc--provenance) · [Limits](#limits) · [Pre-existing vs built](#pre-existing-vs-built-during-the-hackathon) · [Safety](#safety)
 
 ## The robot in the demo
 
@@ -59,6 +59,16 @@ What it films is the simulator's window on your screen, not a camera on the robo
 
 <p align="center"><img src="docs/console-see.png" width="720" alt="The console's See step: masks on the robot and the purple box, a magnifier on the contact"></p>
 <p align="center"><em>See: SAM 3.1 follows both objects on every frame; the gap in pixels gives the first contact (the 166.4 s run).</em></p>
+
+## Where it is in the code
+
+- **The 60 s buffer:** [`sidecar/capture.py`](sidecar/capture.py) on Windows keeps the ring of 1 s segments; [`blinkflow/capture.py`](blinkflow/capture.py) (`Sidecar`) starts it and cuts snapshots from WSL.
+- **Muse Glimmer:** [`blinkflow/models.py`](blinkflow/models.py) (`glimmer`), called to name objects in [`see.py`](blinkflow/see.py) (`name_objects`), describe key frames in [`diagnose.py`](blinkflow/diagnose.py) (`build_frames`), read the sentence in [`voice.py`](blinkflow/voice.py) (`parse`) and watch in [`watch.py`](blinkflow/watch.py) (`Watcher`).
+- **SAM 3.1 and the contact:** [`blinkflow/sam.py`](blinkflow/sam.py) (`track`) calls it, [`maskcodec.py`](blinkflow/maskcodec.py) decodes the masks, [`see.py`](blinkflow/see.py) (`gap`, `base_of`, `measure`) turns them into distances and a first contact.
+- **Muse Wonder and the citation check:** [`blinkflow/diagnose.py`](blinkflow/diagnose.py) (`ask`, `check`).
+- **Muse Code and the gate:** [`blinkflow/fix.py`](blinkflow/fix.py) (`muse_code`, `gate`, `audit`) and the PreToolUse hook [`muse-gate/hooks/pre_tool_use.py`](muse-gate/hooks/pre_tool_use.py).
+- **The twin:** [`blinkflow/twin.py`](blinkflow/twin.py) (`Twin`, `Video`), the scenes in [`blinkflow/scenes/`](blinkflow/scenes).
+- **Proof, rollback, "Keep the fix?":** [`blinkflow/prove.py`](blinkflow/prove.py) (`replay`, `verdict`, `control`); [`blinkflow/fix.py`](blinkflow/fix.py) (`fix`, `undo`, `terminal_ask`).
 
 ## Results
 
