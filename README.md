@@ -2,6 +2,8 @@
 
 # BlinkFlow
 
+[![judge path](https://github.com/samoxis/blinkflow/actions/workflows/judge-path.yml/badge.svg)](https://github.com/samoxis/blinkflow/actions/workflows/judge-path.yml)
+
 **The robot did something wrong? Just say what you saw.**
 
 **[See a real run, no install](https://samoxis.github.io/blinkflow/report/)**: the purple-box incident, from the snapshot to the proof. It is the static report of `examples/purple-box/`.
