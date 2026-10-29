@@ -28,7 +28,16 @@
 
 ## Contents
 
-[For the judges](#for-the-judges-5-minutes) · [What is new](#what-is-new-here) · [How it works](#how-it-works) · [Results](#results) · [Try it in ~2 min](#try-it-in-2-min-no-gpu) · [Run the full loop](#run-the-full-loop-3060-min-gpu) · [Glimmer provenance](#muse-glimmer-on-this-pc--provenance) · [Limits](#limits) · [Pre-existing vs built](#pre-existing-vs-built-during-the-hackathon) · [Safety](#safety)
+[For the judges](#for-the-judges-5-minutes) · [What is new](#what-is-new-here) · [The robot](#the-robot-in-the-demo) · [How it works](#how-it-works) · [Results](#results) · [Try it in ~2 min](#try-it-in-2-min-no-gpu) · [Run the full loop](#run-the-full-loop-3060-min-gpu) · [Glimmer provenance](#muse-glimmer-on-this-pc--provenance) · [Limits](#limits) · [Pre-existing vs built](#pre-existing-vs-built-during-the-hackathon) · [Safety](#safety)
+
+## The robot in the demo
+
+[Microduck](https://github.com/pollen-robotics/microduck) is a small open-source biped robot by Pollen Robotics / Hugging Face. Two pre-existing layers move it:
+
+- **The legs:** Pollen's walking policy, a neural network trained with reinforcement learning in a MuJoCo simulation. It turns "walk at this speed, turn at this rate" into steps.
+- **The brain:** [microduck-brain](https://github.com/samoxis/microduck-brain), the author's own, picks those speeds from one 8×8 depth sensor facing forward. It walks ahead, steers away from what comes near, stops and turns in place at walls and boxes, turns out of corners, goes around low objects on the floor, keeps away from ledges, and remembers for a few seconds what it saw beside its body after it leaves the sensor's view.
+- **The five scenes** test one rule each: the purple box (what passes beside the body), a low cube, a ledge, a corner, a narrow doorway.
+- **The demo bug** is an earlier bug of the author's, put back: the brain judges "ahead" from the sensor's front columns only, and its side memory is off (`side_memory_seconds = 0.0`). The purple box leaves the sensor's view before the right leg has passed it, and the leg hits the box it should have steered around. In the example, Muse Code turns the memory back on (3 s).
 
 ## How it works
 
@@ -118,7 +127,7 @@ Glimmer is the open-weight model that names objects, describes key frames and re
 
 - [`glimmer-model.txt`](examples/purple-box/glimmer-model.txt): `ollama show muse-glimmer` on this PC, the SHA-256 of both weight files, the public manifest, and the one `curl | sha256sum` that checks it without a GPU.
 - [`models.json`](examples/purple-box/models.json): every model call of the run. Glimmer's ten are `muse-glimmer`, `local`, with tokens in and out and seconds (the sentence, the names, four key frames, the names in four control scenes). Of the 56 SAM 3.1 calls, 6 were paid ($0.13 of the run's $0.50) and 50 are `cached, $0`, each with the hash of the video bytes, concept and parameters it answers.
-- [`provenance.txt`](examples/purple-box/provenance.txt): Glimmer's ten calls with their times and tokens, and Ollama's own answer during the run (`/api/ps`, the `glimmer.vram` event in `events.jsonl`): `muse-glimmer`, 16.7 GB, all in VRAM, context 8192, Q4_K_M. No `ollama ps` / `nvidia-smi` sampler ran beside this run; an earlier run of the same example, sampled every ~3 s with both, is at [`e9b88d8`](https://github.com/samoxis/blinkflow/blob/e9b88d8/examples/purple-box/provenance.txt).
+- [`provenance.txt`](examples/purple-box/provenance.txt): Glimmer's ten calls with their times and tokens, and Ollama's own answer during the run (`/api/ps`, the `glimmer.vram` event in `events.jsonl`): `muse-glimmer`, 16.7 GB, all in VRAM, context 8192, Q4_K_M. No `ollama ps` / `nvidia-smi` sampler ran beside this run; an earlier run of the same example, sampled every ~3 s with both, is at [`e9b88d8`](https://github.com/samoxis/blinkflow/blob/e9b88d8/examples/purple-box/provenance.txt). Every `voice live` run now writes these samples itself, from start to end, into its own `provenance.txt`.
 - [`glimmer.jsonl`](examples/purple-box/glimmer.jsonl): Glimmer's raw replies from the run, each with what it was asked and the image it saw.
 
 `python3 tools/pack_example.py <run>/events.jsonl examples/<name>` packs any run the same way: paths made relative to the example, the home folder written as `~`, no keys, and never the scorer's ground truth.

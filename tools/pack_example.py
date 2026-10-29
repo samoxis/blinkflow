@@ -8,7 +8,8 @@ truth.json, scene files). Paths are rewritten relative to the example ("./...") 
 written as "~". Adds:
   models.json    every model call of the run (model, where it ran, tokens or frames, seconds, cost)
   glimmer.jsonl  Muse Glimmer's raw replies, each beside its call in models.json
-  provenance.txt `ollama ps` and `nvidia-smi` sampled while the run ran (--provenance), timestamps kept
+  provenance.txt `ollama ps` and `nvidia-smi` sampled every ~3 s while the run ran, timestamps kept: the run's own
+                 (`voice live` writes it), or --provenance
   --extra        other text files (an earlier run's models.json...), scrubbed the same way
   left-out.json  what was not copied: SAM 3.1's replies for the control scenes (masks do not compress; their
                  verdicts stay in the stream and their calls in models.json), unless --all

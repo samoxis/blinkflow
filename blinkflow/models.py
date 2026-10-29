@@ -12,6 +12,9 @@ import json
 import os
 import pathlib
 import re
+import shutil
+import subprocess
+import threading
 import time
 import urllib.request
 
@@ -157,6 +160,54 @@ def glimmer_vram():
         m = next((m for m in json.load(r)["models"] if m["name"].split(":")[0] == GLIMMER), None)
     return m and {"vram_gb": round(m["size_vram"] / 1e9, 1), "size_gb": round(m["size"] / 1e9, 1),
                   "context": m.get("context_length"), "quantization": (m.get("details") or {}).get("quantization_level")}
+
+
+class GpuSamples(threading.Thread):
+    """`ollama ps` (Windows, where Ollama serves Glimmer to WSL) and `nvidia-smi` (WSL, the same GPU) every
+    `every` s into `path`, timestamped, for as long as the `with` block lasts: Glimmer's provenance, sampled
+    beside its calls. Waits for `path`'s folder to exist (a run makes its own). Never stops the run."""
+
+    def __init__(self, path, every=3.0):
+        super().__init__(daemon=True)
+        self.path, self.every, self.done = pathlib.Path(path), every, threading.Event()
+        self.ollama = (["ollama.exe"] if shutil.which("ollama.exe")
+                       else ["powershell.exe", "-NoProfile", "-Command", "ollama"])
+
+    def out(self, args):
+        try:
+            r = subprocess.run(args, capture_output=True, text=True, timeout=10)
+            return (r.stdout + r.stderr).rstrip()
+        except (OSError, subprocess.TimeoutExpired) as e:
+            return f"({e})"
+
+    def sample(self):
+        if not self.path.parent.is_dir():
+            return
+        head = "" if self.path.exists() else (
+            f"# Muse Glimmer on this PC, sampled every ~{self.every:g} s while this run ran (UTC).\n"
+            f"# `ollama ps` on Windows ({self.out(self.ollama + ['-v'])}, serving Glimmer to WSL on 127.0.0.1:11434)\n"
+            "# and `nvidia-smi` in WSL (the same GPU). Glimmer's calls, with their times and tokens: events.jsonl,\n"
+            "# models.json. WSL's nvidia-smi does not list Windows processes (Ollama, the simulator's window).\n")
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+        with self.path.open("a") as f:
+            f.write(f"{head}\n=== {now}\n--- ollama ps (Windows)\n{self.out(self.ollama + ['ps'])}\n"
+                    f"--- nvidia-smi\n{self.out(['nvidia-smi'])}\n")
+
+    def run(self):
+        while True:
+            t = time.time()
+            self.sample()
+            if self.done.wait(max(0.0, self.every - (time.time() - t))):
+                return
+
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, *exc):
+        self.done.set()
+        self.join(15)
+        self.sample()                    # the last one, at the end of the run
 
 
 def chat_content(content):

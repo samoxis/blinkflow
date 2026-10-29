@@ -85,6 +85,7 @@ One folder per run, `~/blinkflow-runs/voice/<stamp>/` (or `--out DIR`):
 |---|---|
 | `voice.json` | what was heard, the moment, the incident as seen, the loop's outcome |
 | `said.wav`, `answers.jsonl` | the push-to-talk audio (spoken runs), the answers given in the console |
+| `provenance.txt` | `voice live`: `ollama ps` (Windows) and `nvidia-smi` every ~3 s, from start to end: Glimmer on the GPU beside its calls |
 | `events.jsonl` | every step, for the console: `python3 -m blinkflow.console report <run>/events.jsonl --out report` |
 | `window/` | the snapshot cut from the buffer, and `evidence/`: SAM 3.1's masks, the distance per frame, first contact, the key frames, Muse Wonder's diagnosis (`diagnosis.md`) |
 | `fix/fix.json` | the base commit, each attempt, fixed or not, kept or not |

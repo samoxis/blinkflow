@@ -355,8 +355,9 @@ def main():
     tty = fix.terminal() if asks else None
     out = pathlib.Path(a.out).expanduser() if a.out else RUNS / time.strftime("%Y%m%d-%H%M%S")
     if a.cmd == "live":
-        doc = live(pathlib.Path(a.brain).expanduser(), a.seconds, a.cam, out, not a.no_loop, a.auto, a.type, a.mic,
-                   tty=tty)
+        with models.GpuSamples(out / "provenance.txt"):    # Glimmer's provenance, for the whole run, loop included
+            doc = live(pathlib.Path(a.brain).expanduser(), a.seconds, a.cam, out, not a.no_loop, a.auto, a.type,
+                       a.mic, tty=tty)
     else:
         doc = clip(a.snapshot, a.press, out, a.wav, a.text, not a.no_loop, a.auto, a.brain, tty)
     h, c = doc.get("heard"), doc.get("incident")
