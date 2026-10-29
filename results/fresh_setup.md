@@ -39,7 +39,7 @@ had already spent $3.95 on SAM 3.1 that day, close to the default $5 guard. Run 
 | The whole command (clip played to the key, hearing, seeing, the loop) | 214.6 s wall clock |
 | Model cost (`fix/models.json`) | **$0.83**: SAM 3.1 $0.672 (32 calls, 3360 frames, none cached), Muse Wonder $0.155, Muse Code $0.0061, Muse Glimmer 6 calls on this PC, $0 |
 
-Within the 135.8–191.0 s of the earlier purple-box loops (`results/loop_times.md`); the cost is close to the $0.93 of
+Within the 135.8–234.0 s of the ten purple-box loops in `results/loop_times.md`; the cost is close to the $0.93 of
 the first, uncached run in [`examples/purple-box/models-first-run.json`](https://github.com/samoxis/blinkflow/tree/49a9695/examples/purple-box/models-first-run.json) as it was then.
 
 ## Not checked from scratch

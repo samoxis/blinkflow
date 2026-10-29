@@ -12,7 +12,7 @@
 
 | Criterion | What it shows | Where |
 |---|---|---|
-| **Impact** (30%) | Say what went wrong on screen, get a proven fix in the robot's code: 8/8 held-out bugs fixed (new seed, code frozen); live, contact in 5/5 runs before the fix, 0/5 after | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
+| **Impact** (30%) | Say what went wrong on screen, get a proven fix in the robot's code: 8/8 bugs fixed on a held-out pass (new seed, code frozen; 7 of the 8 repeat first-pass mutations, 1 is new); live, contact in 5/5 runs before the fix, 0/5 after | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
 | **Use of Meta tooling** (25%) | One job per model: Muse Glimmer (open weights, this PC) watches and names, SAM 3.1 tracks, Muse Wonder finds the cause, Muse Code fixes, Muse Voice Transcribe listens. Every call is logged | [How it works](#how-it-works), [`models.json`](examples/purple-box/models.json) |
 | **Technical depth** (20%) | Distances from SAM 3.1's masks, a diagnosis whose citations are checked, an exact replay in a deterministic twin, rollback and retry, a gate before each tool call | [`results/bug_suite.md`](results/bug_suite.md), [Safety](#safety) |
 | **Demo** (25%) | The purple-box incident from the sentence to the proof, as a page anyone can open, and the live console | [The report](https://samoxis.github.io/blinkflow/report/), [The console](#the-console) |
@@ -45,7 +45,7 @@ For people who write robot software and test it in a simulator: you say what wen
 
 BlinkFlow watches a robot simulator the way you do: through the screen. When the robot does something wrong, you say what you saw. BlinkFlow rewinds to that moment, works out which part of the robot's program caused it, writes the fix, and plays the same scene again to prove the problem is gone. If the fix doesn't work, it undoes it and tries again.
 
-What it films is the simulator's window on your screen, not a camera on the robot. It runs Meta's **open-weight Muse Glimmer on this PC**, so that window never leaves the machine until there is something worth fixing.
+What it films is the simulator's window on your screen, not a camera on the robot. It runs Meta's **open-weight Muse Glimmer on this PC**, so that window never leaves the machine until Glimmer raises a hand or you speak.
 
 | Step | What happens | Meta model |
 |---|---|---|
@@ -73,7 +73,7 @@ Measured during the hackathon; each number links to the file it comes from.
 | Seen → fixed and verified (machine time) | **135.8–234.0 s** over 10 purple-box loops, median 169.2 s; the spread is mostly Muse Wonder (55–120 s) | [`results/loop_times.md`](results/loop_times.md), [`results/quick_loop.md`](results/quick_loop.md) |
 | Control after the fix, on pixels | **5/5 scenes clean, all 5 measured** (the 166.4 s run); the twin's log agrees | [`results/loop_times.md`](results/loop_times.md), [`results/console/`](results/console) |
 | Watcher (nobody speaks) | **0 false alarms** in 16 runs without an incident; **14/17** incidents caught. Optimistic: the suite gave Glimmer a look every 0.97 s, live beside the simulator it is ~1.45 s | [`results/watcher.md`](results/watcher.md) |
-| Voice | **5/5** sentences from a TTS heard, read and seen; the real microphone not yet tested | [`results/voice.md`](results/voice.md) |
+| Voice | **5/5** TTS sentences heard, read and seen; 1 real spoken run (Ray-Ban Meta glasses, F9): transcribed, read, seen, fixed ([`examples/purple-box/`](examples/purple-box)) | [`results/voice.md`](results/voice.md) |
 | Pixel rule against ground truth | 92 saved looks re-measured: 60/64 incidents caught, false alarms 1 → 0 after one correction | [`results/control.md`](results/control.md) |
 | Cost of one loop (model calls) | **$0.88** for the profiled loop; $0.34–$1.71 over the 10 runs (measuring the four control scenes adds SAM 3.1; replies from the cache cost $0) | [`results/quick_loop.md`](results/quick_loop.md), [`results/loop_times.md`](results/loop_times.md) |
 
@@ -157,10 +157,10 @@ On a real robot the proof changes: the real world never repeats exactly, but the
 - **Muse Wonder varies.** The same evidence gives different lengths of answer (4.7k–9.1k output tokens), and that alone moves the loop time by up to ~50 s; its cause is not always on the mutated line ([`results/bug_suite.md`](results/bug_suite.md)).
 - **The watcher confirms after the fact,** a median 19.5 s after the incident (13–52 s): it is a safety net, not a brake.
 - **"Stuck" has no real case.** The watcher checks for it, but no run has had a robot stuck.
-- **The real microphone is untested.** This PC has only a virtual one; voice was measured with TTS sentences.
+- **One real spoken run so far:** the example's sentence was said through Ray-Ban Meta glasses (Bluetooth, F9) and transcribed correctly, one word doubled. The 5-sentence accuracy table is still from TTS; how far people's "N seconds ago" lands has one data point.
 
 > Built during the [Meta Global AI Developer Hackathon](https://cerebralvalley.ai/e/meta-ai-developer-hackathon), Oct 26 – Nov 4, 2026. Indie Developer track, theme: Push the Frontier.
-> **Work in progress.** This README grows as each piece starts working. The build log is in [`DEVLOG.md`](DEVLOG.md).
+> The build log is in [`DEVLOG.md`](DEVLOG.md).
 
 **New vs pre-existing:** everything in this repo was written after the kickoff on Oct 26, 2026; the robot, its simulator and its brain existed before — see [Pre-existing vs built during the hackathon](#pre-existing-vs-built-during-the-hackathon).
 

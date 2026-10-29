@@ -664,11 +664,17 @@ def manifest(calls):
 
 
 def rel(run, p):
-    p = pathlib.Path(p)
-    try:
-        return str(p.relative_to(run))
-    except ValueError:
-        return str(p)
+    """`p` as the report names it: relative to the run folder (report.md's), so its links work wherever the
+    run is copied, e.g. ../window/evidence/evidence.png."""
+    return os.path.relpath(pathlib.Path(p).resolve(), pathlib.Path(run).resolve())
+
+
+def gate_blocked():
+    """How many tool calls the gate denied in this run: its musecode.blocked events in the stream."""
+    s = events.path()
+    if not (s and s.exists()):
+        return "not recorded (no event stream)"
+    return sum(json.loads(line).get("type") == "musecode.blocked" for line in s.read_text().splitlines() if line.strip())
 
 
 def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
@@ -700,7 +706,7 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                 + (f", {c['wall_time']}" if c.get("wall_time") else "") + ".")
     out = [f"# BlinkFlow: {names['robot']} {'falls off' if kind == 'fall' else 'touches'} the {obj}", "", head, "",
            "## What was seen", "",
-           f"Snapshot `{snapshot}` ({ev['kind']} run, {ev['clock']} clock). Named by {names['named_by']}: " + seen, "",
+           f"Snapshot `{rel(run, snapshot)}` ({ev['kind']} run, {ev['clock']} clock). Named by {names['named_by']}: " + seen, "",
            f"![incident]({rel(run, evdir / 'evidence.png')})", "",
            "## Cause (Muse Wonder)", "",
            f"`{diag['cause']['file']}`, `{diag['cause']['function']}`, lines {diag['cause']['lines']['start']}-"
@@ -767,8 +773,8 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
             for s in sorted(done["stages"], key=lambda s: s["start"])]
     out += [f"| **total** | 0 | **{done['seconds']:.0f}** |", ""]
     if evdir.parent != run:
-        out += ["The incident's evidence and first diagnosis were reused from an earlier run; their time is not "
-                "counted above.", ""]
+        out += ["The incident's evidence and first diagnosis were made before the loop (the voice or watcher step); "
+                "their time is not counted above.", ""]
     out += ["## Models", "", "| stage | model | where | purpose | input tokens (cached) | output tokens | cost $ | s |",
             "|---|---|---|---|---|---|---|---|"]
     for m in mdoc["calls"]:
@@ -778,7 +784,7 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                    f"{m.get('output_tokens') if m.get('output_tokens') is not None else '-'} | "
                    f"{'-' if m['cost_usd'] is None else format(m['cost_usd'], '.4f')} | {m['seconds']:.0f} |")
     out += ["", f"Total ${mdoc['total_cost_usd']:.3f}. Every call is in `models.json`; Muse Code's cost is the "
-            "host's own estimate.", "",
+            "host's own estimate, or, when the host reports none, priced from its token counts.", "",
             "## Guardrails", "",
             "- the person decided: " + ("; ".join(f"{x['question']} {'yes' if x['yes'] else 'no'} (attempt "
                                                   f"{x['attempt']}, {x['seconds']:.0f} s)" for x in done["answers"])
@@ -786,6 +792,9 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
             "- run with --auto: no one was asked before Muse Code wrote or before the fix was kept.",
             "- Muse Code ran under the host's default sandboxed profile (not `:unrestricted`), approval mode "
             "`promptUnmatched`; edits are approved only when every path is inside the target.",
+            f"- BlinkFlow's gate (muse-gate/, a PreToolUse hook) checked every tool call before it ran: "
+            f"{sum(len(json.loads((run / f'attempt-{a['attempt']}' / 'muse-code.json').read_text())['tool_calls']) for a in done['attempts'])}"
+            f" calls, blocked: {gate_blocked()}.",
             f"- approval requests that reached BlinkFlow: "
             f"{sum(len(json.loads((run / f'attempt-{a['attempt']}' / 'muse-code.json').read_text())['approvals']) for a in done['attempts'])}"
             " (in-workspace reads and edits are allowed by the host's own rules and never ask).",

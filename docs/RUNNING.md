@@ -75,6 +75,8 @@ uv pip install --python ~/microduck_rl/.venv/bin/python viser==1.0.30 mjviser==0
 python3 -m blinkflow.voice live --type --auto
 ```
 
+The sidecar listens on port 8771 on the Windows side; if another local service holds it, `BLINKFLOW_SIDECAR_PORT=8772` (any free port) moves it.
+
 BlinkFlow starts the simulator in the demo scene, the Viser window in Chrome and the sidecar itself, and the robot walks for 30 s: press Enter when you see it go wrong, then type what you saw. Without `--type`, hold F9 and say it. Without `--auto`, BlinkFlow asks "Fix it?" before Muse Code writes and "Keep the fix?" after the proof.
 
 **5. What comes out**
@@ -114,4 +116,4 @@ The console only reads the loop's event log (`events.jsonl`); the loop runs the 
 
 ## Cost
 
-The SAM 3.1 replies are cached by the exact hash of the video bytes, the concept and the parameters: the twin is deterministic, so an unchanged scene gives the same video and is not paid twice. Muse Spark runs on Baseten (`meta-models/muse-spark-open-1026`); Muse Wonder stays on the Meta Model API. Muse Code now runs on `muse-spark-1.3-contributor` ($0.10 / $0.20 per 1M tokens in / out, against $1.25 / $4.25; its conversations may be used for training, and the target and this repo are public): one purple-box loop gave the same fix, 1 → 0, control 5/5, and $0.0053 for Muse Code instead of $0.070 (`BLINKFLOW_MUSE_MODEL=muse-spark-1.3` goes back). The loop costs in Results were all measured on `muse-spark-1.3`, Muse Code included. `python3 tools/spend.py --day YYYY-MM-DD` sums the `models.json` of every run that day, per model and per provider.
+The SAM 3.1 replies are cached by the exact hash of the video bytes, the concept and the parameters: the twin is deterministic, so an unchanged scene gives the same video and is not paid twice. Muse Spark runs on Baseten (`meta-models/muse-spark-open-1026`); Muse Wonder stays on the Meta Model API. Muse Code now runs on `muse-spark-1.3-contributor` ($0.10 / $0.20 per 1M tokens in / out, against $1.25 / $4.25; its conversations may be used for training, and the target and this repo are public): one purple-box loop gave the same fix, 1 → 0, control 5/5, and $0.0053 for Muse Code instead of $0.070 (`BLINKFLOW_MUSE_MODEL=muse-spark-1.3` goes back). Of the ten loops in [`results/loop_times.md`](../results/loop_times.md), the first eight ran Muse Code on `muse-spark-1.3` and the last two on `muse-spark-1.3-contributor`, as did the fresh-setup run ([`results/fresh_setup.md`](../results/fresh_setup.md)); every loop cost includes Muse Code. `python3 tools/spend.py --day YYYY-MM-DD` sums the `models.json` of every run that day, per model and per provider.

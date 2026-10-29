@@ -4,9 +4,9 @@
 
 ## What was seen
 
-Snapshot `~/blinkflow-runs/voice/20261029-170922/window/snapshot.json` (live run, wall clock). Named by glimmer: robot = *white robot*, object = *purple box*. First contact (base reading) at frame 163, t = 11.202 s after the brain starts, 2026-10-29T17:09:55.286+00:00.
+Snapshot `../window/snapshot.json` (live run, wall clock). Named by glimmer: robot = *white robot*, object = *purple box*. First contact (base reading) at frame 163, t = 11.202 s after the brain starts, 2026-10-29T17:09:55.286+00:00.
 
-![incident](~/blinkflow-runs/voice/20261029-170922/window/evidence/evidence.png)
+![incident](../window/evidence/evidence.png)
 
 ## Cause (Muse Wonder)
 
@@ -14,7 +14,7 @@ Snapshot `~/blinkflow-runs/voice/20261029-170922/window/snapshot.json` (live run
 
 In plain words: The box approached at the very edge of the depth sensor's view, beside the robot rather than in the centre of its path, so the ordinary check of what lies directly ahead stayed clear and the robot kept walking. A separate safeguard exists that remembers nearby surfaces seen at the sides, but that memory was switched off in the settings, so those edge sightings left no trace and were never acted on.
 
-Confidence 0.62; grounded in key frames and log ticks: yes. Full diagnosis: `~/blinkflow-runs/voice/20261029-170922/window/evidence/diagnosis.md`.
+Confidence 0.62; grounded in key frames and log ticks: yes. Full diagnosis: `../window/evidence/diagnosis.md`.
 
 ## The fix
 
@@ -66,7 +66,7 @@ Replayed in the twin, each scene's shot followed by SAM 3.1 (every 3rd frame) wi
 
 ### Attempt 1: kept
 
-- diagnosis used: `~/blinkflow-runs/voice/20261029-170922/window/evidence/diagnosis.md` (cause `brain.toml::[obstacle] side_memory_seconds`)
+- diagnosis used: `../window/evidence/diagnosis.md` (cause `brain.toml::[obstacle] side_memory_seconds`)
 - Muse Code: completed, 37 s, 1 file changed, 1 insertion(+), 1 deletion(-); files: brain.toml
 - its note: Changed `side_memory_seconds` in brain.toml from 0.0 to 3.0, restoring the built-in default. This re-enables the side-hazard memory so wall returns seen in the outer depth columns are retained and merged into the view ahead, letting the robot steer or stop before a side object like the purple box.
 - replay: no contact; closest gap 106 px at t = 12.89 s
@@ -90,7 +90,7 @@ Stages marked background run beside the others, so the column does not add up to
 | attempt 1: the person decides to keep | 442 | 13 |
 | **total** | 0 | **454** |
 
-The incident's evidence and first diagnosis were reused from an earlier run; their time is not counted above.
+The incident's evidence and first diagnosis were made before the loop (the voice or watcher step); their time is not counted above.
 
 ## Models
 
@@ -169,12 +169,13 @@ The incident's evidence and first diagnosis were reused from an earlier run; the
 | incident | muse-wonder-1.0 | Meta Model API | warm the prompt cache (instructions + code) | 30279 | 16 | 0.1214 | 2 |
 | attempt-1 | muse-spark-1.3-contributor | Muse Code (muse serve, sandboxed) -> Meta Model API | fix attempt 1 | 174504 (127059) | 1150 | 0.0052 | 37 |
 
-Total $0.502. Every call is in `models.json`; Muse Code's cost is the host's own estimate.
+Total $0.502. Every call is in `models.json`; Muse Code's cost is the host's own estimate, or, when the host reports none, priced from its token counts.
 
 ## Guardrails
 
 - the person decided: Fix it? yes (attempt 1, 8 s); Keep the fix? yes (attempt 1, 13 s)
 - Muse Code ran under the host's default sandboxed profile (not `:unrestricted`), approval mode `promptUnmatched`; edits are approved only when every path is inside the target.
+- BlinkFlow's gate (muse-gate/, a PreToolUse hook) checked every tool call before it ran: 6 calls, blocked: 0.
 - approval requests that reached BlinkFlow: 0 (in-workspace reads and edits are allowed by the host's own rules and never ask).
 - every tool call was audited after each turn (file paths, paths named in shell commands); an attempt with a call outside the target, a commit of its own, or no change is undone unreplayed.
 - the simulator's contact log and the twin's record of falls are not read by BlinkFlow; the scorers (tools/live_check.py, tools/bug_suite.py) do that.

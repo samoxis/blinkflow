@@ -39,7 +39,8 @@ Clips 1-3 are live runs of the purple box (live-check), 4 and 5 twin renders (b1
   Voice's version of espeak's "just now"), and the true contact fell inside the window every time.
 - The moment's error here is exactly the gap between the number said and the key's real delay, which the
   test chose (0.4-0.8 s). So this table shows that the chain adds no error of its own: transcription,
-  reading and clock together add 0.00 s. How far a real person's words land is what the mic test measures.
+  reading and clock together add 0.00 s. How far a real person's words land needs spoken runs: one so far
+  (below), not yet the three-run mic test.
 - Doubled words ("seconds seconds", "kicked kicked") and "it's foot" came back from Muse Voice on espeak's
   robotic speech; none changed the reading.
 - SAM 3.1's first contact is -0.33..+0.85 s from the truth: see's own accuracy on these clips (the
@@ -76,8 +77,28 @@ while the key is up; nothing is written to disk. Holding the key records from 0.
 into BlinkFlow's) and `/utterance/<id>` (WAV, mono 16-bit 24 kHz). Checked with F9 pressed by a script for
 1.5 s: one utterance, 2.10 s of audio. This PC has only a virtual microphone (Steam Streaming Microphone),
 so the audio was silence, Muse Voice returned an empty transcript, and BlinkFlow says it heard nothing.
+On Oct 29 the same path ran with a real microphone, Ray-Ban Meta glasses connected over Bluetooth as a
+headset ("Headset (RB Meta 0269)"): 4.96 s of audio, transcribed in 4.16 s as "two seconds ago, the right
+leg leg hit the purple box." (below).
 
-## With a real voice (to run)
+## With a real voice: one run (Oct 29)
+
+`python3 -m blinkflow.voice live` on the purple box, run `voice/20261029-170922`, now
+[`examples/purple-box/`](../examples/purple-box). The person held F9 and spoke into the Ray-Ban Meta
+glasses' microphone (Bluetooth); BlinkFlow's clock is the brain's.
+
+| said (Muse Voice Transcribe) | audio (s) | transcribed in (s) | read by Glimmer | key down (s) | moment said (s) | SAM 3.1 first contact (s) | moment said - seen (s) |
+|---|---|---|---|---|---|---|---|
+| two seconds ago, the right leg leg hit the purple box. | 4.96 | 4.16 | 2 s ago, contact, right leg / purple box (1.31 s) | 12.996 | 10.997 | 11.202 (base reading) | **-0.21** |
+
+- Heard, read, seen, then fixed in attempt 1: contacts 1 -> 0, control 5/5, 234.0 s of machine time,
+  $0.50. "Fix it?" was answered yes in the console after 7.5 s, "Keep the fix?" in the terminal after
+  12.6 s, both by the person.
+- The doubled "leg" came from the transcription, as with espeak; it did not change the reading.
+- The person's "two seconds ago" landed 0.2 s before SAM 3.1's first contact. One data point, measured
+  against what BlinkFlow saw, not against the simulator's contact log.
+
+Still to run, for more than one data point:
 
 ```bash
 python -m blinkflow.voice_test --mic --runs 3
@@ -86,13 +107,13 @@ python3 tools/voice_suite.py table ~/blinkflow-runs/voice/mic/<stamp>
 
 Each run starts the simulator on the purple-box scenario (25 s); hold F9 when the robot touches the box and
 say what you saw and when. `--loop` also starts the loop and asks at the terminal; `--mic-name` picks the
-microphone (default: the first one that is not virtual). Not run yet.
+microphone (default: the first one that is not virtual). Not run as of Oct 29.
 
 ## Limits
 
 - The TTS test measures the chain, not a person: the key's delays were chosen, and espeak speaks slowly
-  and clearly. Human error in "three seconds ago" is the open question, and the window (5 s before,
-  3 s after) was chosen without data on it.
+  and clearly. Human error in "three seconds ago" is still open: one real run so far (-0.21 s), and the
+  window (5 s before, 3 s after) was chosen without more data on it.
 - Only contacts were spoken about; a fall goes through the same path (Glimmer read "fell into the yellow
   pit a couple of seconds ago" as a fall, 2 s) but was not run through SAM here.
 - One sentence per key press, English only (`languageBias: English`).

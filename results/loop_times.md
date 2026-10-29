@@ -1,7 +1,9 @@
-# The purple-box loop: seen -> fixed and verified, every run on the current loop
+# The purple-box loop: seen -> fixed and verified, ten full loops on the current loop
 
-Every full loop on the live purple-box incident since the quick loop (`results/quick_loop.md`, opt-3, commit
-07fd1de), read from each run's `fix.json` and `models.json` (`~/blinkflow-runs/<run>/fix/`). Machine time on
+Ten full loops on the live purple-box incident since the quick loop (`results/quick_loop.md`, opt-3, commit
+07fd1de), read from each run's `fix.json` and `models.json` (`~/blinkflow-runs/<run>/fix/`). Three more are
+kept elsewhere: gate-1 in `docs/SAFETY.md`, contrib-1 in `DEVLOG.md` (Oct 28, 11:30) and the fresh-setup run
+(`voice/20261028-192828`) in `results/fresh_setup.md`. Machine time on
 BlinkFlow's clock: the seconds a person takes to answer "Fix it?" are not counted. All fixed in attempt 1.
 
 | run | how the incident came in | seen -> fixed and verified (s) | see (s) | understand (s) | Muse Wonder s / output tokens | Muse Code (s) | replay after (s) | SAM 3.1 calls from the cache | model cost |

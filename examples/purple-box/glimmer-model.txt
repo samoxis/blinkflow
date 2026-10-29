@@ -1,5 +1,7 @@
-# Muse Glimmer as this PC runs it (Windows 11, Ollama for Windows, RTX 4090), read Oct 29, 2026: the same
-# model ID that `ollama ps` shows in provenance.txt while this example ran (de878ce33ad8).
+# Muse Glimmer as this PC runs it (Windows 11, Ollama for Windows, RTX 4090), read Oct 29, 2026. Model ID
+# de878ce33ad8 is the one `ollama ps` showed while the previous example ran (git show
+# e9b88d8:examples/purple-box/provenance.txt); during this example's run Ollama's /api/ps gave 16.7 GB,
+# Q4_K_M, context 8192 (provenance.txt).
 #
 # Checkable without our GPU. The weights are Ollama's public library model muse-glimmer:30b-q4_K_M, which is
 # also its `latest`:

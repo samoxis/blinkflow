@@ -1,4 +1,4 @@
-# BlinkFlow blind bug suite
+# Bug suites (BlinkFlow blind to the mutation)
 
 Clean base: `~/duck-target` with its known bug undone; in the twin it does not touch the box in 20 s. 14 mutations drawn from `tools/inject_bug.py` with a sealed seed; 7 gave a contact within 20 s, 6 were kept. BlinkFlow saw each incident only as the twin's rendered shot and the brain's log; the mutation is revealed here, after the runs.
 
