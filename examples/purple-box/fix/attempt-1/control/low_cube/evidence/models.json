@@ -4,7 +4,7 @@
    "model": "muse-glimmer",
    "where": "local",
    "purpose": "name the robot and the object or hazard nearest to it",
-   "seconds": 21.63,
+   "seconds": 2.67,
    "images": 3,
    "input_tokens": 1411,
    "output_tokens": 60,
@@ -12,108 +12,64 @@
   },
   {
    "model": "sam-3.1",
-   "where": "Meta Model API",
+   "where": "cached",
    "purpose": "track 'floor edge' (frames 0-109, sent from 0)",
-   "seconds": 4.89,
+   "seconds": 0.0,
    "frames": 110,
    "frames_returned": 0,
-   "usage": {
-    "input_tokens": 0,
-    "input_tokens_details": {
-     "cached_tokens": 0
-    },
-    "output_tokens": 0,
-    "output_tokens_details": {
-     "reasoning_tokens": 0
-    },
-    "total_tokens": 0,
-    "video_frames_processed": 110
-   },
    "cache_key": "b117e660502c69fb50e6ecc2cb1d520e67daf48a67c36ae404f6801d381034ef",
-   "cost_usd": 0.022
+   "original_seconds": 4.89,
+   "cost_usd": 0.0
   },
   {
    "model": "sam-3.1",
-   "where": "Meta Model API",
+   "where": "cached",
    "purpose": "track 'floor edge' (frames 110-219, sent from 95)",
-   "seconds": 5.31,
+   "seconds": 0.0,
    "frames": 125,
    "frames_returned": 0,
-   "usage": {
-    "input_tokens": 0,
-    "input_tokens_details": {
-     "cached_tokens": 0
-    },
-    "output_tokens": 0,
-    "output_tokens_details": {
-     "reasoning_tokens": 0
-    },
-    "total_tokens": 0,
-    "video_frames_processed": 125
-   },
    "cache_key": "f2f6eb4f2a8503aa95e3a9670d2ba3c82d01c9e9d09999ce418ee7560a250fd4",
-   "cost_usd": 0.025
+   "original_seconds": 5.31,
+   "cost_usd": 0.0
   },
   {
    "model": "sam-3.1",
-   "where": "Meta Model API",
-   "purpose": "track 'white robot' (frames 0-109, sent from 0)",
-   "seconds": 6.59,
-   "frames": 110,
-   "frames_returned": 110,
-   "usage": {
-    "input_tokens": 0,
-    "input_tokens_details": {
-     "cached_tokens": 0
-    },
-    "output_tokens": 0,
-    "output_tokens_details": {
-     "reasoning_tokens": 0
-    },
-    "total_tokens": 0,
-    "video_frames_processed": 110
-   },
-   "cache_key": "ac6cd3bd09777da8a6946511857b133a80f424d40d035df43ea92d7390e69aa0",
-   "cost_usd": 0.022
-  },
-  {
-   "model": "sam-3.1",
-   "where": "Meta Model API",
+   "where": "cached",
    "purpose": "track 'white robot' (frames 110-219, sent from 95)",
-   "seconds": 8.54,
+   "seconds": 0.44,
    "frames": 125,
    "frames_returned": 105,
-   "usage": {
-    "input_tokens": 0,
-    "input_tokens_details": {
-     "cached_tokens": 0
-    },
-    "output_tokens": 0,
-    "output_tokens_details": {
-     "reasoning_tokens": 0
-    },
-    "total_tokens": 0,
-    "video_frames_processed": 125
-   },
    "cache_key": "58e6d0dc539cfc3a7aaff5c590d1aa287dcfdf4f20ae51f842dcbaa6a3d41872",
-   "cost_usd": 0.025
+   "original_seconds": 8.54,
+   "cost_usd": 0.0
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 0-109, sent from 0)",
+   "seconds": 0.51,
+   "frames": 110,
+   "frames_returned": 110,
+   "cache_key": "ac6cd3bd09777da8a6946511857b133a80f424d40d035df43ea92d7390e69aa0",
+   "original_seconds": 6.59,
+   "cost_usd": 0.0
   },
   {
    "model": "muse-spark-open-1026",
    "where": "Baseten",
    "purpose": "name the robot and the object or hazard nearest to it",
-   "seconds": 9.64,
+   "seconds": 5.93,
    "images": 3,
    "input_tokens": 1500,
-   "cached_input_tokens": 128,
-   "output_tokens": 1975,
-   "cost_usd": 0.01013
+   "cached_input_tokens": 0,
+   "output_tokens": 808,
+   "cost_usd": 0.00531
   },
   {
    "model": "sam-3.1",
    "where": "Meta Model API",
-   "purpose": "track 'cyan box' (frames 0-109, sent from 0)",
-   "seconds": 7.88,
+   "purpose": "track 'gray pillar' (frames 0-109, sent from 0)",
+   "seconds": 25.45,
    "frames": 110,
    "frames_returned": 110,
    "usage": {
@@ -128,14 +84,14 @@
     "total_tokens": 0,
     "video_frames_processed": 110
    },
-   "cache_key": "8b3a2dd27e145aa6554a07ca09e0f8e3a6dcabf6868863a67c4eb92205e93f52",
+   "cache_key": "59bd0e016e18ef7cbb5fd1eb46f700b4c44e2673fb0ceeea3191d77012b952a8",
    "cost_usd": 0.022
   },
   {
    "model": "sam-3.1",
    "where": "Meta Model API",
-   "purpose": "track 'cyan box' (frames 110-219, sent from 95)",
-   "seconds": 8.05,
+   "purpose": "track 'gray pillar' (frames 110-219, sent from 95)",
+   "seconds": 34.41,
    "frames": 125,
    "frames_returned": 125,
    "usage": {
@@ -150,11 +106,11 @@
     "total_tokens": 0,
     "video_frames_processed": 125
    },
-   "cache_key": "b257fb80528b6c0b7acc3e29cd9344de994caf2a79596801b78fe9e9b6a35457",
+   "cache_key": "ed723eee7382203500fe8571d487f18b6a8dc9970afb177f7a691d0110a0190f",
    "cost_usd": 0.025
   }
  ],
- "total_cost_usd": 0.15113,
+ "total_cost_usd": 0.05231,
  "prices": {
   "sam-3.1": "$0.20 per 1000 frames",
   "muse-spark-open-1026": "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",

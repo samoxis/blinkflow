@@ -1,37 +1,37 @@
 {
  "feed": "live",
  "brain": "~/duck-target",
- "record": "~/blinkflow-runs/run-20261028-212723.jsonl.gz",
- "brain_start": 1793222863.9865253,
+ "record": "~/blinkflow-runs/run-20261029-170922.jsonl.gz",
+ "brain_start": 1793293784.0841606,
  "clock": "WSL epoch",
- "heard_by": "typed",
+ "heard_by": "push-to-talk (F9), Headset (RB Meta 0269)",
  "window_s": [
   5.0,
   3.0
  ],
  "heard": {
-  "said": "two seconds ago its right leg hit the purple box",
-  "heard_by": "typed",
-  "audio_s": null,
+  "said": "two seconds ago, the right leg leg hit the purple box.",
+  "heard_by": "muse-voice-transcribe-1.0",
+  "audio_s": 4.96,
   "seconds_ago": 2.0,
   "event": "contact",
-  "robot": "robot",
+  "robot": "right leg",
   "object": "purple box",
   "read_by": "glimmer",
   "read_attempts": [
    {
     "reader": "glimmer",
-    "reply": "{\"seconds_ago\": 2, \"event\": \"contact\", \"robot\": \"robot\", \"object\": \"purple box\"}",
+    "reply": "{\"seconds_ago\": 2, \"event\": \"contact\", \"robot\": \"right leg\", \"object\": \"purple box\"}",
     "rejected": null
    }
   ],
-  "press": 1793222877.5679832,
-  "release": 1793222879.0682864,
-  "moment": 1793222875.568,
-  "transcribe_s": 0.0,
-  "read_s": 1.53,
-  "moment_brain_s": 11.581,
-  "press_brain_s": 13.581
+  "press": 1793293797.0806143,
+  "release": 1793293801.3883514,
+  "moment": 1793293795.081,
+  "transcribe_s": 4.16,
+  "read_s": 1.31,
+  "moment_brain_s": 10.997,
+  "press_brain_s": 12.996
  },
  "incident": {
   "kind": "contact",
@@ -43,23 +43,23 @@
   "robot_moved": true,
   "object_as_said": "purple box",
   "names_agree": true,
-  "incident_s": 12.503,
+  "incident_s": 11.202,
   "reading": "base",
-  "seconds": 29.4,
-  "evidence": "~/blinkflow-runs/voice/20261028-212723/window/evidence",
+  "seconds": 23.7,
+  "evidence": "~/blinkflow-runs/voice/20261029-170922/window/evidence",
   "snapshot": "./window/snapshot.json",
-  "see_cost_usd": 0.0896,
+  "see_cost_usd": 0.0872,
   "window_brain_s": [
-   6.581,
-   14.581
+   5.997,
+   13.996
   ]
  },
  "loop": {
   "started": true,
   "asked": true,
   "rc": 0,
-  "seconds": 442.1,
-  "run": "~/blinkflow-runs/voice/20261028-212723/fix",
+  "seconds": 454.7,
+  "run": "~/blinkflow-runs/voice/20261029-170922/fix",
   "fixed": true,
   "kept": true,
   "attempts": 1,
@@ -68,17 +68,17 @@
     "attempt": 1,
     "question": "Fix it?",
     "yes": true,
-    "seconds": 2.0,
-    "asked": 1793222993.7080553,
-    "answered": 1793222995.7084532
+    "seconds": 7.5,
+    "asked": 1793293964.959439,
+    "answered": 1793293972.4717364
    },
    {
     "attempt": 1,
     "question": "Keep the fix?",
     "yes": true,
-    "seconds": 2.0,
-    "asked": 1793223351.7373624,
-    "answered": 1793223353.7378006
+    "seconds": 12.6,
+    "asked": 1793294274.6850777,
+    "answered": 1793294287.3156233
    }
   ],
   "stopped": null

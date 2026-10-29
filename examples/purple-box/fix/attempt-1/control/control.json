@@ -11,20 +11,20 @@
   "reading": "base",
   "first_contact_s": null,
   "first_contact_frame": null,
-  "whole_mask_touch_s": null,
-  "closest_gap_px": 30.5,
-  "closest_s": 5.4,
+  "whole_mask_touch_s": 10.335,
+  "closest_gap_px": 2.0,
+  "closest_s": 10.335,
   "robot_frames": 200,
   "travel_m": 2.446,
   "clean": true,
-  "why": "no contact, no fall; closest gap 30 px",
+  "why": "no contact, no fall; closest gap 2 px",
   "names": [
    "white robot",
-   "cyan box"
+   "gray pillar"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261028-212723/fix/attempt-1/control/low_cube/evidence",
-  "see_s": 59.6,
-  "render_s": 156.1
+  "evidence": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/control/low_cube/evidence",
+  "see_s": 52.2,
+  "render_s": 148.3
  },
  "ledge": {
   "kind": "contact",
@@ -49,9 +49,9 @@
    "white robot",
    "gray block"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261028-212723/fix/attempt-1/control/ledge/evidence",
-  "see_s": 63.0,
-  "render_s": 175.8
+  "evidence": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/control/ledge/evidence",
+  "see_s": 49.3,
+  "render_s": 167.5
  },
  "corner": {
   "kind": "contact",
@@ -76,9 +76,9 @@
    "white robot",
    "red barrier"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261028-212723/fix/attempt-1/control/corner/evidence",
-  "see_s": 37.4,
-  "render_s": 177.0
+  "evidence": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/control/corner/evidence",
+  "see_s": 12.2,
+  "render_s": 168.6
  },
  "doorway": {
   "kind": "contact",
@@ -103,8 +103,8 @@
    "white robot",
    "white rectangle"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261028-212723/fix/attempt-1/control/doorway/evidence",
-  "see_s": 30.6,
-  "render_s": 173.2
+  "evidence": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/control/doorway/evidence",
+  "see_s": 11.0,
+  "render_s": 164.4
  }
 }

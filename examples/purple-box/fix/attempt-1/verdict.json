@@ -15,8 +15,8 @@
  "closest_s": 12.89,
  "robot_frames": 100,
  "travel_m": 2.783,
- "meta": "./twin/20261028-213038/meta.json",
- "evidence": "~/blinkflow-runs/voice/20261028-212723/fix/attempt-1/evidence",
- "replay_s": 25.0,
- "see_s": 14.9
+ "meta": "./twin/20261029-171329/meta.json",
+ "evidence": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/evidence",
+ "replay_s": 23.6,
+ "see_s": 9.8
 }

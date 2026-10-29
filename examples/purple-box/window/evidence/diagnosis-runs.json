@@ -4,88 +4,76 @@
   "diagnosis": {
    "cause": {
     "file": "brain.toml",
-    "function": "[obstacle] configuration",
+    "function": "[obstacle] side_memory_seconds",
     "lines": {
      "end": 29,
      "start": 29
     },
-    "what": "side_memory_seconds is set to 0.0"
+    "what": "side_memory_seconds is set to 0.0, disabling the hazard memory for wall returns near the body"
    },
-   "confidence": 0.82,
+   "confidence": 0.62,
    "evidence": [
     {
-     "ref": "K1",
-     "shows": "At t=11.503 s, 1 s before contact, the purple box is beside and just in front of the robot's leg, very close; the gap is 36.1 px and the feet are already 101.3 px past the base's far edge, so this was a side approach, not a head-on approach.",
+     "ref": "K2, t=10.702",
+     "shows": "The purple box is already touching the robot on screen at its side, while its feet are still -81.4 px from the base's far edge, i.e. this is a side/edge obstacle, not a centred obstacle straight ahead.",
      "source": "frame",
-     "value": "K1"
+     "value": "gap 2.0 px, feet past base edge -81.4 px"
     },
     {
-     "ref": "K2/K3",
-     "shows": "At t=12.003 s (K2) and t=12.403 s (K3) the box remains very close to the robot's left side while the robot continues past it.",
+     "ref": "K4, t=11.202",
+     "shows": "First real contact: the box is close to the robot's left side and partially in front of it, confirming contact with an object at the edge of the robot rather than in the middle of its path.",
      "source": "frame",
-     "value": "K2, K3"
+     "value": "gap 1.0 px, feet past base edge -9.2 px"
     },
     {
-     "ref": "K4",
-     "shows": "At t=12.503 s the mask gap is 2.0 px, the first-contact reading, with the feet 249.3 px past the base's far edge: the robot touched the box while passing alongside it.",
-     "source": "frame",
-     "value": "K4"
-    },
-    {
-     "ref": "log",
-     "shows": "From t=9.527 to t=12.490 (just before contact) every tick is state=forward with cmd move vx=0.24 and only small vyaw; the robot never brakes or turns in place, so nothing ever made the passing box count as blocking.",
+     "ref": "brain log t=10.722 to t=11.424",
+     "shows": "The brain never left forward, never braked or turned, and kept commanding vx=0.24 right through contact, so the obstacle never entered the view the forward state acts on.",
      "source": "log",
-     "value": "t=9.527..12.490"
+     "value": "state=forward, cmd=move, vx=0.24 for every tick"
     },
     {
-     "ref": "log",
-     "shows": "At t=9.527 the leftmost wall-row depth readings are about 67-74 cm with valid frames arriving (marked *), and safe=yes throughout; the sensor was delivering close returns on that side.",
+     "ref": "full depth frame t=11.123",
+     "shows": "Just before contact the close object is only in the outermost left column (68-70 cm in rows 3-4, 101-109 cm in rows 0-2) while columns 1 onward are 101 cm or more; the central wall analysis therefore sees a clear way.",
+     "source": "measurement",
+     "value": "column 0 = 109/105/101/70/68 cm in rows 0-4 vs column 1 = 126/124/117/116/116 cm"
+    },
+    {
+     "ref": "full depth frame t=11.223",
+     "shows": "At contact the same pattern holds: column 0 reads 62-67 cm while column 1 reads 107-112 cm, so the object stayed in the edge column the whole time.",
+     "source": "measurement",
+     "value": "column 0 = 67/66/63/62/63 cm vs column 1 = 112/108/107/108/108 cm"
+    },
+    {
+     "ref": "brain log t=8.217 to t=11.424",
+     "shows": "Depth frames kept arriving (new-frame marks throughout) and safe=yes throughout, so this was not a sensor-dropout, fall or health hold.",
      "source": "log",
-     "value": "t=9.527"
-    },
-    {
-     "ref": "hazards.py",
-     "shows": "Side ('wall returns near the body') memory is enabled only when obstacle.side_memory_seconds > 0 (lines 62-66); side hazards are detected from all wall-row columns within 0.8 m ahead and 0.30 m of the axis (lines 96-107), remembered (lines 171-205) and merged into the view so a close one blocks (lines 209-226).",
-     "source": "code",
-     "value": "hazards.py:62-66,96-107"
-    },
-    {
-     "ref": "brain.toml",
-     "shows": "brain.toml sets side_memory_seconds = 0.0, switching that side memory off; the built-in default in config.py:46 is 3.0 s.",
-     "source": "code",
-     "value": "brain.toml:29"
-    },
-    {
-     "ref": "brain.py",
-     "shows": "Forward only stops when the ahead view is blocked (lines 143-148) and otherwise keeps moving forward (line 170), so with side memory off the alongside box could never trigger a stop.",
-     "source": "code",
-     "value": "brain.py:143-170"
+     "value": "safe=yes on every tick, fresh frames marked '*' regularly"
     }
    ],
-   "explanation": "The robot walked forward past a box that sat beside it, outside the patch directly ahead that it uses to decide to stop. A separate safeguard was meant to remember close objects at its sides while it passed them, but that safeguard was turned off in its settings, so it kept walking straight until its side touched the box.",
-   "fix_direction": "Turn the side-hazard memory back on in the configuration (a few seconds, as in the built-in default) so close side returns are remembered and can stop or steer the robot while it is passing an object, then confirm with a replay or simulator run of this approach.",
-   "observed": "The robot walked forward alongside the purple box and touched its side at t=12.503 s (K4, gap 2.0 px) without ever braking or turning away.",
+   "explanation": "The box approached at the very edge of the depth sensor's view, beside the robot rather than in the centre of its path, so the ordinary check of what lies directly ahead stayed clear and the robot kept walking. A separate safeguard exists that remembers nearby surfaces seen at the sides, but that memory was switched off in the settings, so those edge sightings left no trace and were never acted on.",
+   "fix_direction": "Give the near-body side memory a positive retention time (as in the built-in defaults) so wall returns seen in the outer columns are kept and fed into the view ahead, then re-run this recording to confirm the robot steers or stops before the box.",
+   "observed": "The robot walked straight into the purple box that approached on its side, touching it at t=11.202 (frame 163) without ever slowing, steering away, braking or turning.",
    "plain": {
-    "camera": "Camera: the purple box sat close beside the robot.",
-    "robot": "Robot: its log shows it kept walking straight forward.",
-    "why": "Why: it was set to forget things beside it."
+    "camera": "The camera showed the box beside the robot, then touching it.",
+    "robot": "Its log showed it kept walking forward throughout.",
+    "why": "It was set to forget nearby objects at its sides."
    },
    "ruled_out": [
     {
-     "because": "At t=12.390 and t=12.490 the wall-row readings ahead are around 1.0-3.0 m in the full depth frames, well beyond the stop distance; the box was beside, not in the front columns (depth.py:93-112 only judges blocked from the front columns). The failure is the disabled side path, not a missed reading of something dead ahead.",
-     "cause": "A missed obstacle dead ahead in the front wall rows"
+     "because": "The brain stayed in forward with vx=0.24 on every tick from t=8.217 to t=11.424 and no brake/turn state ever appears; also the central columns in the full frames at t=11.123 and t=11.223 read over 1 m, never under the stop distance.",
+     "cause": "A centred wall obstacle that the forward/brake logic saw but handled too late"
     },
     {
-     "because": "In the bottom rows of the full frames (e.g. t=11.989, t=12.490) the readings are smooth floor-like values around 50-100 cm, and contact was with the tall box's side (K1-K4) at leg/body height, not with a small floor-level object in front.",
-     "cause": "A low object on the floor missed by the bottom-row detector"
+     "because": "safe=yes on every log tick and new depth frames are marked arriving throughout, up to and past contact at t=11.202.",
+     "cause": "A fall, unhealthy robot, or missing depth frames causing a hold or blindness"
     },
     {
-     "because": "safe=yes on every tick from t=9.527 to t=12.741, new depth frames keep arriving (marked *), and the state never leaves forward for hold; the guard in brain.py:360-371 was never triggered.",
-     "cause": "A fall, unhealthy robot, or blind/missing depth causing a hold"
+     "because": "The close return appears in the top and middle sensor rows too (rows 0-4 in column 0 at t=11.223), not only in the bottom floor rows, and it persists across frames 10.722 to 11.223 rather than flickering once.",
+     "cause": "A low floor-level object or a single noisy depth zone"
     },
     {
-     "because": "Small vyaw corrections (within about +/-0.2 rad/s) are present throughout the log and the heading stays in a narrow band (yaw about +0.13 to +0.42 rad); the robot held roughly its course. It hit the box because the alongside hazard was never made blocking, not because it steered the wrong way.",
-     "cause": "Heading control steering the wrong way"
+     "because": "The outermost-column returns would have been eligible for the side-hazard memory (within its forward and sideways band); what removed them was the zero retention setting, not the central-column window, which is a deliberate design split between the two mechanisms.",
+     "cause": "The central front columns (1-6) excluding column 0, on its own"
     }
    ]
   },
@@ -95,32 +83,35 @@
    "lines_ok": true,
    "function_ok": true,
    "frames_cited": [
-    "K1",
     "K2",
-    "K3",
     "K4"
    ],
-   "log_ticks_cited": [],
-   "bad_refs": [
-    "log",
-    "log"
+   "log_ticks_cited": [
+    8.217,
+    10.702,
+    10.722,
+    11.123,
+    11.202,
+    11.223,
+    11.424
    ],
-   "grounded": false
+   "bad_refs": [],
+   "grounded": true
   },
   "key": "brain.toml::[obstacle] side_memory_seconds",
   "call": {
    "model": "muse-wonder-1.0",
    "where": "Meta Model API",
    "purpose": "diagnose (evidence, run 1)",
-   "seconds": 66.62,
+   "seconds": 120.19,
    "effort": "medium",
    "status": "completed",
    "images": 4,
-   "input_tokens": 41239,
+   "input_tokens": 41259,
    "cached_input_tokens": 30182,
-   "output_tokens": 6701,
-   "reasoning_tokens": 5526,
-   "cost_usd": 0.18428
+   "output_tokens": 9102,
+   "reasoning_tokens": 7925,
+   "cost_usd": 0.23238
   },
   "mode": "evidence"
  }

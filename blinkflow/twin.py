@@ -29,7 +29,25 @@ import time
 
 import mujoco
 import numpy as np
-import onnxruntime as ort
+
+
+def quiet_import_ort():
+    """onnxruntime >= 1.24 warns on import that it cannot read the GPU's vendor under WSL (it runs on the CPU here),
+    in C++ on fd 2, before any log level can be set: fd 2 goes to /dev/null for the import only."""
+    sys.stderr.flush()
+    saved, null = os.dup(2), os.open(os.devnull, os.O_WRONLY)
+    os.dup2(null, 2)
+    try:
+        import onnxruntime
+    finally:
+        os.dup2(saved, 2)
+        os.close(saved)
+        os.close(null)
+    onnxruntime.set_default_logger_severity(3)       # errors only
+    return onnxruntime
+
+
+ort = quiet_import_ort()
 from mjlab_microduck.sim.body_server import (HOME_POSE, JOINT_NAMES, MOUTH_INDEX, Body, gravity_in_trunk,
                                              pose_table)
 

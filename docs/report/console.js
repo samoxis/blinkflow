@@ -925,7 +925,7 @@ P.proof = () => {
     h("div", { class: "v" }, va ? (va.valid && !va.incident ? h("b", { style: "color:var(--green)" }, `Fixed: the same scene, no ${fall ? "fall" : "contact"}.`) : h("b", { style: "color:var(--red)" }, "Not fixed yet.")) : "the verdict comes from the pixels, as before",
       va ? h("div", { class: "mute", style: "margin-top:.4rem; font-size:.9rem" }, `same inputs, replayed in the twin · robot walked ${num(va.travel_m, 2)} m (before: ${num(vb && vb.travel_m, 2)} m)`) : null),
     keep ? h("div", { class: "keep" }, askCard(keep, false)) : null));
-  box.append(controls(va));
+  box.append(controls(va, atag));
   return [head("proof", after && after.rendered ? `twin replay ${secs(after.rendered.seconds)}` : null), box];
 };
 
@@ -958,20 +958,67 @@ function frame([a, ta], [b, tb]) {
     return { crop: [x1 - px, y1 - py, x2 + px, y2 + py], span: [f0, f1] };
   }).catch(() => null));
   framed.get(key).then((fr) => {
-    if (!fr) return;
-    a.crop = b.crop = fr.crop;
-    a.span = fr.span;
+    const ta_ = A.start.times, tb_ = B.start.times;
+    if (fr) a.crop = b.crop = fr.crop;
+    const [t0, t1] = fr ? [ta_[fr.span[0]], ta_[fr.span[1]]] : [Math.min(ta_[0], tb_[0]), Math.max(ta_[ta_.length - 1], tb_[tb_.length - 1])];
+    if (!synced.has(key)) synced.set(key, new Sync([[a, ta_], [b, tb_]], t0, t1));
   });
-  const ta_ = A.start.times, tb_ = B.start.times;
-  a.listeners = [(f) => {
-    const d = b.video.duration;
-    if (!d) return;
-    let g = 0;
-    for (let i = 0; i < tb_.length; i++) if (Math.abs(tb_[i] - ta_[f]) < Math.abs(tb_[g] - ta_[f])) g = i;
-    if (Math.abs(b.frame - g) > 2) b.video.currentTime = (g * d) / b.frames;
-    if (b.video.playbackRate !== a.video.playbackRate) b.video.playbackRate = a.video.playbackRate;
-    if (b.video.paused) b.video.play().catch(() => {});
-  }];
+  tickers.push(() => { const s = synced.get(key); if (s) s.tick(); });
+}
+
+// Replays on one scene clock: brain seconds [t0, t1], looped. Each video plays by itself and is steered
+// toward the clock by its speed; it is seeked only when far off, because the twin's shots have a keyframe
+// every ~9 s and every seek decodes up to that much video. A shot that ends before the clock holds its
+// last frame. At t1 all go back to t0, wait until each has its frame, and start again together; the clock
+// waits for a video that is still loading.
+const synced = new Map();
+class Sync {
+  constructor(players, t0, t1) {
+    this.ps = players.map(([p, times]) => ({ p, times }));
+    this.t0 = t0; this.t1 = t1; this.T = t0;
+    this.last = null; this.restart = true;
+    for (const { p } of this.ps) { p.video.loop = false; p.video.pause(); p.span = null; }
+  }
+  // the video time that shows brain time T in this shot, or null past its last frame
+  at({ p, times }, T) {
+    const d = p.video.duration;
+    if (!d || !times.length) return 0;
+    if (T > times[times.length - 1]) return null;
+    let i = 0;
+    for (let k = 0; k < times.length; k++) if (Math.abs(times[k] - T) < Math.abs(times[i] - T)) i = k;
+    return ((i + 0.5) * d) / p.frames;
+  }
+  tick() {
+    const now = performance.now(), dt = this.last == null ? 0 : (now - this.last) / 1000;
+    this.last = now;
+    const v = (x) => x.p.video;
+    if (this.ps.some((x) => !v(x).duration)) return;
+    if (this.restart) {                               // seek every shot to t0 once, start when all have it
+      if (!this.seeking) {
+        this.T = this.t0;
+        for (const x of this.ps) { v(x).pause(); v(x).playbackRate = 1; v(x).currentTime = this.at(x, this.T) ?? v(x).duration; }
+        this.seeking = true;
+      }
+      if (this.ps.some((x) => v(x).seeking || v(x).readyState < 3)) return;
+      this.seeking = false; this.restart = false;
+      for (const x of this.ps) if (this.at(x, this.T) != null) v(x).play().catch(() => {});
+      return;
+    }
+    const live = this.ps.filter((x) => this.at(x, this.T) != null);
+    if (!live.some((x) => v(x).seeking || v(x).readyState < 3)) this.T += Math.min(dt, 0.1);
+    if (this.T >= this.t1) { this.restart = true; return; }
+    for (const x of this.ps) {
+      const want = this.at(x, this.T), vid = v(x);
+      if (want == null) {                             // this shot has ended: hold its last frame
+        if (!vid.paused) vid.pause();
+        continue;
+      }
+      if (vid.paused && !vid.seeking) vid.play().catch(() => {});
+      const off = vid.currentTime - want;
+      if (Math.abs(off) > 1 && !vid.seeking) vid.currentTime = want;
+      else vid.playbackRate = Math.min(1.5, Math.max(0.5, 1 - off));
+    }
+  }
 }
 const overlaps = (p, q) => Math.min(p[2], q[2]) > Math.max(p[0], q[0]) && Math.min(p[3], q[3]) > Math.max(p[1], q[1]);
 
@@ -979,7 +1026,7 @@ const overlaps = (p, q) => Math.min(p[2], q[2]) > Math.max(p[0], q[0]) && Math.m
 // Older logs carry no "valid", only the reason.
 const unmeasured = (r) => r && !r.clean && (r.valid === false || /^no verdict|not found|robot found in only|robot walked/.test(r.why || ""));
 
-function controls(va) {
+function controls(va, atag) {
   const C = st.control;
   const all = ["box", ...((C.start && C.start.scenes) || [])];
   const clean = (va && va.valid && !va.incident ? 1 : 0) + Object.values(C.scenes).filter((c) => c.clean).length;
@@ -991,8 +1038,9 @@ function controls(va) {
   const scenes = ["box", ...((C.start && C.start.scenes) || ["low_cube", "ledge", "corner", "doorway"])];
   for (const sc of scenes) {
     if (sc === "box") {
+      const ev = atag && st.sees[atag], img = ev && ev.evidence && url(ev.evidence.image);
       el.append(h("div", { class: `scene ${va ? (va.valid && !va.incident ? "clean" : "dirty") : ""}` },
-        h("div", { style: "width:5.6rem; height:4.2rem; border-radius:.35rem; display:grid; place-items:center; background:#000; color:var(--mute); font-size:.75rem" }, "the proof"),
+        img ? pic(img) : h("div", { style: "width:5.6rem; height:4.2rem; border-radius:.35rem; display:grid; place-items:center; background:#000; color:var(--mute); font-size:.75rem" }, "the proof"),
         h("div", {}, h("div", { class: "s" }, "box"), h("div", { class: "r" }, va ? says(va) : "the incident's scene"))));
       continue;
     }

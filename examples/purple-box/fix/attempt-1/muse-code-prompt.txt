@@ -11,56 +11,54 @@ Make the smallest change to this workspace that removes the cause. Rules:
 ===== DIAGNOSIS =====
 # Diagnosis: white robot touches the purple box
 
-**Cause:** `brain.toml`, `[obstacle] configuration`, lines 29-29. side_memory_seconds is set to 0.0
+**Cause:** `brain.toml`, `[obstacle] side_memory_seconds`, lines 29-29. side_memory_seconds is set to 0.0, disabling the hazard memory for wall returns near the body
 
-**In plain words:** The robot walked forward past a box that sat beside it, outside the patch directly ahead that it uses to decide to stop. A separate safeguard was meant to remember close objects at its sides while it passed them, but that safeguard was turned off in its settings, so it kept walking straight until its side touched the box.
+**In plain words:** The box approached at the very edge of the depth sensor's view, beside the robot rather than in the centre of its path, so the ordinary check of what lies directly ahead stayed clear and the robot kept walking. A separate safeguard exists that remembers nearby surfaces seen at the sides, but that memory was switched off in the settings, so those edge sightings left no trace and were never acted on.
 
-**What happened:** The robot walked forward alongside the purple box and touched its side at t=12.503 s (K4, gap 2.0 px) without ever braking or turning away.
+**What happened:** The robot walked straight into the purple box that approached on its side, touching it at t=11.202 (frame 163) without ever slowing, steering away, braking or turning.
 
-**Confidence:** 0.82  ·  **Fix direction (no patch):** Turn the side-hazard memory back on in the configuration (a few seconds, as in the built-in default) so close side returns are remembered and can stop or steer the robot while it is passing an object, then confirm with a replay or simulator run of this approach.
+**Confidence:** 0.62  ·  **Fix direction (no patch):** Give the near-body side memory a positive retention time (as in the built-in defaults) so wall returns seen in the outer columns are kept and fed into the view ahead, then re-run this recording to confirm the robot steers or stops before the box.
 
 ## Evidence cited
 
-- *frame* `K1`: K1. At t=11.503 s, 1 s before contact, the purple box is beside and just in front of the robot's leg, very close; the gap is 36.1 px and the feet are already 101.3 px past the base's far edge, so this was a side approach, not a head-on approach.
-- *frame* `K2/K3`: K2, K3. At t=12.003 s (K2) and t=12.403 s (K3) the box remains very close to the robot's left side while the robot continues past it.
-- *frame* `K4`: K4. At t=12.503 s the mask gap is 2.0 px, the first-contact reading, with the feet 249.3 px past the base's far edge: the robot touched the box while passing alongside it.
-- *log* `log`: t=9.527..12.490. From t=9.527 to t=12.490 (just before contact) every tick is state=forward with cmd move vx=0.24 and only small vyaw; the robot never brakes or turns in place, so nothing ever made the passing box count as blocking.
-- *log* `log`: t=9.527. At t=9.527 the leftmost wall-row depth readings are about 67-74 cm with valid frames arriving (marked *), and safe=yes throughout; the sensor was delivering close returns on that side.
-- *code* `hazards.py`: hazards.py:62-66,96-107. Side ('wall returns near the body') memory is enabled only when obstacle.side_memory_seconds > 0 (lines 62-66); side hazards are detected from all wall-row columns within 0.8 m ahead and 0.30 m of the axis (lines 96-107), remembered (lines 171-205) and merged into the view so a close one blocks (lines 209-226).
-- *code* `brain.toml`: brain.toml:29. brain.toml sets side_memory_seconds = 0.0, switching that side memory off; the built-in default in config.py:46 is 3.0 s.
-- *code* `brain.py`: brain.py:143-170. Forward only stops when the ahead view is blocked (lines 143-148) and otherwise keeps moving forward (line 170), so with side memory off the alongside box could never trigger a stop.
+- *frame* `K2, t=10.702`: gap 2.0 px, feet past base edge -81.4 px. The purple box is already touching the robot on screen at its side, while its feet are still -81.4 px from the base's far edge, i.e. this is a side/edge obstacle, not a centred obstacle straight ahead.
+- *frame* `K4, t=11.202`: gap 1.0 px, feet past base edge -9.2 px. First real contact: the box is close to the robot's left side and partially in front of it, confirming contact with an object at the edge of the robot rather than in the middle of its path.
+- *log* `brain log t=10.722 to t=11.424`: state=forward, cmd=move, vx=0.24 for every tick. The brain never left forward, never braked or turned, and kept commanding vx=0.24 right through contact, so the obstacle never entered the view the forward state acts on.
+- *measurement* `full depth frame t=11.123`: column 0 = 109/105/101/70/68 cm in rows 0-4 vs column 1 = 126/124/117/116/116 cm. Just before contact the close object is only in the outermost left column (68-70 cm in rows 3-4, 101-109 cm in rows 0-2) while columns 1 onward are 101 cm or more; the central wall analysis therefore sees a clear way.
+- *measurement* `full depth frame t=11.223`: column 0 = 67/66/63/62/63 cm vs column 1 = 112/108/107/108/108 cm. At contact the same pattern holds: column 0 reads 62-67 cm while column 1 reads 107-112 cm, so the object stayed in the edge column the whole time.
+- *log* `brain log t=8.217 to t=11.424`: safe=yes on every tick, fresh frames marked '*' regularly. Depth frames kept arriving (new-frame marks throughout) and safe=yes throughout, so this was not a sensor-dropout, fall or health hold.
 
 ## Ruled out
 
-- A missed obstacle dead ahead in the front wall rows: At t=12.390 and t=12.490 the wall-row readings ahead are around 1.0-3.0 m in the full depth frames, well beyond the stop distance; the box was beside, not in the front columns (depth.py:93-112 only judges blocked from the front columns). The failure is the disabled side path, not a missed reading of something dead ahead.
-- A low object on the floor missed by the bottom-row detector: In the bottom rows of the full frames (e.g. t=11.989, t=12.490) the readings are smooth floor-like values around 50-100 cm, and contact was with the tall box's side (K1-K4) at leg/body height, not with a small floor-level object in front.
-- A fall, unhealthy robot, or blind/missing depth causing a hold: safe=yes on every tick from t=9.527 to t=12.741, new depth frames keep arriving (marked *), and the state never leaves forward for hold; the guard in brain.py:360-371 was never triggered.
-- Heading control steering the wrong way: Small vyaw corrections (within about +/-0.2 rad/s) are present throughout the log and the heading stays in a narrow band (yaw about +0.13 to +0.42 rad); the robot held roughly its course. It hit the box because the alongside hazard was never made blocking, not because it steered the wrong way.
+- A centred wall obstacle that the forward/brake logic saw but handled too late: The brain stayed in forward with vx=0.24 on every tick from t=8.217 to t=11.424 and no brake/turn state ever appears; also the central columns in the full frames at t=11.123 and t=11.223 read over 1 m, never under the stop distance.
+- A fall, unhealthy robot, or missing depth frames causing a hold or blindness: safe=yes on every log tick and new depth frames are marked arriving throughout, up to and past contact at t=11.202.
+- A low floor-level object or a single noisy depth zone: The close return appears in the top and middle sensor rows too (rows 0-4 in column 0 at t=11.223), not only in the bottom floor rows, and it persists across frames 10.722 to 11.223 rather than flickering once.
+- The central front columns (1-6) excluding column 0, on its own: The outermost-column returns would have been eligible for the side-hazard memory (within its forward and sideways band); what removed them was the zero retention setting, not the central-column window, which is a deliberate design split between the two mechanisms.
 
 ## Check against what was sent
 
 - file exists: True; lines in range: True; function found: True
-- key frames cited: K1, K2, K3, K4; log ticks cited: none
-- references that match nothing sent: ['log', 'log']
-- **grounded in pixels and log: NO**
+- key frames cited: K2, K4; log ticks cited: 8.217, 10.702, 10.722, 11.123, 11.202, 11.223, 11.424
+- references that match nothing sent: none
+- **grounded in pixels and log: yes**
 
 ## Key frames
 
-**K1** 1 s before contact, t = 11.50 s. Glimmer: *The robot is walking forward with its legs apart and slightly splayed, and the purple box is to the left of the robot in the picture, just in front of its left leg and very close to it.*
+**K1** 1 s before contact, t = 10.20 s. Glimmer: *The robot is walking forward with its legs lifted off the ground, and the purple box is to the left of the robot in the picture, slightly below and in front of it, close to its left leg.*
 
 
-**K2** 0.5 s before contact, t = 12.00 s. Glimmer: *The robot is walking forward with its legs positioned under its body, and the purple box is to the left of the robot, slightly above it in the picture and very close to its left side.*
+**K2** 0.5 s before contact, t = 10.70 s. Glimmer: *The robot is walking forward with its legs positioned under its body, and the purple box is to the left of the robot in the picture, slightly in front of it and close to its left side.*
 
 
-**K3** just before contact, t = 12.40 s. Glimmer: *The robot is standing with its legs together and slightly forward, and the purple box is to the left of the robot, just in front of it and very close.*
+**K3** just before contact, t = 11.10 s. Glimmer: *The robot is walking forward with its orange feet on the ground and its legs slightly apart, and the purple box is to the left of the robot in the picture, close to its front left side, appearing slightly in front of and to the left of the robot’s body.*
 
 
-**K4** first contact, t = 12.50 s. Glimmer: *The white robot is standing still with its orange legs positioned under its body, and the purple box is to the left of the robot, slightly above it in the picture and close to its left side.*
+**K4** first contact, t = 11.20 s. Glimmer: *The robot is standing facing the camera with its orange feet on the ground and its legs slightly apart, and the purple box is to the left of the robot in the picture, close to its left side and partially in front of it.*
 
 
 ## Model
 
-muse-wonder-1.0 (Meta Model API), effort medium, 41239 input tokens (30182 cached), 6701 output (5526 reasoning), $0.184, 67 s. Every call of this incident is in `models.json`.
+muse-wonder-1.0 (Meta Model API), effort medium, 41259 input tokens (30182 cached), 9102 output (7925 reasoning), $0.232, 120 s. Every call of this incident is in `models.json`.
 
 ===== WORKSPACE =====
 Its files (git ls-files): .gitignore, LICENSE, brain.toml, pyproject.toml, src/microduck_brain/__init__.py, src/microduck_brain/brain.py, src/microduck_brain/cli.py, src/microduck_brain/config.py, src/microduck_brain/depth.py, src/microduck_brain/hazards.py, src/microduck_brain/ipc.py, src/microduck_brain/plot.py, src/microduck_brain/record.py, src/microduck_brain/runner.py, uv.lock

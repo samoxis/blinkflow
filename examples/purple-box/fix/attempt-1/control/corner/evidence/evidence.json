@@ -1,5 +1,5 @@
 {
- "snapshot": "~/blinkflow-runs/voice/20261028-212723/fix/attempt-1/control/corner/look/meta.json",
+ "snapshot": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/control/corner/look/meta.json",
  "kind": "twin",
  "clock": "simulated",
  "clip": "../look/every.mp4",
@@ -24,7 +24,7 @@
   "attempts": [
    {
     "namer": "glimmer",
-    "reply": "{\"objects\": [\"white robot\", \"red barrier\", \"green sphere\", \"cyan block\"], \"hazards\": [\"brown floor edge\", \"dark drop-off\"], \"robot\": \"white robot\", \"nearest\": \"red barrier\", \"nearest_is\": \"object\"}",
+    "reply": "{\"objects\": [\"white robot\", \"red barrier\", \"green sphere\", \"cyan block\"], \"hazards\": [\"floor edge\", \"drop-off\"], \"robot\": \"white robot\", \"nearest\": \"red barrier\", \"nearest_is\": \"object\"}",
     "rejected": null
    }
   ],

@@ -61,12 +61,12 @@ Measured during the hackathon; each number links to the file it comes from.
 | Same suite, held-out pass: a new seed, the code frozen, one pass, no reruns. 7 of the 8 kept bugs are a first-pass mutation with the same value; 1 is new | **8/8**: incidents gone, control clean in all five scenes. Changes on the mutated line: **7/8** | [`results/bug_suite.md`](results/bug_suite.md#held-out-pass-oct-28) |
 | First suite (6 bugs), blind to the mutation, one pass | 6/6 fixed; Muse Wonder's cause on the mutated line in 5/6 | [`results/bug_suite.md`](results/bug_suite.md) |
 | Live simulator, the demo incident, 20 s per run | contact in **5/5** runs without the fix, **0/5** with it (an earlier pass, with a CPU-heavy job beside it: 3/5, 0/5) | [`results/live_check.md`](results/live_check.md) |
-| Seen → fixed and verified (machine time) | **135.8–196.7 s** over 9 purple-box loops, median 166.8 s; the spread is mostly Muse Wonder (55–97 s) | [`results/loop_times.md`](results/loop_times.md), [`results/quick_loop.md`](results/quick_loop.md) |
+| Seen → fixed and verified (machine time) | **135.8–234.0 s** over 10 purple-box loops, median 169.2 s; the spread is mostly Muse Wonder (55–120 s) | [`results/loop_times.md`](results/loop_times.md), [`results/quick_loop.md`](results/quick_loop.md) |
 | Control after the fix, on pixels | **5/5 scenes clean, all 5 measured** (the 166.4 s run); the twin's log agrees | [`results/loop_times.md`](results/loop_times.md), [`results/console/`](results/console) |
 | Watcher (nobody speaks) | **0 false alarms** in 16 runs without an incident; **14/17** incidents caught. Optimistic: the suite gave Glimmer a look every 0.97 s, live beside the simulator it is ~1.45 s | [`results/watcher.md`](results/watcher.md) |
 | Voice | **5/5** sentences from a TTS heard, read and seen; the real microphone not yet tested | [`results/voice.md`](results/voice.md) |
 | Pixel rule against ground truth | 92 saved looks re-measured: 60/64 incidents caught, false alarms 1 → 0 after one correction | [`results/control.md`](results/control.md) |
-| Cost of one loop (model calls) | **$0.88** for the profiled loop; $0.34–$1.71 over the 9 runs (measuring the four control scenes adds SAM 3.1; replies from the cache cost $0) | [`results/quick_loop.md`](results/quick_loop.md), [`results/loop_times.md`](results/loop_times.md) |
+| Cost of one loop (model calls) | **$0.88** for the profiled loop; $0.34–$1.71 over the 10 runs (measuring the four control scenes adds SAM 3.1; replies from the cache cost $0) | [`results/quick_loop.md`](results/quick_loop.md), [`results/loop_times.md`](results/loop_times.md) |
 
 Every run writes a `models.json`: each model call with the model, where it ran (this PC, Meta, Baseten, the cache), tokens or frames, seconds and cost. Cost details (the SAM 3.1 cache, Muse Code's model, `tools/spend.py`): [`docs/RUNNING.md`](docs/RUNNING.md#cost).
 
@@ -75,7 +75,7 @@ Every run writes a `models.json`: each model call with the model, where it ran (
 
 ## Try it in ~2 min, no GPU
 
-A recorded live run of the demo incident is in [`examples/purple-box/`](examples/purple-box): the 60 s snapshot, the sentence, the evidence, Muse Wonder's diagnosis, both answers, Muse Code's change, the replays before and after, the control scenes and the model calls. No GPU, no simulator, no key. The sentence was typed at the terminal and "Fix it?" and "Keep the fix?" answered yes there by a script that drove the terminal, 2 s after each question; everything else is the loop as it runs with a person.
+A recorded live run of the demo incident is in [`examples/purple-box/`](examples/purple-box): the 60 s snapshot, the sentence, the evidence, Muse Wonder's diagnosis, both answers, Muse Code's change, the replays before and after, the control scenes and the model calls. No GPU, no simulator, no key. A person said the sentence through the microphone of Ray-Ban Meta glasses (push-to-talk, F9; [`said.wav`](examples/purple-box/said.wav)), Muse Voice Transcribe wrote it down, and the same person answered yes to "Fix it?" (in the console, after 7.5 s) and to "Keep the fix?" (in the terminal, after 12.6 s).
 
 **1. The report.** Python 3 (tested on 3.12), standard library only:
 
@@ -85,7 +85,7 @@ python3 -m venv .venv && . .venv/bin/activate
 python3 -m blinkflow.console report examples/purple-box/events.jsonl --out report
 ```
 
-Open `report/index.html` over a local server (`python3 -m http.server -d report 8000`, then http://localhost:8000): the whole loop step by step, the masks, the distance to first contact, the cause with its key frame, log row and code line, the replay before | after, the clock and the bill.
+Open `report/index.html` over a local server that answers byte-range requests, since the replays seek in their videos (`python3 -m http.server` does not, and they snap back to the start); the console's own server does, on the same example: `python3 -m blinkflow.console serve --events examples/purple-box/events.jsonl --port 8000`, then http://localhost:8000. Either way: the whole loop step by step, the masks, the distance to first contact, the cause with its key frame, log row and code line, the replay before | after, the clock and the bill.
 
 **2. Measure it again.** The contact is re-derived from SAM 3.1's saved replies, offline (needs `ffmpeg`):
 
@@ -117,8 +117,8 @@ Glimmer is the open-weight model that names objects, describes key frames and re
 **The model:** `muse-glimmer`, 27.9B, quantization **Q4_K_M**, projector clip 1.9B, served by Ollama 0.40.11, digest `de878ce33ad8`. The weights are Ollama's public library model [`muse-glimmer:30b-q4_K_M`](https://ollama.com/library/muse-glimmer) (also its `latest`), unchanged: the public manifest's SHA-256 is that digest, and its model and projector layers are the SHA-256 of the two weight files on this PC.
 
 - [`glimmer-model.txt`](examples/purple-box/glimmer-model.txt): `ollama show muse-glimmer` on this PC, the SHA-256 of both weight files, the public manifest, and the one `curl | sha256sum` that checks it without a GPU.
-- [`models.json`](examples/purple-box/models.json): every model call of the run. Glimmer's ten are `muse-glimmer`, `local`, with tokens in and out and seconds (the sentence, the names, four key frames, the names in four control scenes). Of the 56 SAM 3.1 calls, 34 were paid ($0.77 of the run's $0.99) and 22 are `cached, $0`, each with the hash of the video bytes, concept and parameters it answers.
-- [`provenance.txt`](examples/purple-box/provenance.txt): `ollama ps` and `nvidia-smi` sampled every ~3 s while the run ran, with timestamps that line up with Glimmer's calls: `muse-glimmer`, 16 GB, 100% GPU, context 8192.
+- [`models.json`](examples/purple-box/models.json): every model call of the run. Glimmer's ten are `muse-glimmer`, `local`, with tokens in and out and seconds (the sentence, the names, four key frames, the names in four control scenes). Of the 56 SAM 3.1 calls, 6 were paid ($0.13 of the run's $0.50) and 50 are `cached, $0`, each with the hash of the video bytes, concept and parameters it answers.
+- [`provenance.txt`](examples/purple-box/provenance.txt): Glimmer's ten calls with their times and tokens, and Ollama's own answer during the run (`/api/ps`, the `glimmer.vram` event in `events.jsonl`): `muse-glimmer`, 16.7 GB, all in VRAM, context 8192, Q4_K_M. No `ollama ps` / `nvidia-smi` sampler ran beside this run; an earlier run of the same example, sampled every ~3 s with both, is at [`e9b88d8`](https://github.com/samoxis/blinkflow/blob/e9b88d8/examples/purple-box/provenance.txt).
 - [`glimmer.jsonl`](examples/purple-box/glimmer.jsonl): Glimmer's raw replies from the run, each with what it was asked and the image it saw.
 
 `python3 tools/pack_example.py <run>/events.jsonl examples/<name>` packs any run the same way: paths made relative to the example, the home folder written as `~`, no keys, and never the scorer's ground truth.
@@ -145,7 +145,7 @@ On a real robot the proof changes: the real world never repeats exactly, but the
 
 - **The twin is not the live simulator.** It starts the robot standing (no sit-to-stand boot) and re-states robotd's controller in Python, so robotd itself is bypassed.
 - **The live simulator is not deterministic.** Four wall clocks run it, so the same brain does not walk the same path twice. That is why the proof is double: exact in the twin, then 5 runs on each side live.
-- **Muse Wonder varies.** The same evidence gives different lengths of answer (4.7k–8.4k output tokens), and that alone moves the loop time by about 40 s; its cause is not always on the mutated line ([`results/bug_suite.md`](results/bug_suite.md)).
+- **Muse Wonder varies.** The same evidence gives different lengths of answer (4.7k–9.1k output tokens), and that alone moves the loop time by up to ~50 s; its cause is not always on the mutated line ([`results/bug_suite.md`](results/bug_suite.md)).
 - **The watcher confirms after the fact,** a median 19.5 s after the incident (13–52 s): it is a safety net, not a brake.
 - **"Stuck" has no real case.** The watcher checks for it, but no run has had a robot stuck.
 - **The real microphone is untested.** This PC has only a virtual one; voice was measured with TTS sentences.

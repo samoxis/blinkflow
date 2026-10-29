@@ -1,5 +1,5 @@
 {
- "snapshot": "~/blinkflow-runs/voice/20261028-212723/fix/attempt-1/control/ledge/look/meta.json",
+ "snapshot": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/control/ledge/look/meta.json",
  "kind": "twin",
  "clock": "simulated",
  "clip": "../look/every.mp4",
@@ -33,7 +33,7 @@
    },
    {
     "namer": "spark",
-    "reply": "{\"objects\":[\"white robot\",\"gray block\",\"green object\",\"blue cube\"],\"hazards\":[\"yellow pit\"],\"robot\":\"white robot\",\"nearest\":\"gray block\",\"nearest_is\":\"object\"}",
+    "reply": "{\"objects\":[\"gray block\",\"cyan cube\",\"green object\"],\"hazards\":[\"yellow pit\"],\"robot\":\"white robot\",\"nearest\":\"gray block\",\"nearest_is\":\"object\"}",
     "rejected": null
    }
   ],

@@ -36,9 +36,11 @@ class Sidecar:
         args = ["-u", unc(SIDECAR), "--host", self.host, "--port", str(self.port),
                 "--title", title, "--crop-top", str(crop_top), "--crop-right", str(crop_right)]
         args += ["--listen", "--ptt-key", key] + (["--mic", mic] if mic else []) if listen else []
-        arglist = ",".join(f"'{a}'" for a in args)
+        # one Windows command line, quoted the way python.exe parses it ("Headset (RB Meta 0269)" stays one
+        # argument; Start-Process joins an array with bare spaces), inside a PowerShell single-quoted string
+        cmdline = subprocess.list2cmdline(args).replace("'", "''")
         subprocess.run(["powershell.exe", "-NoProfile", "-Command",
-                        f"Start-Process -WindowStyle Hidden python -ArgumentList {arglist}"],
+                        f"Start-Process -WindowStyle Hidden python -ArgumentList '{cmdline}'"],
                        check=True)
         deadline = time.time() + wait
         while time.time() < deadline:

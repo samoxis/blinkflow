@@ -1,8 +1,8 @@
 {
- "snapshot": "../twin/20261028-212832/meta.json",
+ "snapshot": "../twin/20261029-171033/meta.json",
  "kind": "twin",
  "clock": "simulated",
- "clip": "../twin/20261028-212832/twin.mp4",
+ "clip": "../twin/20261029-171033/twin.mp4",
  "shot": {
   "first_frame": 0,
   "frames": 737,
