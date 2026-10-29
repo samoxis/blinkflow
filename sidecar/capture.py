@@ -26,6 +26,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import threading
 import time
 import uuid
@@ -40,20 +41,20 @@ KEEP_SNAPS = 6
 
 user32 = ctypes.windll.user32
 user32.SetProcessDpiAwarenessContext(ctypes.c_void_p(-4))  # per-monitor v2: physical pixels
+user32.SetWindowPos.argtypes = [wt.HWND, wt.HWND, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, wt.UINT]
+user32.WindowFromPoint.argtypes = [wt.POINT]
+user32.WindowFromPoint.restype = user32.GetAncestor.restype = wt.HWND
 HWND_TOPMOST = -1
-SWP_NOMOVE, SWP_NOSIZE = 0x2, 0x1
+SWP_NOMOVE, SWP_NOSIZE, SWP_SHOWWINDOW = 0x2, 0x1, 0x40
 
 
-def find_window(title):
+def find_window(name):
     found = []
 
     @ctypes.WINFUNCTYPE(wt.BOOL, wt.HWND, wt.LPARAM)
     def cb(hwnd, _):
-        if user32.IsWindowVisible(hwnd):
-            buf = ctypes.create_unicode_buffer(256)
-            user32.GetWindowTextW(hwnd, buf, 256)
-            if buf.value == title:
-                found.append(hwnd)
+        if user32.IsWindowVisible(hwnd) and title(hwnd) == name:
+            found.append(hwnd)
         return True
 
     user32.EnumWindows(cb, 0)
@@ -66,6 +67,76 @@ def client_rect(hwnd):
     pt = wt.POINT(0, 0)
     user32.ClientToScreen(hwnd, ctypes.byref(pt))
     return pt.x, pt.y, r.right, r.bottom
+
+
+def window_rect(hwnd):
+    r = wt.RECT()
+    user32.GetWindowRect(hwnd, ctypes.byref(r))
+    return r.left, r.top, r.right - r.left, r.bottom - r.top
+
+
+def title(hwnd):
+    buf = ctypes.create_unicode_buffer(256)
+    user32.GetWindowTextW(hwnd, buf, 256)
+    return buf.value
+
+
+def pin(hwnd, size, settle=3.0):
+    """Put the window at (0,0), `size` in Chrome's units (--window-size, DIPs) scaled to its DPI, topmost.
+
+    Chrome ignores --window-position when the profile remembers where the --app window was last, and may
+    restore those bounds after the window appears, so it is set again until it stays put for a second."""
+    s = user32.GetDpiForWindow(hwnd) / 96
+    want = (0, 0, round(size[0] * s), round(size[1] * s))
+    if user32.IsIconic(hwnd) or user32.IsZoomed(hwnd):
+        user32.ShowWindow(hwnd, 9)  # SW_RESTORE
+    still, deadline = 0, time.time() + settle
+    while still < 4 and time.time() < deadline:
+        if window_rect(hwnd) == want:
+            still += 1
+        else:
+            still = 0
+            user32.SetWindowPos(hwnd, HWND_TOPMOST, *want, SWP_SHOWWINDOW)
+        time.sleep(0.25)
+    user32.SetForegroundWindow(hwnd)   # may be refused from a background process; topmost is what counts
+    return want
+
+
+def mismatch(hwnd, want, rect):
+    """Why the capture rect would not be showing the window, or None."""
+    if not (user32.IsWindow(hwnd) and user32.IsWindowVisible(hwnd)):
+        return "the window is gone"
+    if user32.IsIconic(hwnd):
+        return "the window is minimised"
+    if (got := window_rect(hwnd)) != want:
+        return f"the window is at {got[:2]} size {got[2]}x{got[3]}, not at {want[:2]} size {want[2]}x{want[3]}"
+    x, y, w, h = rect
+    sw, sh = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    if x < 0 or y < 0 or x + w > sw or y + h > sh:
+        return f"the capture rect {rect} is not inside the {sw}x{sh} screen"
+    for i in range(1, 8):              # a 7x7 grid over the rect: the top-level window under each point
+        for j in range(1, 8):
+            top = user32.GetAncestor(user32.WindowFromPoint(wt.POINT(x + w * i // 8, y + h * j // 8)), 2)  # GA_ROOT
+            if top != hwnd:
+                return f"window {title(top)!r} covers the capture rect at ({x + w * i // 8}, {y + h * j // 8})"
+    return None
+
+
+class Guard:
+    """Keeps the window where the capture rect expects it: puts it back if it moves, reports if it is covered."""
+
+    def __init__(self, hwnd, want, rect):
+        self.hwnd, self.want, self.rect = hwnd, want, rect
+        self.moved, self.problem = 0, None
+        threading.Thread(target=self._run, daemon=True).start()
+
+    def _run(self):
+        while user32.IsWindow(self.hwnd):
+            if window_rect(self.hwnd) != self.want and not user32.IsIconic(self.hwnd):
+                user32.SetWindowPos(self.hwnd, HWND_TOPMOST, *self.want, SWP_SHOWWINDOW)
+                self.moved += 1
+            self.problem = mismatch(self.hwnd, self.want, self.rect)
+            time.sleep(0.5)
 
 
 class Ring:
@@ -315,7 +386,7 @@ def vk_code(key):
     return 0x6F + int(k[1:]) if re.fullmatch(r"F([1-9]|1[0-9]|2[0-4])", k) else int(k, 16)
 
 
-def make_handler(ring, cursor, hwnd, stop, mic=None):
+def make_handler(ring, cursor, hwnd, stop, guard, mic=None):
     class H(BaseHTTPRequestHandler):
         def log_message(self, *a):
             pass
@@ -337,6 +408,7 @@ def make_handler(ring, cursor, hwnd, stop, mic=None):
                     self._json({"now": time.time(), "recording": alive, "rect": ring.rect, "fps": FPS,
                                 "segments": len(ring.segs), "clock_offset": ring.offset(),
                                 "window_alive": bool(user32.IsWindow(hwnd)),
+                                "window_problem": guard.problem, "window_moved_back": guard.moved,
                                 "listening": bool(mic and mic.alive()), "mic": mic and mic.device})
                 elif u.path == "/listen":
                     if not (mic and mic.alive()):
@@ -400,13 +472,18 @@ def main():
     ap.add_argument("--title", default="Viser")
     ap.add_argument("--crop-top", type=int, default=45)
     ap.add_argument("--crop-right", type=int, default=356)
+    ap.add_argument("--width", type=int, default=1100, help="window width in DIPs (as Chrome's --window-size)")
+    ap.add_argument("--height", type=int, default=700)
     ap.add_argument("--wait", type=float, default=60, help="seconds to wait for the window")
     ap.add_argument("--ffmpeg", default=shutil.which("ffmpeg") or "ffmpeg")
     ap.add_argument("--dir", default=os.path.join(os.environ["LOCALAPPDATA"], "BlinkFlow", "ring"))
     ap.add_argument("--listen", action="store_true", help="push-to-talk: record the microphone while the key is held")
     ap.add_argument("--mic", help="dshow audio device (default: the first that is not a virtual one)")
     ap.add_argument("--ptt-key", default="F9", help="F1..F24 or a hex virtual-key code")
+    ap.add_argument("--log", help="stderr goes to this file (why it refused or stopped, read by the agent in WSL)")
     a = ap.parse_args()
+    if a.log:
+        sys.stderr = open(a.log, "a", buffering=1)
 
     mic = None
     if a.listen:
@@ -422,16 +499,19 @@ def main():
         if time.time() > deadline:
             raise SystemExit(f"no visible window titled {a.title!r}")
         time.sleep(0.25)
-    user32.SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)
+    want = pin(hwnd, (a.width, a.height))
     x, y, w, h = client_rect(hwnd)
     w, h = (w - a.crop_right) & ~1, (h - a.crop_top) & ~1
     rect = (x, y + a.crop_top, w, h)
+    if why := mismatch(hwnd, want, rect):   # refuse rather than film something else
+        raise SystemExit(f"capture refused: the rect {rect} would not show the {a.title!r} window: {why}")
 
     ring = Ring(a.ffmpeg, a.dir, rect)
     ring.start()
     cursor = Cursor(rect)
+    guard = Guard(hwnd, want, rect)
     stop = threading.Event()
-    srv = ThreadingHTTPServer((a.host, a.port), make_handler(ring, cursor, hwnd, stop, mic))
+    srv = ThreadingHTTPServer((a.host, a.port), make_handler(ring, cursor, hwnd, stop, guard, mic))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     print(json.dumps({"listening": f"{a.host}:{a.port}", "rect": rect, "mic": mic and mic.device,
                       "ptt_key": a.listen and a.ptt_key}), flush=True)

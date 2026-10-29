@@ -3,6 +3,7 @@ import json
 import os
 import pathlib
 import subprocess
+import tempfile
 import time
 import urllib.request
 
@@ -26,6 +27,7 @@ class Sidecar:
         self.host = host or windows_host()
         self.base = f"http://{self.host}:{port}"
         self.port = port
+        self.err = pathlib.Path(tempfile.gettempdir()) / f"blinkflow-sidecar-{port}.err"
 
     def _get(self, path, timeout=10):
         with urllib.request.urlopen(self.base + path, timeout=timeout) as r:
@@ -34,11 +36,12 @@ class Sidecar:
     def start(self, title="Viser", crop_top=45, crop_right=356, wait=30, listen=False, mic=None, key="F9"):
         """`listen`: push-to-talk too (hold `key`; `mic` a dshow device name, default the first real one)."""
         args = ["-u", unc(SIDECAR), "--host", self.host, "--port", str(self.port),
-                "--title", title, "--crop-top", str(crop_top), "--crop-right", str(crop_right)]
+                "--title", title, "--crop-top", str(crop_top), "--crop-right", str(crop_right), "--log", unc(self.err)]
         args += ["--listen", "--ptt-key", key] + (["--mic", mic] if mic else []) if listen else []
         # one Windows command line, quoted the way python.exe parses it ("Headset (RB Meta 0269)" stays one
         # argument; Start-Process joins an array with bare spaces), inside a PowerShell single-quoted string
         cmdline = subprocess.list2cmdline(args).replace("'", "''")
+        self.err.write_text("")      # its --log: a refusal ("capture refused: ...") is read, not waited out
         subprocess.run(["powershell.exe", "-NoProfile", "-Command",
                         f"Start-Process -WindowStyle Hidden python -ArgumentList '{cmdline}'"],
                        check=True)
@@ -49,7 +52,9 @@ class Sidecar:
                 if h["recording"] and h["segments"] >= 2:
                     return h
             except OSError:
-                pass
+                if self.err.read_text(errors="replace").strip():
+                    time.sleep(0.5)    # let it finish writing
+                    raise RuntimeError("capture sidecar: " + self.err.read_text(errors="replace").strip().splitlines()[-1])
             time.sleep(0.5)
         raise RuntimeError("capture sidecar did not come up")
 
@@ -116,3 +121,4 @@ class Sidecar:
             urllib.request.urlopen(req, timeout=5).read()
         except OSError:
             pass
+        self.err.unlink(missing_ok=True)
