@@ -638,7 +638,9 @@ const NUMS = "\\d+(?:\\.\\d+)?|a|one|two|three|four|five|six|seven|eight|nine|te
 const PARTS = [
   ["moment", () => new RegExp(`\\b(?:just now|a (?:moment|second) ago|(?:about |around |roughly |maybe )?(?:${NUMS})\\s+(?:seconds?|secs?)\\s+ago)\\b`, "gi")],
   ["object", (r) => r && r.object ? new RegExp(`\\b(?:the |a |that )?${r.object.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "gi") : null],
-  ["robot", () => /\b(?:(?:its|the|his|her|their)\s+)?(?:(?:left|right|front|back)\s+)?(?:legs?|foot|feet|knee|arm|head|body|side|hip|ankle|robot|duck)\b/gi],
+  // and the words the reader took as the robot, so "she" or "it" is coloured when that is what it read
+  ["robot", (r) => new RegExp(String.raw`\b(?:(?:its|the|his|her|their)\s+)?(?:(?:left|right|front|back)\s+)?(?:legs?|foot|feet|knee|arm|head|body|side|hip|ankle|robot|duck)\b` +
+    (r && r.robot ? String.raw`|\b${r.robot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\b` : ""), "gi")],
   ["event", () => /\b(?:hit|hits|touched|touches|touch|bumped|bumps|brushed|scraped|clipped|knocked|ran into|walked into|collided with|fell off|fell|falls|tripped|got stuck|stuck)\b/gi],
 ];
 function marked(text, r) {
@@ -1079,6 +1081,15 @@ const overlaps = (p, q) => Math.min(p[2], q[2]) > Math.max(p[0], q[0]) && Math.m
 // Older logs carry no "valid", only the reason.
 const unmeasured = (r) => r && !r.clean && (r.valid === false || /^no verdict|not found|robot found in only|robot walked/.test(r.why || ""));
 
+// A clean scene says which reading decided it, as prove.contact_of picks it from the scene's evidence: with the
+// object's base found, a touch at the base; else the whole masks. The closest gap is the whole masks' on screen,
+// so 2 px "in view" next to a base that was never touched is the base's call, not a near miss.
+function cleanLine(r, e) {
+  const gap = r.closest_gap_px != null ? `closest ${num(r.closest_gap_px, 0)} px` : "";
+  if (gap && e && e.base) return `clean · ${gap} in view · no touch at the base`;
+  return `clean${gap ? ` · ${gap}` : ""}`;
+}
+
 function controls(va, atag) {
   const C = st.control;
   const all = ["box", ...((C.start && C.start.scenes) || [])];
@@ -1099,7 +1110,7 @@ function controls(va, atag) {
     }
     const r = C.scenes[sc], ev = st.sees[`control-${sc}`], img = ev && ev.evidence && url(ev.evidence.image);
     const state = r ? (r.clean ? "clean" : unmeasured(r) ? "unmeasured" : "dirty") : "";
-    const what = r ? (r.clean ? `clean${r.closest_gap_px != null ? ` · closest ${num(r.closest_gap_px, 0)} px` : ""}`
+    const what = r ? (r.clean ? cleanLine(r, ev && ev.evidence)
       : unmeasured(r) ? `not measured · ${r.why}` : r.why || "not clean")
       : ev ? "SAM 3.1 follows" : C.rendered[sc] ? "rendered" : C.start ? "rendering" : "";
     el.append(h("div", { class: `scene ${state}` },
