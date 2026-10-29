@@ -5,10 +5,12 @@
 (() => {
 const STATIC = window.BLINKFLOW_STATIC || null;
 const TEXT = window.BLINKFLOW_TEXT;
-// ?film=1: made to be filmed (no cursor, no buttons); &speed=N: a finished run replayed at N times its pace;
-// &script=1: the whole run loaded and held still, for a script to show (BLINKFLOW.seek / pin)
+// ?film=1: made to be filmed (no cursor, no buttons, the three verbs on top, bigger badges); &speed=N: a finished
+// run replayed at N times its pace; &script=1: the whole run loaded and held still, for a script to show
+// (BLINKFLOW.seek / pin); &mic=…: in the film, the microphone as the person filming names it (the stream does
+// not carry the device; the run's voice.json does)
 const Q = new URLSearchParams(location.search);
-const FILM = Q.has("film"), SPEED = +Q.get("speed") || null, SCRIPTED = Q.has("script");
+const FILM = Q.has("film"), SPEED = +Q.get("speed") || null, SCRIPTED = Q.has("script"), MIC = Q.get("mic");
 
 // ── small helpers ──────────────────────────────────────────────────────────
 function h(tag, attrs, ...kids) {
@@ -79,6 +81,10 @@ const MODEL = {
 };
 const BAND = [["voice", "Muse Voice", "listens"], ["glimmer", "Muse Glimmer", "watches, on this PC"],
   ["sam", "SAM 3.1", "follows every object"], ["wonder", "Muse Wonder", "finds the cause"], ["code", "Muse Code", "writes the fix"]];
+if (FILM) MODEL.voice[0] = BAND[0][1] = "Muse Voice Transcribe";       // the film names the model in full
+// the film's three verbs: say it (the moment and what was seen), fix it (the cause and the change), prove it
+const PHASE = { watch: 0, heard: 0, see: 0, cause: 1, ask: 1, fix: 1, proof: 2, done: 2 };
+const verbs = FILM ? h("div", { id: "verbs" }, ["say", "fix", "prove"].map((v, i) => [i ? h("i", {}, "·") : null, h("span", { class: "verb" }, `${v} it`)])) : null;
 const chip = (m) => h("span", { class: `model m-${m}` }, h("b", {}, MODEL[m][0]), ` · ${MODEL[m][1]}`);
 const plain = (t) => h("span", { class: "model plain" }, t);
 
@@ -592,11 +598,13 @@ P.heard = () => {
   if (!st.said) {
     box.append(h("div", {}, h("div", { class: "mic" }, st.listen ? st.listen.key || "F9" : "mic"),
       h("div", { class: "wait", style: "height:auto" }, st.key ? h("div", {}, typed() ? "reading" : "transcribing", h("span", { class: "dots" }))
-        : st.listen && st.listen.typed ? "Press Enter and type what you saw" : `Hold ${st.listen ? st.listen.key || "F9" : "the key"} and say what you saw`)));
+        : st.listen && st.listen.typed ? "Press Enter and type what you saw" : `Hold ${st.listen ? st.listen.key || "F9" : "the key"} and say what you saw`)),
+      ...keyLine());
     return [head("heard"), box];
   }
   const r = st.read;
   if (!typed() && st.said.audio && url(st.said.audio)) box.append(wave(st.said));
+  box.append(...keyLine());
   box.append(h("div", { class: `quote ${fx("quote@463")}` }, marked(st.said.text || "(nothing heard)", r)));
   if (r) {
     const part = (cls, k, v) => h("div", { class: `fact part ${cls}` }, h("span", { class: "k" }, k), h("span", { class: "v" }, v));
@@ -612,9 +620,15 @@ P.heard = () => {
     fact("SAM 3.1 confirms", c.confirmed ? `${c.kind} at ${num(c.incident_s, 2)} s` : "nothing there", c.confirmed ? "red" : ""),
     c.names ? fact("in the pixels", c.names.join(" · ")) : null));
   // typed: the step's own line already says "typed by the person"; only the voice gets a badge
-  const badge = typed() ? null : h("span", { class: "said-by voice" }, `heard by Muse Voice in ${secs(st.said.seconds)}`);
+  const badge = typed() ? null : h("span", { class: "said-by voice" }, `heard by ${MODEL.voice[0]} in ${secs(st.said.seconds)}`);
   return [head("heard", badge), box];
 };
+// film: the key and, when the person filming names it, the microphone (none, or one line to append)
+function keyLine() {
+  if (!FILM || typed() || (st.listen && st.listen.typed)) return [];
+  return [h("div", { class: "keyline" }, h("span", {}, h("b", {}, (st.listen && st.listen.key) || "F9"), " · hold and speak"),
+    MIC ? h("span", {}, "mic: ", h("b", {}, MIC)) : null)];
+}
 
 // The sentence's own words, coloured by what was read from them: the moment, the robot, what happened, the
 // object. Only words that are there are coloured; the facts below say what the reader took from them.
@@ -705,6 +719,11 @@ P.see = () => {
   } else box.append(h("div", { class: "player" }, wait("cutting the shot")));
   const side = h("div", { class: "side" });
   const named = v.named;
+  if (FILM && named && named.named_by === "glimmer") {     // the film's badge: the names came from this PC
+    const quant = (st.vram && st.vram.quantization) || (STATIC && STATIC.glimmer_quantization);
+    side.append(h("div", { class: `card glimmer-pc ${fx("glimmer-pc")}` }, h("b", {}, "Muse Glimmer"), h("span", { class: "pc" }, "on this PC"),
+      h("small", {}, `open weights · local GPU${quant ? ` · ${quant}` : ""}${st.vram && st.vram.vram_gb ? ` · ${num(st.vram.vram_gb)} GB VRAM` : ""}`)));
+  }
   side.append(h("div", { class: "card" }, h("h3", {}, named ? `named by ${named.named_by === "glimmer" ? "Muse Glimmer, on this PC" : named.named_by}` : "naming the objects"),
     named ? [h("div", { class: `name ${fx("name@497")}` }, h("i", { style: "background:var(--robot)" }), named.robot, h("small", {}, "robot")),
       h("div", { class: `name ${fx("name@498")}` }, h("i", { style: "background:var(--object)" }), named.object, h("small", {}, named.object_is || "object")),
@@ -773,12 +792,20 @@ P.cause = () => {
   const where = c ? `${c.file}:${c.start}${c.end > c.start ? "–" + c.end : ""}` : d.cause ? `${d.cause.file}:${d.cause.lines.start}` : "";
   const code = c && h("pre", { class: "code" }, c.lines.filter(([n]) => n >= c.start - 1 && n <= c.end + 1)
     .map(([n, line]) => h("div", { class: n >= c.start && n <= c.end ? "hl" : "" }, h("span", { class: "ln" }, n), line || " ")));
+  // film: each row's source, checked as diagnose.check() checks it: the key frames cited are ones that were sent,
+  // the log ticks cited exist (the stream's "grounded"), the lines named are in the target's file
+  const refs = (d.evidence || []).filter((e) => e.source !== "code");
+  const sent = new Set((kf ? kf.frames : []).map((f) => f.tag));
+  const kcited = [...new Set(refs.flatMap((e) => e.ref.match(/K\d+/g) || []))].filter((t) => sent.has(t));
+  const lcited = refs.filter((e) => e.source === "log").map((e) => e.ref.replace(/^brain log\s*/, ""));
+  const inFile = !!c && Array.from({ length: c.end - c.start + 1 }, (_, i) => c.start + i).every((n) => c.lines.some(([m]) => m === n));
+  const chk = (ok, what) => (FILM ? h("div", { class: `chk ${ok ? "ok" : "no"}` }, ok ? `✓ source checked · ${what}` : "source not checked") : null);
   const rows = [
-    ["saw", "What the camera saw", pl.camera, k ? h("div", { class: "ev keyframe" }, pic(url(k.image)),
+    ["saw", "What the camera saw", [pl.camera, chk(kcited.length, `key frame${kcited.length > 1 ? "s" : ""} ${kcited.join(", ")}`)], k ? h("div", { class: "ev keyframe" }, pic(url(k.image)),
       h("span", { class: "cap" }, `key frame · ${k.label} · ${num(k.brain_s, 2)} s`)) : null],
-    ["believed", "What the robot believed", pl.robot, log ? h("div", { class: "ev" }, logRows(log, 2, 0),
+    ["believed", "What the robot believed", [pl.robot, chk(d.grounded, lcited.length ? `log ${lcited[0]}` : "log ticks")], log ? h("div", { class: "ev" }, logRows(log, 2, 0),
       h("span", { class: "cap" }, `the robot's own log at ${num(log.moment, 2)} s`)) : null],
-    ["why", "Why", [pl.why, h("span", { class: "where" }, where)], code ? h("div", { class: "ev" }, code,
+    ["why", "Why", [pl.why, h("span", { class: "where" }, where), chk(inFile, `the line is in the target's ${c && c.file}`)], code ? h("div", { class: "ev" }, code,
       h("span", { class: "cap" }, `${where}${d.cause && d.cause.function ? " · " + d.cause.function : ""}`)) : null],
   ];
   const box = h("div", { class: "body cause3" });
@@ -844,7 +871,7 @@ P.fix = () => {
   const cp = st.checkpoint, u = last(st.undos);
   box.append(h("div", { class: `card save ${u && !st.commit ? "undo" : ""}` },
     h("span", { class: "lock" }, u && !st.commit ? "↺" : "git"),
-    cp ? h("div", {}, h("b", {}, "Safety save before any change"), h("br"),
+    cp ? h("div", {}, h("b", {}, FILM ? "Safety copy saved" : "Safety save before any change"), h("br"),
       h("span", { class: "mute" }, "commit "), h("span", { class: "mono" }, cp.commit.slice(0, 10)),
       h("span", { class: "mute" }, ` in ${tilde(cp.target)}${cp.committed_now ? " · saved just now" : " · already clean"} · any failed attempt goes back to it`))
       : h("div", { class: "mute" }, "the safety save comes first"),
@@ -869,6 +896,10 @@ P.fix = () => {
         h("span", { class: "args" }, t.reason ? `blocked before it ran: ${t.reason}` : brief(t.args))));
     }
     if (!c.tools.size) tools.append(wait("Muse Code reads the diagnosis and the code"));
+    // film: BlinkFlow's gate (muse-gate/, required by fix.py since Oct 28) asks before every tool call
+    const blocked = [...c.tools.values()].filter((t) => t.status === "blocked").length;
+    if (FILM && c.start) tools.append(h("div", { class: `gatebadge ${blocked ? "hit" : ""}` }, h("b", {}, "gate: target folder only"),
+      ` · ${c.tools.size} call${c.tools.size === 1 ? "" : "s"} checked · ${blocked} blocked`));
   }
   box.append(h("div", { class: "card" }, h("h3", {}, c ? `Muse Code at work · ${tag}${c.start && c.start.model ? " · " + c.start.model : ""}` : "Muse Code"),
     c ? tools : wait(st.asks.length ? "waiting for the answer" : "it starts once you say yes")));
@@ -882,11 +913,31 @@ P.fix = () => {
     }
   }
   box.append(h("div", { class: "card" }, h("h3", {}, ch ? `the change · ${ch.stat} · ${secs(ch.seconds)} · ${ch.tool_calls} tool calls${ch.sandbox ? " · sandboxed" : ""}` : "the change"),
-    ch ? [h("div", { class: `summary ${fx("summary@660")}` }, String(ch.summary || "").replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")),
+    ch ? [oneLine(ch.diff), h("div", { class: `summary ${fx("summary@660")}` }, String(ch.summary || "").replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")),
       ch.problems && ch.problems.length ? h("div", { style: "color:var(--red); margin-bottom:.5rem" }, `rejected: ${ch.problems.join("; ")}`) : null, diff]
       : wait(c ? "writing" : "")));
   return [head("fix", c && c.start ? `edits only inside ${tilde(st.checkpoint ? st.checkpoint.target : "the target")}` : null), box];
 };
+
+// film: a change of one `key = value` line, read from the diff as file:line · key · old → new (else nothing)
+function oneLine(diff) {
+  if (!FILM) return null;
+  const file = ((diff || "").match(/^\+\+\+ b\/(.+)$/m) || [])[1];
+  let n = 0, del = [], add = [];
+  for (const line of (diff || "").split("\n")) {
+    const at = line.match(/^@@ -\d+(?:,\d+)? \+(\d+)/);
+    if (at) { n = +at[1]; continue; }
+    if (!n || /^(\+\+\+|---)/.test(line)) continue;
+    if (line[0] === "-") del.push(line.slice(1));
+    else if (line[0] === "+") add.push([n++, line.slice(1)]);
+    else if (line[0] !== "\\") n++;
+  }
+  const kv = (l) => l.match(/^\s*([\w.]+)\s*=\s*(.+?)\s*(?:#.*)?$/);
+  const a = del.length === 1 && kv(del[0]), b = add.length === 1 && kv(add[0][1]);
+  if (!file || !a || !b || a[1] !== b[1]) return null;
+  return h("div", { class: `oneline ${fx("oneline")}` }, h("span", { class: "where" }, `${file}:${add[0][0]}`), ` · ${b[1]} · `,
+    h("span", { class: "was" }, a[2]), h("span", { class: "arrow" }, " → "), h("span", { class: "now" }, b[2]));
+}
 
 function says(v) {
   if (!v) return null;
@@ -1071,6 +1122,7 @@ P.done = () => {
   box.append(h("div", { class: "bigclock" },
     h("div", {}, h("div", { class: "k" }, "seen → fixed and verified · the machine's time"), big,
       answered.length ? h("div", { class: "you" }, answered.map((a) => `you took ${secs(tookFor(a))} to answer “${a.question}”`).join(" · "), ", not on the clock") : null),
+    FILM ? h("div", { class: "cost" }, h("div", { class: "k" }, "what it cost · every model call"), h("div", { class: "v" }, usd(st.cost))) : null,
     d ? h("div", {}, h("div", { class: "k" }, "outcome"),
       h("div", { class: `outcome ${d.fixed ? "ok" : "bad"}` }, d.kept ? `fixed, verified, kept · ${(d.fix_commit || "").slice(0, 10)}` : d.fixed ? "fixed and verified, not kept" : "not fixed"),
       d.stopped ? h("div", { class: "mute" }, d.stopped) : null) : null));
@@ -1151,6 +1203,10 @@ function render() {
   document.getElementById("you").textContent = answered.map((a) => secs(tookFor(a))).join(" + ");
   document.getElementById("cost").textContent = usd(st.cost);
   document.getElementById("privacy").hidden = st.mode !== "watch";
+  if (verbs) {                           // lit from the moment something is said (or seen by the watcher)
+    const p = st.key || st.said || st.raises.length ? PHASE[shown] : -1;
+    verbs.querySelectorAll(".verb").forEach((v, i) => { v.classList.toggle("on", i === p); v.classList.toggle("past", i < p); });
+  }
   if (!dirty) return;
   dirty = false;
   const rail = document.getElementById("rail");
@@ -1247,6 +1303,7 @@ function reset() {
 reset();
 document.getElementById("band").prepend(...BAND.map(([m, name, what]) => h("span", { class: `model m-${m}` }, h("b", {}, name), ` · ${what}`)));
 if (FILM) document.body.classList.add("film");
+if (verbs) document.querySelector("#top .right").prepend(verbs);
 let EVENTS = STATIC ? STATIC.events : null;
 if (STATIC) {
   for (const e of STATIC.events) on(e);

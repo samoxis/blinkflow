@@ -409,3 +409,30 @@ table.models td.num { text-align: right; font-family: var(--mono); }
 .gantt .nm { color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .outcome { font-size: 1.3rem; font-weight: 600; }
 .outcome.ok { color: var(--green); } .outcome.bad { color: var(--red); }
+
+/* ── film (?film=1): the three verbs on top, the badges a camera can read ── */
+#verbs { display: flex; align-items: center; gap: .55rem; font: 800 1.2rem var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+#verbs i { color: var(--line2); font-style: normal; }
+#verbs .verb { --c: var(--cyan); color: var(--dim); padding: .3rem .75rem; border-radius: .55rem; transition: color .5s, background .5s, box-shadow .5s; }
+#verbs .verb:nth-of-type(2) { --c: var(--violet); } #verbs .verb:nth-of-type(3) { --c: var(--green); }
+#verbs .verb.past { color: var(--ink2); }
+#verbs .verb.on { color: var(--bg); background: var(--c); box-shadow: 0 0 1.5rem color-mix(in srgb, var(--c) 45%, transparent); }
+body.film .built { display: none; }
+.keyline { display: flex; flex-wrap: wrap; justify-content: inherit; gap: .8rem; font-size: 1.1rem; color: var(--ink2); }
+.keyline span { padding: .3rem .9rem; border-radius: 99rem; border: 1px solid var(--m-voice); }
+.keyline b { color: var(--m-voice); }
+.glimmer-pc { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: .25rem 1rem; border: 2px solid var(--m-glimmer); background: rgba(53, 224, 224, .07); }
+.glimmer-pc b { font-size: 1.7rem; color: var(--m-glimmer); }
+.glimmer-pc .pc { font-size: 1.7rem; font-weight: 800; color: var(--green); }
+.glimmer-pc small { grid-column: 1 / 3; font: .92rem var(--mono); color: var(--ink2); }
+.row3 .chk { margin-top: .45rem; font: 600 .95rem var(--mono); }
+.row3 .chk.ok { color: var(--green); } .row3 .chk.no { color: var(--mute); }
+.tools .gatebadge { display: block; margin-top: 1rem; padding: .6rem .9rem; border-radius: .7rem; border: 2px solid var(--green); color: var(--ink2); font: .9rem var(--mono); white-space: nowrap; }
+.tools .gatebadge b { color: var(--green); }
+.tools .gatebadge.hit { border-color: var(--amber); } .tools .gatebadge.hit b { color: var(--amber); }
+.oneline { font: 600 1.45rem var(--mono); margin-bottom: .7rem; color: var(--ink2); }
+.oneline .where { font-size: 1.45rem; }
+.oneline .was { color: var(--red); } .oneline .now { color: var(--green); } .oneline .arrow { color: var(--mute); }
+body.film .counter .n { font-size: 7rem; } body.film .counter .n .arrow { font-size: 3.4rem; }
+body.film .bigclock { gap: 2.4rem; } body.film .bigclock .you { max-width: 36rem; }
+body.film .bigclock .cost .v { font-size: 5.2rem; }
