@@ -30,7 +30,7 @@
 
 ## Contents
 
-[For the judges](#for-the-judges-5-minutes) · [What is new](#what-is-new-here) · [The robot](#the-robot-in-the-demo) · [How it works](#how-it-works) · [The code](#where-it-is-in-the-code) · [Results](#results) · [Try it in ~2 min](#try-it-in-2-min-no-gpu) · [Run the full loop](#run-the-full-loop-3060-min-gpu) · [Glimmer provenance](#muse-glimmer-on-this-pc--provenance) · [Limits](#limits) · [Pre-existing vs built](#pre-existing-vs-built-during-the-hackathon) · [Safety](#safety)
+[For the judges](#for-the-judges-5-minutes) · [What is new](#what-is-new-here) · [The robot](#the-robot-in-the-demo) · [How it works](#how-it-works) · [Why the Meta stack](#why-the-meta-stack) · [The code](#where-it-is-in-the-code) · [Results](#results) · [Try it in ~2 min](#try-it-in-2-min-no-gpu) · [Run the full loop](#run-the-full-loop-3060-min-gpu) · [Glimmer provenance](#muse-glimmer-on-this-pc--provenance) · [Limits](#limits) · [Pre-existing vs built](#pre-existing-vs-built-during-the-hackathon) · [Safety](#safety)
 
 ## The robot in the demo
 
@@ -61,6 +61,14 @@ What it films is the simulator's window on your screen, not a camera on the robo
 
 <p align="center"><img src="docs/console-see.png" width="720" alt="The console's See step: masks on the robot and the purple box, a magnifier on the contact"></p>
 <p align="center"><em>See: SAM 3.1 follows both objects on every frame; the gap in pixels gives the first contact (the 166.4 s run).</em></p>
+
+## Why the Meta stack
+
+- **Muse Glimmer runs locally, with open weights.** It watches all the time, 0 tokens billed, and the frames it watches never leave the PC unless it raises a hand or you speak.
+- **SAM 3.1 turns video into masks across frames,** and the distance between the masks is the measurement: no model eyeballs it.
+- **Muse Wonder reasons over frames, log and code at once; Muse Code edits in a sandbox, behind the gate.** The whole chain, from watching to the fix, is one ecosystem.
+
+**Works on any screen.** BlinkFlow only watches pixels, through GPU screen capture (DXGI Desktop Duplication + NVENC), of the window named by the sidecar's `--title`; there is no plugin in the simulator. The pixel part should apply to any simulator (Isaac Sim, Gazebo, CARLA, Unreal), but it has not been tested on them. The replay proof needs a simulator that can replay a scene deterministically.
 
 ## Where it is in the code
 
