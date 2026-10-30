@@ -256,6 +256,8 @@ function kept(key, make) {
   return keep.get(key);
 }
 const pic = (src) => (src ? kept(`img:${src}`, () => h("img", { src, alt: "" })) : null);
+// one frame of a rendered video, as a picture: a scene the twin has rendered, before SAM's evidence lands
+const still = (src) => kept(`still:${src}`, () => h("video", { src: `${src}#t=3`, muted: true, preload: "auto", playsinline: true, class: "still" }));
 let tickers = [];                   // what the shown panel moves on every frame, without a redraw
 
 // A video with SAM 3.1's masks drawn over each frame it shows.
@@ -514,6 +516,8 @@ P.watch = () => {
     const p = kept(`snap:${st.snapshot.video}`, () => new Player(url(st.snapshot.video), null));
     p.set(`the window around the moment · ${num(st.snapshot.window[1] - st.snapshot.window[0])} s, saved`);
     view = p.el;
+  } else if (savedFeed()) {
+    view = kept(`snap:${savedFeed().video}`, () => new Player(url(savedFeed().video), null)).el;
   } else if (st.feed && st.feed.kind === "live" && !STATIC) {
     const img = kept("live", () => h("img", { alt: "" }));
     view = h("div", { class: "player" }, img, h("span", { class: "label" }, "the simulator, live"));
@@ -528,6 +532,42 @@ P.watch = () => {
 };
 
 let rewound = null;                 // {t: the rewind event's time, at: when its animation started}
+
+// A finished run replayed: the live picture was never kept, but the seconds saved around the moment were.
+// They stand in for the feed, played where the replayed clock is (held on their first or last frame outside
+// them), and follow the rewind back to the moment.
+const savedFeed = () => (replaying && st.feed && st.feed.kind === "live" && EVENTS
+  ? EVENTS.find((e) => e.type === "snapshot" && e.t0_epoch != null && url(e.video)) || null : null);
+function scrub(p, snap, at, k) {
+  const v = p.video, d = v.duration;
+  v.autoplay = false;
+  if (!d) return;
+  const clamp = (t) => Math.max(0, Math.min(d - 0.05, t));
+  if (k != null && k >= 1) {                // rewound: the window from the moment, in a loop, at its own pace
+    if (!p.rewound) {
+      p.rewound = true;
+      v.loop = true;
+      v.playbackRate = 1;
+      v.currentTime = clamp(toEpoch(st.rewind.moment) - snap.t0_epoch);
+      v.play().catch(() => {});
+    }
+    return;
+  }
+  p.rewound = false;
+  v.loop = false;
+  const t = at - snap.t0_epoch, inside = t >= 0 && t < d;
+  if (k != null || !inside) {               // the rewind sweeping back, or a moment the clip does not hold
+    if (!v.paused) v.pause();
+    if (!v.seeking && Math.abs(v.currentTime - clamp(t)) > 0.04) v.currentTime = clamp(t);
+  } else {
+    const rate = SPEED || 1;
+    if (v.playbackRate !== rate) v.playbackRate = rate;
+    if (!v.seeking && Math.abs(v.currentTime - t) > 0.3 * rate) v.currentTime = t;
+    if (v.paused) v.play().catch(() => {});
+  }
+  if (!st.snapshot) p.set(t < 0 ? `the simulator · this run's saved seconds start in ${num(-t, 0)} s`
+    : "the simulator · this run's saved seconds, replayed");
+}
 function timeline() {
   // the last 60 s up to now; frozen when the person speaks, then rewound to the moment. Redrawn every
   // frame from the clock, so a redraw of the page never cuts the rewind short.
@@ -544,7 +584,7 @@ function timeline() {
     const side = (t) => (pos(t) > 80 ? " end" : pos(t) < 20 ? " start" : "");   // labels stay inside the panel
     const out = [];
     if (st.brainStart && toEpoch(st.brainStart.at) > start) out.push(h("div", { class: `mark${side(toEpoch(st.brainStart.at))}`, style: at(toEpoch(st.brainStart.at)) }, h("span", {}, "robot starts")));
-    let x = 100;
+    let x = 100, k = null;
     if (st.rewind) {
       const [w0, w1] = st.rewind.window.map(toEpoch), m = toEpoch(st.rewind.moment);
       const press = toEpoch(st.rewind.press), near = Math.abs(pos(press) - pos(m)) < 20;
@@ -557,19 +597,23 @@ function timeline() {
         const recent = replaying || (!STATIC && now() - st.rewind.t < 6);
         rewound = { t: st.rewind.t, at: recent ? performance.now() : -1e9 };
       }
-      const k = (performance.now() - rewound.at) / 2000;
+      k = (performance.now() - rewound.at) / 2000;
       if (k < 1) {
         const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
         x = 100 + (pos(m) - 100) * e;
       } else {
         const p = st.snapshot && keep.get(`snap:${st.snapshot.video}`);
-        x = p && p.video.duration ? pos(w0 + (p.video.currentTime / p.video.duration) * (w1 - w0)) : pos(m);
+        const t0 = st.snapshot && st.snapshot.t0_epoch;        // the clip's first frame, when the stream says
+        x = !p || !p.video.duration ? pos(m)
+          : pos(t0 ? toEpoch(t0) + p.video.currentTime : w0 + (p.video.currentTime / p.video.duration) * (w1 - w0));
       }
     } else if (st.raises.length) {
       out.push(h("div", { class: `mark moment${side(toEpoch(last(st.raises).t))}`, style: at(toEpoch(last(st.raises).t)) }, h("span", {}, "hand raised")));
     }
     marks.replaceChildren(...out);
     dot.style.left = `${x}%`;
+    const snap = savedFeed(), sp = snap && keep.get(`snap:${snap.video}`);
+    if (sp) scrub(sp, snap, start + (x / 100) * span, k);
   };
   draw();
   tickers.push(draw);
@@ -1113,8 +1157,9 @@ function controls(va, atag) {
     const what = r ? (r.clean ? cleanLine(r, ev && ev.evidence)
       : unmeasured(r) ? `not measured · ${r.why}` : r.why || "not clean")
       : ev ? "SAM 3.1 follows" : C.rendered[sc] ? "rendered" : C.start ? "rendering" : "";
+    const shot = C.rendered[sc] && url(C.rendered[sc].video);
     el.append(h("div", { class: `scene ${state}` },
-      img ? pic(img) : h("div", { style: "width:5.6rem; height:4.2rem; border-radius:.35rem; background:#000" }),
+      img ? pic(img) : shot ? still(shot) : h("div", { style: "width:5.6rem; height:4.2rem; border-radius:.35rem; background:#000" }),
       h("div", {}, h("div", { class: "s" }, sc.replace("_", " ")), h("div", { class: "r" }, what))));
   }
   return el;

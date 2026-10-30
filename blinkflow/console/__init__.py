@@ -241,6 +241,7 @@ def open_film(port, speed=None):
     no cursor (the page hides it), no buttons. With `speed`, the stream is a finished run replayed at that
     pace, which the page shows ("4x")."""
     q = "film=1" + (f"&speed={speed:g}" if speed else "")
+    # --kiosk, not --start-fullscreen: full screen without the "press and hold Esc to exit" banner (Alt+F4 closes it)
     # full screen on any monitor, laid out at 1920x1080 CSS pixels: the scale is the screen's physical width
     # over 1920 (a 4K screen at 150 % would otherwise give the page 2560x1440)
     r = subprocess.run(["powershell.exe", "-NoProfile", "-Command", "(Get-CimInstance Win32_VideoController | "
@@ -249,7 +250,7 @@ def open_film(port, speed=None):
     width = int(r.stdout.strip() or 1920)
     args = [f"--app=http://localhost:{port}/?{q}", r"--user-data-dir=$env:LOCALAPPDATA\BlinkFlow\film",
             "--no-first-run", "--no-default-browser-check", "--window-position=0,0",
-            f"--force-device-scale-factor={width / 1920:g}", "--start-fullscreen",
+            f"--force-device-scale-factor={width / 1920:g}", "--kiosk",
             "--autoplay-policy=no-user-gesture-required", "--hide-scrollbars"]
     arglist = ",".join(f'"{a}"' for a in args)   # double quotes: PowerShell expands $env:
     subprocess.run(["powershell.exe", "-NoProfile", "-Command", f"Start-Process '{sim.CHROME}' -ArgumentList {arglist}"],
