@@ -3,6 +3,8 @@
 Push-to-talk, in the sidecar: F9 held anywhere on the desktop records the microphone. The moment is the
 press of the key, on BlinkFlow's clock, minus the time said in the sentence ("three seconds ago"): the
 key carries the clock, the words carry the delay, and how long the person takes to speak does not matter.
+With --tap-to-talk, a tap on the Bluetooth glasses' arm is the press and the next tap the release, both set
+back by the time a tap takes to arrive (sidecar --tap-delay, 0.69 s measured).
 
   1. Muse Voice Transcribe (PUSH_TO_TALK: the key held down is the whole turn) -> the sentence;
   2. Muse Glimmer, on this PC, reads from it how long ago it happened, what happened (touched, fell) and
@@ -16,7 +18,7 @@ key carries the clock, the words carry the delay, and how long the person takes 
 
 Typing is the fallback (--type): Enter is the key press, then the sentence is typed.
 
-    python3 -m blinkflow.voice live [--brain DIR] [--seconds 30] [--type] [--auto] [--no-loop] [--mic NAME]
+    python3 -m blinkflow.voice live [--brain DIR] [--seconds 30] [--type] [--auto] [--no-loop] [--mic NAME] [--tap-to-talk]
     python3 -m blinkflow.voice clip <snapshot> --press T (--wav FILE | --text "...") [--brain DIR] [--auto] [--no-loop]
 
 clip: a recorded clip played on the wall clock as if it were the buffer (watch.ClipFeed); the key goes
@@ -94,7 +96,7 @@ def hear(u, ledger, out=None):
     """An utterance ({press, release, wav} or {press, release, text}) -> what was said and when it happened.
     None if nothing was said. The recording is kept in `out` as said.wav (the console draws it)."""
     t = time.time()
-    events.emit("key", press=u["press"], release=u["release"], typed="text" in u)
+    events.emit("key", press=u["press"], release=u["release"], typed="text" in u, trigger=u.get("trigger"))
     audio = None
     if "text" in u:
         text, audio_s, how = u["text"].strip(), None, "typed"
@@ -113,7 +115,8 @@ def hear(u, ledger, out=None):
     events.emit("read", **p, read_by=reader, seconds=round(time.time() - t_heard, 2),
                 moment=round(u["press"] - p["seconds_ago"], 3))
     return {"said": text, "heard_by": how, "audio_s": audio_s, **p, "read_by": reader, "read_attempts": tried,
-            "press": u["press"], "release": u["release"], "moment": round(u["press"] - p["seconds_ago"], 3),
+            "press": u["press"], "release": u["release"], "trigger": u.get("trigger"),
+            "moment": round(u["press"] - p["seconds_ago"], 3),
             "transcribe_s": round(t_heard - t, 2), "read_s": round(time.time() - t_heard, 2)}
 
 
@@ -244,7 +247,8 @@ def typed(box, stop, tty):
         box.append({"press": press, "release": time.time(), "text": text})
 
 
-def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=None, port=8090, settle=10, tty=None):
+def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=None, port=8090, settle=10, tty=None,
+         tap=False):
     env = sim.sim_env(cam, port)
     out.mkdir(parents=True)
     events.begin(out, "voice", feed="live", brain=str(brain))
@@ -256,9 +260,12 @@ def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=
     proc, h, snap, u = None, None, None, None
     try:
         sim.open_viser(port)
-        health = cap.start(listen=not type_, mic=mic, key=KEY)
+        health = cap.start(listen=not type_, mic=mic, key=KEY, tap=tap)
         if not type_ and not health.get("listening"):
             raise RuntimeError(f"the sidecar is not listening: {health}")
+        tap = tap and not type_
+        if tap and not health.get("tap_to_talk"):
+            raise RuntimeError(f"the sidecar does not take taps: {health}")
         skew = cap.skew()
         events.emit("feed", kind="live", clock="epoch", sidecar=cap.base, buffer_s=60)
         time.sleep(settle)
@@ -267,10 +274,10 @@ def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=
                                  str(record)], cwd=brain, env=env, stdout=subprocess.DEVNULL,
                                 stderr=subprocess.DEVNULL, start_new_session=True)
         events.emit("brain.start", at=launched, seconds=seconds)
-        events.emit("listen", key=KEY, typed=type_, mic=None if type_ else health.get("mic"))   # the device recording
+        events.emit("listen", key=KEY, typed=type_, mic=None if type_ else health.get("mic"), tap=tap)   # the device recording
         print(f"The robot is walking ({seconds:g} s). " + ("Type what you see." if type_ else
-              f"When it goes wrong, hold {KEY} and say what you saw and when, e.g. "
-              "\"two seconds ago its right leg hit the purple box\"."), flush=True)
+              f"When it goes wrong, hold {KEY}{' (or tap the glasses, and tap again when done)' if tap else ''} "
+              "and say what you saw and when, e.g. \"two seconds ago its right leg hit the purple box\"."), flush=True)
         box, stop = [], threading.Event()
         if type_:
             threading.Thread(target=typed, args=(box, stop, tty), daemon=True).start()
@@ -310,7 +317,8 @@ def live(brain, seconds, cam, out, with_loop=True, auto=False, type_=False, mic=
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     start = sim.brain_start(record)
     doc = {"feed": "live", "brain": str(brain), "record": str(record), "brain_start": start, "clock": "WSL epoch",
-           "heard_by": "typed" if type_ else f"push-to-talk ({KEY}), {health.get('mic')}", "window_s": [BEFORE, AFTER]}
+           "heard_by": "typed" if type_ else f"push-to-talk ({KEY}{' or a tap on the glasses' if tap else ''}), "
+                                            f"{health.get('mic')}", "window_s": [BEFORE, AFTER]}
     if not h:
         print("nothing was said", flush=True)
         return finish(out, doc, None, None, brain, False, auto, tty)
@@ -337,6 +345,8 @@ def main():
     a_live.add_argument("--cam", default=f"{sim.CAM_DIR}/shots_incident.json")
     a_live.add_argument("--type", action="store_true", help="type instead of speaking: Enter is the key press")
     a_live.add_argument("--mic", help="the microphone's dshow name (default: the first real one)")
+    a_live.add_argument("--tap-to-talk", action="store_true",
+                        help="a tap on the Bluetooth glasses' arm starts recording, the next one stops it (F9 still works)")
     a_clip = sub.add_parser("clip", help="a recorded clip played back as the buffer; the key pressed at --press")
     a_clip.add_argument("snapshot")
     a_clip.add_argument("--press", type=float, required=True, help="brain time (s) the key goes down")
@@ -357,7 +367,7 @@ def main():
     if a.cmd == "live":
         with models.GpuSamples(out / "provenance.txt"):    # Glimmer's provenance, for the whole run, loop included
             doc = live(pathlib.Path(a.brain).expanduser(), a.seconds, a.cam, out, not a.no_loop, a.auto, a.type,
-                       a.mic, tty=tty)
+                       a.mic, tty=tty, tap=a.tap_to_talk)
     else:
         doc = clip(a.snapshot, a.press, out, a.wav, a.text, not a.no_loop, a.auto, a.brain, tty)
     h, c = doc.get("heard"), doc.get("incident")

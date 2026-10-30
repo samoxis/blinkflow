@@ -81,6 +81,23 @@ On Oct 29 the same path ran with a real microphone, Ray-Ban Meta glasses connect
 headset ("Headset (RB Meta 0269)"): 4.96 s of audio, transcribed in 4.16 s as "two seconds ago, the right
 leg leg hit the purple box." (below).
 
+## Tap the glasses to talk (Oct 30)
+
+With `--tap-to-talk` (`voice live` and the sidecar), a tap on the arm of the Ray-Ban Meta glasses starts the
+recording and the next tap stops it; F9 still works. Windows' Bluetooth AVRCP transport turns a tap into a
+media key it injects, with no device behind it: a single tap is `VK_MEDIA_PLAY_PAUSE`, three quick taps
+arrived as one `VK_MEDIA_PREV_TRACK`, and only the key down comes, never the key up, so a tap can toggle but
+not be held. The sidecar takes injected play/pause, next and previous keys from a low-level keyboard hook (a
+keyboard's own media keys are not injected, and pass) and swallows them while it listens, so a tap does not
+also pause music. The utterance carries `trigger: "glasses-tap"` (F9's: `"key"`).
+
+Measured with 6 single taps 4 s apart, Space pressed by the other hand at each tap: 6 of 6 arrived,
+665–879 ms after Space (median 694 ms; 879, 698, 703, 669, 691, 665 in order; the spread includes how well
+two hands agree). Both taps are set back by 0.69 s (`--tap-delay`), and with the key up the microphone keeps 1.19 s instead of 0.5 s
+(0.3 s before the corrected press, plus the delay), so the first word is still there. A lost second tap ends the utterance at 59 s. Checked with
+two injected play/pause keys 6 s apart: one utterance, press and release 0.69 s before the keys, 6.6 s of
+audio, and a hook installed before the sidecar's saw neither key. Not yet used in a live run.
+
 ## With a real voice: one run (Oct 29)
 
 `python3 -m blinkflow.voice live` on the purple box, run `voice/20261029-170922`, now

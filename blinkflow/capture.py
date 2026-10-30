@@ -33,11 +33,13 @@ class Sidecar:
         with urllib.request.urlopen(self.base + path, timeout=timeout) as r:
             return r.read()
 
-    def start(self, title="Viser", crop_top=45, crop_right=356, wait=30, listen=False, mic=None, key="F9"):
-        """`listen`: push-to-talk too (hold `key`; `mic` a dshow device name, default the first real one)."""
+    def start(self, title="Viser", crop_top=45, crop_right=356, wait=30, listen=False, mic=None, key="F9", tap=False):
+        """`listen`: push-to-talk too (hold `key`; `mic` a dshow device name, default the first real one).
+        `tap`: a tap on the Bluetooth glasses starts and stops it as well."""
         args = ["-u", unc(SIDECAR), "--host", self.host, "--port", str(self.port),
                 "--title", title, "--crop-top", str(crop_top), "--crop-right", str(crop_right), "--log", unc(self.err)]
-        args += ["--listen", "--ptt-key", key] + (["--mic", mic] if mic else []) if listen else []
+        args += ["--listen", "--ptt-key", key] + (["--mic", mic] if mic else []) + (["--tap-to-talk"] if tap else []) \
+            if listen else []
         # one Windows command line, quoted the way python.exe parses it ("Headset (RB Meta 0269)" stays one
         # argument; Start-Process joins an array with bare spaces), inside a PowerShell single-quoted string
         cmdline = subprocess.list2cmdline(args).replace("'", "''")

@@ -4,9 +4,10 @@ Keeps the last ~60 s of one window's client area as 1 s H.264 segments
 (ffmpeg ddagrab -> NVENC -> segment ring) and samples the cursor at 60 Hz.
 Serves snapshots over HTTP so the agent in WSL can ask for "the last N seconds".
 With --listen, also push-to-talk: while the key is held (F9 by default, anywhere on the desktop) the
-microphone is recorded; the moment of the press is the moment the person speaks about.
+microphone is recorded; the moment of the press is the moment the person speaks about. With --tap-to-talk,
+a tap on the Bluetooth glasses' arm does the same: tap = start, tap = stop.
 
-    python capture.py --host 172.20.80.1 --title Viser --crop-top 45 --crop-right 356 [--listen [--mic NAME]]
+    python capture.py --host 172.20.80.1 --title Viser --crop-top 45 --crop-right 356 [--listen [--mic NAME] [--tap-to-talk]]
 
 GET /health                  -> state, capture rect, clock offset
 GET /snapshot?seconds=N      -> metadata of a new clip (optionally &end=<epoch>)
@@ -23,6 +24,7 @@ import ctypes.wintypes as wt
 import io
 import json
 import os
+import queue
 import re
 import shutil
 import subprocess
@@ -46,6 +48,24 @@ user32.WindowFromPoint.argtypes = [wt.POINT]
 user32.WindowFromPoint.restype = user32.GetAncestor.restype = wt.HWND
 HWND_TOPMOST = -1
 SWP_NOMOVE, SWP_NOSIZE, SWP_SHOWWINDOW = 0x2, 0x1, 0x40
+
+# tap-to-talk: a low-level keyboard hook
+LRESULT = ctypes.c_ssize_t
+HOOKPROC = ctypes.WINFUNCTYPE(LRESULT, ctypes.c_int, wt.WPARAM, wt.LPARAM)
+user32.SetWindowsHookExW.argtypes = [ctypes.c_int, HOOKPROC, wt.HINSTANCE, wt.DWORD]
+user32.SetWindowsHookExW.restype = wt.HHOOK
+user32.CallNextHookEx.argtypes = [wt.HHOOK, ctypes.c_int, wt.WPARAM, wt.LPARAM]
+user32.CallNextHookEx.restype = LRESULT
+ctypes.windll.kernel32.GetModuleHandleW.restype = wt.HMODULE
+WH_KEYBOARD_LL, LLKHF_INJECTED = 13, 0x10
+WM_KEYDOWN, WM_KEYUP, WM_SYSKEYDOWN, WM_SYSKEYUP = 0x100, 0x101, 0x104, 0x105
+# a single tap on the Ray-Ban Meta glasses arrives as play/pause, three quick ones as previous track (Oct 30)
+TAP_KEYS = {0xB0, 0xB1, 0xB3}   # VK_MEDIA_NEXT_TRACK, VK_MEDIA_PREV_TRACK, VK_MEDIA_PLAY_PAUSE
+
+
+class KBDLLHOOKSTRUCT(ctypes.Structure):
+    _fields_ = [("vkCode", wt.DWORD), ("scanCode", wt.DWORD), ("flags", wt.DWORD), ("time", wt.DWORD),
+                ("dwExtraInfo", ctypes.c_size_t)]
 
 
 def find_window(name):
@@ -295,23 +315,31 @@ class Mic:
     """Push-to-talk. The microphone is read (ffmpeg dshow, 50 ms chunks) all the while, but with the key
     up only the last PREROLL s are kept, in memory; nothing is written to disk. Holding the key records
     an utterance, PREROLL before the press to POSTROLL after the release (the first word is often
-    spoken with the press). Each chunk is stamped when it arrives."""
+    spoken with the press). Each chunk is stamped when it arrives.
+
+    `tap_delay` (seconds): tap-to-talk too. A tap reaches the PC that long after the finger, so the key up
+    keeps PREROLL + tap_delay, and both taps are set back by it."""
     RATE, CHUNK = 24000, 1200
     PREROLL, POSTROLL, MAX_S, KEEP = 0.3, 0.3, 60, 10
 
-    def __init__(self, ffmpeg, device, vk):
-        self.device, self.vk = device, vk
+    def __init__(self, ffmpeg, device, vk, tap_delay=None):
+        self.device, self.vk, self.tap_delay = device, vk, tap_delay
         self.chunks = collections.deque()
         self.utterances = collections.OrderedDict()
         self.press = None
         self.n = 0
         self.lock = threading.Condition()
+        self.idle_keep = self.PREROLL + 0.2 + (tap_delay or 0.0)
         self.proc = subprocess.Popen([ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin",
                                       "-f", "dshow", "-audio_buffer_size", "50", "-i", f"audio={device}",
                                       "-ac", "1", "-ar", str(self.RATE), "-f", "s16le", "-"],
                                      stdout=subprocess.PIPE)
         threading.Thread(target=self._read, daemon=True).start()
         threading.Thread(target=self._keys, daemon=True).start()
+        if tap_delay is not None:
+            self.taps = queue.Queue()
+            threading.Thread(target=self._hook, daemon=True).start()
+            threading.Thread(target=self._taps, daemon=True).start()
 
     @staticmethod
     def devices(ffmpeg):
@@ -327,7 +355,7 @@ class Mic:
             now = time.time()
             with self.lock:
                 self.chunks.append((now, b))
-                keep = self.PREROLL + 0.2 if self.press is None else self.MAX_S
+                keep = self.idle_keep if self.press is None else self.MAX_S
                 while self.chunks and self.chunks[0][0] < now - keep:
                     self.chunks.popleft()
 
@@ -343,7 +371,47 @@ class Mic:
             down = held
             time.sleep(0.01)
 
-    def _cut(self, press, release):
+    def _hook(self):
+        """The glasses' taps: media keys that Windows injects for the Bluetooth AVRCP transport, with no device
+        behind them (a keyboard's own media keys are not injected, and pass). Each one is stamped on arrival
+        for _taps and swallowed, so a tap does not also play or pause music while the sidecar listens."""
+        @HOOKPROC
+        def on_key(code, wparam, lparam):
+            if code == 0 and wparam in (WM_KEYDOWN, WM_SYSKEYDOWN, WM_KEYUP, WM_SYSKEYUP):
+                k = ctypes.cast(lparam, ctypes.POINTER(KBDLLHOOKSTRUCT)).contents
+                if k.vkCode in TAP_KEYS and k.flags & LLKHF_INJECTED:
+                    if wparam in (WM_KEYDOWN, WM_SYSKEYDOWN):
+                        self.taps.put(time.time())
+                    return 1
+            return user32.CallNextHookEx(None, code, wparam, lparam)
+        self.on_key = on_key            # the callback must outlive the hook
+        if not user32.SetWindowsHookExW(WH_KEYBOARD_LL, on_key, ctypes.windll.kernel32.GetModuleHandleW(None), 0):
+            print("tap-to-talk: the keyboard hook was refused", file=sys.stderr, flush=True)
+            return
+        msg = wt.MSG()
+        while user32.GetMessageW(ctypes.byref(msg), None, 0, 0) > 0:   # a low-level hook runs in this loop
+            pass
+
+    def _taps(self):
+        """Tap = start, tap = stop. Measured on Oct 30, 6 of 6 single taps arrived, 665-879 ms after a key
+        pressed with the other hand (median 694 ms): both taps are set back by tap_delay. If the second tap is
+        lost, the utterance ends MAX_S - 1 s in, while its first chunks are still kept."""
+        start = None
+        while True:
+            try:
+                t = self.taps.get(timeout=None if start is None else max(0.0, start + self.MAX_S - 1 - time.time()))
+                t -= self.tap_delay
+            except queue.Empty:
+                t = start + self.MAX_S - 1
+            if start is None:
+                start = t
+                with self.lock:
+                    self.press = t
+            else:
+                threading.Thread(target=self._cut, args=(start, t, "glasses-tap"), daemon=True).start()
+                start = None
+
+    def _cut(self, press, release, trigger="key"):
         time.sleep(self.POSTROLL + 0.1)
         with self.lock:
             pcm = b"".join(b for t, b in self.chunks if press - self.PREROLL <= t <= release + self.POSTROLL)
@@ -356,7 +424,7 @@ class Mic:
                 w.setsampwidth(2)
                 w.setframerate(self.RATE)
                 w.writeframes(pcm)
-            self.utterances[self.n] = {"id": self.n, "press": press, "release": release,
+            self.utterances[self.n] = {"id": self.n, "press": press, "release": release, "trigger": trigger,
                                        "audio_s": round(len(pcm) / 2 / self.RATE, 3), "wav": buf.getvalue()}
             while len(self.utterances) > self.KEEP:
                 self.utterances.popitem(last=False)
@@ -409,7 +477,8 @@ def make_handler(ring, cursor, hwnd, stop, guard, mic=None):
                                 "segments": len(ring.segs), "clock_offset": ring.offset(),
                                 "window_alive": bool(user32.IsWindow(hwnd)),
                                 "window_problem": guard.problem, "window_moved_back": guard.moved,
-                                "listening": bool(mic and mic.alive()), "mic": mic and mic.device})
+                                "listening": bool(mic and mic.alive()), "mic": mic and mic.device,
+                                "tap_to_talk": bool(mic and mic.tap_delay is not None)})
                 elif u.path == "/listen":
                     if not (mic and mic.alive()):
                         raise RuntimeError("not listening (start with --listen; is there a microphone?)")
@@ -480,6 +549,9 @@ def main():
     ap.add_argument("--listen", action="store_true", help="push-to-talk: record the microphone while the key is held")
     ap.add_argument("--mic", help="dshow audio device (default: the first that is not a virtual one)")
     ap.add_argument("--ptt-key", default="F9", help="F1..F24 or a hex virtual-key code")
+    ap.add_argument("--tap-to-talk", action="store_true",
+                    help="with --listen: a tap on the Bluetooth glasses' arm starts recording, the next one stops it")
+    ap.add_argument("--tap-delay", type=float, default=0.69, help="seconds a tap takes to reach the PC, taken off both taps")
     ap.add_argument("--log", help="stderr goes to this file (why it refused or stopped, read by the agent in WSL)")
     a = ap.parse_args()
     if a.log:
@@ -492,7 +564,7 @@ def main():
         device = a.mic or (real or found or [None])[0]
         if not device:
             raise SystemExit("--listen: no microphone found (ffmpeg -list_devices true -f dshow -i dummy)")
-        mic = Mic(a.ffmpeg, device, vk_code(a.ptt_key))
+        mic = Mic(a.ffmpeg, device, vk_code(a.ptt_key), a.tap_delay if a.tap_to_talk else None)
 
     deadline = time.time() + a.wait
     while not (hwnd := find_window(a.title)):
@@ -514,7 +586,7 @@ def main():
     srv = ThreadingHTTPServer((a.host, a.port), make_handler(ring, cursor, hwnd, stop, guard, mic))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     print(json.dumps({"listening": f"{a.host}:{a.port}", "rect": rect, "mic": mic and mic.device,
-                      "ptt_key": a.listen and a.ptt_key}), flush=True)
+                      "ptt_key": a.listen and a.ptt_key, "tap_to_talk": a.listen and a.tap_to_talk}), flush=True)
     try:
         while not stop.is_set() and ring.proc.poll() is None:
             stop.wait(0.5)
