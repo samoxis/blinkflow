@@ -271,7 +271,7 @@ class Player {
     this.label = h("span", { class: "label" });
     this.badge = h("span", { class: "badge", hidden: true });
     this.el = h("div", { class: "player" }, this.video, this.canvas, this.flash, this.label, this.badge);
-    this.slowTag = h("span", { class: "slow", hidden: true }, "¼× speed");
+    this.slowTag = h("span", { class: "slow", hidden: true }, "0.25× speed");
     this.el.append(this.slowTag);
     this.layers = [];
     this.listeners = [];
@@ -668,11 +668,14 @@ P.heard = () => {
   return [head("heard", badge), box];
 };
 // film: the key and the microphone the stream names (voice live writes the device into its listen event;
-// older streams have none, and no chip); none, or one line to append
+// older streams have none, and no chip); none, or one line to append. A glasses tap is the key event's own
+// trigger; anything else is the held key
+const tapped = () => !!(st.key && st.key.trigger === "glasses-tap");
 function keyLine() {
   if (!FILM || typed() || (st.listen && st.listen.typed)) return [];
   const mic = st.listen && st.listen.mic;
-  return [h("div", { class: "keyline" }, h("span", {}, h("b", {}, (st.listen && st.listen.key) || "F9"), " · hold and speak"),
+  return [h("div", { class: "keyline" }, tapped() ? h("span", {}, h("b", {}, "tap the glasses"), " · Ray-Ban Meta")
+    : h("span", {}, h("b", {}, (st.listen && st.listen.key) || "F9"), " · hold and speak"),
     mic ? h("span", { title: mic }, "mic: ", h("b", {}, /RB Meta/i.test(mic) ? "Ray-Ban Meta glasses" : mic)) : null)];
 }
 
@@ -743,7 +746,7 @@ function wave(said) {
     }).catch((e) => console.warn("wave", e));
     return c;
   });
-  return h("div", { class: "wavebox" }, cv, h("span", { class: "mute" }, `${secs(said.audio_s)} of speech · held ${secs(st.key ? st.key.release - st.key.press : null)}`));
+  return h("div", { class: "wavebox" }, cv, h("span", { class: "mute" }, `${secs(said.audio_s)} of speech · ${tapped() ? "between taps" : "held"} ${secs(st.key ? st.key.release - st.key.press : null)}`));
 }
 
 P.see = () => {
