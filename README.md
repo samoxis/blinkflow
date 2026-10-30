@@ -8,7 +8,7 @@
 
 **[See a real run, no install](https://samoxis.github.io/blinkflow/report/)**: the purple-box incident, from the snapshot to the proof. It is the static report of `examples/purple-box/`.
 
-<p align="center"><img src="docs/blinkflow.gif" width="640" alt="The robot's right leg brushes the purple box; after BlinkFlow's fix, contacts go from 1 to 0"></p>
+<p align="center"><img src="docs/blinkflow.gif" width="640" alt="The example run's two replays in the twin, each at its own moment: before the fix the robot touches the purple box (1 contact at 11.46 s); with the fix it stops 106 px away; contacts 1 to 0"></p>
 
 ## For the judges (5 minutes)
 
@@ -59,8 +59,10 @@ What it films is the simulator's window on your screen, not a camera on the robo
 | Fix | A coding agent patches the code inside its sandbox; a git commit is taken first | Muse Code (Python SDK) |
 | Prove | The same scene, replayed exactly in a deterministic twin, and checked again on pixels; failed fixes are rolled back and retried. For the demo incident, then confirmed on the live simulator (`results/live_check.md`) | SAM 3.1, Muse Code |
 
-<p align="center"><img src="docs/console-see.png" width="720" alt="The console's See step: masks on the robot and the purple box, a magnifier on the contact"></p>
-<p align="center"><em>See: SAM 3.1 follows both objects on every frame; the gap in pixels gives the first contact (the 166.4 s run).</em></p>
+<p align="center"><img src="docs/console-see.png" width="720" alt="The console's See step: masks on the robot and the purple box, a magnifier on the contact at 11.20 s"></p>
+<p align="center"><em>See: SAM 3.1 follows both objects on every frame of the live window; the gap in pixels gives the first contact, 11.20 s (the example run, <a href="examples/purple-box"><code>examples/purple-box/</code></a>).</em></p>
+<p align="center"><img src="docs/contact-side.png" width="720" alt="The robot's right foot against the purple box, filmed low from the side in the twin, ringed"></p>
+<p align="center"><em>From above, the foot is hidden under the robot; SAM 3.1 counts contact when the masks come within 2 px. The side view shows the touch.</em></p>
 
 ## Why the Meta stack
 
@@ -99,8 +101,8 @@ Measured during the hackathon; each number links to the file it comes from.
 
 Every run writes a `models.json`: each model call with the model, where it ran (this PC, Meta, Baseten, the cache), tokens or frames, seconds and cost. Cost details (the SAM 3.1 cache, Muse Code's model, `tools/spend.py`): [`docs/RUNNING.md`](docs/RUNNING.md#cost).
 
-<p align="center"><img src="docs/console-prove.png" width="720" alt="The console's Prove it step: before the fix in red with 1 contact, after it in green with none"></p>
-<p align="center"><em>Prove it: the same scene replayed before (red) and after the fix (green), measured on pixels: contacts 1 → 0.</em></p>
+<p align="center"><img src="docs/console-prove.png" width="720" alt="The console's Prove it step: before the fix in red with 1 contact at 11.46 s, after it in green with none, closest 106 px; Keep the fix? Yes"></p>
+<p align="center"><em>Prove it: the same scene replayed before (red) and after the fix (green), measured on pixels: contacts 1 → 0. Each replay is shown at its own moment: the first contact at 11.46 s, and with the fix the closest approach, 106 px, where the robot stops and turns away. "Keep the fix?" was answered yes.</em></p>
 
 ## Try it in ~2 min, no GPU
 
@@ -157,7 +159,7 @@ Glimmer is the open-weight model that names objects, describes key frames and re
 A local page that shows the loop live, one step at a time, with the model behind each step, from the last 60 seconds rewinding to the moment to the replay before | after, the clock and the bill. "Fix it?" and "Keep the fix?" can be answered there or in the terminal. `python3 -m blinkflow.console serve` (http://localhost:8777); the other commands (the static report, the film mode, the teaser, the side shot) are in [`docs/RUNNING.md`](docs/RUNNING.md#the-console).
 
 <p align="center"><img src="docs/console-fix.png" width="720" alt="The console's fix step: the safety commit, Muse Code's tool calls and its one-line diff"></p>
-<p align="center"><em>Write the fix: a safety commit first, then Muse Code's tool calls and its one-line change.</em></p>
+<p align="center"><em>Write the fix: a safety commit first, then Muse Code's tool calls and its one-line change, kept as <code>77db417</code>.</em></p>
 
 ## Where this could go (not built or tested yet)
 
