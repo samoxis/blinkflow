@@ -104,7 +104,7 @@ Every run writes a `models.json`: each model call with the model, where it ran (
 <p align="center"><img src="docs/console-prove.png" width="720" alt="The console's Prove it step: before the fix in red with 1 contact at 11.46 s, after it in green with none, closest 106 px; Keep the fix? Yes"></p>
 <p align="center"><em>Prove it: the same scene replayed before (red) and after the fix (green), measured on pixels: contacts 1 → 0. Each replay is shown at its own moment: the first contact at 11.46 s, and with the fix the closest approach, 106 px, where the robot stops and turns away. "Keep the fix?" was answered yes.</em></p>
 <p align="center"><img src="docs/closest-side.png" width="720" alt="With the fix, the whole robot stands short of the purple box at its closest approach, filmed from the side in the twin"></p>
-<p align="center"><em>With the fix the robot stops short of the box and turns away, so the proof's camera, from above, catches only its edge at the closest approach (106 px). The side view, at the same moment in the twin, shows the whole robot.</em></p>
+<p align="center"><em>With the fix the robot stops short of the box and turns away. Its closest gap to the box is 106 px; from above, only the top of the robot enters the proof camera's frame. The side view, at the same moment in the twin, shows the whole robot.</em></p>
 
 ## Try it in ~2 min, no GPU
 
