@@ -338,6 +338,8 @@ button:disabled { opacity: .45; cursor: default; }
 .save.undo .lock { background: rgba(255, 181, 71, .12); color: var(--amber); border-color: rgba(255, 181, 71, .5); }
 .tools { display: flex; flex-direction: column; gap: .35rem; font: .85rem var(--mono); overflow: hidden; }
 .tools div { display: grid; grid-template-columns: 1.2rem 9rem 1fr; gap: .5rem; align-items: baseline; }
+/* the placeholder before the first call is not a tool row: in the row grid it wrapped a word per line */
+.tools .wait { display: block; height: auto; padding: 2rem 0; font: 1.2rem var(--sans); } .tools .wait div { display: block; }
 .tools .args { color: var(--mute); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .tools .st { color: var(--amber); } .tools .st.ok { color: var(--green); } .tools .st.bad { color: var(--red); }
 .diff { font: .92rem/1.55 var(--mono); white-space: pre; overflow: hidden; margin: 0; }

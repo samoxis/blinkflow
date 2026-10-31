@@ -95,7 +95,7 @@ const STEPS = [
   { id: "cause", title: "Find the cause", models: () => [chip("wonder")] },
   { id: "ask", title: "Fix it?", models: () => [chip("you")] },
   { id: "fix", title: "Write the fix", models: () => [chip("code")] },
-  { id: "proof", title: "Prove it: replay", models: () => [chip("sam"), plain("same scene, same inputs, in the twin")] },
+  { id: "proof", title: "Prove it: replay", models: () => [chip("sam"), plain("same start, same world, replayed in the twin")] },
   { id: "done", title: "Fixed and verified", models: () => [plain("the real clock and the bill")] },
 ];
 const STEP = Object.fromEntries(STEPS.map((x, i) => [x.id, { ...x, n: i + 1 }]));
@@ -863,7 +863,9 @@ P.cause = () => {
   rows.forEach(([cls, label, said, ev], i) => box.append(h("div", { class: `row3 ${cls} ${fx("row3@" + cls)}`, style: `animation-delay:${i * 0.25}s` },
     h("div", { class: "say" }, h("span", { class: "no" }, i + 1), h("div", {}, h("div", { class: "lab" }, label), h("div", { class: "txt" }, said))),
     h("div", { class: "link" }), ev || h("div", { class: "ev" }))));
-  box.append(h("div", { class: "tech" }, `confidence ${num(d.confidence, 2)} · ${d.grounded ? "file, lines and cited evidence checked" : "not grounded"}`,
+  // the confidence is the number Muse Wonder gives itself; the three citations are BlinkFlow's checks above
+  const checked = [kcited.length > 0, !!d.grounded, inFile].filter(Boolean).length;
+  box.append(h("div", { class: "tech" }, `Muse Wonder's own confidence ${num(d.confidence, 2)} · citations checked ${checked}/3`,
     m ? ` · Muse Wonder ${secs(m.seconds)}, ${m.input_tokens} tokens in (${m.cached_input_tokens || 0} cached), ${m.output_tokens} out, ${usd(m.cost_usd)}` : "",
     h("details", {}, h("summary", {}, "the full explanation"), d.explanation)));
   return [head("cause", aside), box];
@@ -884,7 +886,7 @@ function logCard(log, style, before = 6, after = 2) {
 function askCard(a, big) {
   const ans = st.answers[a.id];
   const ctx = a.question === "Fix it?"
-    ? [a.cause, a.file ? h("div", { class: "where", style: "margin-top:.6rem" }, `${a.file} · ${a.lines[0] === a.lines[1] ? `line ${a.lines[0]}` : `lines ${a.lines.join("–")}`} · confidence ${num(a.confidence, 2)}`) : null]
+    ? [a.cause, a.file ? h("div", { class: "where", style: "margin-top:.6rem" }, `${a.file} · ${a.lines[0] === a.lines[1] ? `line ${a.lines[0]}` : `lines ${a.lines.join("–")}`} · Muse Wonder's own confidence ${num(a.confidence, 2)}`) : null]
     : [`With the fix: ${a.after}.`, h("br"), `Before it: ${a.before}.`, a.stat ? h("div", { class: "mono mute", style: "margin-top:.5rem; font-size:1rem" }, `${a.stat} · ${(a.files || []).join(", ")}`) : null];
   return h("div", { class: big ? `ask ${fx("ask@" + a.id)}` : "" },
     h("div", { class: "q" }, a.question),
@@ -1025,7 +1027,7 @@ P.proof = () => {
   box.append(h("div", { class: "card counter" }, h("h3", {}, fall ? "falls" : "contacts"),
     h("div", { class: "n" }, h("span", { class: "a" }, count(vb)), h("span", { class: "arrow" }, "→"), h("span", { class: "b", style: va && va.incident ? "color:var(--red)" : "" }, count(va))),
     h("div", { class: "v" }, va ? (va.valid && !va.incident ? h("b", { style: "color:var(--green)" }, `Fixed: the same scene, no ${fall ? "fall" : "contact"}.`) : h("b", { style: "color:var(--red)" }, "Not fixed yet.")) : "the verdict comes from the pixels, as before",
-      va ? h("div", { class: "mute", style: "margin-top:.4rem; font-size:.9rem" }, `same inputs, replayed in the twin · robot walked ${num(va.travel_m, 2)} m (before: ${num(vb && vb.travel_m, 2)} m)`) : null),
+      va ? h("div", { class: "mute", style: "margin-top:.4rem; font-size:.9rem" }, `same start, same world, replayed in the twin · robot walked ${num(va.travel_m, 2)} m (before: ${num(vb && vb.travel_m, 2)} m)`) : null),
     keep ? h("div", { class: "keep" }, askCard(keep, false)) : null));
   box.append(controls(va, atag));
   return [head("proof", after && after.rendered ? `twin replay ${secs(after.rendered.seconds)}` : null), box];
@@ -1312,7 +1314,7 @@ function result(id) {
     case "heard": return st.said ? `“${st.said.text}”` : st.raises.length ? `${last(st.raises).signs.join(", ")} at ${num(last(st.raises).t)} s` : "";
     case "see": { const v = seeTag && st.sees[seeTag], c = fc(seeTag);
       return v && v.named ? `${v.named.robot} · ${v.named.object}${c ? ` · contact ${num(c.brain_s, 2)} s` : ""}` : ""; }
-    case "cause": return d ? `${d.code ? `${d.code.file}:${d.code.start}` : d.cause_key} · ${num(d.confidence, 2)}` : st.wonderOrder.length ? "reading" : "";
+    case "cause": return d ? `${d.code ? `${d.code.file}:${d.code.start}` : d.cause_key} · own confidence ${num(d.confidence, 2)}` : st.wonderOrder.length ? "reading" : "";
     case "ask": return fixA ? `${fixA.yes ? "yes" : "no"} · in the ${fixA.by}` : fixQ ? "waiting for you" : "";
     case "fix": return ch ? `${ch.stat}${st.commit ? " · kept" : st.undos.length ? " · rolled back" : ""}` : st.checkpoint ? `safety save ${st.checkpoint.commit.slice(0, 7)}` : "";
     case "proof": return va ? `contacts ${vb && vb.incident ? 1 : 0} → ${va.incident ? 1 : 0}${nctl ? ` · control ${Object.values(ctl).filter((c) => c.clean).length + (va.valid && !va.incident ? 1 : 0)}/${nctl + 1} clean` : ""}${

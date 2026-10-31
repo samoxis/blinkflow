@@ -108,7 +108,7 @@ CARD_JS = """([kind, w, h, k, d, rows]) => {
       r.innerHTML = '<div class="say"><span class="no">0</span><div><div class="lab">x</div><div class="txt">x<br>x</div></div></div>'; c.append(r); }
   } else {
     c.innerHTML = `<div class="small">contacts</div><div class="big"><span class="a">${d.before}</span> <span class="to">→</span> <span class="b">${d.after}</span></div>
-      <div class="small">the same scene, the same inputs, replayed with the fix</div>`;
+      <div class="small">same start, same world, replayed in the twin with the fix</div>`;
   }
   document.body.append(c);
 }"""
