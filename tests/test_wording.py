@@ -27,3 +27,20 @@ class Wording(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FrozenCodePass(unittest.TestCase):
+    """The Oct 28 suite pass is the frozen-code pass, said plainly: 7 of 8 repeat pass 1, it ran before the gate."""
+
+    def test_no_held_out(self):
+        for f in ("README.md", "results/bug_suite.md", "docs/SAFETY.md", "docs/RUNNING.md"):
+            lines = [l for l in (REPO / f).read_text().splitlines()
+                     if re.search(r"held[- ]out", l, re.I) and "It was called the held-out pass until" not in l]
+            self.assertEqual(lines, [], f)
+
+    def test_said_plainly(self):
+        suite = (REPO / "results/bug_suite.md").read_text().split("## Frozen-code pass")[1]
+        self.assertIn("7 of the 8 bugs in this pass repeat a first-pass mutation, and the pass ran before the current gate",
+                      suite.split("\n\n")[1])
+        readme = (REPO / "README.md").read_text()
+        self.assertEqual(readme.count("the pass ran before the current gate"), 2)

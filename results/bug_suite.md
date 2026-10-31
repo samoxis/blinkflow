@@ -89,7 +89,9 @@ After a fall became an incident of its own (seen from pixels: the robot's mask d
 - corridor (doorway): corridor too narrow (doorway): `[obstacle] corridor_half_width = 0.05`
 - stop threshold (corner): stop distance too short: `[obstacle] stop_distance = 0.16`
 <!-- layered notes -->
-## Held-out pass (Oct 28)
+## Frozen-code pass (Oct 28)
+
+**Plainly: 7 of the 8 bugs in this pass repeat a first-pass mutation, and the pass ran before the current gate.** It was called the held-out pass until Oct 31.
 
 A new seed (`tools/inject_bug.py draw --set layers --force`, Oct 28 09:15), the same 11 mutation kinds, one pass, with BlinkFlow frozen at `4c07bfb`: no rule changed before, during or after it, and no bug was rerun. The SAM 3.1 cache was on. Validation kept 8 of 11 again; the same three kinds gave no incident (stop distance 0.16 in the corner, the corridor at 0.05 in the doorway, the freer side inverted). Muse Spark ran beside Wonder on b3 and b6.
 
@@ -112,9 +114,9 @@ Wonder and Spark on the same evidence (bugs b3, b6), runs whose cause contains a
 
 Model cost of the runs: $9.41 (SAM 3.1 $3.95, Muse Wonder $3.17, other $2.28). Time = rendering the incident + the whole loop. The suite ran with `BLINKFLOW_SAM_BUDGET=25 BLINKFLOW_WONDER_BUDGET=30` from the environment; the code defaults are still $5 and $15.
 
-Beside the first pass: (a) incident gone 5/8 on the first pass, 8/8 after two reruns with rule changes, **8/8 held-out**; (b) control clean 5/8, 8/8, **8/8**; (c) change on a mutated line 5/8, 6/8, **7/8**. b8 (corridor) needed 3 Muse Code attempts and b4 needed 2; the change in b8 widened the corridor in code and left the mutated value alone, so (c) is 0 there, as in rerun 1.
+Beside the first pass: (a) incident gone 5/8 on the first pass, 8/8 after two reruns with rule changes, **8/8 frozen-code**; (b) control clean 5/8, 8/8, **8/8**; (c) change on a mutated line 5/8, 6/8, **7/8**. b8 (corridor) needed 3 Muse Code attempts and b4 needed 2; the change in b8 widened the corridor in code and left the mutated value alone, so (c) is 0 there, as in rerun 1.
 
-These suites ran before the gate (README, Safety: a Muse Code PreToolUse hook that blocks a tool call naming a path outside the target before it runs). Run offline over their saved tool calls, the gate refuses none of the commands inside the target. It refuses the scratch scripts Muse Code wrote to `/tmp` and the shell commands that ran them: held-out b4 (`/tmp/check_wall_margin.py`), held-out b8 (`/tmp/side_width_probe.py`), first-pass b6 (`/tmp/tray_probe.py`) and b7 (`/tmp/probe_low.py`). Those writes are where b4's second attempt and one of b8's two extra attempts came from: the after-turn audit rejected attempt 1 in both. b8's attempt 2 was rejected because the proof found the robot in 0 frames. With the gate, those writes and the commands that ran them would have been refused before they ran, and Muse Code would have been told why within the same turn; whether it then fixes in one attempt is not measured.
+These suites ran before the gate (README, Safety: a Muse Code PreToolUse hook that blocks a tool call naming a path outside the target before it runs). Run offline over their saved tool calls, the gate refuses none of the commands inside the target. It refuses the scratch scripts Muse Code wrote to `/tmp` and the shell commands that ran them: frozen-code b4 (`/tmp/check_wall_margin.py`), frozen-code b8 (`/tmp/side_width_probe.py`), first-pass b6 (`/tmp/tray_probe.py`) and b7 (`/tmp/probe_low.py`). Those writes are where b4's second attempt and one of b8's two extra attempts came from: the after-turn audit rejected attempt 1 in both. b8's attempt 2 was rejected because the proof found the robot in 0 frames. With the gate, those writes and the commands that ran them would have been refused before they ran, and Muse Code would have been told why within the same turn; whether it then fixes in one attempt is not measured.
 
 The first pass's folders are now in `~/blinkflow-runs/suite-layers-pass1` (seal `tools/.bugseal-layers-pass1`); `~/blinkflow-runs/suite-layers` holds this pass, so `tools/bug_suite.py --set layers report` now regenerates this pass, not the tables above.
 
