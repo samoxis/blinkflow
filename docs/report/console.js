@@ -844,17 +844,19 @@ P.cause = () => {
   const code = c && h("pre", { class: "code" }, c.lines.filter(([n]) => n >= c.start - 1 && n <= c.end + 1)
     .map(([n, line]) => h("div", { class: n >= c.start && n <= c.end ? "hl" : "" }, h("span", { class: "ln" }, n), line || " ")));
   // film: each row's source, checked as diagnose.check() checks it: the key frames cited are ones that were sent,
-  // the log ticks cited exist (the stream's "grounded"), the lines named are in the target's file
+  // the log ticks cited exist (the stream's "ticks_cited"; older streams: "grounded", which then meant frames and
+  // ticks), the lines named are in the target's file
   const refs = (d.evidence || []).filter((e) => e.source !== "code");
   const sent = new Set((kf ? kf.frames : []).map((f) => f.tag));
   const kcited = [...new Set(refs.flatMap((e) => e.ref.match(/K\d+/g) || []))].filter((t) => sent.has(t));
+  const ticks = !!(d.ticks_cited ?? d.grounded);
   const lcited = refs.filter((e) => e.source === "log").map((e) => e.ref.replace(/^brain log\s*/, ""));
   const inFile = !!c && Array.from({ length: c.end - c.start + 1 }, (_, i) => c.start + i).every((n) => c.lines.some(([m]) => m === n));
   const chk = (ok, what) => (FILM ? h("div", { class: `chk ${ok ? "ok" : "no"}` }, ok ? `✓ source checked · ${what}` : "source not checked") : null);
   const rows = [
     ["saw", "What the camera saw", [pl.camera, chk(kcited.length, `key frame${kcited.length > 1 ? "s" : ""} ${kcited.join(", ")}`)], k ? h("div", { class: "ev keyframe" }, pic(url(k.image)),
       h("span", { class: "cap" }, `key frame · ${k.label} · ${num(k.brain_s, 2)} s`)) : null],
-    ["believed", "What the robot believed", [pl.robot, chk(d.grounded, lcited.length ? `log ${lcited[0]}` : "log ticks")], log ? h("div", { class: "ev" }, logRows(log, 2, 0),
+    ["believed", "What the robot believed", [pl.robot, chk(ticks, lcited.length ? `log ${lcited[0]}` : "log ticks")], log ? h("div", { class: "ev" }, logRows(log, 2, 0),
       h("span", { class: "cap" }, `the robot's own log at ${num(log.moment, 2)} s`)) : null],
     ["why", "Why", [pl.why, h("span", { class: "where" }, where), chk(inFile, `the line is in the target's ${c && c.file}`)], code ? h("div", { class: "ev" }, code,
       h("span", { class: "cap" }, `${where}${d.cause && d.cause.function ? " · " + d.cause.function : ""}`)) : null],
@@ -864,7 +866,7 @@ P.cause = () => {
     h("div", { class: "say" }, h("span", { class: "no" }, i + 1), h("div", {}, h("div", { class: "lab" }, label), h("div", { class: "txt" }, said))),
     h("div", { class: "link" }), ev || h("div", { class: "ev" }))));
   // the confidence is the number Muse Wonder gives itself; the three citations are BlinkFlow's checks above
-  const checked = [kcited.length > 0, !!d.grounded, inFile].filter(Boolean).length;
+  const checked = [kcited.length > 0, ticks, inFile].filter(Boolean).length;
   box.append(h("div", { class: "tech" }, `Muse Wonder's own confidence ${num(d.confidence, 2)} · citations checked ${checked}/3`,
     m ? ` · Muse Wonder ${secs(m.seconds)}, ${m.input_tokens} tokens in (${m.cached_input_tokens || 0} cached), ${m.output_tokens} out, ${usd(m.cost_usd)}` : "",
     h("details", {}, h("summary", {}, "the full explanation"), d.explanation)));

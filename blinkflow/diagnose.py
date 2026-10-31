@@ -397,12 +397,14 @@ def check(d, files, frames, tick_times):
         ticks_cited |= set(hits)
         if e["source"] in ("frame", "log") and not got and not hits:
             bad.append(ref)
-    return {"file": name, "file_ok": name is not None,
-            "lines_ok": name is not None and 1 <= a <= b <= n_lines,
-            "function_ok": bool(fn) and (re.search(rf"\bdef {re.escape(fn)}\b", text) is not None
-                                         or name == "brain.toml"),
+    file_ok = name is not None
+    lines_ok = file_ok and 1 <= a <= b <= n_lines
+    function_ok = bool(fn) and (re.search(rf"\bdef {re.escape(fn)}\b", text) is not None or name == "brain.toml")
+    # grounded only when every check holds: the file, its lines and its function are real, it cites key
+    # frames that were sent and log ticks that exist, and no frame or log reference points at nothing
+    return {"file": name, "file_ok": file_ok, "lines_ok": lines_ok, "function_ok": function_ok,
             "frames_cited": sorted(frames_cited), "log_ticks_cited": sorted(ticks_cited), "bad_refs": bad,
-            "grounded": bool(frames_cited) and bool(ticks_cited)}
+            "grounded": file_ok and lines_ok and function_ok and bool(frames_cited) and bool(ticks_cited) and not bad}
 
 
 def cause_key(d, chk, files):
@@ -468,7 +470,7 @@ def write_md(path, ev, frames, main, compare):
             f"- key frames cited: {', '.join(chk['frames_cited']) or 'none'}; log ticks cited: "
             f"{', '.join(f'{t:.3f}' for t in chk['log_ticks_cited']) or 'none'}",
             f"- references that match nothing sent: {chk['bad_refs'] or 'none'}",
-            f"- **grounded in pixels and log: {'yes' if chk['grounded'] else 'NO'}**", "",
+            f"- **grounded (file, lines and function real; key frames and log ticks cited that exist): {'yes' if chk['grounded'] else 'NO'}**", "",
             "## Key frames", ""]
     for k in frames:
         out += [f"**{k['tag']}** {k['label']}, t = {k['brain_s']:.2f} s. Glimmer: *{k['glimmer']}*", "",
@@ -626,7 +628,8 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, c
     events.emit("diagnosis", tag=tag, **{k: doc[k] for k in ("observed", "cause", "evidence", "ruled_out", "confidence",
                                                              "fix_direction", "explanation", "cause_key")},
                 plain=doc.get("plain"),
-                grounded=doc["check"]["grounded"], code=snippet(files, doc["cause"]),
+                grounded=doc["check"]["grounded"], ticks_cited=bool(doc["check"]["log_ticks_cited"]),
+                code=snippet(files, doc["cause"]),
                 model={k: doc["model"].get(k) for k in ("model", "seconds", "cost_usd", "input_tokens",
                                                         "cached_input_tokens", "output_tokens", "reasoning_tokens")})
     return doc

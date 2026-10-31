@@ -743,7 +743,7 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
            f"`{diag['cause']['file']}`, `{diag['cause']['function']}`, lines {diag['cause']['lines']['start']}-"
            f"{diag['cause']['lines']['end']}: {diag['cause']['what']}", "",
            f"In plain words: {diag['explanation']}", "",
-           f"Confidence {diag['confidence']:.2f}; grounded in key frames and log ticks: "
+           f"Confidence {diag['confidence']:.2f}; grounded (the file, its lines and function real; key frames and log ticks cited that exist): "
            f"{'yes' if diag['check']['grounded'] else 'NO'}. Full diagnosis: `{rel(run, evdir / 'diagnosis.md')}`.", ""]
     if kept:
         out += ["## The fix", "", f"Muse Code: {kept['muse_code']['summary']}", "",
