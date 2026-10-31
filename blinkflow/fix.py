@@ -9,15 +9,19 @@
      smallest change in the target. Before each tool call, BlinkFlow's gate (muse-gate/, a PreToolUse
      hook) denies it if it names a path outside the target; after the turn every tool call is audited
      the same way, and the agent must not commit;
-  5. proof: the same scenario replayed with the change, SAM 3.1 on the rendered shot, incident or not.
-     Still there: git reset --hard, the new evidence goes back to Muse Wonder (with the change
-     in place, and said so), and Muse Code tries again with what failed. At most 3 attempts;
-  6. a person decides twice: before Muse Code writes ("Fix it?", after the cause in two plain sentences)
+  5. proof: the same scenario replayed with the change, SAM 3.1 on the rendered shot. Fixed only with
+     the incident gone, no fall and the robot still walking (prove.verdict). Still there: git reset --hard,
+     the new evidence goes back to Muse Wonder (with the change in place, and said so), and Muse Code
+     tries again with what failed. At most 3 attempts;
+  6. control: the same brain in every other twin scene, from pixels. Any scene not clean and the change
+     is undone and Muse Code tries again with that; only a clean control makes it fixed (the label, the
+     clock's stop, the commit). --skip-control leaves it out, and the report says "control skipped";
+  7. a person decides twice: before Muse Code writes ("Fix it?", after the cause in two plain sentences)
      and after the proof ("Keep the fix?"; no = git reset --hard). --auto asks no one (suite, watcher);
-  7. report.md and models.json (every model call of the whole run) in ~/blinkflow-runs/fixes/<stamp>/.
+  8. report.md and models.json (every model call of the whole run) in ~/blinkflow-runs/fixes/<stamp>/.
 
     python3 -m blinkflow.fix <snapshot .json> [--evidence DIR] [--attempts 3] [--model MODEL] [--out DIR]
-                                 [--compare N] [--auto]
+                                 [--compare N] [--auto] [--skip-control]
 
 The target is ~/duck-target, or the copy named by BLINKFLOW_TARGET.
 """
@@ -436,16 +440,16 @@ def timed(stages, name, t0, fn, *args, **kw):
         stage(stages, name, t, t0)
 
 
-def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, ask=None, control=None):
+def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, ask=None, control=True):
     """`ask`: question -> True/False, the person's answer (terminal_ask); None runs with no one asked.
-    `control`: after a fix is verified, replay the brain in every other scene and look for an incident
-    there from pixels, before the person decides to keep it (default: when a person is asked)."""
+    `control`: once the incident is gone, replay the brain in every other scene and look for an incident
+    there from pixels; a scene not clean undoes the change like a failed proof. False only on purpose
+    (--skip-control), and the report says so."""
     snapshot = pathlib.Path(snapshot).expanduser().resolve()
     model = model or models.MUSE_CODE
     run = pathlib.Path(out).expanduser() if out else RUNS / time.strftime("%Y%m%d-%H%M%S")
     run.mkdir(parents=True)
     t0 = time.time()
-    control = bool(ask) if control is None else control
     events.begin(run, "fix", snapshot=str(snapshot), target=str(TARGET))
     events.emit("loop.start", run=str(run), snapshot=str(snapshot), target=str(TARGET), asked=bool(ask),
                 control=control, attempts=attempts)
@@ -525,7 +529,8 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
     before = timed(stages, "wait for the replay before any change", t0, looked.result)
     pool.shutdown(wait=False)
     done = {"run": str(run), "base": base, "kind": kind, "before": before, "attempts": [], "fixed": False,
-            "kept": False, "asked": bool(ask), "answers": answers, "seen_s": round(t0 - seen, 1)}
+            "kept": False, "asked": bool(ask), "answers": answers, "seen_s": round(t0 - seen, 1),
+            "control_skipped": not control}
     if not go:
         done["stopped"] = "the person said no before Muse Code wrote anything"
         return finish(run, snapshot, evdir, ev, first_diag, done, stages, ledger, t0)
@@ -566,16 +571,34 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
                 v = {"valid": False, "incident": None, "contact": None, "problems": [f"the replay failed: {e}"]}
             stage(stages, f"attempt {i}: replay and look again", t, t0)
             rec["verdict"] = v
+            if v.get("fixed") and control:
+                # the control is part of the proof: a change that breaks another scene is not a fix
+                rec["control"] = timed(stages, f"attempt {i}: control, every other scene (pixels)", t0,
+                                       prove.control, a / "control")
+                dirty = "; ".join(f"{s}: {c['why']}" for s, c in rec["control"].items() if not c["clean"])
+                if dirty:
+                    undo(base, f"attempt {i}: the incident is gone, but the control is not clean ({dirty})"[:300])
+                    rec["control_failed"] = True
+                    done["stopped"] = f"attempt {i} removed the incident, but the control was not clean ({dirty})"
+                    what = (f"Attempt {i} changed:\n```diff\n{mc['change']['diff']}```\nIts note: {mc['summary']}\n"
+                            f"It removed the incident in this scene ({says(v, obj, kind)}), but the same brain then "
+                            f"failed in other scenes: {dirty}. Find a change that removes the incident without that.")
+                    history.append(what)
+                    tried.append(f"Attempt {i}: the diagnosis named `{rec['cause_key']}` ({cause['what']}) The change:\n"
+                                 f"```diff\n{mc['change']['diff']}```\nIt removed the incident here but broke other "
+                                 f"scenes: {dirty}.")
+                    continue
             if v.get("fixed"):
                 done["fixed"] = True
-                # the machine's time only: the seconds the loop sat waiting for the person are shown apart
+                done.pop("stopped", None)
+                done["control"] = rec.get("control")
+                # the machine's time only, the control included: the seconds the loop sat waiting for the person
+                # are shown apart
                 done["person_s"] = round(held(), 1)
                 done["verified_s"] = round(time.time() - seen - held(), 1)
                 events.emit("clock.stop", at=time.time(), seconds=done["verified_s"], wall_s=round(time.time() - seen, 1),
-                            person_s=done["person_s"], why="fixed and verified", attempt=i)
-                if control:
-                    done["control"] = timed(stages, f"attempt {i}: control, every other scene (pixels)", t0,
-                                            prove.control, a / "control")
+                            person_s=done["person_s"], why="fixed and verified" + ("" if control else " (control skipped)"),
+                            attempt=i)
                 if ask:
                     print(f"\nReplay with the change: {says(v, obj, kind)}.\nBefore it: {says(before, obj, kind)}.\n"
                           f"Change: {mc['change']['stat']} ({', '.join(mc['change']['files'])})", flush=True)
@@ -698,9 +721,9 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
     elif kept:
         head = (f"**Fixed and verified in attempt {kept['attempt']} of {n}.** Seen -> fixed and verified: "
                 f"**{done.get('verified_s', done['seconds']):.0f} s** of machine time"
-                + (f" (the person took {done.get('person_s', 0):.1f} s to answer \"Fix it?\", not counted; "
-                   f"{done['seconds']:.0f} s in all with the control and the answers)." if done.get("asked")
-                   or done.get("control") else "."))
+                + (" (the control in every other scene included" if done.get("control") else " (**control skipped**")
+                + (f"; the person took {done.get('person_s', 0):.1f} s to answer \"Fix it?\", not counted; "
+                   f"{done['seconds']:.0f} s in all with the answers)." if done.get("asked") else ")."))
     else:
         head = f"**Not fixed** after {n} attempt(s), {done['seconds']:.0f} s. " + done.get("stopped", "")
     if kind == "fall":
@@ -768,11 +791,13 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
     out += ["## Attempts", ""]
     for a in done["attempts"]:
         v = a["verdict"]
-        out += [f"### Attempt {a['attempt']}: {'kept' if a['kept'] else 'rolled back (the person said no)' if a.get('rolled_back') else 'undone (git reset --hard)'}", "",
+        out += [f"### Attempt {a['attempt']}: {'kept' if a['kept'] else 'rolled back (the person said no)' if a.get('rolled_back') else 'undone: the control was not clean (git reset --hard)' if a.get('control_failed') else 'undone (git reset --hard)'}", "",
                 f"- diagnosis used: `{rel(run, a['diagnosis'])}` (cause `{a['cause_key']}`)",
                 f"- Muse Code: {a['muse_code']['outcome']}, {a['muse_code']['seconds']:.0f} s, "
                 f"{a['change']['stat'] or 'no change'}; files: {', '.join(a['change']['files']) or 'none'}",
                 f"- its note: {a['muse_code']['summary'] or '(none)'}",
+                *([f"- control: " + "; ".join(f"{s} {'clean' if c['clean'] else 'NOT clean (' + c['why'] + ')'}"
+                                              for s, c in a["control"].items())] if a.get("control") else []),
                 f"- rejected before replay: {'; '.join(a['muse_code']['problems'])}" if a["muse_code"]["problems"]
                 else f"- replay: {says(v, obj, kind) if v else 'not run'}", ""]
         if not a["kept"] and a["change"]["diff"].strip():
@@ -800,6 +825,10 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                                                   f"{x['attempt']}, {x['seconds']:.0f} s)" for x in done["answers"])
                                         or "nothing was asked") if done.get("asked") else
             "- run with --auto: no one was asked before Muse Code wrote or before the fix was kept.",
+            "- control: " + ("**control skipped** (--skip-control): the change was not replayed in the other scenes."
+                             if done.get("control_skipped") else
+                             "every other twin scene replayed with the change and judged from pixels before anything "
+                             "was called fixed; a scene not clean undoes the change."),
             "- Muse Code ran under the host's default sandboxed profile (not `:unrestricted`), approval mode "
             "`promptUnmatched`; edits are approved only when every path is inside the target.",
             f"- BlinkFlow's gate (muse-gate/, a PreToolUse hook) checked every tool call before it ran: "
@@ -824,15 +853,15 @@ def main():
                     help=f"Muse Code's model (default: BLINKFLOW_MUSE_MODEL or {models.MUSE_CODE})")
     ap.add_argument("--out", help=f"run folder (default: {RUNS}/<stamp>)")
     ap.add_argument("--auto", action="store_true", help="ask no one: fix and keep on the proof alone (suite, watcher)")
-    ap.add_argument("--control", action=argparse.BooleanOptionalAction, default=None,
-                    help="after a verified fix, look for an incident in every other scene (default: when asking)")
+    ap.add_argument("--skip-control", action="store_true",
+                    help="do not replay the change in every other scene before calling it fixed (the report says so)")
     ap.add_argument("--compare", type=int, default=0, metavar="N",
                     help="first diagnosis: N runs each of Muse Wonder and Muse Spark (Wonder's majority is used)")
     a = ap.parse_args()
     if not (a.auto or sys.stdin.isatty()):
         raise SystemExit("no one at a terminal to ask: run with --auto")
     ask = None if a.auto else functools.partial(terminal_ask, tty=terminal())
-    done = fix(a.snapshot, a.evidence, a.attempts, a.model, a.out, a.compare, ask, a.control)
+    done = fix(a.snapshot, a.evidence, a.attempts, a.model, a.out, a.compare, ask, not a.skip_control)
     print(json.dumps({"run": done["run"], "fixed": done["fixed"], "kept": done["kept"], "seconds": done["seconds"],
                       "attempts": [{"attempt": x["attempt"], "files": x["change"]["files"],
                                     "incident": (x["verdict"] or {}).get("incident"), "kept": x["kept"]}
