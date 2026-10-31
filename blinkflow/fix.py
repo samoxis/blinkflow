@@ -368,6 +368,8 @@ def says(v, obj, kind="contact"):
         return (f"the robot still touched the {obj}, first contact at t = {v['first_contact_s']:.3f} s after the brain "
                 f"starts ({v['reading']} reading)")
     gap = "" if v["closest_gap_px"] is None else f"closest gap {v['closest_gap_px']:.0f} px at t = {v['closest_s']:.2f} s"
+    if v.get("fell_s") is not None:             # no contact, because it fell first: not a fix
+        return f"no contact, but the robot fell at t = {v['fell_s']:.3f} s ({v['fall_reading']} reading){'; ' + gap if gap else ''}"
     return f"no fall; the robot stayed on its feet{'; ' + gap if gap else ''}" if kind == "fall" else f"no contact; {gap}"
 
 
@@ -564,7 +566,7 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
                 v = {"valid": False, "incident": None, "contact": None, "problems": [f"the replay failed: {e}"]}
             stage(stages, f"attempt {i}: replay and look again", t, t0)
             rec["verdict"] = v
-            if v["valid"] and not v["incident"]:
+            if v.get("fixed"):
                 done["fixed"] = True
                 # the machine's time only: the seconds the loop sat waiting for the person are shown apart
                 done["person_s"] = round(held(), 1)
@@ -743,7 +745,9 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
         fmt = lambda x, f: "-" if x is None else format(x, f)
         cols = ((fmt(v["incident_s"], ".3f"), v["fall_reading"] or "-") if kind == "fall" else
                 (fmt(v["first_contact_s"], ".3f"), fmt(v["whole_mask_touch_s"], ".3f")))
-        return (f"| {label} | {'**yes**' if v['incident'] else '**no**'}{'' if v['valid'] else ' (invalid: ' + '; '.join(v['problems']) + ')'} "
+        fell = (f" (fell at {v['fell_s']:.3f} s: not a fix)" if kind != "fall" and not v["incident"]
+                and v.get("fell_s") is not None else "")
+        return (f"| {label} | {'**yes**' if v['incident'] else '**no**'}{fell}{'' if v['valid'] else ' (invalid: ' + '; '.join(v['problems']) + ')'} "
                 f"| {cols[0]} | {cols[1]} | {fmt(v['closest_gap_px'], '.0f')} | {v['travel_m']:.2f} |")
 
     out.append(row("before (base commit)", b))

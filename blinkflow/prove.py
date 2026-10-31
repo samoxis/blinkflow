@@ -80,7 +80,11 @@ def verdict(ev, record, reference_travel=None, kind="contact"):
     hanging over the robot's path on screen does not. Without a base, any touch.
     Fall: the robot's mask tips over, drops or vanishes mid-shot (pixels), or the brain logs a fall.
     No verdict if the robot was not followed through the shot or barely walked, or, for a contact,
-    if the object was never found."""
+    if the object was never found.
+    `fixed`: the incident gone and nothing worse in its place: a valid verdict, no contact or fall of the
+    incident's kind, no fall of any kind (a robot that falls before the box never touches it), and at least
+    MIN_TRAVEL of the incident's distance walked (one that stands still never touches it either). Without
+    the incident's distance to compare, nothing is called fixed."""
     c = ev["contacts"]
     reading, hit = contact_of(ev)
     fall = (ev.get("fall") or {}).get("first")
@@ -101,7 +105,9 @@ def verdict(ev, record, reference_travel=None, kind="contact"):
     if reference_travel and walked < MIN_TRAVEL * reference_travel:
         problems.append(f"robot walked {walked:.2f} m, the incident {reference_travel:.2f} m")
     closest = ev["closest"]
-    return {"kind": kind, "incident": again is not None, "incident_s": again and round(again["brain_s"], 3),
+    fixed = (not problems and again is None and fall is None
+             and reference_travel is not None and walked >= MIN_TRAVEL * reference_travel)
+    return {"kind": kind, "incident": again is not None, "fixed": fixed, "incident_s": again and round(again["brain_s"], 3),
             "fell_s": fall and round(fall["brain_s"], 3), "fall_reading": fall and fall["reading"],
             "contact": hit is not None, "valid": not problems, "problems": problems, "reading": reading,
             "first_contact_s": hit and round(hit["brain_s"], 3), "first_contact_frame": hit and hit["frame"],
