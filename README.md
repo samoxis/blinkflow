@@ -26,7 +26,7 @@
 
 - **It watches pixels, not the simulator's insides.** BlinkFlow looks at the window, as the developer does. Plain measurements come first: SAM 3.1's masks become distances and a first contact. Only then does Muse Wonder look, and its answer is checked against what it was sent.
 - **The proof is the same scene, played again.** A deterministic twin replays it exactly, and it is measured again on pixels. A fix that fails is undone and tried again. Then the person answers "Keep the fix?".
-- **A referee the agent never sees, and a gate.** Results are scored from contact logs that BlinkFlow never gets. Every Muse Code tool call is checked first: one that names a path outside the target is blocked before it runs.
+- **A referee the agent never sees, and a gate.** Results are scored from contact logs that BlinkFlow never gets. The gate is a filter, not an isolation: it checks every Muse Code call against the target folder and refuses, before it runs, one that names a path outside it.
 
 ## Contents
 
@@ -56,7 +56,7 @@ What it films is the simulator's window on your screen, not a camera on the robo
 | Listen | Hold F9 (or, with `--tap-to-talk`, tap the arm of the Ray-Ban Meta glasses, and tap again when done) and say what you saw ("three seconds ago its right leg hit the purple box"), or type it; the moment is the key press on BlinkFlow's own clock minus the time you said; the sentence is read locally (`results/voice.md`) | Muse Voice Transcribe, Muse Glimmer (local) |
 | See | Objects in those seconds are named locally and then followed pixel by pixel; the masks become measurements (distance between objects per frame, first contact) | Muse Glimmer (local), SAM 3.1 |
 | Understand | Key frames + measurements + time-aligned logs + the robot's code → the cause, plus a plain-language explanation. Every claim cites its source: a key frame, a measurement, a log tick or a code line, and the answer is checked against what was sent (the file, function and lines exist; the cited frames and ticks exist) | Muse Wonder |
-| Fix | A coding agent patches the code inside its sandbox; a git commit is taken first | Muse Code (Python SDK) |
+| Fix | A coding agent patches the code in the target folder, each of its calls checked by BlinkFlow's gate; a git commit is taken first | Muse Code (Python SDK) |
 | Prove | The same scene, replayed exactly in a deterministic twin, and checked again on pixels; failed fixes are rolled back and retried. For the demo incident, then confirmed on the live simulator (`results/live_check.md`) | SAM 3.1, Muse Code |
 
 <p align="center"><img src="docs/console-see.png" width="720" alt="The console's See step: masks on the robot and the purple box, a magnifier on the contact at 11.20 s"></p>
@@ -68,7 +68,7 @@ What it films is the simulator's window on your screen, not a camera on the robo
 
 - **Muse Glimmer runs locally, with open weights.** It watches all the time, 0 tokens billed, and the frames it watches never leave the PC unless it raises a hand or you speak.
 - **SAM 3.1 turns video into masks across frames,** and the distance between the masks is the measurement: no model eyeballs it.
-- **Muse Wonder reasons over frames, log and code at once; Muse Code edits in a sandbox, behind the gate.** The whole chain, from watching to the fix, is one ecosystem.
+- **Muse Wonder reasons over frames, log and code at once; Muse Code edits, each call checked by BlinkFlow's gate.** The whole chain, from watching to the fix, is one ecosystem.
 
 **Works on any screen.** BlinkFlow only watches pixels, through GPU screen capture (DXGI Desktop Duplication + NVENC), of the window named by the sidecar's `--title`; there is no plugin in the simulator. The pixel part should apply to any simulator (Isaac Sim, Gazebo, CARLA, Unreal), but it has not been tested on them. The replay proof needs a simulator that can replay a scene deterministically.
 
@@ -211,7 +211,7 @@ Existed before, used only as the test target, not part of this repo:
 
 ## Safety
 
-Muse Code runs under `muse serve`'s default sandboxed profile, which does not stop a read or a write outside the target, so a PreToolUse hook (`muse-gate/`, `python3 -m blinkflow.gate install`) blocks any tool call that names a path outside the target before it runs. Every fix starts from a git commit; BlinkFlow asks "Fix it?" before Muse Code writes and "Keep the fix?" after the proof, and a no rolls the change back. How it was measured, and how to undo a kept fix: [`docs/SAFETY.md`](docs/SAFETY.md).
+Muse Code runs under `muse serve`'s default sandboxed profile, which does not stop a read or a write outside the target, so a PreToolUse hook (`muse-gate/`, `python3 -m blinkflow.gate install`) refuses any tool call that names a path outside the target before it runs. That hook is a filter that checks every Muse Code call against the target folder, not an isolation: it reads the paths a call names, so code that reaches outside without naming the path (a script that builds one as it runs, say) is not stopped by it. Every fix starts from a git commit; BlinkFlow asks "Fix it?" before Muse Code writes and "Keep the fix?" after the proof, and a no rolls the change back. How it was measured, and how to undo a kept fix: [`docs/SAFETY.md`](docs/SAFETY.md).
 
 ## Credits and licence
 

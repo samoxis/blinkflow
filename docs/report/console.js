@@ -953,8 +953,8 @@ P.fix = () => {
     if (!c.tools.size) tools.append(wait("Muse Code reads the diagnosis and the code"));
     // film: BlinkFlow's gate asks before every tool call; shown only when the stream says which hook was loaded
     const blocked = [...c.tools.values()].filter((t) => t.status === "blocked").length;
-    if (FILM && c.gate) tools.append(h("div", { class: `gatebadge ${blocked ? "hit" : ""}`, title: `${c.gate.hook} sha256 ${c.gate.hook_sha256}` }, h("b", {}, "gate: target folder only"),
-      ` · ${c.tools.size} call${c.tools.size === 1 ? "" : "s"} checked · ${blocked} blocked`));
+    if (FILM && c.gate) tools.append(h("div", { class: `gatebadge ${blocked ? "hit" : ""}`, title: `${c.gate.hook} sha256 ${c.gate.hook_sha256}` }, h("b", {}, "gate"),
+      ` · ${c.tools.size} call${c.tools.size === 1 ? "" : "s"} checked against the target folder · ${blocked} blocked`));
   }
   box.append(h("div", { class: "card" }, h("h3", {}, c ? `Muse Code at work · ${tag}${c.start && c.start.model ? " · " + c.start.model : ""}` : "Muse Code"),
     c ? tools : wait(st.asks.length ? "waiting for the answer" : "it starts once you say yes")));
@@ -967,11 +967,11 @@ P.fix = () => {
       diff.append(h("span", { class: cls }, line || " "));
     }
   }
-  box.append(h("div", { class: "card" }, h("h3", {}, ch ? `the change · ${ch.stat} · ${secs(ch.seconds)} · ${ch.tool_calls} tool calls${ch.sandbox ? " · sandboxed" : ""}` : "the change"),
+  box.append(h("div", { class: "card" }, h("h3", {}, ch ? `the change · ${ch.stat} · ${secs(ch.seconds)} · ${ch.tool_calls} tool calls` : "the change"),
     ch ? [oneLine(ch.diff), h("div", { class: `summary ${fx("summary@660")}` }, String(ch.summary || "").replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")),
       ch.problems && ch.problems.length ? h("div", { style: "color:var(--red); margin-bottom:.5rem" }, `rejected: ${ch.problems.join("; ")}`) : null, diff]
       : wait(c ? "writing" : "")));
-  return [head("fix", c && c.start ? `edits only inside ${tilde(st.checkpoint ? st.checkpoint.target : "the target")}` : null), box];
+  return [head("fix", c && c.start ? `every call checked against ${tilde(st.checkpoint ? st.checkpoint.target : "the target")}` : null), box];
 };
 
 // film: a change of one `key = value` line, read from the diff as file:line · key · old → new (else nothing)

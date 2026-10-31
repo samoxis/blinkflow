@@ -315,7 +315,7 @@ def muse_code(prompt, out, base, ledger, purpose, model=None):
         cached = cum.get("cacheReadTokens") or 0
         cost = ((cum["promptTokens"] - cached) * pin + cached * pcached + (cum.get("outputTokens") or 0) * pout) / 1e6
         note = "from the host's token counts and the model catalog's prices"
-    ledger.add(mid, "Muse Code (muse serve, sandboxed) -> Meta Model API",
+    ledger.add(mid, "Muse Code (muse serve, default profile) -> Meta Model API",
                purpose, seconds, cost, input_tokens=cum.get("promptTokens"),
                cached_input_tokens=cum.get("cacheReadTokens"), output_tokens=cum.get("outputTokens"),
                cost_note=note)
@@ -829,9 +829,11 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                              if done.get("control_skipped") else
                              "every other twin scene replayed with the change and judged from pixels before anything "
                              "was called fixed; a scene not clean undoes the change."),
-            "- Muse Code ran under the host's default sandboxed profile (not `:unrestricted`), approval mode "
+            "- Muse Code ran under the host's default sandboxed profile (not `:unrestricted`; it does not stop a read "
+            "or a write outside the target), approval mode "
             "`promptUnmatched`; edits are approved only when every path is inside the target.",
-            f"- BlinkFlow's gate (muse-gate/, a PreToolUse hook) checked every tool call before it ran: "
+            f"- BlinkFlow's gate (muse-gate/, a PreToolUse hook: a filter on the paths each call names, not an "
+            f"isolation) checked every tool call before it ran: "
             f"{sum(len(json.loads((run / f'attempt-{a['attempt']}' / 'muse-code.json').read_text())['tool_calls']) for a in done['attempts'])}"
             f" calls, blocked: {gate_blocked()}.",
             f"- approval requests that reached BlinkFlow: "
