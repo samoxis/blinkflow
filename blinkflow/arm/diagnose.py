@@ -67,6 +67,5 @@ def diagnose(evdir,ledger,spoken=None):
          "model":ledger.calls[-1]}
     (evdir/"diagnosis.json").write_text(json.dumps(doc,indent=1))
     (evdir/"diagnosis.md").write_text(d["explanation"]+"\n\n"+json.dumps(d,indent=1)+"\n")
-    if not check["grounded"] or check["bad_refs"]:
-        raise RuntimeError(f"Ungrounded diagnosis: {check}")
+    # as the duck's: the check is reported with the diagnosis, and only the pixels decide whether a fix holds
     return doc

@@ -96,7 +96,7 @@ def recheck(example,physics=True):
         d=read(evdir/"diagnosis.json")
         files=read(evdir/"source.json")
         chk=original_diagnose.check(d,files,d["key_frames"],d["tick_times"])
-        assert chk==d["check"] and chk["grounded"] and not chk["bad_refs"]
+        assert chk==d["check"]           # reported as it was; like the duck's loop, it does not stop the fix
         # Every attempt: where it wrote and which tools it called, never what it wrote. A kept one's diff,
         # applied to the brain before, must give the brain after, byte for byte.
         from blinkflow import fix

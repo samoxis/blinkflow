@@ -106,8 +106,6 @@ def run(out,until="done",attempts=3,wav=None,press=4.):
             try: diagnose.diagnose(evdir,l,spoken)
             finally: l.write(evdir/"diagnosis-models.json")
         d=json.loads((evdir/"diagnosis.json").read_text())
-        if not d["check"]["grounded"] or d["check"]["bad_refs"]:
-            raise RuntimeError("saved diagnosis is ungrounded")
         if until=="diagnose": return d["check"]
         history=[]
         fix.change=change

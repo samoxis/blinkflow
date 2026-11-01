@@ -1,8 +1,8 @@
 """Pack a completed arm loop (blinkflow.arm.run) as examples/<name>, including every successful SAM reply and
-calibration cost. It made examples/arm on Nov 1 (in the arm's own repo, then moved here unchanged); here it
-reads the arm's state from ~/blinkflow-runs/arm. Not yet run on a second loop.
+calibration cost. It made examples/arm, examples/arm-bug2 and examples/arm-voice; it reads the arm's state
+from BLINKFLOW_ARM_STATE (default ~/blinkflow-runs/arm), so run it with the state the loop ran with.
 
-    python3 tools/arm_pack_example.py ~/blinkflow-runs/arm/loop-1 examples/arm-2 [--lost-calibration-reply]
+    python3 tools/arm_pack_example.py ~/blinkflow-runs/arm/loop-1 examples/arm-2 [--caption TEXT] [--lost-calibration-reply]
 """
 import argparse
 import gzip
@@ -23,7 +23,10 @@ TEXT={'.json','.jsonl','.txt','.md','.diff','.py','.toml','.xml'}
 def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def pack(source,dest,lost=False):
+CAPTION='One planted clearance bug. SAM masks, Wonder diagnosis, Code fix, deterministic proof.'
+
+
+def pack(source,dest,lost=False,caption=CAPTION):
     src,out=pathlib.Path(source).resolve(),pathlib.Path(dest).resolve()
     result=json.loads((src/'result.json').read_text())
     assert result['passed']
@@ -90,7 +93,7 @@ def pack(source,dest,lost=False):
         subprocess.run(['ffmpeg','-v','error','-y','-i',str(path),'-vf','fps=10,scale=480:-1','-loop','0',str(out/f'{tag}.gif')],check=True)
     (out/'preview.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8"><title>BlinkFlow arm</title>'
         '<style>body{background:#15171b;color:white;font:18px sans-serif;margin:2rem}main{display:flex;gap:1rem}img{width:100%}figure{margin:0;max-width:48%}</style>'
-        '<h1>BlinkFlow: second robot</h1><p>One planted clearance bug. SAM masks, Wonder diagnosis, Code fix, deterministic proof.</p>'
+        '<h1>BlinkFlow: second robot</h1><p>'+caption+'</p>'
         '<main><figure><figcaption>Before: contact</figcaption><img src="before.gif"></figure>'
         '<figure><figcaption>After: target reached, no contact</figcaption><img src="after.gif"></figure></main>'
         '<p>SAM arm tracking is initialized from a box marked in the first image. It is not text-only arm detection.</p></html>')
@@ -100,4 +103,5 @@ def pack(source,dest,lost=False):
 
 
 if __name__=='__main__':
-    ap=argparse.ArgumentParser();ap.add_argument('source');ap.add_argument('dest');ap.add_argument('--lost-calibration-reply',action='store_true');a=ap.parse_args();pack(a.source,a.dest,a.lost_calibration_reply)
+    ap=argparse.ArgumentParser();ap.add_argument('source');ap.add_argument('dest');ap.add_argument('--lost-calibration-reply',action='store_true');ap.add_argument('--caption',default=CAPTION)
+    a=ap.parse_args();pack(a.source,a.dest,a.lost_calibration_reply,a.caption)
