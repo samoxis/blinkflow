@@ -7,9 +7,9 @@ import math
 import pathlib
 
 from blinkflow import prove as original, see
-from . import HERE, ROBOT, budget, twin, see as arm_see
+from . import ROBOT, WORLD, budget, twin, see as arm_see
 
-NAMES=json.loads((HERE/"obstacles.json").read_text())
+NAMES=json.loads((WORLD/"obstacles.json").read_text())
 
 
 def pixels(ev):

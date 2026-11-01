@@ -30,9 +30,10 @@ class Guards(unittest.TestCase):
         self.assertTrue(fix.outside("read_file",{"path":str(pathlib.Path.home()/"duck-target/brain.toml")}))
         self.assertFalse(fix.outside("edit_file",{"path":"brain.toml"}))
 
-    def test_gate_hook_refuses_the_harness(self):
-        """The PreToolUse hook itself, run as Muse Code runs it, with the arm's target: a write to the harness
-        (blinkflow/arm/run.py), by absolute or relative path, is denied; the robot's brain.toml is not."""
+    def test_gate_hook_refuses_the_world_and_the_harness(self):
+        """The PreToolUse hook itself, run as Muse Code runs it, with the arm's target: a write to the world
+        (blinkflow/arm/world/scene.xml) or the harness (blinkflow/arm/run.py), by absolute or relative path, is
+        denied; the controller (brain.py, brain.toml) is not."""
         hook=arm.REPO/"muse-gate/hooks/pre_tool_use.py"
         with tempfile.TemporaryDirectory() as tmp:
             conf=pathlib.Path(tmp)/"blinkflow-gate.json"
@@ -43,8 +44,31 @@ class Guards(unittest.TestCase):
                 return json.loads(out)["hookSpecificOutput"]["permissionDecision"] if out else "allow"
             self.assertEqual(decide({"path":str(arm.HERE/"run.py")}),"deny")
             self.assertEqual(decide({"path":"../run.py"}),"deny")
+            self.assertEqual(decide({"path":str(arm.WORLD/"scene.xml")}),"deny")
+            self.assertEqual(decide({"path":"../world/scene.xml"}),"deny")
             self.assertEqual(decide({"path":"brain.toml"}),"allow")
+            self.assertEqual(decide({"path":"brain.py"}),"allow")
+            self.assertEqual(decide({"path":str(arm.ROBOT/"brain.py")}),"allow")
         self.assertTrue(fix.outside("edit_file",{"path":str(arm.HERE/"run.py")}))
+        self.assertTrue(fix.outside("edit_file",{"path":str(arm.WORLD/"scene.xml")}))
+
+    def test_change_takes_any_controller_file_and_refuses_the_world(self):
+        """The loop's own check reads paths, not content: an edit to brain.py is staged, one to the scene
+        is refused."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root=pathlib.Path(tmp)
+            for rel in ("blinkflow/arm/robot/brain.py","blinkflow/arm/world/scene.xml"):
+                (root/rel).parent.mkdir(parents=True,exist_ok=True);(root/rel).write_text("v0\n")
+            def git(*args):
+                return subprocess.check_output(["git","-c","user.name=Test","-c","user.email=test@localhost",*args],cwd=root,text=True,stderr=subprocess.DEVNULL)
+            git("init","-q");git("add",".");git("commit","-qm","baseline")
+            base=git("rev-parse","HEAD").strip()
+            with patch.object(run,"REPO",root):
+                (root/"blinkflow/arm/robot/brain.py").write_text("anything\n")
+                self.assertEqual(run.change(base)["files"],["blinkflow/arm/robot/brain.py"])
+                (root/"blinkflow/arm/world/scene.xml").write_text("moved\n")
+                with self.assertRaises(RuntimeError):
+                    run.change(base)
 
     def test_rollback_preserves_unrelated_work(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -30,7 +30,7 @@ def ledger(out,extra=None):
 
 
 def change(base):
-    """Inspect every repo path, but only stage the authorized arm subtree."""
+    """Every changed repo path must be inside the robot (REL); only that is staged."""
     names=git("diff",base,"--name-only").splitlines()
     names+=git("ls-files","--others","--exclude-standard").splitlines()
     if any(not n.startswith(REL+"/") for n in names):
@@ -116,34 +116,31 @@ def run(out,until="done",attempts=3):
             if git("status","--porcelain").strip(): raise RuntimeError("dirty tree before Muse Code")
             base=git("rev-parse","HEAD").strip()
             (out/f"attempt-{i}-checkpoint.json").write_text(json.dumps({"base":base}))
-            prompt=("Fix this fixed-base three-joint manipulator controller. Edit only brain.toml; "
-                    "make the smallest configuration change justified by the diagnosis. Do not touch git. "
-                    "Do not read outside this workspace. Do not change scene, speed, timing, gains or target. "
-                    "The arm must lift over the block, descend and reach the target. Do not run a simulator. "
-                    "No delegation.\nDIAGNOSIS\n"+(evdir/"diagnosis.md").read_text()+
+            prompt=("You are fixing the controller of a fixed-base three-joint robot arm; this workspace is its "
+                    "code. In a simulator the arm hit a red block on its way to a green target. BlinkFlow filmed "
+                    "it, measured it from the pixels and read the controller's own log; its diagnosis follows.\n"
+                    "Make the smallest change to this workspace that removes the cause. Rules:\n"
+                    "- Edit only files inside this workspace. Do not commit or otherwise touch git.\n"
+                    "- Do not read anything outside this workspace.\n"
+                    "- Keep the arm's behaviour otherwise the same: it must still reach the target.\n"
+                    "- You cannot run the simulator. When you finish, BlinkFlow replays the same scene in a "
+                    "deterministic twin and looks at the camera again. No delegation.\nDIAGNOSIS\n"+(evdir/"diagnosis.md").read_text()+
                     "\nCODE\n"+(evdir/"diagnosis-input.txt").read_text().split("Spoken sentence:")[0]+
                     "\nEARLIER FAILED ATTEMPTS\n"+"\n".join(history))
             l=models.Ledger()
             # The contributor model's bounded small edit is reserved very conservatively.
             reservation=budget.book(0.25,f"Muse Code attempt {i} maximum allowance")
             try:
-                rec=fix.muse_code(prompt,p,base,l,f"arm clearance fix attempt {i}",model=models.MUSE_CODE)
+                rec=fix.muse_code(prompt,p,base,l,f"arm fix attempt {i}",model=models.MUSE_CODE)
                 cost=l.calls[-1]["cost_usd"]
                 if cost is None: raise RuntimeError("Muse Code cost unavailable; reservation retained")
                 budget.book(cost-reservation,f"settle Muse Code attempt {i}")
                 l.write(p/"models.json")
                 if rec["problems"]: raise RuntimeError(str(rec["problems"]))
-                changed=rec["change"]["files"]
-                if changed != [REL+"/brain.toml"]: raise RuntimeError(f"unexpected fix diff: {changed}")
-                import tomllib
-                old=tomllib.loads((out/"brain-before/brain.toml").read_text())
-                new=tomllib.loads((ROBOT/"brain.toml").read_text())
-                value=new["planner"]["clearance"]
-                new["planner"]["clearance"]=old["planner"]["clearance"]
-                if new!=old or value<=0: raise RuntimeError("fix changed more than positive clearance")
+                if not rec["change"]["files"]: raise RuntimeError("Muse Code changed nothing")
                 result=prove.prove(p,reference=before["travel_m"])
                 if not result["passed"]: raise RuntimeError("proof or control failed")
-                git("commit","-m","Fix arm clearance with Muse Code; prove incident and controls")
+                git("commit","-m","Fix the arm with Muse Code; prove incident and controls")
                 result.update(commit=git("rev-parse","HEAD").strip(),attempt=i)
                 (out/"result.json").write_text(json.dumps(result,indent=1))
                 return result

@@ -16,7 +16,7 @@ import subprocess
 import sys
 
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]))
-from blinkflow.arm import HERE, REPO, ROBOT, STATE  # noqa: E402
+from blinkflow.arm import HERE, REPO, ROBOT, STATE, WORLD  # noqa: E402
 TEXT={'.json','.jsonl','.txt','.md','.diff','.py','.toml','.xml'}
 
 
@@ -30,7 +30,7 @@ def pack(source,dest,lost=False):
     if out.exists(): raise RuntimeError(f'{out} already exists')
     shutil.copytree(src,out)
     shutil.copytree(HERE,out/'snapshot/arm',ignore=shutil.ignore_patterns('__pycache__'))
-    shutil.copy(ROBOT/'scene.xml',out/'snapshot/scene.xml')
+    shutil.copy(WORLD/'scene.xml',out/'snapshot/scene.xml')
     (out/'brain-after').mkdir()
     for name in ('brain.py','brain.toml'):shutil.copy(ROBOT/name,out/'brain-after'/name)
     (out/'calibration/sam-cache').mkdir(parents=True)
