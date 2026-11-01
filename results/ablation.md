@@ -81,9 +81,11 @@ All four kept the same blob (`7ea627d`), BlinkFlow's included. The control close
 before any replay, because it wrote a probe script to `/tmp/drop_probe.py`; attempt 2 passed. Runs 2 and 3
 passed on the first attempt (9 tool calls each; BlinkFlow's attempt took 3).
 
-**What this says.** For b7, Muse Code alone found the cause from one sentence in 3 of 3 runs, first attempt in
-2, in 39–144 s of agent time; with BlinkFlow's evidence (key frames, the log, the cited lines 294–321) it took
-24 s and 3 tool calls. The swap is visible in the code itself once one goes looking near "drop" and "pit",
-the words the sentence gives. So the evidence's edge here is small: about 1.6–6× less agent time, not a fix
-that would otherwise be missed. Two bugs, one setting and one code line, is still a small sample; what neither
-run could do alone is say whether the change worked: that is the replay and the control, in both.
+**Both bugs, in short.** On both, the purple box (a setting) and b7 (a line of code), the cause was findable
+from the code alone: Muse Code, given only the sentence, made BlinkFlow's own change in 3 of 3 runs each.
+What BlinkFlow brought each time was the right fix on the first attempt (1 of 1, against 0 of 3 runs alone on
+the purple box and 2 of 3 on b7) and the proof. Alone, Muse Code's attempts were not judged by Muse Code: the
+ones that failed were stopped by BlinkFlow's gate and audit before any replay (a write to `/tmp`, an empty
+turn), and the ones kept were kept because BlinkFlow's replay in the twin and its control in the other scenes,
+from pixels, said they worked. On b7 the evidence saved less time than on the purple box (24 s against
+39–144 s of agent time, above). Two bugs are still a small sample.
