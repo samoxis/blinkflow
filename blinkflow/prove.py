@@ -27,10 +27,20 @@ MIN_ROBOT_FRAMES = 10     # the robot must be found in at least this many frames
                           # shot sees it only near the object, ~70 of 520 frames in the incident)
 MIN_TRAVEL = 0.5          # ...and walk at least this fraction of the incident's distance
 EXTRA_S = 8.0             # the replay runs this long past the incident's end
-# Every twin scene but the box, each with its own obstacle as SAM 3.1 is asked for it (scenes/obstacles.json):
-# the control follows the scene's obstacle, never a name guessed from the picture unless that one is not found
+# Every twin scene but the incident's own, each with its own obstacle as SAM 3.1 is asked for it
+# (scenes/obstacles.json): the control follows the scene's obstacle, never a name guessed from the picture
+# unless that one is not found
 OBSTACLES = json.loads((pathlib.Path(__file__).resolve().parent / "scenes" / "obstacles.json").read_text())
-CONTROL_SCENES = tuple(s for s in OBSTACLES["scenes"] if s != "box")
+LIVE_SCENE = "box"        # the live simulator's demo scene is the twin's box scene
+
+
+def control_scenes(incident_scene=LIVE_SCENE):
+    """Every twin scene but the one the incident happened in (Nov 1: the box was always left out, so a
+    ledge incident's control replayed the ledge and never the box)."""
+    return tuple(s for s in OBSTACLES["scenes"] if s != (incident_scene or LIVE_SCENE))
+
+
+CONTROL_SCENES = control_scenes()
 CONTROL_S = 20.0          # each control replay's length (the scorer's control is as long)
 CONTROL_EVERY = 3         # SAM 3.1 follows every 3rd frame of a control shot (9.5 fps): a third of the cost
 CONTROL_WORKERS = 6       # render processes per control scene (four scenes at once on 24 threads)

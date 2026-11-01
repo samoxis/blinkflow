@@ -574,7 +574,8 @@ def fix(snapshot, evidence=None, attempts=3, model=None, out=None, compare=0, as
             if v.get("fixed") and control:
                 # the control is part of the proof: a change that breaks another scene is not a fix
                 rec["control"] = timed(stages, f"attempt {i}: control, every other scene (pixels)", t0,
-                                       prove.control, a / "control")
+                                       prove.control, a / "control",
+                                       scenes=prove.control_scenes(prove.scenario(snapshot)["scene"]))
                 dirty = "; ".join(f"{s}: {c['why']}" for s, c in rec["control"].items() if not c["clean"])
                 if dirty:
                     undo(base, f"attempt {i}: the incident is gone, but the control is not clean ({dirty})"[:300])

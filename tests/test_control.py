@@ -37,6 +37,8 @@ class Control(unittest.TestCase):
                                                       "incident": "contact"}))
         (ev / "diagnosis.json").write_text(json.dumps({"cause_key": "brain.toml::[obstacle] margin",
                                                        "cause": {"what": "the margin is too small."}}))
+        # a twin incident on the ledge: its control is every other scene, the box included
+        (tmp / "snap.json").write_text(json.dumps({"video_times": [], "scene": "ledge", "settle": 3.0, "seconds": 12.0}))
         order = []
         mc = {"seconds": 20.0, "outcome": "completed", "summary": "widened the margin", "problems": [],
               "session": "s", "change": CHANGE}
@@ -56,7 +58,7 @@ class Control(unittest.TestCase):
             mock.patch.object(fix.prove, "render", return_value=(tmp / "meta.json", 1.0)),
             mock.patch.object(fix.prove, "look", return_value=BEFORE),
             mock.patch.object(fix.prove, "prove", return_value=GONE),
-            mock.patch.object(fix.prove, "control", side_effect=lambda out: order.append(("control",)) or controls.pop(0)),
+            mock.patch.object(fix.prove, "control", side_effect=lambda out, scenes: order.append(("control", scenes)) or controls.pop(0)),
         ]
         for p in patches:
             p.start()
@@ -79,7 +81,8 @@ class Control(unittest.TestCase):
         self.assertTrue(done["fixed"] and done["kept"])
         self.assertEqual([a["kept"] for a in done["attempts"]], [False, True])
         self.assertNotIn("stopped", done)
-        last_control = max(i for i, o in enumerate(order) if o == ("control",))
+        self.assertEqual({o[1] for o in order if o[0] == "control"}, {("box", "low_cube", "corner", "doorway")})
+        last_control = max(i for i, o in enumerate(order) if o[0] == "control")
         self.assertGreater(order.index(("emit", "clock.stop")), last_control)
         self.assertGreater(next(i for i, o in enumerate(order) if o[:2] == ("git", "commit")), last_control)
 
@@ -87,7 +90,7 @@ class Control(unittest.TestCase):
         done, order = self.run_fix([], attempts=1, control=False)
         self.assertTrue(done["fixed"])
         self.assertTrue(done["control_skipped"])
-        self.assertNotIn(("control",), order)
+        self.assertFalse(any(o[0] == "control" for o in order))
 
     def test_auto_keeps_the_control(self):
         with mock.patch("sys.argv", ["fix", "snap.json", "--auto"]), \

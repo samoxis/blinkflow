@@ -60,7 +60,7 @@ def main():
     o = prove.OBSTACLES["scenes"][a.scene]
     names = (prove.OBSTACLES["robot"], o["noun"])                        # the scene's own obstacle, as the control
     kind = before.get("kind", "contact")
-    others = tuple(s for s in prove.OBSTACLES["scenes"] if s != a.scene)
+    others = prove.control_scenes(a.scene)
     was = fix.git("symbolic-ref", "-q", "--short", "HEAD", check=False).strip() or fix.git("rev-parse", "HEAD").strip()
     if fix.git("status", "--porcelain").strip():
         sys.exit(f"{TARGET} has uncommitted changes")

@@ -88,6 +88,13 @@ class Control(unittest.TestCase):
             self.assertFalse(c["valid"])
             self.assertEqual(c["why"], "no verdict: object not seen")
 
+    def test_control_is_every_scene_but_the_incidents(self):
+        # Nov 1: the box was always left out, so the b7 ledge loop's control replayed the ledge and not the box
+        self.assertEqual(prove.control_scenes("box"), ("low_cube", "ledge", "corner", "doorway"))
+        self.assertEqual(prove.control_scenes("ledge"), ("box", "low_cube", "corner", "doorway"))
+        self.assertEqual(prove.control_scenes(None), prove.control_scenes("box"))     # a live run: the demo scene
+        self.assertEqual(prove.CONTROL_SCENES, prove.control_scenes("box"))
+
 
 if __name__ == "__main__":
     unittest.main()
