@@ -1,0 +1,391 @@
+{
+ "run": "~/blinkflow-runs/ablation/vague-20261101-114005/box-2",
+ "sentence": "a couple of seconds ago something went wrong with the robot",
+ "said": "something still went wrong with the robot",
+ "scene": "box",
+ "control": [
+  "low_cube",
+  "ledge",
+  "corner",
+  "doorway"
+ ],
+ "base": "ce1efb7f2811a25d4e64cc173c93e8ba274f62e6",
+ "model": "muse-spark-1.3-contributor",
+ "fixed_and_control_clean": true,
+ "seconds": 366.5,
+ "muse_code_usd": 0.0121,
+ "proof_usd": 0,
+ "attempts": [
+  {
+   "attempt": 1,
+   "muse_code_s": 160.9,
+   "files": [
+    "brain.toml"
+   ],
+   "stat": "1 file changed, 1 insertion(+), 1 deletion(-)",
+   "problems": [],
+   "verdict": {
+    "fixed": true,
+    "incident": false,
+    "contact": false,
+    "valid": true,
+    "first_contact_s": null,
+    "fell_s": null,
+    "closest_gap_px": 106.8,
+    "closest_s": 12.89,
+    "travel_m": 2.734,
+    "problems": []
+   },
+   "control": {
+    "low_cube": {
+     "clean": true,
+     "why": "no contact, no fall; closest gap 139 px"
+    },
+    "ledge": {
+     "clean": true,
+     "why": "no contact, no fall; closest gap 157 px"
+    },
+    "corner": {
+     "clean": true,
+     "why": "no contact, no fall; closest gap 50 px"
+    },
+    "doorway": {
+     "clean": true,
+     "why": "no contact, no fall; closest gap 14 px"
+    }
+   },
+   "proof_s": 205.7
+  }
+ ],
+ "kept_diff": "diff --git a/brain.toml b/brain.toml\nindex 86c6b1c..a2deec7 100644\n--- a/brain.toml\n+++ b/brain.toml\n@@ -26,7 +26,7 @@ first_row = 0             # frame rows used for walls (0 = top). Rows below last\n last_row = 4              # they are handled separately, as low objects and drops.\n corridor_half_width = 0.14 # half-width of the robot's swept corridor (m): body width + margin\n sensor_lateral = 0.0224   # the sensor sits this far left of the robot's axis (m; MJCF `tof` site)\n-side_memory_seconds = 0.0 # remember wall returns near the body for this long (s)\n+side_memory_seconds = 3.0 # remember wall returns near the body for this long (s)\n front_first_col = 1       # central columns used to decide whether the sensor is blind (0 = the sensor's left)\n front_last_col = 6\n min_zones = 2             # how many zones must be close for it to count (rejects single-zone noise)\n",
+ "kept_blobs": {
+  "brain.toml": "a2deec7ff08d7c726d9affa12bf1cabe2f57f42f"
+ },
+ "evidence": [
+  "attempt-1/control/corner/evidence",
+  "attempt-1/control/doorway/evidence",
+  "attempt-1/control/ledge/evidence",
+  "attempt-1/control/low_cube/evidence",
+  "attempt-1/evidence"
+ ],
+ "left_out": [
+  "attempt-1/control/corner/twin/20261101-115340/contacts.csv",
+  "attempt-1/control/corner/twin/20261101-115340/truth.json",
+  "attempt-1/control/doorway/twin/20261101-115340/contacts.csv",
+  "attempt-1/control/doorway/twin/20261101-115340/truth.json",
+  "attempt-1/control/ledge/twin/20261101-115340/contacts.csv",
+  "attempt-1/control/ledge/twin/20261101-115340/truth.json",
+  "attempt-1/control/low_cube/twin/20261101-115340/contacts.csv",
+  "attempt-1/control/low_cube/twin/20261101-115340/truth.json",
+  "attempt-1/twin/20261101-115306/contacts.csv",
+  "attempt-1/twin/20261101-115306/truth.json"
+ ],
+ "files": [
+  {
+   "path": "ablation.json",
+   "bytes": 2584,
+   "sha256": "3aea30265788e826b3174bf32affcde942bc5c01dd64353ac4802efe2edff648"
+  },
+  {
+   "path": "attempt-1/change.diff",
+   "bytes": 880,
+   "sha256": "d2a00d02622092ea9424e83e05bd3453824684964f03d95c524753abf9c3450f"
+  },
+  {
+   "path": "attempt-1/control/control.json",
+   "bytes": 2775,
+   "sha256": "73f309112e141da648267109c796113d7d1588388075172e297c330a5e35a0b0"
+  },
+  {
+   "path": "attempt-1/control/corner/evidence/evidence.json",
+   "bytes": 35742,
+   "sha256": "5d3664c9646b3e9cdf3dae28c2c8361e03c804859079485b109120047513e5c8"
+  },
+  {
+   "path": "attempt-1/control/corner/evidence/evidence.png",
+   "bytes": 180211,
+   "sha256": "397196d5a5c44e5bf214a295923859ee1e549a6fb91c0410892ab166769edead"
+  },
+  {
+   "path": "attempt-1/control/corner/evidence/models.json",
+   "bytes": 2050,
+   "sha256": "13b2e3d05228994bdf9b4c07be83e83a52922397038f9986ba57c3c5777a229b"
+  },
+  {
+   "path": "attempt-1/control/corner/evidence/sam-object.txt",
+   "bytes": 1809820,
+   "sha256": "00325431f41ac63c3d2dec0b4f5aabc5b6b5cc21e8804d519958cfceb122b6bf"
+  },
+  {
+   "path": "attempt-1/control/corner/evidence/sam-robot.txt",
+   "bytes": 360046,
+   "sha256": "5c201fae0ef9607a43125ab7bbb5c4e127ba9259d77909b2f8a0c8215e99d335"
+  },
+  {
+   "path": "attempt-1/control/corner/evidence/shot.mp4",
+   "bytes": 306663,
+   "sha256": "8b65af97500463462bd4a468abc531e1b5f7a9fbf1be38669f3485ec617a0d04"
+  },
+  {
+   "path": "attempt-1/control/corner/look/every.mp4",
+   "bytes": 315318,
+   "sha256": "029586c364021da0608e493bf431815163f1dbb658091325d6bfb457b8602eaf"
+  },
+  {
+   "path": "attempt-1/control/corner/look/meta.json",
+   "bytes": 1976,
+   "sha256": "b25935df0f17502b29b32d1dd74130e3d207128832c41a13f7da1182593df833"
+  },
+  {
+   "path": "attempt-1/control/corner/twin/20261101-115340/meta.json",
+   "bytes": 5052,
+   "sha256": "e0deacf845c6274a6b6b2c9fac961ee23199c658599c635ecc55fbb67121c628"
+  },
+  {
+   "path": "attempt-1/control/corner/twin/20261101-115340/run.jsonl.gz",
+   "bytes": 87977,
+   "sha256": "d4a8e252fdda216610e2172d618b447855f77fb88bbd262ecb71d77ff6fbd746"
+  },
+  {
+   "path": "attempt-1/control/corner/twin/20261101-115340/twin.mp4",
+   "bytes": 469683,
+   "sha256": "625db5f8bbebe094d64fce067872fd75b99a8a6358c2e0bf889c334b16b04e7a"
+  },
+  {
+   "path": "attempt-1/control/doorway/evidence/evidence.json",
+   "bytes": 32453,
+   "sha256": "1e7e910260c04e110a99c1008e82dd403f186233d80431bdbda78696116462bd"
+  },
+  {
+   "path": "attempt-1/control/doorway/evidence/evidence.png",
+   "bytes": 178724,
+   "sha256": "34910fde7f489e98f8e0e07e6f918bf6d6df7deb16f2bf38379079332b319329"
+  },
+  {
+   "path": "attempt-1/control/doorway/evidence/models.json",
+   "bytes": 2047,
+   "sha256": "e2895a4cec6bef0ef84dd71b128dd1c74ff5e5001f333e750f24bd4acac818d8"
+  },
+  {
+   "path": "attempt-1/control/doorway/evidence/sam-object.txt",
+   "bytes": 1339173,
+   "sha256": "f1637cbade1f54356c507030f7d4d8ae247177053932a5da25fe3cb36b7c1320"
+  },
+  {
+   "path": "attempt-1/control/doorway/evidence/sam-robot.txt",
+   "bytes": 205420,
+   "sha256": "530777610007248c2d004e4c9ec53c3c4ac65bc32504f8ea866694d43a42fb3f"
+  },
+  {
+   "path": "attempt-1/control/doorway/evidence/shot.mp4",
+   "bytes": 194763,
+   "sha256": "adc9f95c15ecf7766883f5e4336f780d3518d5ae7597a05bc818a3413e15030e"
+  },
+  {
+   "path": "attempt-1/control/doorway/look/every.mp4",
+   "bytes": 199700,
+   "sha256": "d2750f1bb6b66fe29967a1e5998aee0860219f2df7faa1fccacb14665552d7af"
+  },
+  {
+   "path": "attempt-1/control/doorway/look/meta.json",
+   "bytes": 1979,
+   "sha256": "19d5453994c8c1ae1832ebc1bafa7d89a0415bb9eac1f28bb841e93988591a83"
+  },
+  {
+   "path": "attempt-1/control/doorway/twin/20261101-115340/meta.json",
+   "bytes": 5055,
+   "sha256": "73a1cfd60aa584007aeec327a7187bab6c2feb9957cc8289fa88fa1befb920f0"
+  },
+  {
+   "path": "attempt-1/control/doorway/twin/20261101-115340/run.jsonl.gz",
+   "bytes": 88611,
+   "sha256": "2998159a2cfae89c2d3abce9c49c4295b1d309d7197e6bb798e9cc1371d6715c"
+  },
+  {
+   "path": "attempt-1/control/doorway/twin/20261101-115340/twin.mp4",
+   "bytes": 306074,
+   "sha256": "d4be1269db96afbbf2f75c452141982da7a9fcf394ad4bfb0eb944323023ea90"
+  },
+  {
+   "path": "attempt-1/control/ledge/evidence/evidence.json",
+   "bytes": 36238,
+   "sha256": "963993b879ba5543cf16be76840094cf5ba0187c7f3549c7e4bebb6582ab169e"
+  },
+  {
+   "path": "attempt-1/control/ledge/evidence/evidence.png",
+   "bytes": 273785,
+   "sha256": "4afa21bdea61959bea64cb427db9e5927d6b468d2e70d61bbe9f69e619c1fb5d"
+  },
+  {
+   "path": "attempt-1/control/ledge/evidence/models.json",
+   "bytes": 2053,
+   "sha256": "3bf93ebfc4ca8a67b1d3a33662bc95df4a68b36072031ede88d07cab2e16e45f"
+  },
+  {
+   "path": "attempt-1/control/ledge/evidence/sam-object.txt",
+   "bytes": 3138213,
+   "sha256": "10b81f533a601687c996527a9d9a150e4bbd512cf0d67db936821a87efec9443"
+  },
+  {
+   "path": "attempt-1/control/ledge/evidence/sam-robot.txt",
+   "bytes": 369630,
+   "sha256": "8838a0573d64e6194a69d3f717c83210bae09a2816c4fe91c3009992af56b9c2"
+  },
+  {
+   "path": "attempt-1/control/ledge/evidence/shot.mp4",
+   "bytes": 340885,
+   "sha256": "2e8b7efb20fabce0d5b53b55bb6b022f57295fc76aa77022e166b8e759e40270"
+  },
+  {
+   "path": "attempt-1/control/ledge/look/every.mp4",
+   "bytes": 345684,
+   "sha256": "5ccb09ad527263d7971046726151e2752a1c1e846864f9851c07e3156a955051"
+  },
+  {
+   "path": "attempt-1/control/ledge/look/meta.json",
+   "bytes": 1973,
+   "sha256": "c1a90c78cae6a723fb56f0876bd314c6b466938c107ef26fe5034c9e37d244d3"
+  },
+  {
+   "path": "attempt-1/control/ledge/twin/20261101-115340/meta.json",
+   "bytes": 5049,
+   "sha256": "44bb9193c251bf014e29fab3d96ca6039703e4fc3ada8adcfa1cf8db5658f946"
+  },
+  {
+   "path": "attempt-1/control/ledge/twin/20261101-115340/run.jsonl.gz",
+   "bytes": 86809,
+   "sha256": "8c93b58fc60bba5eced06beaa334eb467e38800ec9a547b69c9d049075b0ccdf"
+  },
+  {
+   "path": "attempt-1/control/ledge/twin/20261101-115340/twin.mp4",
+   "bytes": 501341,
+   "sha256": "d89bb393c23cbef439d1324ac46710bfc9b72660184421a10c01ce83712cf48b"
+  },
+  {
+   "path": "attempt-1/control/low_cube/evidence/evidence.json",
+   "bytes": 33865,
+   "sha256": "e9d2c30584677213e78a0fca299f04c32a575259b13bb4fd73df0d8724a2fdab"
+  },
+  {
+   "path": "attempt-1/control/low_cube/evidence/evidence.png",
+   "bytes": 215202,
+   "sha256": "143e8271c7044be66ae5a3162b4b5a654b8b85a2eb9882546d6b40aa821c6a38"
+  },
+  {
+   "path": "attempt-1/control/low_cube/evidence/models.json",
+   "bytes": 2048,
+   "sha256": "f8bb4ed3ce93b0517b084cf2932ee00cdf3d3c9a9cc5133a17d4956f3ccb4e1d"
+  },
+  {
+   "path": "attempt-1/control/low_cube/evidence/sam-object.txt",
+   "bytes": 276094,
+   "sha256": "2482d9ec07899195b8f301fc796046061dc2eb00cd842012327e333aa32c43d1"
+  },
+  {
+   "path": "attempt-1/control/low_cube/evidence/sam-robot.txt",
+   "bytes": 411232,
+   "sha256": "8e272e1a57b387ed4141d8db0827e94d6fe6c4ca4b0d5daaaba2f18ee8df6522"
+  },
+  {
+   "path": "attempt-1/control/low_cube/evidence/shot.mp4",
+   "bytes": 360879,
+   "sha256": "c53e987fd932e9bf73f1a1be7ec0b71e7e6d70b509ca4b6123d4277d40352465"
+  },
+  {
+   "path": "attempt-1/control/low_cube/look/every.mp4",
+   "bytes": 372045,
+   "sha256": "be47b4b9eb539cc9cf3ec210f0d938f1f9307bc179863db4c0dd0be5f8e9f5f0"
+  },
+  {
+   "path": "attempt-1/control/low_cube/look/meta.json",
+   "bytes": 1982,
+   "sha256": "7f8e6ddac436ad4b64f09a826a62688b8c802e11447254170bbe6a3cd2beef4c"
+  },
+  {
+   "path": "attempt-1/control/low_cube/twin/20261101-115340/meta.json",
+   "bytes": 5058,
+   "sha256": "e19c61e9cf2e55f6f9905aab203150bb95965b263e155b78817890f0f3b496fc"
+  },
+  {
+   "path": "attempt-1/control/low_cube/twin/20261101-115340/run.jsonl.gz",
+   "bytes": 87464,
+   "sha256": "07c9e696f969b4adf8cb29793c976fb325dbdc218d1bb509f07e7a568aaabbf0"
+  },
+  {
+   "path": "attempt-1/control/low_cube/twin/20261101-115340/twin.mp4",
+   "bytes": 526309,
+   "sha256": "863fdae77d48334973105712f9243dd709e46719c52c4155b00b8dcdc9cabcf9"
+  },
+  {
+   "path": "attempt-1/evidence/evidence.json",
+   "bytes": 17538,
+   "sha256": "666c3bca3b47f97013dd23c53d44b219455b9e9b44c4cf7782b981ada02b28b9"
+  },
+  {
+   "path": "attempt-1/evidence/evidence.png",
+   "bytes": 135317,
+   "sha256": "76226da9c0baed1d50234370e9ef03c3ce22fa67b40b9dfcf5d98fd227b5695e"
+  },
+  {
+   "path": "attempt-1/evidence/models.json",
+   "bytes": 5860,
+   "sha256": "2c450cb8a311e99c5041539e66daee49c498db767df858f8cf4fdbe13615d20e"
+  },
+  {
+   "path": "attempt-1/evidence/sam-object.txt",
+   "bytes": 4167946,
+   "sha256": "2c1c42d7f45293a8c4effca25b162901ffc9212cb0f241e707431f9b3ccd51f9"
+  },
+  {
+   "path": "attempt-1/evidence/sam-robot.txt",
+   "bytes": 192784,
+   "sha256": "48e297b1c4f14f384a1e3eb333b4828b4b69450eed6cd412ba861c16e5e336d7"
+  },
+  {
+   "path": "attempt-1/evidence/shot.mp4",
+   "bytes": 260585,
+   "sha256": "c45157b0286efc0fd77a6cf11e7501ed6946f70e34d617edc24dbf620a37fea2"
+  },
+  {
+   "path": "attempt-1/muse-code-prompt.txt",
+   "bytes": 825,
+   "sha256": "850a8516e18dc91e1a68ba5361bc31659be899ad4ab9878926de3b61a0835ecb"
+  },
+  {
+   "path": "attempt-1/muse-code.json",
+   "bytes": 4989,
+   "sha256": "85ca9ca2b05583a31e2ff644d7551d67836561638b16b1d92535b7e62bbe8993"
+  },
+  {
+   "path": "attempt-1/twin/20261101-115306/meta.json",
+   "bytes": 5541,
+   "sha256": "9ae40c6ce2e9ce5475f64ce3466a7e411cf55dba01c24d796b6cc18f68bc2b70"
+  },
+  {
+   "path": "attempt-1/twin/20261101-115306/run.jsonl.gz",
+   "bytes": 96449,
+   "sha256": "f2b5d7e2f29c5de07a0e5b9e76d7854aef36c7c6d560d8498bebc42c8e9581cb"
+  },
+  {
+   "path": "attempt-1/twin/20261101-115306/twin.mp4",
+   "bytes": 236368,
+   "sha256": "1088a4c657484f6c5f858aaf3a638347af8ee40be63bb464bd2b02e29597caba"
+  },
+  {
+   "path": "attempt-1/verdict.json",
+   "bytes": 615,
+   "sha256": "f331875f85d0886d59ba430897d6c03be6693996cf257a21f7af98ed77ca6bc7"
+  },
+  {
+   "path": "events.jsonl",
+   "bytes": 69953,
+   "sha256": "12e65e4bd030b85dd391a99f7b0424e345cfc370ff13cf57119a378aa089b058"
+  },
+  {
+   "path": "models-muse-code.json",
+   "bytes": 1133,
+   "sha256": "ec115349ace11ce01996ee5b34e95de9a1dceca787749f843148c8aeae05b771"
+  }
+ ],
+ "recheck": "python3 tools/ablation_manifest.py check results/ablation/box-vague-2.json --target <a clone of the target holding ce1efb7>"
+}

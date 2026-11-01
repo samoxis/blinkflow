@@ -132,8 +132,27 @@ BlinkFlow the change came in 43–44 s of Muse Code, first attempt, and the pers
 wrong, at which second, which the agent alone never said. Bugs whose cause is not the only odd line in
 the code are where the eyes would have to earn more than speed; none was tried here.
 
-**One thing the b7 loop shows about the control.** BlinkFlow's loop runs its control on the four scenes other
-than the demo's box (`prove.CONTROL_SCENES`): for an incident in the ledge scene that list holds the ledge
-itself and leaves the box out. The b7 loop's control was low cube, ledge, corner and doorway, all clean; the
-box scene was not replayed with that change. The ablation script leaves out the incident's own scene instead
-(`--scene`).
+**The b7 loop ran with the old control.** Until Nov 1 the loop's control was the four scenes other than the
+demo's box (`prove.CONTROL_SCENES`): for an incident in the ledge scene that list held the ledge itself and left
+the box out. The b7 loop's control above was low cube, ledge, corner and doorway, all clean; the box scene was
+not replayed with that change. The loop now leaves out the incident's own scene (`prove.control_scenes`: for
+the box low cube, ledge, corner, doorway; for the ledge box, low cube, corner, doorway), as the ablation script
+always did (`--scene`). The purple-box example is unaffected (its scene is the box) and was not rerun; the b7
+loop was not rerun either.
+
+## The twelve runs, as manifests
+
+[`results/ablation/`](ablation/) holds one manifest per run of Muse Code alone: `box-precise-1..3`,
+`b7-precise-1..3` (sections 1 and 2), `box-vague-1..3`, `b7-vague-1..3` (section 3). Each has the sentence,
+every attempt (files changed, Muse Code's seconds, the replay's verdict, the control), the kept diff and the git
+blob of every file it leaves, and the sha256 of each of the run's files the verdicts came from: the twin's
+shots, SAM 3.1's replies, the measurements, Muse Code's own record. The scorer's ground truth (the twin's
+`contacts.csv`, `truth.json`) is listed as left out, not hashed. The runs themselves (257 MB, 58 MB without
+repeats) stay on the PC that made them. There, one command checks all twelve:
+
+    python3 tools/ablation_manifest.py check results/ablation/*.json --target ~/duck-target <box target> <b7 target>
+
+Run on Nov 1: every file has its hash, every measurement re-derived from SAM 3.1's saved replies equals the
+saved one (5 of 5 in each run: the replay and the four control scenes), and the kept diff on the base commit
+gives `a2deec7` (`brain.toml`) or `7ea627d` (`depth.py`) in all twelve. No key, no GPU, 8 min 42 s.
+
