@@ -11,7 +11,7 @@ import urllib.request
 
 import requests
 from blinkflow import diagnose as original_diagnose, models, sam, see
-from . import HERE, prove, twin, use_target
+from . import REL, ROBOT, prove, twin, use_target
 
 
 def deny(*args,**kwargs):
@@ -68,8 +68,7 @@ def recheck(example,physics=True):
         cause=d["cause"];a,b=cause["lines"]["start"],cause["lines"]["end"]
         assert any("clearance" in s for s in files[chk["file"]].splitlines()[a-1:b])
         rec=json.loads((root/f"attempt-{attempt}/muse-code.json").read_text())
-        # the run was made in its own repo, where the arm was arm/
-        assert not rec["problems"] and rec["change"]["files"]==["arm/brain.toml"]
+        assert not rec["problems"] and rec["change"]["files"]==[REL+"/brain.toml"]
         assert not rec["change"]["agent_commits"]
         # Re-audit the SDK tool paths against the same arm workspace.
         from blinkflow import fix
@@ -87,7 +86,7 @@ def recheck(example,physics=True):
         assert abs(sum(c["cost_usd"] for c in accounting["calls"])-accounting["total_cost_usd"])<1e-4
         physical={}
         if physics:
-            assert (root/"snapshot/scene.xml").read_bytes()==(HERE/"scene.xml").read_bytes()
+            assert (root/"snapshot/scene.xml").read_bytes()==(ROBOT/"scene.xml").read_bytes()
             first=twin.replay(tmp/"repeat-a",root/"brain-before",video=False)
             second=twin.replay(tmp/"repeat-b",root/"brain-before",video=False)
             saved=json.loads((root/"before/twin/meta.json").read_text())

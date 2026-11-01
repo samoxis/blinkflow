@@ -8,7 +8,7 @@ import subprocess
 import time
 
 from blinkflow import events, fix, models, prove as original_prove
-from . import HERE, REL, REPO, STATE, budget, diagnose, prove, twin, use_target
+from . import REL, REPO, ROBOT, STATE, budget, diagnose, prove, twin, use_target
 
 
 def git(*args):
@@ -58,7 +58,7 @@ def run(out,until="done",attempts=3):
     budget.configure()
     use_target()
     # Critical check: never allow the SDK to inherit BlinkFlow's Microduck target.
-    if fix.TARGET != HERE:
+    if fix.TARGET != ROBOT:
         raise RuntimeError(f"wrong Muse target: {fix.TARGET}")
     manifest=out/"checkpoint.json"
     if not manifest.exists():
@@ -67,7 +67,7 @@ def run(out,until="done",attempts=3):
         base=git("rev-parse","HEAD").strip()
         (out/"brain-before").mkdir()
         for name in ("brain.py","brain.toml"):
-            shutil.copy(HERE/name,out/"brain-before"/name)
+            shutil.copy(ROBOT/name,out/"brain-before"/name)
         manifest.write_text(json.dumps({"base":base,"started":time.time(),"spoken":
                             "a couple of seconds ago the arm hit the red block"},indent=1))
     else:
@@ -137,7 +137,7 @@ def run(out,until="done",attempts=3):
                 if changed != [REL+"/brain.toml"]: raise RuntimeError(f"unexpected fix diff: {changed}")
                 import tomllib
                 old=tomllib.loads((out/"brain-before/brain.toml").read_text())
-                new=tomllib.loads((HERE/"brain.toml").read_text())
+                new=tomllib.loads((ROBOT/"brain.toml").read_text())
                 value=new["planner"]["clearance"]
                 new["planner"]["clearance"]=old["planner"]["clearance"]
                 if new!=old or value<=0: raise RuntimeError("fix changed more than positive clearance")

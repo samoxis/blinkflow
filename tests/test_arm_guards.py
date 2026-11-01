@@ -6,6 +6,7 @@ Needs MuJoCo (mujoco==3.10.0).
 import json
 import pathlib
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -29,21 +30,37 @@ class Guards(unittest.TestCase):
         self.assertTrue(fix.outside("read_file",{"path":str(pathlib.Path.home()/"duck-target/brain.toml")}))
         self.assertFalse(fix.outside("edit_file",{"path":"brain.toml"}))
 
+    def test_gate_hook_refuses_the_harness(self):
+        """The PreToolUse hook itself, run as Muse Code runs it, with the arm's target: a write to the harness
+        (blinkflow/arm/run.py), by absolute or relative path, is denied; the robot's brain.toml is not."""
+        hook=arm.REPO/"muse-gate/hooks/pre_tool_use.py"
+        with tempfile.TemporaryDirectory() as tmp:
+            conf=pathlib.Path(tmp)/"blinkflow-gate.json"
+            conf.write_text(json.dumps({"repo":str(arm.REPO),"target":str(arm.ROBOT)}))
+            def decide(args):
+                out=subprocess.run([sys.executable,str(hook),str(conf)],input=json.dumps({"tool_name":"edit_file","tool_input":args}),
+                                   capture_output=True,text=True,check=True).stdout.strip()
+                return json.loads(out)["hookSpecificOutput"]["permissionDecision"] if out else "allow"
+            self.assertEqual(decide({"path":str(arm.HERE/"run.py")}),"deny")
+            self.assertEqual(decide({"path":"../run.py"}),"deny")
+            self.assertEqual(decide({"path":"brain.toml"}),"allow")
+        self.assertTrue(fix.outside("edit_file",{"path":str(arm.HERE/"run.py")}))
+
     def test_rollback_preserves_unrelated_work(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=pathlib.Path(tmp)
-            (root/"blinkflow/arm").mkdir(parents=True);(root/"blinkflow/arm/brain.toml").write_text("clearance = 0.0\n")
+            (root/"blinkflow/arm/robot").mkdir(parents=True);(root/"blinkflow/arm/robot/brain.toml").write_text("clearance = 0.0\n")
             (root/"README.md").write_text("initial\n")
             def git(*args):
                 return subprocess.check_output(["git","-c","user.name=Test","-c","user.email=test@localhost",*args],cwd=root,text=True,stderr=subprocess.DEVNULL)
             git("init","-q");git("add",".");git("commit","-qm","baseline")
             base=git("rev-parse","HEAD").strip()
-            (root/"blinkflow/arm/brain.toml").write_text("bad change\n")
-            (root/"blinkflow/arm/unwanted.py").write_text("untracked\n")
+            (root/"blinkflow/arm/robot/brain.toml").write_text("bad change\n")
+            (root/"blinkflow/arm/robot/unwanted.py").write_text("untracked\n")
             (root/"README.md").write_text("unrelated work\n")
             with patch.object(run,"REPO",root):run.rollback(base)
-            self.assertEqual((root/"blinkflow/arm/brain.toml").read_text(),"clearance = 0.0\n")
-            self.assertFalse((root/"blinkflow/arm/unwanted.py").exists())
+            self.assertEqual((root/"blinkflow/arm/robot/brain.toml").read_text(),"clearance = 0.0\n")
+            self.assertFalse((root/"blinkflow/arm/robot/unwanted.py").exists())
             self.assertEqual((root/"README.md").read_text(),"unrelated work\n")
 
     def test_budget_keeps_prior_spend_and_refuses_before_call(self):
