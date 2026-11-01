@@ -41,7 +41,7 @@ it, and a rule that accepted only a positive clearance) at
 | Tracking coverage | 180/180 frames for both objects, before and after; 57/57 in each control | the four `evidence.json` |
 | Offline re-check | passed: the four pixel measurements re-derived from SAM 3.1's saved replies, the citation check, the diff, and the physics replayed (same record hashes), with no key and the network blocked | `python3 -m blinkflow.arm.recheck examples/arm` |
 | Cost of this loop | **$0.27414**: SAM 3.1 $0.1896 (8 replies, none cached), Muse Wonder $0.07976, Muse Code $0.00478 | [`models.json`](../examples/arm/models.json) |
-| Spent on the arm, in total | **$1.30199**: the three clearance runs ($0.38726 for the first with its calibration, $0.3007, $0.27414) and the two below ($0.185188, $0.1547084), of a $3 cap | the three examples' `models.json` |
+| Spent on the arm, in total | **$1.85567**: the three clearance runs ($0.38726 for the first with its calibration, $0.3007, $0.27414), the first bug 2 and voice runs made in the arm's repo ($0.18519, $0.15471) and their re-runs below ($0.28117, $0.27251), of a $3 cap | [`examples/arm-voice/models.json`](../examples/arm-voice/models.json) (`repo_spend_usd`) |
 
 ### Against the earlier runs
 
@@ -63,31 +63,57 @@ first attempt. The closest gap after the fix stays 3.6 px with any of the three 
 of the move, as the arm comes down to the target beside the block, not in the lift. With the content rule gone,
 Muse Code still chose to change only the clearance; nothing made it.
 
-## Three runs on the arm
+## Five runs in this repo
 
-Two more runs, made in the arm's own repo (at its commit `c335000`, before it was integrated
-again), copied here unchanged: [`examples/arm-bug2/`](../examples/arm-bug2) and
-[`examples/arm-voice/`](../examples/arm-voice). The same scene, camera, box seed, gains and timing in all three.
+Five runs of this repo's loop on the arm, from the same scene, camera, box seed, gains and timing: the three
+clearance runs above, and bug 2 and the voice run below. The three published examples share one rule: a fix is
+kept by the pixels alone, and Muse Wonder's citation check is reported with the diagnosis but never stops the
+loop, as in the duck's. (The first two clearance runs also accepted only a positive clearance.)
 
-| Run | Bug | Input | Attempts | Result | Cost |
-|---|---|---|---|---|---|
-| [Clearance](../examples/arm) | `clearance = 0.0` | fixed text | 1 | fixed (`0.0` → `0.15` here; 0.08 in the first run), target reached, controls 2/2 | $0.27 (this run) |
-| [Bug 2](../examples/arm-bug2/preview.html) | `lift = max(z0, z1) - clearance` in `brain.py`: a sign error, `clearance` stays 0.08 | fixed text | 1 | one-line logic fix in `brain.py` (`-` → `+`), target reached, controls 2/2 | $0.19 |
-| [Voice](../examples/arm-voice/preview.html) | the first run's controller (`clearance = 0.0`) | Sorin's recorded sentence through Muse Voice Transcribe: a 13.6 s WAV, the sentence said twice; transcript saved | 1 | the same fix (`0.0` → `0.08`) and the same after-proof as the first run (2a09938): records, masks and verdicts identical | $0.15 |
+| Run | Bug | Input | Attempts | Muse Code's change | Result | Cost |
+|---|---|---|---|---|---|---|
+| [Clearance](../examples/arm/preview.html) | `clearance = 0.0` | fixed text | 1 | `brain.toml`: `0.0` → `0.15` | 1 → 0 contacts, 3.6 px, target reached, controls 2/2 (21.0 / 51.3 px) | $0.27414 |
+| [Bug 2](../examples/arm-bug2/preview.html) | `lift = max(z0, z1) - self.clearance` in `brain.py`, `clearance = 0.08` | fixed text | 1 | `brain.py:33`: `-` → `+` | 1 → 0 contacts (two episodes in the log), 3.6 px, target reached, controls 2/2 (19.0 / 51.3 px) | $0.28117 |
+| [Voice](../examples/arm-voice/preview.html) | `clearance = 0.0` | Sorin's recorded sentence (a 13.6 s WAV, said twice) through `blinkflow.voice.clip`, the key press replayed at 4 s | 1 | `brain.toml`: `0.0` → `0.15` | 1 → 0 contacts, 3.6 px, target reached, controls 2/2 (21.0 / 51.3 px) | $0.27251 |
 
-Bug 2 is a different incident from the same scene: first contact 2.035 s on pixels, 2.015 s in MuJoCo's log
-(two contact episodes). Muse Wonder named `Brain.waypoint`, `brain.py:30–35` (grounded, `bad_refs=[]`, K1–K4
-cited); Muse Code read `brain.py` and edited one line in 28.7 s; closest gap after 3.6 px, controls 20.0 / 51.3 px.
-In the voice run Muse Voice Transcribe returned both sentences ("a couple of seconds ago the arm hit the red
-block", twice; $0.00068), Muse Glimmer read "2 seconds ago, contact, red block", and the clip was cut from the
-recording around that moment (151 frames, 0–5 s); SAM 3.1 found the contact at 2.035 s in it, and Muse Wonder
-named `brain.toml:1–2` with the transcript in its input.
+**Bug 2.** First contact 2.035 s on pixels, 2.015 s in MuJoCo's log. Muse Wonder named the line:
+`brain.py:33`, `Brain.waypoint`, "subtracting the planner clearance … instead of raising the travel height"
+(confidence 0.94). Its three citations name categories (`key_frame`, `log_tick`, `code`) instead of a key frame,
+a tick or a file line, so the check reports `grounded=false`, `bad_refs` all three. The loop then stopped there,
+a rule the duck's loop never had ($0.16006 spent); it was removed (`241e262`), and the run resumed from the
+saved diagnosis, with no new Wonder call. Muse Code read `brain.py` and edited line 33: two tool calls, 27.9 s.
 
-`python3 -m blinkflow.arm.recheck` re-checks both offline, with their bytes as published: each was made in the
-arm repo's flat layout (the robot was `arm/brain.py`, `arm/brain.toml`), so their diffs and file lists name
-`arm/`, and the re-check reads that as the robot. For the voice run it also checks the transcript against the
-saved Muse Voice reply, the delay Glimmer read, the press-minus-delay moment, the window, the cut log (a prefix
-of the full one) and the WAV's length.
+**Voice.** Muse Voice Transcribe returned "a couple of seconds ago the arm hit the red block a couple of seconds
+ago the arm arm hit the red block" ($0.00068); Muse Glimmer read 2 s ago and "red block"; the moment is
+4 − 2 = 2.0 s, the window −3 to 5 s, 151 frames; SAM 3.1 found the contact at 2.035 s in it, and MuJoCo's log
+at 2.010 s. Muse Wonder named `brain.toml:1–2` (confidence 0.95) with the transcript in its input; it cited tick
+2.035 s but no key frame, and two references that point at nothing (`Brain.py`, and a sentence), so
+`grounded=false`. Muse Code read `brain.toml` and `brain.py`, searched twice, edited and read back: six tool
+calls, 54.3 s. With the same brain after, its replays are byte for byte those of the clearance run.
+
+### Against the first bug 2 and voice runs
+
+Both were first made on Nov 1 in the arm's own repo, whose loop named the file to edit, accepted only that
+change and required a grounded diagnosis. Those runs are not kept as examples (their bytes are at
+[`6b2d5a6`](https://github.com/samoxis/blinkflow/tree/6b2d5a6/examples)); what differs is here.
+
+| | Bug 2, first | Bug 2, here | Voice, first | Voice, here |
+|---|---|---|---|---|
+| Accepted by | content rules + pixels | pixels | content rules + pixels | pixels |
+| Transcript | | | "…the red block. A couple of seconds ago the arm hit the red block." | "…the red block a couple of seconds ago the arm arm hit the red block" |
+| Muse Wonder's cause | `brain.py:30–35` | `brain.py:33` | `brain.toml:1–2` | `brain.toml:1–2` |
+| Citation check | grounded; K1–K4 | not grounded: categories only | grounded; K4, ticks 2.000, 2.035 s | not grounded: tick 2.035 s, no key frame, two references to nothing |
+| Muse Code's change | `-` → `+` | `-` → `+`, the same bytes | `0.0` → `0.08` | `0.0` → `0.15` |
+| Tool calls, time | 2, 28.7 s | 2, 27.9 s | 5, 66.5 s | 6, 54.3 s |
+| Closest gap, block moved | 20.0 px | 19.0 px | 20.0 px | 21.0 px |
+| Cost | $0.18519 | $0.28117 | $0.15471 | $0.27251 |
+
+The same in both: the incident replays (records `46d5458d…` and `291bd97e…`), the first contacts, the 2 s delay,
+the window and its 151 frames, 3.6 px after the fix, 51.3 px with the target moved, 2/2 controls, a fix on the
+first attempt. Bug 2's control videos are the same bytes in both runs; the 1 px with the block moved is SAM 3.1's
+reply to the same video. The cost differs mostly in SAM 3.1: the arm repo's runs reused cached replies for six of
+their eight requests (the after-proof's videos had been sent before), and here every state was fresh, so all
+eight were paid.
 
 ## Limits
 
@@ -104,14 +130,13 @@ of the full one) and the WAV's length.
   duck's do; the controller's log, sent to Muse Wonder, has a clearance column because the controller logs it.
 - The sentence is fixed text in the clearance runs and bug 2. The voice run used a supplied key-press time (4 s)
   and derived the incident moment at 2 s from it and the spoken delay: a replayed press on a recorded sentence,
-  not live capture. The box seed is still needed for the arm in all three. No physical robot.
-- Bug 2 and the voice run were made with the arm repo's loop, before acceptance here became pixels only: its
-  prompt named the one file to edit, and it accepted only that file (a logic fix of at most two lines with the
-  config unchanged, or only a positive clearance), with a diagnosis naming the planted file. Both passed those
-  and the pixel proof; the re-check here applies only the pixel proof and the path and audit checks.
+  not live capture. The same WAV gave a different transcript the second time. The box seed is still needed for
+  the arm in all three. No physical robot.
+- In both re-runs Muse Wonder named the planted line, but its citations failed the check; nothing but the pixels
+  decided the fix. A diagnosis that named the wrong line would have reached Muse Code the same way.
 - Built with Codex (GPT-6.1 Sol) on Nov 1, in a separate repo, from a written brief (`AGENTS.md` there),
-  then moved here as `blinkflow/arm/`, as declared in `DEVLOG.md`. The two clearance re-runs were made here; bug 2 and the
-  voice run were made there on Nov 1, also with Codex.
+  then moved here as `blinkflow/arm/`, as declared in `DEVLOG.md`. Bug 2 and the voice run were first made
+  there, also with Codex, and re-run here.
 
 ## Re-check it
 

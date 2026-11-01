@@ -40,8 +40,8 @@ The loop is not tied to the biped. A hand-written MuJoCo arm (a 43-line scene, a
 
 Contacts **1 → 0**, controls **2/2** clean, Muse Wonder's cause grounded with no bad references, and Muse Code's fix is one line, made on the first attempt (`0.0` → `0.15`). The finished loop cost **$0.27**. One limit: SAM 3.1 did not find the arm from text, so the arm is tracked from a box marked once on the first frame, the same before and after. The run is in [`examples/arm/`](examples/arm) and the numbers and limits are in [`results/arm.md`](results/arm.md).
 
-Two more runs: a sign error in the controller's lift (fixed with one logic line on the first attempt) and the clearance bug driven by a real spoken sentence through Muse Voice Transcribe, same fix and proof. [`results/arm.md`](results/arm.md).
-All arm runs so far, from their ledgers: **$1.30**.
+Two more runs, with the same loop and the same rule: a sign error in the controller's lift (fixed with one logic line on the first attempt) and the clearance bug driven by a real spoken sentence through Muse Voice Transcribe, same fix and proof. [`results/arm.md`](results/arm.md).
+All arm runs so far, from their ledgers: **$1.86**.
 
 ## Contents
 

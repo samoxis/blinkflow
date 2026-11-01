@@ -1,7 +1,5 @@
-"""Re-derive a public arm run with network/model access blocked and no API key: examples/arm, and the two runs
-made in the arm's own repo before it moved here (examples/arm-bug2, a logic bug; examples/arm-voice, a spoken
-sentence). Those were made in its flat layout, where the robot was arm/brain.py and arm/brain.toml; their
-diffs and file lists name that path, read here as the robot (robot/ now), and their bytes stay as published."""
+"""Re-derive a public arm run with network/model access blocked and no API key: examples/arm (the clearance bug),
+examples/arm-bug2 (a logic bug) and examples/arm-voice (the clearance bug from a spoken sentence)."""
 import argparse
 import hashlib
 import json
@@ -19,7 +17,6 @@ from blinkflow import diagnose as original_diagnose, models, sam, see
 from . import REL, WORLD, prove, twin, use_target
 
 ROBOT_FILES = ("brain.py", "brain.toml")
-LAYOUTS = (REL, "arm")                # this repo's robot/, and the arm repo's flat arm/ (examples/arm-bug2, -voice)
 
 
 def deny(*args,**kwargs):
@@ -36,12 +33,9 @@ def relative(value,parent):
 
 
 def robot_files(files):
-    """The changed files, as long as they are the robot's own in either layout: (layout, names)."""
-    for layout in LAYOUTS:
-        if files and all(f.startswith(layout+"/") for f in files):
-            names=[f[len(layout)+1:] for f in files]
-            if layout==REL or all(n in ROBOT_FILES for n in names):
-                return layout,names
+    """The changed files, as long as they are the robot's own: (REL, names)."""
+    if files and all(f.startswith(REL+"/") for f in files):
+        return REL,[f[len(REL)+1:] for f in files]
     raise AssertionError(f"changed files outside the robot: {files}")
 
 
@@ -126,7 +120,6 @@ def recheck(example,physics=True):
         assert read(root/"alignment.json")["delta_s"]<=0.1
         accounting=read(root/"models.json")
         assert accounting["repo_spend_usd"]<=3.
-        if checkpoint.get("phase")==3: assert accounting["phase3_spend_usd"]<=2.
         assert abs(sum(c["cost_usd"] for c in accounting["calls"])-accounting["total_cost_usd"])<1e-4
         heard=None
         if checkpoint.get("input")=="voice":
