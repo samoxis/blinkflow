@@ -23,7 +23,7 @@ Typing is the fallback (--type): Enter is the key press, then the sentence is ty
 
 clip: a recorded clip played on the wall clock as if it were the buffer (watch.ClipFeed); the key goes
 down at brain time T and stays down for the length of the recording, which is then handled exactly as
-one from the sidecar. Nothing past the window is read; nor are the simulator's contact log, the scene
+one from the sidecar (the clip may end first, as long as it holds the press + 1 s). Nothing past the window is read; nor are the simulator's contact log, the scene
 files or the twin's own record.
 """
 import argparse
@@ -204,8 +204,11 @@ def clip(path, press, out, wav=None, text=None, with_loop=True, auto=False, brai
     feed = watch.ClipFeed(path)
     data = wav and pathlib.Path(wav).read_bytes()
     release = press + (wav_seconds(data) if data else 0.0)
-    if release > feed.times[-1]:
-        raise SystemExit(f"the clip ends at {feed.times[-1]:.2f} s, before the key is let go ({release:.2f} s)")
+    # the clip may end while the person is still talking: nothing past the window is read, and the window
+    # never reaches past the press + 1 s
+    if min(release, press + 1.0) > feed.times[-1]:
+        raise SystemExit(f"the clip ends at {feed.times[-1]:.2f} s, before the window it would need "
+                         f"({min(release, press + 1.0):.2f} s)")
     feed.start()
     watch.tell_feed(feed)
     events.emit("listen", key=KEY, typed=not data)
