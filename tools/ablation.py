@@ -3,7 +3,11 @@
 # its own: the replay of the example's scene in the twin, then the control in every other scene, from pixels.
 # Between attempts Muse Code hears only what a person watching would say: still hit it, or other scenes broke.
 #   python3 tools/ablation.py OUT [--sentence "..."] [--base b2fe90a]
-# The target is put on --base for the run and goes back to the commit it was on.
+# The target is put on --base for the run and goes back to the commit it was on. Another incident than the
+# example's (a bug suite copy, with BLINKFLOW_TARGET naming it):
+#   --snapshot its incident's meta.json --before its fix/before/verdict.json --scene ledge
+#   --what "fell into the yellow pit" --key "nominal * bx, nominal * by" --sentence "..."
+# The control is every other twin scene, each following its own obstacle (prove.OBSTACLES).
 import argparse, json, pathlib, sys, time
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
@@ -39,13 +43,20 @@ def main():
     ap.add_argument("--sentence", default="a couple of seconds ago the robot hit the purple box")
     ap.add_argument("--base", default="b2fe90a")
     ap.add_argument("--attempts", type=int, default=3)
+    ap.add_argument("--snapshot", default=str(EXAMPLE / "window/snapshot.json"))
+    ap.add_argument("--before", default=str(EXAMPLE / "fix/before/verdict.json"), help="the replay with no change")
+    ap.add_argument("--scene", default="box", help="the incident's own scene, left out of the control")
+    ap.add_argument("--what", default="hit the purple box", help="what the robot did, as a watcher says it")
+    ap.add_argument("--key", default=KEY, help="text in the diff that marks the known cause")
     a = ap.parse_args()
     run = pathlib.Path(a.out).expanduser()
     run.mkdir(parents=True)
-    snapshot = (EXAMPLE / "window/snapshot.json").resolve()
-    before = json.loads((EXAMPLE / "fix/before/verdict.json").read_text())   # the replay with no change: 1 contact
-    ev = json.loads((EXAMPLE / "window/evidence/evidence.json").read_text())
-    names = (ev["names"]["robot"], ev["names"]["object"])
+    snapshot = pathlib.Path(a.snapshot).expanduser().resolve()
+    before = json.loads(pathlib.Path(a.before).expanduser().read_text())   # the replay with no change: the incident
+    o = prove.OBSTACLES["scenes"][a.scene]
+    names = (prove.OBSTACLES["robot"], o["noun"])                        # the scene's own obstacle, as the control
+    kind = before.get("kind", "contact")
+    others = tuple(s for s in prove.OBSTACLES["scenes"] if s != a.scene)
     was = fix.git("symbolic-ref", "-q", "--short", "HEAD", check=False).strip() or fix.git("rev-parse", "HEAD").strip()
     if fix.git("status", "--porcelain").strip():
         sys.exit(f"{TARGET} has uncommitted changes")
@@ -63,7 +74,7 @@ def main():
             mc = fix.muse_code(prompt, out, base, ledger, f"ablation attempt {i}", models.MUSE_CODE)
             diff = mc["change"]["diff"]
             rec = {"attempt": i, "muse_code_s": mc["seconds"], "summary": mc["summary"], "problems": mc["problems"],
-                   "files": mc["change"]["files"], "stat": mc["change"]["stat"], "names_key": KEY in diff,
+                   "files": mc["change"]["files"], "stat": mc["change"]["stat"], "names_key": a.key in diff,
                    "verdict": None, "control": None}
             attempts.append(rec)
             found = found or rec["names_key"]
@@ -72,22 +83,22 @@ def main():
                 history.append(f"Attempt {i} was rejected before any replay: {'; '.join(mc['problems'])}.")
                 continue
             t = time.time()
-            v = prove.prove(snapshot, out, names, before["travel_m"])
+            v = prove.prove(snapshot, out, names, before["travel_m"], kind=kind)
             rec["verdict"] = {k: v.get(k) for k in ("fixed", "incident", "contact", "valid", "first_contact_s",
-                                                    "closest_gap_px", "closest_s", "travel_m", "problems")}
+                                                    "fell_s", "closest_gap_px", "closest_s", "travel_m", "problems")}
             told = f"Attempt {i} changed:\n```diff\n{diff}```\nIts note: {mc['summary']}\n"
             if v.get("fixed"):
-                c = prove.control(out / "control")
+                c = prove.control(out / "control", scenes=others)
                 rec["control"] = {s: {"clean": x["clean"], "why": x["why"]} for s, x in c.items()}
                 dirty = [s for s, x in c.items() if not x["clean"]]
                 if not dirty:
                     rec["proof_s"] = round(time.time() - t, 1)
                     fixed = True
                     break
-                told += (f"In the replay of the same scene the robot no longer hit the purple box, but with this "
+                told += (f"In the replay of the same scene the robot no longer {a.what}, but with this "
                          f"change it failed in other scenes ({', '.join(dirty)}).")
             else:
-                told += "In the replay of the same scene the robot still hit the purple box."
+                told += f"In the replay of the same scene the robot still {a.what}."
             rec["proof_s"] = round(time.time() - t, 1)
             history.append(told)
             fix.undo(base, f"attempt {i} did not pass")
@@ -97,7 +108,7 @@ def main():
         fix.git("checkout", "-q", was)                       # the branch it was on, untouched (base was detached)
         ledger.write(run / "models-muse-code.json")
     muse_cost = round(sum(c["cost_usd"] or 0 for c in ledger.calls), 5)
-    summary = {"sentence": a.sentence, "base": base, "model": models.MUSE_CODE, "attempts": attempts,
+    summary = {"sentence": a.sentence, "scene": a.scene, "follow": names, "control": others, "base": base, "model": models.MUSE_CODE, "attempts": attempts,
                "found_key": found, "fixed_and_control_clean": fixed, "seconds": round(time.time() - t0, 1),
                "muse_code_usd": muse_cost, "proof_usd": round(cost_of(run), 5),
                "kept_diff": final_diff if fixed else None}

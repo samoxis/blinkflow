@@ -30,7 +30,7 @@ EXTRA_S = 8.0             # the replay runs this long past the incident's end
 # Every twin scene but the box, each with its own obstacle as SAM 3.1 is asked for it (scenes/obstacles.json):
 # the control follows the scene's obstacle, never a name guessed from the picture unless that one is not found
 OBSTACLES = json.loads((pathlib.Path(__file__).resolve().parent / "scenes" / "obstacles.json").read_text())
-CONTROL_SCENES = tuple(OBSTACLES["scenes"])
+CONTROL_SCENES = tuple(s for s in OBSTACLES["scenes"] if s != "box")
 CONTROL_S = 20.0          # each control replay's length (the scorer's control is as long)
 CONTROL_EVERY = 3         # SAM 3.1 follows every 3rd frame of a control shot (9.5 fps): a third of the cost
 CONTROL_WORKERS = 6       # render processes per control scene (four scenes at once on 24 threads)
@@ -188,13 +188,13 @@ def judge(ev, record, kind):
     return {**v, "clean": v["valid"] and not hit and v["fell_s"] is None, "why": why}
 
 
-def control(out, brain=TARGET):
+def control(out, brain=TARGET, scenes=CONTROL_SCENES):
     """The brain as it is now in every other twin scene for CONTROL_S, judged from pixels only: SAM 3.1
     follows the robot and the scene's own obstacle (OBSTACLES; every CONTROL_EVERY-th frame), and the
     scene is clean when judge() sees no contact and no fall. Only if the scene's obstacle is found in no
     frame does Glimmer name what is near the robot instead (Muse Spark after it). {scene: {clean, why, ...}}"""
     out = pathlib.Path(out)
-    events.emit("control.start", scenes=list(CONTROL_SCENES), seconds=CONTROL_S, every=CONTROL_EVERY)
+    events.emit("control.start", scenes=list(scenes), seconds=CONTROL_S, every=CONTROL_EVERY)
 
     def render_one(scene):
         t = time.time()
@@ -220,12 +220,12 @@ def control(out, brain=TARGET):
                 "names": [ev["names"]["robot"], ev["names"]["object"]], "named_by": named_by, "evidence": str(evdir),
                 "see_s": round(time.time() - t, 1)}
 
-    with concurrent.futures.ThreadPoolExecutor(len(CONTROL_SCENES)) as pool:
-        rendered = dict(zip(CONTROL_SCENES, pool.map(render_one, CONTROL_SCENES)))
+    with concurrent.futures.ThreadPoolExecutor(len(scenes)) as pool:
+        rendered = dict(zip(scenes, pool.map(render_one, scenes)))
     with concurrent.futures.ThreadPoolExecutor(2) as pool:          # 2 at a time: SAM gets ~28 pieces at once
-        looked = dict(zip(CONTROL_SCENES, pool.map(lambda s: look_one(s, rendered[s][0]), CONTROL_SCENES)))
+        looked = dict(zip(scenes, pool.map(lambda s: look_one(s, rendered[s][0]), scenes)))
     result = {}
-    for s in CONTROL_SCENES:
+    for s in scenes:
         result[s] = {**looked[s], "render_s": rendered[s][1]}
         events.emit("control.scene", scene=s, **{k: result[s].get(k) for k in (
             "clean", "valid", "why", "names", "named_by", "evidence", "render_s", "see_s", "robot_frames",

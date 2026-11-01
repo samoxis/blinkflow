@@ -1,10 +1,26 @@
 {
- "about": "What SAM 3.1 is asked to follow in each control scene: the scene's own obstacle, by the colour its fragment gives it (see __init__.py), and whether it is a thing to touch or a hazard to fall into. Each name was checked on the example's control shots (Nov 1): found in every frame. The robot is the same in every scene.",
+ "about": "What SAM 3.1 is asked to follow in each control scene: the scene's own obstacle, by the colour its fragment gives it (see __init__.py), and whether it is a thing to touch or a hazard to fall into. Each name was checked on the example's control shots (Nov 1): found in every frame. The robot is the same in every scene. The box is the demo incident's own scene: in the control only when another scene's incident is being fixed (tools/ablation.py --scene).",
  "robot": "white robot",
  "scenes": {
-  "low_cube": {"noun": "orange cube", "is": "object"},
-  "ledge": {"noun": "yellow floor", "is": "hazard"},
-  "corner": {"noun": "red barrier", "is": "object"},
-  "doorway": {"noun": "blue block", "is": "object"}
+  "box": {
+   "noun": "purple box",
+   "is": "object"
+  },
+  "low_cube": {
+   "noun": "orange cube",
+   "is": "object"
+  },
+  "ledge": {
+   "noun": "yellow floor",
+   "is": "hazard"
+  },
+  "corner": {
+   "noun": "red barrier",
+   "is": "object"
+  },
+  "doorway": {
+   "noun": "blue block",
+   "is": "object"
+  }
  }
 }

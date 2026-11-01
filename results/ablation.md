@@ -44,8 +44,8 @@ the first attempt in any run:
 
 **How it found it**, in its own notes: `side_memory_seconds = 0.0` is the only value in `brain.toml` that
 differs from the default in the code (3.0). For this bug that is a strong clue that needs no picture. So this
-ablation shows that **the demo bug is findable from the code alone**; it does not show the same for bugs
-where the code itself is wrong rather than a setting, and it covered this one bug only.
+ablation shows that **the demo bug is findable from the code alone**. A code bug (b7, below) turned out to be
+findable from the code alone as well.
 
 **What BlinkFlow's evidence changed here:** speed and the first attempt. With the cause cited to frames, the
 brain's log and the line, Muse Code made the change in one attempt, 41.6 s and 6 tool calls; alone it took
@@ -55,3 +55,35 @@ replay before any change was taken from the example). In money the ablation was 
 ($0.21 in the example), and most SAM 3.1 replies came from the cache, since the same change gives the same
 twin video. The proof itself is BlinkFlow's in both cases: without the replay and the control, nothing would
 have said which of these attempts worked.
+
+## A code bug: b7, the swapped drop position (Nov 1)
+
+The same test on a bug in Python code rather than a setting: b7 of the bug suite (`results/bug_suite.md`),
+where `depth.drop_zones` gives each drop's forward distance as its sideways offset and back
+(`DropZone(r, c, nominal * by, nominal * bx, ...)`, `depth.py:320`), so the robot walks into the yellow pit of
+the ledge scene. Muse Code got only "a couple of seconds ago the robot fell into the yellow pit" and the
+buggy brain (`653458d`, in a copy holding that one commit, so no fix sits in its history). The same method as
+above: at most 3 attempts, each judged by the frozen pass's own scene replayed in the twin (the fall at
+10.06 s, 1.48 m walked), then the control in the four other scenes (box, low cube, corner, doorway), each
+following its own obstacle. Between attempts, only "the robot still fell into the yellow pit".
+
+`tools/ablation.py --scene ledge`; the runs are in `~/blinkflow-runs/ablation/b7-20261101-102347/run-{1,2,3}`.
+
+| run | attempts | found the swap | the change kept | twin proof | control | Muse Code time (s) | whole run (s) | Muse Code cost | proof + control cost |
+|---|---|---|---|---|---|---|---|---|---|
+| b7 · 1 | 2 | yes, in both | `by, bx` → `bx, by` | fall at 10.06 s → none, walked 2.26 m, pit no closer than 157 px | 4/4 clean | 144.0 | 398.7 | $0.014 | $0.235 |
+| b7 · 2 | 1 | yes | `by, bx` → `bx, by` | the same | 4/4 clean | 38.6 | 269.9 | $0.006 | $0 (cached) |
+| b7 · 3 | 1 | yes | `by, bx` → `bx, by` | the same | 4/4 clean | 61.6 | 282.8 | $0.006 | $0 (cached) |
+| b7 · BlinkFlow, frozen-code pass (Oct 28) | 1 | yes | `by, bx` → `bx, by` | fall → none | 5/5 clean (the rule of then) | 23.6 | 152 | (in the $0.98) | (in the $0.98) |
+
+All four kept the same blob (`7ea627d`), BlinkFlow's included. The control closest gaps: box 107, low cube
+139, corner 50, doorway 14 px. Run 1's first attempt made the same change and was rejected by the audit
+before any replay, because it wrote a probe script to `/tmp/drop_probe.py`; attempt 2 passed. Runs 2 and 3
+passed on the first attempt (9 tool calls each; BlinkFlow's attempt took 3).
+
+**What this says.** For b7, Muse Code alone found the cause from one sentence in 3 of 3 runs, first attempt in
+2, in 39–144 s of agent time; with BlinkFlow's evidence (key frames, the log, the cited lines 294–321) it took
+24 s and 3 tool calls. The swap is visible in the code itself once one goes looking near "drop" and "pit",
+the words the sentence gives. So the evidence's edge here is small: about 1.6–6× less agent time, not a fix
+that would otherwise be missed. Two bugs, one setting and one code line, is still a small sample; what neither
+run could do alone is say whether the change worked: that is the replay and the control, in both.
