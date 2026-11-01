@@ -1,6 +1,6 @@
 """The 20 s teaser, made for a phone: the loop once, in order, with large type and a subtitle burned in.
 
-    python3 tools/teaser.py EVENTS [--angle 38] [--out C:/Users/sorin/blinkflow/footage]
+    python3 tools/teaser.py EVENTS [--angle 38] [--out %USERPROFILE%/blinkflow/footage]
 
 EVENTS is a finished run's events.jsonl; every word and number on screen is read from that stream, or,
 for the first shot, from the twin's own contact log. The shots:
@@ -36,7 +36,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import side_shot  # noqa: E402
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
-FOOTAGE = pathlib.Path(os.environ.get("BLINKFLOW_FOOTAGE", "/mnt/c/Users/sorin/blinkflow/footage"))
+FOOTAGE = pathlib.Path(os.environ.get("BLINKFLOW_FOOTAGE", f"/mnt/c/Users/{os.environ.get('USER', '')}/blinkflow/footage"))
 FONT = os.environ.get("BLINKFLOW_FONT", "/mnt/c/Windows/Fonts/arialbd.ttf")
 FPS = 30
 BG = (10, 11, 14)                      # the console's --bg

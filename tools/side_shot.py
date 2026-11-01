@@ -7,7 +7,7 @@ behind, towards the robot's right (where the box is), low, so the gap between th
 closes in view. Each clip is 4 s: 1x, then 1/4 up to the touch, a 0.5 s hold with a ring on the point of
 contact, 1/4 again, 1x. Every slowed second is labelled.
 
-    python3 tools/side_shot.py [--angles 30,38,45] [--plain] [--brain ~/duck-target] [--out C:/Users/sorin/blinkflow/footage]
+    python3 tools/side_shot.py [--angles 30,38,45] [--plain] [--brain ~/duck-target] [--out %USERPROFILE%/blinkflow/footage]
 
 Writes impact-<angle>-<date>.mp4 per angle and, with several angles, a contact sheet of them side by side
 (impact-sheet-<date>.mp4 and .png). --plain leaves out every label but the ring (for the teaser, which draws its own).
@@ -29,7 +29,7 @@ from PIL import Image, ImageDraw, ImageFont
 HOME = pathlib.Path.home()
 REPO = pathlib.Path(__file__).resolve().parent.parent
 TWIN_PY = HOME / "microduck_rl" / ".venv" / "bin" / "python"
-FOOTAGE = pathlib.Path(os.environ.get("BLINKFLOW_FOOTAGE", "/mnt/c/Users/sorin/blinkflow/footage"))
+FOOTAGE = pathlib.Path(os.environ.get("BLINKFLOW_FOOTAGE", f"/mnt/c/Users/{os.environ.get('USER', '')}/blinkflow/footage"))
 FONT = os.environ.get("BLINKFLOW_FONT", "/mnt/c/Windows/Fonts/arialbd.ttf")
 W, H = 1920, 1080
 SRC_FPS, OUT_FPS = 200, 50      # every 5 ms physics step is a frame: 1/4 speed still plays at 50 fps
