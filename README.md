@@ -222,4 +222,6 @@ The icon was made with Meta's Muse Image; provenance in results/icon/.
 The deterministic twin (`blinkflow/twin.py`) is new code, but the physics, the scenes, the depth sensor and the walking policies it runs are imported from [Pollen Robotics' Microduck](https://github.com/pollen-robotics/microduck) (`microduck_rl`), not copied.
 
 
-Apache-2.0 (see `LICENSE`). Microduck and its simulation are by Pollen Robotics and Hugging Face, Apache-2.0. Code in this repository is written with AI coding assistants under the author's direction.
+SAM 3.1's mask decoder (`blinkflow/maskcodec.py`, `blinkflow/console/static/maskcodec.js`) is a port of the decoder in Meta's [`@meta-sam/parser`](https://www.npmjs.com/package/@meta-sam/parser) 0.1.0 (`dist/mask-codec.js`: the base-85 payload, the range decoder, the one-bit and lossless mask coders), under the SAM License: those two files are distributed under it, with Meta's copyright notice and the licence's text in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
+Everything else is Apache-2.0 (see `LICENSE`). Microduck and its simulation are by Pollen Robotics and Hugging Face, Apache-2.0. Code in this repository is written with AI coding assistants under the author's direction.

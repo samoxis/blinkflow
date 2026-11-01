@@ -1,3 +1,6 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
+# A port of dist/mask-codec.js of @meta-sam/parser 0.1.0; a derivative work of SAM Materials, distributed under the
+# SAM License (not this repository's Apache-2.0). Its text: THIRD_PARTY_NOTICES.md.
 """SAM 3.1 mask payloads -> binary rasters. A Python port of the decoder in Meta's `@meta-sam/parser`.
 
 A mask covers its object's box (height x width, row-major). The payload is base-85 text holding a

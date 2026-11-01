@@ -1,3 +1,6 @@
+// Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
+// A port of dist/mask-codec.js of @meta-sam/parser 0.1.0; a derivative work of SAM Materials, distributed under the
+// SAM License (not this repository's Apache-2.0). Its text: THIRD_PARTY_NOTICES.md.
 // SAM 3.1 mask payloads -> binary rasters, in the browser. The same decoder as blinkflow/maskcodec.py
 // (itself a port of Meta's @meta-sam/parser): base-85 text, then a 32-bit range-coded stream,
 // `!` one bit per pixel with a 12-pixel causal context, `~` coverage bytes with a predictor.
