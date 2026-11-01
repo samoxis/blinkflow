@@ -7,6 +7,8 @@
 # example's (a bug suite copy, with BLINKFLOW_TARGET naming it):
 #   --snapshot its incident's meta.json --before its fix/before/verdict.json --scene ledge
 #   --what "fell into the yellow pit" --key "nominal * bx, nominal * by" --sentence "..."
+# A vague sentence ("something went wrong with the robot") goes with --said, what the watcher says between
+# attempts in its place: "something still went wrong with the robot", no obstacle named.
 # The control is every other twin scene, each following its own obstacle (prove.OBSTACLES).
 import argparse, json, pathlib, sys, time
 
@@ -48,6 +50,8 @@ def main():
     ap.add_argument("--scene", default="box", help="the incident's own scene, left out of the control")
     ap.add_argument("--what", default="hit the purple box", help="what the robot did, as a watcher says it")
     ap.add_argument("--key", default=KEY, help="text in the diff that marks the known cause")
+    ap.add_argument("--said", help="what the watcher says when the replay still fails, in place of 'the robot "
+                                   "still <what>' (a vague sentence gets a vague answer)")
     a = ap.parse_args()
     run = pathlib.Path(a.out).expanduser()
     run.mkdir(parents=True)
@@ -95,10 +99,10 @@ def main():
                     rec["proof_s"] = round(time.time() - t, 1)
                     fixed = True
                     break
-                told += (f"In the replay of the same scene the robot no longer {a.what}, but with this "
-                         f"change it failed in other scenes ({', '.join(dirty)}).")
+                told += (f"In the replay of the same scene {'nothing went wrong' if a.said else 'the robot no longer ' + a.what}"
+                         f", but with this change it failed in other scenes ({', '.join(dirty)}).")
             else:
-                told += f"In the replay of the same scene the robot still {a.what}."
+                told += f"In the replay of the same scene {a.said or 'the robot still ' + a.what}."
             rec["proof_s"] = round(time.time() - t, 1)
             history.append(told)
             fix.undo(base, f"attempt {i} did not pass")
@@ -108,7 +112,7 @@ def main():
         fix.git("checkout", "-q", was)                       # the branch it was on, untouched (base was detached)
         ledger.write(run / "models-muse-code.json")
     muse_cost = round(sum(c["cost_usd"] or 0 for c in ledger.calls), 5)
-    summary = {"sentence": a.sentence, "scene": a.scene, "follow": names, "control": others, "base": base, "model": models.MUSE_CODE, "attempts": attempts,
+    summary = {"sentence": a.sentence, "said": a.said, "scene": a.scene, "follow": names, "control": others, "base": base, "model": models.MUSE_CODE, "attempts": attempts,
                "found_key": found, "fixed_and_control_clean": fixed, "seconds": round(time.time() - t0, 1),
                "muse_code_usd": muse_cost, "proof_usd": round(cost_of(run), 5),
                "kept_diff": final_diff if fixed else None}

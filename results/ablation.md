@@ -89,3 +89,51 @@ ones that failed were stopped by BlinkFlow's gate and audit before any replay (a
 turn), and the ones kept were kept because BlinkFlow's replay in the twin and its control in the other scenes,
 from pixels, said they worked. On b7 the evidence saved less time than on the purple box (24 s against
 39–144 s of agent time, above). Two bugs are still a small sample.
+
+## A vague sentence: "something went wrong" (Nov 1)
+
+The question: when does BlinkFlow's seeing become indispensable rather than faster? The same two bugs, with a
+sentence that names no obstacle, no fall and no colour: **"a couple of seconds ago something went wrong with
+the robot"**. Alone, as above (at most 3 attempts, the twin proof, the control in the four other scenes), and
+between attempts only "something still went wrong with the robot" (`tools/ablation.py --said`). Then the
+same sentence through the whole of BlinkFlow (see → diagnose → fix → prove, `blinkflow.voice clip --text ...
+--auto`), once per bug, from saved inputs: the purple box from the example's 60 s clip with its key press
+(13.483 s); b7 from its incident in the twin, rendered again to 14 s with the same buggy brain (contact
+9.335 s, fall 10.25 s, as in the suite) so the key could go down 2.58 s after the fall, as on the purple box.
+
+Each bug ran on its own copy of the buggy brain (purple box: the tree of `b2fe90a`; b7: `653458d`), with no
+fix in its history. The runs are in `~/blinkflow-runs/ablation/vague-20261101-114005/` (not in the repo).
+
+| bug | sentence | alone: fixed? | alone: attempts | alone: Muse Code time (s) | alone: whole run (s) | alone: what it changed | with BlinkFlow: fixed? | with BlinkFlow: attempts | with BlinkFlow: Muse Code (s) | with BlinkFlow: seen → verified (s) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| purple box · 1 | vague | yes, control 4/4 clean | 1 | 375.5 | 618.6 | `brain.toml` `side_memory_seconds` 0.0 → 3.0 | yes, control 4/4 clean | 1 | 42.5 | 358.1 |
+| purple box · 2 | vague | yes, control 4/4 clean | 1 | 160.9 | 366.5 | the same | | | | |
+| purple box · 3 | vague | yes, control 4/4 clean | 2 | 771.8 | 973.9 | attempt 1: `src/microduck_brain/brain.py` (rejected by the audit, `/tmp` named; never replayed); attempt 2: the same as run 1 | | | | |
+| b7 · 1 | vague | yes, control 4/4 clean | 1 | 216.5 | 425.0 | `depth.py` `drop_zones`: `by, bx` → `bx, by` | yes, control clean | 1 | 43.8 | 327.9 |
+| b7 · 2 | vague | yes, control 4/4 clean | 1 | 104.8 | 310.7 | the same | | | | |
+| b7 · 3 | vague | yes, control 4/4 clean | 1 | 180.6 | 383.2 | the same | | | | |
+
+Every kept change is BlinkFlow's own blob (`a2deec7` for the purple box, `7ea627d` for b7), in the six runs
+alone and in both loops. Alone, Muse Code used 14–47 tool calls per run; its cost was $0.009–0.039 a run, and
+the proof and control came from SAM 3.1's cache ($0). The two loops cost $0.38 (purple box, mostly cached)
+and $0.76 (b7).
+
+**What BlinkFlow said it saw**, from the vague sentence: "the white robot touched the purple box at t = 10.90 s"
+and "the white robot fell off the yellow pit at t = 10.05 s". Glimmer read the sentence as "other, 2 s before
+the key"; SAM 3.1 then found the incident in the window from pixels, and Muse Wonder's cause was
+`brain.toml [obstacle] side_memory_seconds` and `depth.py::drop_zones`.
+
+**What this says.** For these two bugs the eyes were not indispensable: Muse Code alone, told only that
+something went wrong, found the same fix in 6 of 6 runs, on the first attempt in 5. The vague sentence did
+not make it worse than the specific one on the purple box (161–772 s against 296–597 s, 1–2 attempts against
+2–3) and made it slower on b7 (105–217 s against 39–144 s). Both bugs leave a single suspicious line in a
+small brain; a vague complaint about a robot with one odd setting or one swapped pair still leads there. With
+BlinkFlow the change came in 43–44 s of Muse Code, first attempt, and the person learned what had gone
+wrong, at which second, which the agent alone never said. Bugs whose cause is not the only odd line in
+the code are where the eyes would have to earn more than speed; none was tried here.
+
+**One thing the b7 loop shows about the control.** BlinkFlow's loop runs its control on the four scenes other
+than the demo's box (`prove.CONTROL_SCENES`): for an incident in the ledge scene that list holds the ledge
+itself and leaves the box out. The b7 loop's control was low cube, ledge, corner and doorway, all clean; the
+box scene was not replayed with that change. The ablation script leaves out the incident's own scene instead
+(`--scene`).
