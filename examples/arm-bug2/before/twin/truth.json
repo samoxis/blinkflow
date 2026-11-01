@@ -1,0 +1,6379 @@
+{
+ "first_contact_s": 2.015,
+ "contact_episodes": [
+  2.015,
+  2.025
+ ],
+ "contact_ticks": 796,
+ "contacts": [
+  {
+   "t": 2.015,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -7.776298112797952e-05
+  },
+  {
+   "t": 2.025,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.001336122901267174
+  },
+  {
+   "t": 2.03,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0008934621470271242
+  },
+  {
+   "t": 2.035,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0006659447084515768
+  },
+  {
+   "t": 2.04,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0004973395862973781
+  },
+  {
+   "t": 2.045,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0003814661993732926
+  },
+  {
+   "t": 2.05,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002905022220967002
+  },
+  {
+   "t": 2.055,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00022995230715269765
+  },
+  {
+   "t": 2.06,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00019787671604119816
+  },
+  {
+   "t": 2.065,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0001748573456961111
+  },
+  {
+   "t": 2.07,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00015834863196943771
+  },
+  {
+   "t": 2.075,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00013367025638296587
+  },
+  {
+   "t": 2.08,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00012934231792109674
+  },
+  {
+   "t": 2.085,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0001267774961412338
+  },
+  {
+   "t": 2.09,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00012596366818745652
+  },
+  {
+   "t": 2.095,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00012585950403332796
+  },
+  {
+   "t": 2.1,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00012685241737826758
+  },
+  {
+   "t": 2.105,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00012818653937209795
+  },
+  {
+   "t": 2.11,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00013016973029374157
+  },
+  {
+   "t": 2.115,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00013234486511959354
+  },
+  {
+   "t": 2.12,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0001348976322664147
+  },
+  {
+   "t": 2.125,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00013756692092682654
+  },
+  {
+   "t": 2.13,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00014045566057535597
+  },
+  {
+   "t": 2.135,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00014341364570222975
+  },
+  {
+   "t": 2.14,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00014649769063257434
+  },
+  {
+   "t": 2.145,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00014962127625905985
+  },
+  {
+   "t": 2.15,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0001528156381349552
+  },
+  {
+   "t": 2.155,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00015603085027018904
+  },
+  {
+   "t": 2.16,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0001592839850590791
+  },
+  {
+   "t": 2.165,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00016254615131688216
+  },
+  {
+   "t": 2.17,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00016582658981890291
+  },
+  {
+   "t": 2.175,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00016910850590675514
+  },
+  {
+   "t": 2.18,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00017239681543496782
+  },
+  {
+   "t": 2.185,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00017568168380196342
+  },
+  {
+   "t": 2.19,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00017896564254286929
+  },
+  {
+   "t": 2.195,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00018224286508589788
+  },
+  {
+   "t": 2.2,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00018551457228937335
+  },
+  {
+   "t": 2.205,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000188777249146857
+  },
+  {
+   "t": 2.21,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00019203139998975882
+  },
+  {
+   "t": 2.215,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00019527484669117773
+  },
+  {
+   "t": 2.22,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00019850770610363444
+  },
+  {
+   "t": 2.225,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00020172857720637122
+  },
+  {
+   "t": 2.23,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00020493737182347704
+  },
+  {
+   "t": 2.235,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002081331447164464
+  },
+  {
+   "t": 2.24,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00021131570399875177
+  },
+  {
+   "t": 2.245,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00021448437585935148
+  },
+  {
+   "t": 2.25,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002176389210463911
+  },
+  {
+   "t": 2.255,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002207788314354045
+  },
+  {
+   "t": 2.26,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00022390385176405958
+  },
+  {
+   "t": 2.265,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00022701357892540575
+  },
+  {
+   "t": 2.27,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00023010775906086994
+  },
+  {
+   "t": 2.275,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00023318605921067437
+  },
+  {
+   "t": 2.28,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00023624823651884064
+  },
+  {
+   "t": 2.285,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00023929400803769652
+  },
+  {
+   "t": 2.29,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002423231470966708
+  },
+  {
+   "t": 2.295,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002449159285157973
+  },
+  {
+   "t": 2.3,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002469945973564494
+  },
+  {
+   "t": 2.305,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00024869080353996653
+  },
+  {
+   "t": 2.31,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002501134636576502
+  },
+  {
+   "t": 2.315,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002513407551576405
+  },
+  {
+   "t": 2.32,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00025242946847060105
+  },
+  {
+   "t": 2.325,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002534197006012068
+  },
+  {
+   "t": 2.33,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00025434047909578955
+  },
+  {
+   "t": 2.335,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00025521219007626494
+  },
+  {
+   "t": 2.34,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00025604956530433237
+  },
+  {
+   "t": 2.345,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00025686289339495877
+  },
+  {
+   "t": 2.35,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00025765959627464807
+  },
+  {
+   "t": 2.355,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000258444822828878
+  },
+  {
+   "t": 2.36,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00025922227861063796
+  },
+  {
+   "t": 2.365,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00025999451164081255
+  },
+  {
+   "t": 2.37,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026076334852191685
+  },
+  {
+   "t": 2.375,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026153002915513257
+  },
+  {
+   "t": 2.38,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026229543584817966
+  },
+  {
+   "t": 2.385,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002630601550863976
+  },
+  {
+   "t": 2.39,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002638245978773199
+  },
+  {
+   "t": 2.395,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002645890269808021
+  },
+  {
+   "t": 2.4,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002653536201295409
+  },
+  {
+   "t": 2.405,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000266118481311195
+  },
+  {
+   "t": 2.41,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002668836739892627
+  },
+  {
+   "t": 2.415,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002676492252793594
+  },
+  {
+   "t": 2.42,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002684151434104304
+  },
+  {
+   "t": 2.425,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002691814189044045
+  },
+  {
+   "t": 2.43,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026994803375593457
+  },
+  {
+   "t": 2.435,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027071496146413576
+  },
+  {
+   "t": 2.44,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002714821718584129
+  },
+  {
+   "t": 2.445,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000272249630773172
+  },
+  {
+   "t": 2.45,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027301730258422197
+  },
+  {
+   "t": 2.455,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002737851498401736
+  },
+  {
+   "t": 2.46,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002745531345942631
+  },
+  {
+   "t": 2.465,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000275321218093344
+  },
+  {
+   "t": 2.47,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002760893614803042
+  },
+  {
+   "t": 2.475,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027685752555987875
+  },
+  {
+   "t": 2.48,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027762567116872833
+  },
+  {
+   "t": 2.485,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002783937590125074
+  },
+  {
+   "t": 2.49,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027916174985911923
+  },
+  {
+   "t": 2.495,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002799296044315794
+  },
+  {
+   "t": 2.5,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002806972835076582
+  },
+  {
+   "t": 2.505,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028144362689981606
+  },
+  {
+   "t": 2.51,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028215344312020746
+  },
+  {
+   "t": 2.515,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000282834739218224
+  },
+  {
+   "t": 2.52,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002834952192281928
+  },
+  {
+   "t": 2.525,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002841402526259154
+  },
+  {
+   "t": 2.53,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002847739465654531
+  },
+  {
+   "t": 2.535,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002853991333832337
+  },
+  {
+   "t": 2.54,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028601055299407735
+  },
+  {
+   "t": 2.545,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002865536447509212
+  },
+  {
+   "t": 2.55,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028697698359106405
+  },
+  {
+   "t": 2.555,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002873468003800686
+  },
+  {
+   "t": 2.56,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028765206858931414
+  },
+  {
+   "t": 2.565,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000287923216886532
+  },
+  {
+   "t": 2.57,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002881578267468071
+  },
+  {
+   "t": 2.575,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002883544693785614
+  },
+  {
+   "t": 2.58,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028849861607926214
+  },
+  {
+   "t": 2.585,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002886042069328437
+  },
+  {
+   "t": 2.59,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002886816682693971
+  },
+  {
+   "t": 2.595,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002887394695475082
+  },
+  {
+   "t": 2.6,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028878289214161884
+  },
+  {
+   "t": 2.605,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002888161715575849
+  },
+  {
+   "t": 2.61,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002888419507465073
+  },
+  {
+   "t": 2.615,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002888623677216873
+  },
+  {
+   "t": 2.62,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028887876388629385
+  },
+  {
+   "t": 2.625,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002888922341728814
+  },
+  {
+   "t": 2.63,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028890347177849135
+  },
+  {
+   "t": 2.635,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028891304754619096
+  },
+  {
+   "t": 2.64,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028892132769750556
+  },
+  {
+   "t": 2.645,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889286163530874
+  },
+  {
+   "t": 2.65,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028893511216266515
+  },
+  {
+   "t": 2.655,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889409813728802
+  },
+  {
+   "t": 2.66,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028894633508860096
+  },
+  {
+   "t": 2.665,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028895126694147844
+  },
+  {
+   "t": 2.67,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889558412463786
+  },
+  {
+   "t": 2.675,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028896011253931597
+  },
+  {
+   "t": 2.68,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889641194556772
+  },
+  {
+   "t": 2.685,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889678949351479
+  },
+  {
+   "t": 2.69,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028897146308968363
+  },
+  {
+   "t": 2.695,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889748445734572
+  },
+  {
+   "t": 2.7,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889780550016999
+  },
+  {
+   "t": 2.705,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889811078032878
+  },
+  {
+   "t": 2.71,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028898401343645935
+  },
+  {
+   "t": 2.715,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889867809193203
+  },
+  {
+   "t": 2.72,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028898941745190976
+  },
+  {
+   "t": 2.725,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028899192924791706
+  },
+  {
+   "t": 2.73,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028899432136053615
+  },
+  {
+   "t": 2.735,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000288996598140856
+  },
+  {
+   "t": 2.74,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889987631641694
+  },
+  {
+   "t": 2.745,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890008194861779
+  },
+  {
+   "t": 2.75,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890027696188305
+  },
+  {
+   "t": 2.755,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028900461567657465
+  },
+  {
+   "t": 2.76,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028900635937298413
+  },
+  {
+   "t": 2.765,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028900800210701627
+  },
+  {
+   "t": 2.77,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028900954496910436
+  },
+  {
+   "t": 2.775,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890109887926512
+  },
+  {
+   "t": 2.78,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028901233416311206
+  },
+  {
+   "t": 2.785,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028901358145105166
+  },
+  {
+   "t": 2.79,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890147308210883
+  },
+  {
+   "t": 2.795,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000289015782252329
+  },
+  {
+   "t": 2.8,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890167355484932
+  },
+  {
+   "t": 2.805,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028901759035099284
+  },
+  {
+   "t": 2.81,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890183461469395
+  },
+  {
+   "t": 2.815,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890190022791228
+  },
+  {
+   "t": 2.82,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890195579523594
+  },
+  {
+   "t": 2.825,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890200122407788
+  },
+  {
+   "t": 2.83,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890203640939018
+  },
+  {
+   "t": 2.835,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028902061234137993
+  },
+  {
+   "t": 2.84,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028902075569765817
+  },
+  {
+   "t": 2.845,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890207927667976
+  },
+  {
+   "t": 2.85,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890207220455493
+  },
+  {
+   "t": 2.855,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028902054192778137
+  },
+  {
+   "t": 2.86,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028902025070576265
+  },
+  {
+   "t": 2.865,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890198465756999
+  },
+  {
+   "t": 2.87,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028901932763766153
+  },
+  {
+   "t": 2.875,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890186918993176
+  },
+  {
+   "t": 2.88,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890179372775706
+  },
+  {
+   "t": 2.885,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028901706160087276
+  },
+  {
+   "t": 2.89,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890160626100452
+  },
+  {
+   "t": 2.895,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890149379608173
+  },
+  {
+   "t": 2.9,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000289013685224368
+  },
+  {
+   "t": 2.905,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028901230188933813
+  },
+  {
+   "t": 2.91,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028901078536234387
+  },
+  {
+   "t": 2.915,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890091329694547
+  },
+  {
+   "t": 2.92,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890073419562003
+  },
+  {
+   "t": 2.925,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890054094897773
+  },
+  {
+   "t": 2.93,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028900333265856337
+  },
+  {
+   "t": 2.935,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002890011084729846
+  },
+  {
+   "t": 2.94,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028899873386621644
+  },
+  {
+   "t": 2.945,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028899620569469014
+  },
+  {
+   "t": 2.95,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002889935207381483
+  },
+  {
+   "t": 2.955,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028899067570022086
+  },
+  {
+   "t": 2.96,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028898203306747944
+  },
+  {
+   "t": 2.965,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028895484827892726
+  },
+  {
+   "t": 2.97,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028891111982585344
+  },
+  {
+   "t": 2.975,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002888556488010452
+  },
+  {
+   "t": 2.98,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028879052000486266
+  },
+  {
+   "t": 2.985,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028871819101240065
+  },
+  {
+   "t": 2.99,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002886397862173831
+  },
+  {
+   "t": 2.995,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002885565326327874
+  },
+  {
+   "t": 3.0,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028846902599756474
+  },
+  {
+   "t": 3.005,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002883778770972345
+  },
+  {
+   "t": 3.01,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002882833955424047
+  },
+  {
+   "t": 3.015,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002881858817293109
+  },
+  {
+   "t": 3.02,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028808549110820314
+  },
+  {
+   "t": 3.025,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002879823666256734
+  },
+  {
+   "t": 3.03,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028787658077296385
+  },
+  {
+   "t": 3.035,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002877681959463363
+  },
+  {
+   "t": 3.04,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028765723988340153
+  },
+  {
+   "t": 3.045,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028754373331577737
+  },
+  {
+   "t": 3.05,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002874276796659553
+  },
+  {
+   "t": 3.055,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028730907778960063
+  },
+  {
+   "t": 3.06,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028718791771960295
+  },
+  {
+   "t": 3.065,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002870641865815038
+  },
+  {
+   "t": 3.07,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002869378668758915
+  },
+  {
+   "t": 3.075,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028680893924919876
+  },
+  {
+   "t": 3.08,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028667738182976826
+  },
+  {
+   "t": 3.085,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028654317154269
+  },
+  {
+   "t": 3.09,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002864062838731432
+  },
+  {
+   "t": 3.095,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002862666935024086
+  },
+  {
+   "t": 3.1,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028612437424232334
+  },
+  {
+   "t": 3.105,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028597929935154226
+  },
+  {
+   "t": 3.11,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028583144153460777
+  },
+  {
+   "t": 3.115,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002856807731084904
+  },
+  {
+   "t": 3.12,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028552726602314865
+  },
+  {
+   "t": 3.125,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002853708919587708
+  },
+  {
+   "t": 3.13,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002852116223524201
+  },
+  {
+   "t": 3.135,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002850494284602559
+  },
+  {
+   "t": 3.14,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002848842813885574
+  },
+  {
+   "t": 3.145,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028471615213760543
+  },
+  {
+   "t": 3.15,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028454501163388546
+  },
+  {
+   "t": 3.155,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028437083076637837
+  },
+  {
+   "t": 3.16,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002841935804193396
+  },
+  {
+   "t": 3.165,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028401323150444024
+  },
+  {
+   "t": 3.17,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002838297549943511
+  },
+  {
+   "t": 3.175,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028364312195400254
+  },
+  {
+   "t": 3.18,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002834533035733153
+  },
+  {
+   "t": 3.185,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028326027120015307
+  },
+  {
+   "t": 3.19,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002830639963723458
+  },
+  {
+   "t": 3.195,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028286445085175943
+  },
+  {
+   "t": 3.2,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002826616066564022
+  },
+  {
+   "t": 3.205,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002824554360956605
+  },
+  {
+   "t": 3.21,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000282245911803064
+  },
+  {
+   "t": 3.215,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028203300677191734
+  },
+  {
+   "t": 3.22,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002818166943891684
+  },
+  {
+   "t": 3.225,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028159694847212924
+  },
+  {
+   "t": 3.23,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002813737433018451
+  },
+  {
+   "t": 3.235,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028114705366099474
+  },
+  {
+   "t": 3.24,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002809168548692509
+  },
+  {
+   "t": 3.245,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002806831228194598
+  },
+  {
+   "t": 3.25,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00028044583401473644
+  },
+  {
+   "t": 3.255,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002802049656055461
+  },
+  {
+   "t": 3.26,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027996049542612644
+  },
+  {
+   "t": 3.265,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027971240203193
+  },
+  {
+   "t": 3.27,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027946066473680253
+  },
+  {
+   "t": 3.275,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002792052636504047
+  },
+  {
+   "t": 3.28,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002789461797147591
+  },
+  {
+   "t": 3.285,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002786833947422754
+  },
+  {
+   "t": 3.29,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002784168914513538
+  },
+  {
+   "t": 3.295,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002781466535042229
+  },
+  {
+   "t": 3.3,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002778726655432995
+  },
+  {
+   "t": 3.305,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002775949132262437
+  },
+  {
+   "t": 3.31,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027731338326281163
+  },
+  {
+   "t": 3.315,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002770280634488004
+  },
+  {
+   "t": 3.32,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002767389427019845
+  },
+  {
+   "t": 3.325,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027644601109490935
+  },
+  {
+   "t": 3.33,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027614925988923844
+  },
+  {
+   "t": 3.335,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002758486815672423
+  },
+  {
+   "t": 3.34,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027554426986342584
+  },
+  {
+   "t": 3.345,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027523601979639184
+  },
+  {
+   "t": 3.35,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002749239276971585
+  },
+  {
+   "t": 3.355,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027460799123845553
+  },
+  {
+   "t": 3.36,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027428820946175797
+  },
+  {
+   "t": 3.365,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027396458280366104
+  },
+  {
+   "t": 3.37,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002736371131202564
+  },
+  {
+   "t": 3.375,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002733058037111477
+  },
+  {
+   "t": 3.38,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002729706593407044
+  },
+  {
+   "t": 3.385,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002726316862584968
+  },
+  {
+   "t": 3.39,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002722888922183919
+  },
+  {
+   "t": 3.395,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027194228649490143
+  },
+  {
+   "t": 3.4,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027159187989896083
+  },
+  {
+   "t": 3.405,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027123768479077326
+  },
+  {
+   "t": 3.41,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027088870931115533
+  },
+  {
+   "t": 3.415,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002705523124968551
+  },
+  {
+   "t": 3.42,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002702308510342255
+  },
+  {
+   "t": 3.425,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002699274577649541
+  },
+  {
+   "t": 3.43,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026964292453467154
+  },
+  {
+   "t": 3.435,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002693783294295815
+  },
+  {
+   "t": 3.44,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026913363635322485
+  },
+  {
+   "t": 3.445,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002689089122968197
+  },
+  {
+   "t": 3.45,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002687037003419254
+  },
+  {
+   "t": 3.455,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002685175846858026
+  },
+  {
+   "t": 3.46,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002683499107433221
+  },
+  {
+   "t": 3.465,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026820004783328216
+  },
+  {
+   "t": 3.47,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026806726455362584
+  },
+  {
+   "t": 3.475,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002679508510006687
+  },
+  {
+   "t": 3.48,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002678500633257752
+  },
+  {
+   "t": 3.485,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002677641805218234
+  },
+  {
+   "t": 3.49,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026769247965303944
+  },
+  {
+   "t": 3.495,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026763426207242896
+  },
+  {
+   "t": 3.5,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002675888421688061
+  },
+  {
+   "t": 3.505,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002675555592604323
+  },
+  {
+   "t": 3.51,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026753377225705033
+  },
+  {
+   "t": 3.515,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026752286482271265
+  },
+  {
+   "t": 3.52,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002675222426093346
+  },
+  {
+   "t": 3.525,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002675313352509742
+  },
+  {
+   "t": 3.53,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002675495947105089
+  },
+  {
+   "t": 3.535,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026757649578703496
+  },
+  {
+   "t": 3.54,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026761153494674755
+  },
+  {
+   "t": 3.545,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000267654230139254
+  },
+  {
+   "t": 3.55,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002677041198496863
+  },
+  {
+   "t": 3.555,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002677607626032849
+  },
+  {
+   "t": 3.56,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002678237361277633
+  },
+  {
+   "t": 3.565,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002678926367308751
+  },
+  {
+   "t": 3.57,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000267967078529642
+  },
+  {
+   "t": 3.575,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002680466927886746
+  },
+  {
+   "t": 3.58,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026813112720035226
+  },
+  {
+   "t": 3.585,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002682200452261349
+  },
+  {
+   "t": 3.59,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026831312542333063
+  },
+  {
+   "t": 3.595,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002684100608091877
+  },
+  {
+   "t": 3.6,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002685105582324668
+  },
+  {
+   "t": 3.605,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026861433776970145
+  },
+  {
+   "t": 3.61,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002687211321407909
+  },
+  {
+   "t": 3.615,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026883068614318856
+  },
+  {
+   "t": 3.62,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002689427561065466
+  },
+  {
+   "t": 3.625,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026905710936912797
+  },
+  {
+   "t": 3.63,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026917352377110043
+  },
+  {
+   "t": 3.635,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002692917871692929
+  },
+  {
+   "t": 3.64,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026941169696980544
+  },
+  {
+   "t": 3.645,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002695330596801243
+  },
+  {
+   "t": 3.65,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002696556904791675
+  },
+  {
+   "t": 3.655,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000269779412803664
+  },
+  {
+   "t": 3.66,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002699040579542955
+  },
+  {
+   "t": 3.665,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002700294647165133
+  },
+  {
+   "t": 3.67,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027015547899796044
+  },
+  {
+   "t": 3.675,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002702819534821099
+  },
+  {
+   "t": 3.68,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002704087472967659
+  },
+  {
+   "t": 3.685,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002705357256963317
+  },
+  {
+   "t": 3.69,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027066275976011384
+  },
+  {
+   "t": 3.695,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002707897261022413
+  },
+  {
+   "t": 3.7,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002709165065960667
+  },
+  {
+   "t": 3.705,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027104298810985694
+  },
+  {
+   "t": 3.71,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002711690622567986
+  },
+  {
+   "t": 3.715,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002712946251530804
+  },
+  {
+   "t": 3.72,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002714195771919628
+  },
+  {
+   "t": 3.725,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002715438228233641
+  },
+  {
+   "t": 3.73,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027166727034827476
+  },
+  {
+   "t": 3.735,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027178983172011784
+  },
+  {
+   "t": 3.74,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027191142235677423
+  },
+  {
+   "t": 3.745,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027203196096148297
+  },
+  {
+   "t": 3.75,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027215136935235945
+  },
+  {
+   "t": 3.755,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002722695723002197
+  },
+  {
+   "t": 3.76,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027238649737450216
+  },
+  {
+   "t": 3.765,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002725020747964685
+  },
+  {
+   "t": 3.77,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027261623730027995
+  },
+  {
+   "t": 3.775,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002727289199994515
+  },
+  {
+   "t": 3.78,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002728400602632561
+  },
+  {
+   "t": 3.785,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002729495975942048
+  },
+  {
+   "t": 3.79,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002730574735177599
+  },
+  {
+   "t": 3.795,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027316363147245754
+  },
+  {
+   "t": 3.8,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027326801670871786
+  },
+  {
+   "t": 3.805,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000273370576191527
+  },
+  {
+   "t": 3.81,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002734712585091559
+  },
+  {
+   "t": 3.815,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027357001378492535
+  },
+  {
+   "t": 3.82,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027366679359565327
+  },
+  {
+   "t": 3.825,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002737615508930716
+  },
+  {
+   "t": 3.83,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002738542399292887
+  },
+  {
+   "t": 3.835,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027394481618705363
+  },
+  {
+   "t": 3.84,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002740332363126291
+  },
+  {
+   "t": 3.845,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027411945805396604
+  },
+  {
+   "t": 3.85,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002742034402001686
+  },
+  {
+   "t": 3.855,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027428514252517133
+  },
+  {
+   "t": 3.86,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027436452573537107
+  },
+  {
+   "t": 3.865,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002744415514188414
+  },
+  {
+   "t": 3.87,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002745161819974126
+  },
+  {
+   "t": 3.875,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027458838068232516
+  },
+  {
+   "t": 3.88,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002746581114317845
+  },
+  {
+   "t": 3.885,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002747253389109583
+  },
+  {
+   "t": 3.89,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027479002845384737
+  },
+  {
+   "t": 3.895,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002748521460283343
+  },
+  {
+   "t": 3.9,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027491165820298785
+  },
+  {
+   "t": 3.905,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000274968532114353
+  },
+  {
+   "t": 3.91,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027502273543882766
+  },
+  {
+   "t": 3.915,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027507423636310285
+  },
+  {
+   "t": 3.92,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000275123003560189
+  },
+  {
+   "t": 3.925,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027516900616220835
+  },
+  {
+   "t": 3.93,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027521221373962707
+  },
+  {
+   "t": 3.935,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002752525962785163
+  },
+  {
+   "t": 3.94,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002752901241604294
+  },
+  {
+   "t": 3.945,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002753247681433063
+  },
+  {
+   "t": 3.95,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027535649934506967
+  },
+  {
+   "t": 3.955,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027538528922518846
+  },
+  {
+   "t": 3.96,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754111095712025
+  },
+  {
+   "t": 3.965,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027543393248313786
+  },
+  {
+   "t": 3.97,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754537303611068
+  },
+  {
+   "t": 3.975,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754704758926793
+  },
+  {
+   "t": 3.98,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754841420422316
+  },
+  {
+   "t": 3.985,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754947020388865
+  },
+  {
+   "t": 3.99,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002755021293692622
+  },
+  {
+   "t": 3.995,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027550639776728614
+  },
+  {
+   "t": 4.0,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027550748120611784
+  },
+  {
+   "t": 4.005,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002755053538917654
+  },
+  {
+   "t": 4.01,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754999902561117
+  },
+  {
+   "t": 4.015,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754913649513496
+  },
+  {
+   "t": 4.02,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754794528447499
+  },
+  {
+   "t": 4.025,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754642290135681
+  },
+  {
+   "t": 4.03,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754456687423107
+  },
+  {
+   "t": 4.035,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002754237475184676
+  },
+  {
+   "t": 4.04,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002753984410299726
+  },
+  {
+   "t": 4.045,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002753697251630313
+  },
+  {
+   "t": 4.05,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027533757600006065
+  },
+  {
+   "t": 4.055,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002753019698193207
+  },
+  {
+   "t": 4.06,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027526288309324964
+  },
+  {
+   "t": 4.065,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002752202924889702
+  },
+  {
+   "t": 4.07,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027517417486781076
+  },
+  {
+   "t": 4.075,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027512450728630483
+  },
+  {
+   "t": 4.08,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002750712669974953
+  },
+  {
+   "t": 4.085,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027501443145144105
+  },
+  {
+   "t": 4.09,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002749539782989571
+  },
+  {
+   "t": 4.095,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027488988539146886
+  },
+  {
+   "t": 4.1,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027482213078591083
+  },
+  {
+   "t": 4.105,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027475069274677383
+  },
+  {
+   "t": 4.11,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002746755497495673
+  },
+  {
+   "t": 4.115,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000274596680484282
+  },
+  {
+   "t": 4.12,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002745140638611837
+  },
+  {
+   "t": 4.125,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027442767901316584
+  },
+  {
+   "t": 4.13,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027433750530236195
+  },
+  {
+   "t": 4.135,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002742435223244133
+  },
+  {
+   "t": 4.14,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002741457099146166
+  },
+  {
+   "t": 4.145,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002740440481534892
+  },
+  {
+   "t": 4.15,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027393851737324976
+  },
+  {
+   "t": 4.155,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002738290981648267
+  },
+  {
+   "t": 4.16,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002737157713838187
+  },
+  {
+   "t": 4.165,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027359851815907804
+  },
+  {
+   "t": 4.17,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027347731989871976
+  },
+  {
+   "t": 4.175,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027335215830039117
+  },
+  {
+   "t": 4.18,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002732230153573989
+  },
+  {
+   "t": 4.185,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002730898733681181
+  },
+  {
+   "t": 4.19,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027295271494588713
+  },
+  {
+   "t": 4.195,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027281152302735534
+  },
+  {
+   "t": 4.2,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002726662808819891
+  },
+  {
+   "t": 4.205,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002725169721232573
+  },
+  {
+   "t": 4.21,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000272363580717791
+  },
+  {
+   "t": 4.215,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002722060909969362
+  },
+  {
+   "t": 4.22,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002720444876672598
+  },
+  {
+   "t": 4.225,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027187875582269233
+  },
+  {
+   "t": 4.23,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027170888095588014
+  },
+  {
+   "t": 4.235,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002715348489701619
+  },
+  {
+   "t": 4.24,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027135664619264144
+  },
+  {
+   "t": 4.245,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002711742593865807
+  },
+  {
+   "t": 4.25,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027098767576557575
+  },
+  {
+   "t": 4.255,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027079688300601923
+  },
+  {
+   "t": 4.26,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002706018692623033
+  },
+  {
+   "t": 4.265,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00027040262318040603
+  },
+  {
+   "t": 4.27,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002701991339136428
+  },
+  {
+   "t": 4.275,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026999139113705745
+  },
+  {
+   "t": 4.28,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000269779385064034
+  },
+  {
+   "t": 4.285,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000269563106461472
+  },
+  {
+   "t": 4.29,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002693425466675989
+  },
+  {
+   "t": 4.295,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026911769760709636
+  },
+  {
+   "t": 4.3,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026888855181118193
+  },
+  {
+   "t": 4.305,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026865510243272855
+  },
+  {
+   "t": 4.31,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026842180405426547
+  },
+  {
+   "t": 4.315,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026819222045319085
+  },
+  {
+   "t": 4.32,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002679674687721609
+  },
+  {
+   "t": 4.325,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002677491344438149
+  },
+  {
+   "t": 4.33,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026753765556147835
+  },
+  {
+   "t": 4.335,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026733365986245095
+  },
+  {
+   "t": 4.34,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002671372220248991
+  },
+  {
+   "t": 4.345,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002669484927264945
+  },
+  {
+   "t": 4.35,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002667673584140495
+  },
+  {
+   "t": 4.355,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026659373763696786
+  },
+  {
+   "t": 4.36,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026642742546229004
+  },
+  {
+   "t": 4.365,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002662682331881494
+  },
+  {
+   "t": 4.37,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002661159172868896
+  },
+  {
+   "t": 4.375,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002659702452844012
+  },
+  {
+   "t": 4.38,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002658309633010447
+  },
+  {
+   "t": 4.385,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026569782707076134
+  },
+  {
+   "t": 4.39,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026557058705817954
+  },
+  {
+   "t": 4.395,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000265449002989665
+  },
+  {
+   "t": 4.4,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026533283695155674
+  },
+  {
+   "t": 4.405,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026522186011345567
+  },
+  {
+   "t": 4.41,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002651158494403061
+  },
+  {
+   "t": 4.415,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002650145907137913
+  },
+  {
+   "t": 4.42,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026491787688019686
+  },
+  {
+   "t": 4.425,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026482550931960364
+  },
+  {
+   "t": 4.43,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026473729693329145
+  },
+  {
+   "t": 4.435,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026465305658777277
+  },
+  {
+   "t": 4.44,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026457261254207026
+  },
+  {
+   "t": 4.445,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026449579650621863
+  },
+  {
+   "t": 4.45,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026442244722958
+  },
+  {
+   "t": 4.455,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026435241038516577
+  },
+  {
+   "t": 4.46,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000264285538238658
+  },
+  {
+   "t": 4.465,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002642216894592278
+  },
+  {
+   "t": 4.47,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002641607288337011
+  },
+  {
+   "t": 4.475,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002641025270525704
+  },
+  {
+   "t": 4.48,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002640469604535331
+  },
+  {
+   "t": 4.485,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026399391080383916
+  },
+  {
+   "t": 4.49,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002639432650672069
+  },
+  {
+   "t": 4.495,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002638949151931927
+  },
+  {
+   "t": 4.5,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026384875790311235
+  },
+  {
+   "t": 4.505,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026380469449067273
+  },
+  {
+   "t": 4.51,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002637626306255039
+  },
+  {
+   "t": 4.515,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002637224761670512
+  },
+  {
+   "t": 4.52,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026368414498304654
+  },
+  {
+   "t": 4.525,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002636475547782638
+  },
+  {
+   "t": 4.53,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026361262692656956
+  },
+  {
+   "t": 4.535,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026357928631207117
+  },
+  {
+   "t": 4.54,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002635474611770855
+  },
+  {
+   "t": 4.545,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002635170829742503
+  },
+  {
+   "t": 4.55,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002634880862260533
+  },
+  {
+   "t": 4.555,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002634604083906547
+  },
+  {
+   "t": 4.56,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002634339897329141
+  },
+  {
+   "t": 4.565,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026340877319981637
+  },
+  {
+   "t": 4.57,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002633847043027812
+  },
+  {
+   "t": 4.575,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026336173100426075
+  },
+  {
+   "t": 4.58,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002633398036087503
+  },
+  {
+   "t": 4.585,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026331887465923937
+  },
+  {
+   "t": 4.59,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002632988988383739
+  },
+  {
+   "t": 4.595,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002632798328717975
+  },
+  {
+   "t": 4.6,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026326163543866077
+  },
+  {
+   "t": 4.605,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026324426708360105
+  },
+  {
+   "t": 4.61,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026322769013411434
+  },
+  {
+   "t": 4.615,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002632118686199669
+  },
+  {
+   "t": 4.62,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026319676819830384
+  },
+  {
+   "t": 4.625,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002631823560800897
+  },
+  {
+   "t": 4.63,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026316860095983163
+  },
+  {
+   "t": 4.635,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026315547295028413
+  },
+  {
+   "t": 4.64,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002631429435181326
+  },
+  {
+   "t": 4.645,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026313098542300045
+  },
+  {
+   "t": 4.65,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002631195726597521
+  },
+  {
+   "t": 4.655,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000263108680402524
+  },
+  {
+   "t": 4.66,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026309828495169746
+  },
+  {
+   "t": 4.665,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026308836368355015
+  },
+  {
+   "t": 4.67,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002630788950011148
+  },
+  {
+   "t": 4.675,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026306985828815355
+  },
+  {
+   "t": 4.68,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002630612338651722
+  },
+  {
+   "t": 4.685,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026305300294630907
+  },
+  {
+   "t": 4.69,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002630451476000398
+  },
+  {
+   "t": 4.695,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026303765070954943
+  },
+  {
+   "t": 4.7,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002630304959361854
+  },
+  {
+   "t": 4.705,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002630236676850195
+  },
+  {
+   "t": 4.71,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002630171510696472
+  },
+  {
+   "t": 4.715,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002630109318816076
+  },
+  {
+   "t": 4.72,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026300499655896453
+  },
+  {
+   "t": 4.725,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026299933215626764
+  },
+  {
+   "t": 4.73,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026299392631845553
+  },
+  {
+   "t": 4.735,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026298876725220494
+  },
+  {
+   "t": 4.74,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026298384370136013
+  },
+  {
+   "t": 4.745,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026297914492248026
+  },
+  {
+   "t": 4.75,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262974660661823
+  },
+  {
+   "t": 4.755,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026297038113231447
+  },
+  {
+   "t": 4.76,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026296629699272545
+  },
+  {
+   "t": 4.765,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026296239932789567
+  },
+  {
+   "t": 4.77,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629586796288816
+  },
+  {
+   "t": 4.775,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629551297739993
+  },
+  {
+   "t": 4.78,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026295174201253213
+  },
+  {
+   "t": 4.785,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629485089468281
+  },
+  {
+   "t": 4.79,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026294542351647937
+  },
+  {
+   "t": 4.795,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629424789826612
+  },
+  {
+   "t": 4.8,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026293966891462184
+  },
+  {
+   "t": 4.805,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026293698717416714
+  },
+  {
+   "t": 4.81,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629344279034343
+  },
+  {
+   "t": 4.815,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262931985511701
+  },
+  {
+   "t": 4.82,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629296546632007
+  },
+  {
+   "t": 4.825,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629274302654652
+  },
+  {
+   "t": 4.83,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629253074585558
+  },
+  {
+   "t": 4.835,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629232816040786
+  },
+  {
+   "t": 4.84,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026292134827575475
+  },
+  {
+   "t": 4.845,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629195032486237
+  },
+  {
+   "t": 4.85,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629177424909798
+  },
+  {
+   "t": 4.855,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629160621548596
+  },
+  {
+   "t": 4.86,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026291445856789497
+  },
+  {
+   "t": 4.865,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026291292822566703
+  },
+  {
+   "t": 4.87,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629114677832958
+  },
+  {
+   "t": 4.875,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026291007404873057
+  },
+  {
+   "t": 4.88,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026290874397567193
+  },
+  {
+   "t": 4.885,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026290747465689684
+  },
+  {
+   "t": 4.89,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262906263317729
+  },
+  {
+   "t": 4.895,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026290510731059175
+  },
+  {
+   "t": 4.9,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026290400410770853
+  },
+  {
+   "t": 4.905,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629029512984382
+  },
+  {
+   "t": 4.91,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629019465806501
+  },
+  {
+   "t": 4.915,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629009877578442
+  },
+  {
+   "t": 4.92,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002629000727341346
+  },
+  {
+   "t": 4.925,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628991995088925
+  },
+  {
+   "t": 4.93,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628983661730616
+  },
+  {
+   "t": 4.935,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628975709047174
+  },
+  {
+   "t": 4.94,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262896811965084
+  },
+  {
+   "t": 4.945,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628960876946626
+  },
+  {
+   "t": 4.95,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628953965103861
+  },
+  {
+   "t": 4.955,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026289473690054715
+  },
+  {
+   "t": 4.96,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026289410742290353
+  },
+  {
+   "t": 4.965,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628935067013269
+  },
+  {
+   "t": 4.97,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026289293342218745
+  },
+  {
+   "t": 4.975,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628923863319463
+  },
+  {
+   "t": 4.98,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026289186423417155
+  },
+  {
+   "t": 4.985,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628913659875054
+  },
+  {
+   "t": 4.99,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026289089050219455
+  },
+  {
+   "t": 4.995,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026289043673871637
+  },
+  {
+   "t": 5.0,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628900037048021
+  },
+  {
+   "t": 5.005,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628895904532233
+  },
+  {
+   "t": 5.01,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288919608064704
+  },
+  {
+   "t": 5.015,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288881972447165
+  },
+  {
+   "t": 5.02,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628884605618484
+  },
+  {
+   "t": 5.025,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628881178072043
+  },
+  {
+   "t": 5.03,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288779071100693
+  },
+  {
+   "t": 5.035,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262887478558016
+  },
+  {
+   "t": 5.04,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288718066572875
+  },
+  {
+   "t": 5.045,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628868963821737
+  },
+  {
+   "t": 5.05,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288662508625743
+  },
+  {
+   "t": 5.055,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288636618435057
+  },
+  {
+   "t": 5.06,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288611911021165
+  },
+  {
+   "t": 5.065,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288588332366164
+  },
+  {
+   "t": 5.07,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288565830903665
+  },
+  {
+   "t": 5.075,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288544357432747
+  },
+  {
+   "t": 5.08,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628852386496877
+  },
+  {
+   "t": 5.085,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288504308710076
+  },
+  {
+   "t": 5.09,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288485645884624
+  },
+  {
+   "t": 5.095,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288467835661883
+  },
+  {
+   "t": 5.1,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628845083911674
+  },
+  {
+   "t": 5.105,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288434619071294
+  },
+  {
+   "t": 5.11,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288419140040736
+  },
+  {
+   "t": 5.115,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628840436818339
+  },
+  {
+   "t": 5.12,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628839027117788
+  },
+  {
+   "t": 5.125,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628837681821483
+  },
+  {
+   "t": 5.13,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628836397985529
+  },
+  {
+   "t": 5.135,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628835172802241
+  },
+  {
+   "t": 5.14,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288340035915403
+  },
+  {
+   "t": 5.145,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262883288779929
+  },
+  {
+   "t": 5.15,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288318229823054
+  },
+  {
+   "t": 5.155,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288308068095345
+  },
+  {
+   "t": 5.16,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288298370643476
+  },
+  {
+   "t": 5.165,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628828911622888
+  },
+  {
+   "t": 5.17,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288280284601784
+  },
+  {
+   "t": 5.175,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628827185646235
+  },
+  {
+   "t": 5.18,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288263813353113
+  },
+  {
+   "t": 5.185,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628825613772423
+  },
+  {
+   "t": 5.19,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628824881274888
+  },
+  {
+   "t": 5.195,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288241822437775
+  },
+  {
+   "t": 5.2,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628823515148371
+  },
+  {
+   "t": 5.205,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628822878528586
+  },
+  {
+   "t": 5.21,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628822270995118
+  },
+  {
+   "t": 5.215,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628821691216948
+  },
+  {
+   "t": 5.22,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628821137926271
+  },
+  {
+   "t": 5.225,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288206099150946
+  },
+  {
+   "t": 5.23,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628820106024693
+  },
+  {
+   "t": 5.235,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288196251563617
+  },
+  {
+   "t": 5.24,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628819166257748
+  },
+  {
+   "t": 5.245,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628818728323268
+  },
+  {
+   "t": 5.25,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288183103952145
+  },
+  {
+   "t": 5.255,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288179115623034
+  },
+  {
+   "t": 5.26,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628817530949609
+  },
+  {
+   "t": 5.265,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628817167726269
+  },
+  {
+   "t": 5.27,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628816821098959
+  },
+  {
+   "t": 5.275,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628816490305025
+  },
+  {
+   "t": 5.28,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288161746253896
+  },
+  {
+   "t": 5.285,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288158733694944
+  },
+  {
+   "t": 5.29,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628815585874328
+  },
+  {
+   "t": 5.295,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628815311513516
+  },
+  {
+   "t": 5.3,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288150496873997
+  },
+  {
+   "t": 5.305,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288147998242833
+  },
+  {
+   "t": 5.31,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628814561377313
+  },
+  {
+   "t": 5.315,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288143338232955
+  },
+  {
+   "t": 5.32,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288141166654067
+  },
+  {
+   "t": 5.325,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288139094280544
+  },
+  {
+   "t": 5.33,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288137116591004
+  },
+  {
+   "t": 5.335,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628813522925766
+  },
+  {
+   "t": 5.34,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288133428146315
+  },
+  {
+   "t": 5.345,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288131709326784
+  },
+  {
+   "t": 5.35,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262881300690139
+  },
+  {
+   "t": 5.355,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288128503658414
+  },
+  {
+   "t": 5.36,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628812700982974
+  },
+  {
+   "t": 5.365,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628812558423746
+  },
+  {
+   "t": 5.37,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288124223779186
+  },
+  {
+   "t": 5.375,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628812292546426
+  },
+  {
+   "t": 5.38,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288121686460914
+  },
+  {
+   "t": 5.385,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628812050408519
+  },
+  {
+   "t": 5.39,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288119375711405
+  },
+  {
+   "t": 5.395,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628811829888944
+  },
+  {
+   "t": 5.4,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628811727127603
+  },
+  {
+   "t": 5.405,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628811629059591
+  },
+  {
+   "t": 5.41,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288115354743125
+  },
+  {
+   "t": 5.415,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288114461635315
+  },
+  {
+   "t": 5.42,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628811360932265
+  },
+  {
+   "t": 5.425,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288112795936486
+  },
+  {
+   "t": 5.43,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288112019714344
+  },
+  {
+   "t": 5.435,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628811127898256
+  },
+  {
+   "t": 5.44,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288110572080664
+  },
+  {
+   "t": 5.445,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628810989748001
+  },
+  {
+   "t": 5.45,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288109253683883
+  },
+  {
+   "t": 5.455,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288108639313523
+  },
+  {
+   "t": 5.46,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288108052999887
+  },
+  {
+   "t": 5.465,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628810749347385
+  },
+  {
+   "t": 5.47,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628810695951833
+  },
+  {
+   "t": 5.475,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628810644995372
+  },
+  {
+   "t": 5.48,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288105963657993
+  },
+  {
+   "t": 5.485,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288105499589626
+  },
+  {
+   "t": 5.49,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288105056723743
+  },
+  {
+   "t": 5.495,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288104634095144
+  },
+  {
+   "t": 5.5,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288104230777487
+  },
+  {
+   "t": 5.505,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288103845879124
+  },
+  {
+   "t": 5.51,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288103478552816
+  },
+  {
+   "t": 5.515,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288103128040835
+  },
+  {
+   "t": 5.52,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288102793524393
+  },
+  {
+   "t": 5.525,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628810247428809
+  },
+  {
+   "t": 5.53,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628810216963387
+  },
+  {
+   "t": 5.535,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288101878912257
+  },
+  {
+   "t": 5.54,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288101601451563
+  },
+  {
+   "t": 5.545,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628810133667933
+  },
+  {
+   "t": 5.55,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288101084002286
+  },
+  {
+   "t": 5.555,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288100842874335
+  },
+  {
+   "t": 5.56,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288100612763265
+  },
+  {
+   "t": 5.565,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628810039315421
+  },
+  {
+   "t": 5.57,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628810018359268
+  },
+  {
+   "t": 5.575,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288099983599184
+  },
+  {
+   "t": 5.58,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288099792753927
+  },
+  {
+   "t": 5.585,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809961062392
+  },
+  {
+   "t": 5.59,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288099436796997
+  },
+  {
+   "t": 5.595,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809927092135
+  },
+  {
+   "t": 5.6,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809911262922
+  },
+  {
+   "t": 5.605,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288098961538275
+  },
+  {
+   "t": 5.61,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809881739108
+  },
+  {
+   "t": 5.615,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288098679796285
+  },
+  {
+   "t": 5.62,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809854851935
+  },
+  {
+   "t": 5.625,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288098423218886
+  },
+  {
+   "t": 5.63,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809830364648
+  },
+  {
+   "t": 5.635,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288098189548165
+  },
+  {
+   "t": 5.64,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809808063806
+  },
+  {
+   "t": 5.645,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262880979767309
+  },
+  {
+   "t": 5.65,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809787755537
+  },
+  {
+   "t": 5.655,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809778291996
+  },
+  {
+   "t": 5.66,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288097692602624
+  },
+  {
+   "t": 5.665,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809760640838
+  },
+  {
+   "t": 5.67,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809752416028
+  },
+  {
+   "t": 5.675,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809744565988
+  },
+  {
+   "t": 5.68,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288097370760766
+  },
+  {
+   "t": 5.685,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288097299267954
+  },
+  {
+   "t": 5.69,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809723105238
+  },
+  {
+   "t": 5.695,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809716594821
+  },
+  {
+   "t": 5.7,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288097103809027
+  },
+  {
+   "t": 5.705,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809704452034
+  },
+  {
+   "t": 5.71,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809698793644
+  },
+  {
+   "t": 5.715,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809693393866
+  },
+  {
+   "t": 5.72,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809688240835
+  },
+  {
+   "t": 5.725,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096833235186
+  },
+  {
+   "t": 5.73,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096786305365
+  },
+  {
+   "t": 5.735,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096741516886
+  },
+  {
+   "t": 5.74,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096698798974
+  },
+  {
+   "t": 5.745,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096658006604
+  },
+  {
+   "t": 5.75,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096619076634
+  },
+  {
+   "t": 5.755,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096581923714
+  },
+  {
+   "t": 5.76,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809654649303
+  },
+  {
+   "t": 5.765,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809651266037
+  },
+  {
+   "t": 5.77,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096480382023
+  },
+  {
+   "t": 5.775,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809644957403
+  },
+  {
+   "t": 5.78,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262880964201663
+  },
+  {
+   "t": 5.785,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809639212415
+  },
+  {
+   "t": 5.79,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809636534002
+  },
+  {
+   "t": 5.795,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096339786154
+  },
+  {
+   "t": 5.8,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809631540774
+  },
+  {
+   "t": 5.805,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809629213816
+  },
+  {
+   "t": 5.81,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096269933003
+  },
+  {
+   "t": 5.815,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096248724274
+  },
+  {
+   "t": 5.82,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809622851683
+  },
+  {
+   "t": 5.825,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096209211437
+  },
+  {
+   "t": 5.83,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096190792837
+  },
+  {
+   "t": 5.835,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096173210374
+  },
+  {
+   "t": 5.84,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809615644878
+  },
+  {
+   "t": 5.845,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096140437284
+  },
+  {
+   "t": 5.85,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096125144655
+  },
+  {
+   "t": 5.855,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096110577835
+  },
+  {
+   "t": 5.86,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096096682007
+  },
+  {
+   "t": 5.865,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809608339472
+  },
+  {
+   "t": 5.87,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096070718053
+  },
+  {
+   "t": 5.875,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809605863605
+  },
+  {
+   "t": 5.88,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809604708765
+  },
+  {
+   "t": 5.885,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809603606591
+  },
+  {
+   "t": 5.89,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809602556459
+  },
+  {
+   "t": 5.895,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096015533724
+  },
+  {
+   "t": 5.9,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288096005957357
+  },
+  {
+   "t": 5.905,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262880959968341
+  },
+  {
+   "t": 5.91,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288095988107746
+  },
+  {
+   "t": 5.915,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809597980189
+  },
+  {
+   "t": 5.92,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809597184714
+  },
+  {
+   "t": 5.925,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809596428097
+  },
+  {
+   "t": 5.93,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288095957054114
+  },
+  {
+   "t": 5.935,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288095950151996
+  },
+  {
+   "t": 5.94,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288095943554496
+  },
+  {
+   "t": 5.945,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288095937279654
+  },
+  {
+   "t": 5.95,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.000262880959312789
+  },
+  {
+   "t": 5.955,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809592557582
+  },
+  {
+   "t": 5.96,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809592011838
+  },
+  {
+   "t": 5.965,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809591490103
+  },
+  {
+   "t": 5.97,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809590991543
+  },
+  {
+   "t": 5.975,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809590518935
+  },
+  {
+   "t": 5.98,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809590064715
+  },
+  {
+   "t": 5.985,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288095896323527
+  },
+  {
+   "t": 5.99,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.0002628809589219905
+  },
+  {
+   "t": 5.995,
+   "geoms": [
+    "end_effector",
+    "obstacle"
+   ],
+   "distance": -0.00026288095888275104
+  }
+ ],
+ "target_error_m": 0.30521968625379625
+}

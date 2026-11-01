@@ -41,7 +41,7 @@ it, and a rule that accepted only a positive clearance) at
 | Tracking coverage | 180/180 frames for both objects, before and after; 57/57 in each control | the four `evidence.json` |
 | Offline re-check | passed: the four pixel measurements re-derived from SAM 3.1's saved replies, the citation check, the diff, and the physics replayed (same record hashes), with no key and the network blocked | `python3 -m blinkflow.arm.recheck examples/arm` |
 | Cost of this loop | **$0.27414**: SAM 3.1 $0.1896 (8 replies, none cached), Muse Wonder $0.07976, Muse Code $0.00478 | [`models.json`](../examples/arm/models.json) |
-| Spent on the arm, in total | **$0.96209**: the first run with its calibration ($0.38726), the second ($0.3007) and this one, of a $3 cap | [`models.json`](../examples/arm/models.json) (`repo_spend_usd`) |
+| Spent on the arm, in total | **$1.30199**: the three clearance runs ($0.38726 for the first with its calibration, $0.3007, $0.27414) and the two below ($0.185188, $0.1547084), of a $3 cap | the three examples' `models.json` |
 
 ### Against the earlier runs
 
@@ -63,6 +63,32 @@ first attempt. The closest gap after the fix stays 3.6 px with any of the three 
 of the move, as the arm comes down to the target beside the block, not in the lift. With the content rule gone,
 Muse Code still chose to change only the clearance; nothing made it.
 
+## Three runs on the arm
+
+Two more runs, made in the arm's own repo (at its commit `c335000`, before it was integrated
+again), copied here unchanged: [`examples/arm-bug2/`](../examples/arm-bug2) and
+[`examples/arm-voice/`](../examples/arm-voice). The same scene, camera, box seed, gains and timing in all three.
+
+| Run | Bug | Input | Attempts | Result | Cost |
+|---|---|---|---|---|---|
+| [Clearance](../examples/arm) | `clearance = 0.0` | fixed text | 1 | fixed (`0.0` → `0.15` here; 0.08 in the first run), target reached, controls 2/2 | $0.27 (this run) |
+| [Bug 2](../examples/arm-bug2/preview.html) | `lift = max(z0, z1) - clearance` in `brain.py`: a sign error, `clearance` stays 0.08 | fixed text | 1 | one-line logic fix in `brain.py` (`-` → `+`), target reached, controls 2/2 | $0.19 |
+| [Voice](../examples/arm-voice/preview.html) | the first run's controller (`clearance = 0.0`) | Sorin's recorded sentence through Muse Voice Transcribe: a 13.6 s WAV, the sentence said twice; transcript saved | 1 | the same fix (`0.0` → `0.08`) and the same after-proof as the first run (2a09938): records, masks and verdicts identical | $0.15 |
+
+Bug 2 is a different incident from the same scene: first contact 2.035 s on pixels, 2.015 s in MuJoCo's log
+(two contact episodes). Muse Wonder named `Brain.waypoint`, `brain.py:30–35` (grounded, `bad_refs=[]`, K1–K4
+cited); Muse Code read `brain.py` and edited one line in 28.7 s; closest gap after 3.6 px, controls 20.0 / 51.3 px.
+In the voice run Muse Voice Transcribe returned both sentences ("a couple of seconds ago the arm hit the red
+block", twice; $0.00068), Muse Glimmer read "2 seconds ago, contact, red block", and the clip was cut from the
+recording around that moment (151 frames, 0–5 s); SAM 3.1 found the contact at 2.035 s in it, and Muse Wonder
+named `brain.toml:1–2` with the transcript in its input.
+
+`python3 -m blinkflow.arm.recheck` re-checks both offline, with their bytes as published: each was made in the
+arm repo's flat layout (the robot was `arm/brain.py`, `arm/brain.toml`), so their diffs and file lists name
+`arm/`, and the re-check reads that as the robot. For the voice run it also checks the transcript against the
+saved Muse Voice reply, the delay Glimmer read, the press-minus-delay moment, the window, the cut log (a prefix
+of the full one) and the WAV's length.
+
 ## Limits
 
 - **SAM 3.1 did not find the arm from text.** "robot arm" gave masks in 0 of 180 frames, and so did every other
@@ -76,15 +102,24 @@ Muse Code still chose to change only the clearance; nothing made it.
   margin; the 9.5 fps control videos alone cannot rule out a touch between frames (the 200 Hz log is clean).
 - The prompts still name the robot and the incident ("hit a red block on its way to a green target"), as the
   duck's do; the controller's log, sent to Muse Wonder, has a clearance column because the controller logs it.
-- The sentence is fixed text; no voice, no live window, no physical robot.
+- The sentence is fixed text in the clearance runs and bug 2. The voice run used a supplied key-press time (4 s)
+  and derived the incident moment at 2 s from it and the spoken delay: a replayed press on a recorded sentence,
+  not live capture. The box seed is still needed for the arm in all three. No physical robot.
+- Bug 2 and the voice run were made with the arm repo's loop, before acceptance here became pixels only: its
+  prompt named the one file to edit, and it accepted only that file (a logic fix of at most two lines with the
+  config unchanged, or only a positive clearance), with a diagnosis naming the planted file. Both passed those
+  and the pixel proof; the re-check here applies only the pixel proof and the path and audit checks.
 - Built with Codex (GPT-6.1 Sol) on Nov 1, in a separate repo, from a written brief (`AGENTS.md` there),
-  then moved here as `blinkflow/arm/`, as declared in `DEVLOG.md`. The two re-runs were made here.
+  then moved here as `blinkflow/arm/`, as declared in `DEVLOG.md`. The two clearance re-runs were made here; bug 2 and the
+  voice run were made there on Nov 1, also with Codex.
 
 ## Re-check it
 
 ```bash
 pip install -r requirements.txt
 env -u MODEL_API_KEY -u BASETEN_API_KEY python3 -m blinkflow.arm.recheck examples/arm
+env -u MODEL_API_KEY -u BASETEN_API_KEY python3 -m blinkflow.arm.recheck examples/arm-bug2
+env -u MODEL_API_KEY -u BASETEN_API_KEY python3 -m blinkflow.arm.recheck examples/arm-voice
 ```
 
 How to run it, and the interpreter it was made with: [`docs/RUNNING.md`](../docs/RUNNING.md#the-arm).

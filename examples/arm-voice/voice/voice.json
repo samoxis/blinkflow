@@ -1,0 +1,55 @@
+{
+ "feed": "clip",
+ "clip": "../before/twin/meta.json",
+ "brain": "../brain-before",
+ "clock": "brain time",
+ "window_s": [
+  5.0,
+  3.0
+ ],
+ "heard": {
+  "said": "a couple of seconds ago the arm hit the red block. A couple of seconds ago the arm hit the red block.",
+  "heard_by": "muse-voice-transcribe-1.0",
+  "audio_s": 13.6,
+  "seconds_ago": 2.0,
+  "event": "contact",
+  "robot": "arm",
+  "object": "red block",
+  "read_by": "glimmer",
+  "read_attempts": [
+   {
+    "reader": "glimmer",
+    "reply": "{\"seconds_ago\": 2, \"event\": \"contact\", \"robot\": \"arm\", \"object\": \"red block\"}",
+    "rejected": null
+   }
+  ],
+  "press": 4.0,
+  "release": 17.596,
+  "trigger": null,
+  "moment": 2.0,
+  "transcribe_s": 4.51,
+  "read_s": 0.81,
+  "moment_brain_s": 2.0,
+  "heard_after_release_s": 5.31
+ },
+ "incident": {
+  "kind": "contact",
+  "confirmed": true,
+  "names": [
+   "robot arm",
+   "red block"
+  ],
+  "robot_moved": true,
+  "object_as_said": "red block",
+  "names_agree": true,
+  "incident_s": 2.035,
+  "reading": "whole_mask",
+  "seconds": 0.0,
+  "snapshot": "./window/snapshot.json",
+  "evidence": "../before/evidence",
+  "window_brain_s": [
+   -3.0,
+   5.0
+  ]
+ }
+}

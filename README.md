@@ -40,6 +40,9 @@ The loop is not tied to the biped. A hand-written MuJoCo arm (a 43-line scene, a
 
 Contacts **1 → 0**, controls **2/2** clean, Muse Wonder's cause grounded with no bad references, and Muse Code's fix is one line, made on the first attempt (`0.0` → `0.15`). The finished loop cost **$0.27**. One limit: SAM 3.1 did not find the arm from text, so the arm is tracked from a box marked once on the first frame, the same before and after. The run is in [`examples/arm/`](examples/arm) and the numbers and limits are in [`results/arm.md`](results/arm.md).
 
+Two more runs: a sign error in the controller's lift (fixed with one logic line on the first attempt) and the clearance bug driven by a real spoken sentence through Muse Voice Transcribe, same fix and proof. [`results/arm.md`](results/arm.md).
+All arm runs so far, from their ledgers: **$1.30**.
+
 ## Contents
 
 [For the judges](#for-the-judges-5-minutes) · [What is new](#what-is-new-here) · [The arm](#beyond-the-duck-the-same-loop-on-a-3-joint-arm) · [The robot](#the-robot-in-the-demo) · [How it works](#how-it-works) · [Why the Meta stack](#why-the-meta-stack) · [The code](#where-it-is-in-the-code) · [Results](#results) · [Try it in ~2 min](#try-it-in-2-min-no-gpu) · [Run the full loop](#run-the-full-loop-3060-min-gpu) · [Glimmer provenance](#muse-glimmer-on-this-pc--provenance) · [Limits](#limits) · [Pre-existing vs built](#pre-existing-vs-built-during-the-hackathon) · [Safety](#safety)

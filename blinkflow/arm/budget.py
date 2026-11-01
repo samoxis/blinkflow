@@ -7,8 +7,10 @@ import time
 
 from . import REPO, STATE
 
-# the spend ledger is STATE's; the public example's spend is where a new ledger starts
+# the spend ledger is STATE's; a new one starts from what the public runs spent: examples/arm's ledger total
+# (every run made from this repo) plus the runs made in the arm's own repo after it moved here
 PRIOR = REPO/"examples/arm/models.json"
+ELSEWHERE = [REPO/"examples/arm-bug2/models.json", REPO/"examples/arm-voice/models.json"]
 CAP = 3.0
 LOCK = threading.Lock()
 
@@ -20,11 +22,9 @@ def book(usd, what):
         fcntl.flock(lock, fcntl.LOCK_EX)
         p = folder/"spend.jsonl"
         if not p.exists():
-            prior=PRIOR
-            if prior.exists():
+            if PRIOR.exists():
                 with p.open("w") as fh:
-                    fh.write(json.dumps({"t":time.time(),"usd":json.loads(prior.read_text())["repo_spend_usd"],
-                                         "what":"prior public repo spend"})+"\n")
+                    fh.write(json.dumps({"t":time.time(),"usd":prior(),"what":"prior public repo spend"})+"\n")
         rows = [json.loads(s) for s in p.read_text().splitlines()] if p.exists() else []
         total = sum(r["usd"] for r in rows)
         if total+usd > CAP+1e-9:
@@ -37,8 +37,12 @@ def book(usd, what):
 def total():
     p=STATE/".budget/spend.jsonl"
     if p.exists():return sum(json.loads(s)["usd"] for s in p.read_text().splitlines())
-    prior=PRIOR
-    return json.loads(prior.read_text())["repo_spend_usd"] if prior.exists() else 0.
+    return prior() if PRIOR.exists() else 0.
+
+
+def prior():
+    return (json.loads(PRIOR.read_text())["repo_spend_usd"]
+            + sum(json.loads(p.read_text())["total_cost_usd"] for p in ELSEWHERE if p.exists()))
 
 
 def configure():

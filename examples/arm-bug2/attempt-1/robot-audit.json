@@ -1,0 +1,12 @@
+{
+ "bad_calls": [],
+ "writable": [
+  "brain.py",
+  "brain.toml"
+ ],
+ "readable": [
+  "brain.py",
+  "brain.toml",
+  "scene.xml"
+ ]
+}

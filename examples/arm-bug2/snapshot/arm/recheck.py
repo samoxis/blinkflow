@@ -1,0 +1,155 @@
+"""Offline verification of successful or failed arm runs, including voice input."""
+import argparse
+import hashlib
+import json
+import math
+import os
+import pathlib
+import shutil
+import subprocess
+import tempfile
+import tomllib
+import urllib.request
+import wave
+
+import requests
+from blinkflow import diagnose as original_diagnose, fix, models, sam, see
+from . import prove, twin, gate
+
+
+def deny(*args,**kwargs):raise RuntimeError("offline recheck: network/model call forbidden")
+def read(p):return json.loads(pathlib.Path(p).read_text())
+def relative(value,parent):
+    p=pathlib.Path(value).expanduser()
+    return (p if p.is_absolute() else parent/p).resolve()
+
+
+def recheck(example,physics=True):
+    root=pathlib.Path(example).resolve()
+    os.environ.pop("MODEL_API_KEY",None);os.environ.pop("BASETEN_API_KEY",None)
+    models.api_key=deny;requests.sessions.Session.request=deny;urllib.request.urlopen=deny
+    if (root/"sha256.json").exists():
+        for name,sha in read(root/"sha256.json").items():
+            assert hashlib.sha256((root/name).read_bytes()).hexdigest()==sha,name
+    result=read(root/"result.json");checkpoint=read(root/"checkpoint.json")
+    phase3=checkpoint.get("phase")==3;kind=checkpoint.get("fix_kind","clearance")
+    before=read(root/"before/verdict.json")
+    groups=[root/"before"]
+    for p in sorted(root.glob("attempt-*")):
+        if p.is_dir() and (p/"verdict.json").exists():
+            groups.append(p);groups.extend(sorted(p.glob("control/*")))
+    rederived={};physical={};checks={}
+    with tempfile.TemporaryDirectory(prefix="arm-recheck-") as temp:
+        tmp=pathlib.Path(temp)
+        for src in groups:
+            name=str(src.relative_to(root));out=tmp/name;out.mkdir(parents=True)
+            shutil.copytree(src/"evidence",out/"evidence")
+            old=read(src/"verdict.json")
+            meta_path=relative(old.get("meta","./twin/meta.json"),src)
+            meta=read(meta_path);snap=see.load_snapshot(meta_path)
+            meta.update(video=snap["clip"],record=snap["record"])
+            m=out/"meta.json";m.write_text(json.dumps(meta))
+            saved=read(src/"evidence/evidence.json")
+            control="control" in src.relative_to(root).parts
+            v=prove.look(m,out,None if name=="before" else before["travel_m"],reuse=True,control=control,
+                         said=saved["names"].get("said"))
+            ev=read(out/"evidence/evidence.json")
+            for k in ("gap_by_frame","contacts","tracking","closest"):assert ev[k]==saved[k],(name,k)
+            for k in ("valid","contact","fixed","first_contact_s","closest_gap_px","target_error_m","target_reached","full_tracking"):
+                assert v[k]==old[k],(name,k)
+            if control:assert v["clean"]==old["clean"]
+            rederived[name]={k:v[k] for k in ("valid","contact","first_contact_s","target_error_m")}
+        evdir=root/"before/evidence";d=read(evdir/"diagnosis.json");files=read(evdir/"source.json")
+        chk=original_diagnose.check(d,files,d["key_frames"],d["tick_times"])
+        assert chk==d["check"] and chk["grounded"] and not chk["bad_refs"]
+        assert chk["file"]==("brain.py" if kind=="logic" else "brain.toml")
+        for p in sorted(root.glob("attempt-*")):
+            if not p.is_dir():continue
+            rec=read(p/"muse-code.json");assert not rec["change"]["agent_commits"]
+            scope=[]
+            for c in rec["tool_calls"]:
+                scope+=fix.outside(c["tool"],c["args"])
+                if phase3:scope+=gate.outside(c["tool"],c["args"])
+            passed=(p/"proof.json").exists() and read(p/"proof.json")["passed"]
+            if passed:
+                assert not rec["problems"] and not scope
+                expected="arm/brain.py" if kind=="logic" else "arm/brain.toml"
+                assert rec["change"]["files"]==[expected]
+                work=tmp/(p.name+"-patch");(work/"arm").mkdir(parents=True)
+                for n in ("brain.py","brain.toml"):shutil.copy(root/"brain-before"/n,work/"arm"/n)
+                subprocess.run(["git","apply",str(p/"change.diff")],cwd=work,check=True,capture_output=True)
+                folder=p/"brain" if (p/"brain").exists() else root/"brain-after"
+                for n in ("brain.py","brain.toml"):assert (work/"arm"/n).read_bytes()==(folder/n).read_bytes()
+                if kind=="logic":
+                    assert (work/"arm/brain.toml").read_bytes()==(root/"brain-before/brain.toml").read_bytes()
+                    assert tomllib.loads((work/"arm/brain.toml").read_text())["planner"]["clearance"]==.08
+                    edits=[s for s in (p/"change.diff").read_text().splitlines()
+                           if s.startswith(("+","-")) and not s.startswith(("+++","---"))]
+                    assert 1<=len(edits)<=4
+                else:
+                    a=tomllib.loads((root/"brain-before/brain.toml").read_text());b=tomllib.loads((work/"arm/brain.toml").read_text())
+                    assert b["planner"]["clearance"]>a["planner"]["clearance"]
+                    b["planner"]["clearance"]=a["planner"]["clearance"];assert a==b
+            else:assert (p/"failure.json").exists()
+            checks[p.name]={"passed":passed,"files":rec["change"]["files"],"audit_problems":scope}
+        if result["passed"]:
+            proof=read(root/f"attempt-{result['attempt']}/proof.json")
+            assert proof["passed"] and proof["incident"]["fixed"]
+            assert len(proof["controls"])==2 and all(c["clean"] for c in proof["controls"].values())
+        else:assert checks and not any(c["passed"] for c in checks.values())
+        assert read(root/"alignment.json")["delta_s"]<=.1
+        accounting=read(root/"models.json");assert accounting["repo_spend_usd"]<=3.
+        if phase3:assert accounting["phase3_spend_usd"]<=2.
+        assert abs(sum(c["cost_usd"] for c in accounting["calls"])-accounting["total_cost_usd"])<1e-4
+        voice_check=None
+        if checkpoint.get("input")=="voice":
+            v=read(root/"voice/voice.json");h=v["heard"];raw=read(root/"voice/voice-reply.json")
+            assert h["said"]==raw["transcript"].strip()==checkpoint["spoken"]
+            accepted=next(a for a in h["read_attempts"] if a.get("reply") and not a.get("rejected"))
+            assert float(json.loads(accepted["reply"])["seconds_ago"])==h["seconds_ago"]
+            assert h["moment"]==round(h["press"]-h["seconds_ago"],3)==h["moment_brain_s"]
+            t0=h["moment"]-5.;t1=min(h["moment"]+3.,h["press"]+1.)
+            assert v["incident"]["window_brain_s"]==[round(t0,3),round(t1,3)]
+            window=read(root/"voice/window/snapshot.json");full=read(root/"before/twin/meta.json");i0,i1=window["window"]
+            assert window["video_times"]==full["video_times"][i0:i1] and all(t0<=t<=t1 for t in window["video_times"])
+            assert relative(before["meta"],root/"before")==root/"voice/window/snapshot.json"
+            with wave.open(str(root/"voice/said.wav")) as w:audio_s=w.getnframes()/w.getframerate()
+            assert math.isclose(h["release"]-h["press"],audio_s,abs_tol=1e-6)
+            assert any(c["model"]==models.VOICE and c["cost_usd"]>0 for c in accounting["calls"])
+            assert h["said"] in (evdir/"diagnosis-input.txt").read_text()
+            voice_check={"said":h["said"],"seconds_ago":h["seconds_ago"],"press_s":h["press"],"moment_s":h["moment"],
+                         "window_s":[t0,t1],"audio_sha256":hashlib.sha256((root/"voice/said.wav").read_bytes()).hexdigest()}
+        if physics:
+            assert (root/"snapshot/scene.xml").read_bytes()==(twin.ROOT/"arm/scene.xml").read_bytes()
+            a=twin.replay(tmp/"repeat-a",root/"brain-before",video=False);b=twin.replay(tmp/"repeat-b",root/"brain-before",video=False)
+            assert a["record_sha256"]==b["record_sha256"]==read(root/"before/twin/meta.json")["record_sha256"]
+            physical["determinism"]={"before_record_sha256":a["record_sha256"],"repeats":2}
+            truth=read(tmp/"repeat-a/truth.json")
+            assert truth["contact_episodes"] and abs(truth["first_contact_s"]-before["first_contact_s"])<=.1
+            physical["before"]={"first_contact_s":truth["first_contact_s"],"episodes":len(truth["contact_episodes"])}
+            for p in sorted(root.glob("attempt-*")):
+                if not p.is_dir() or not (p/"proof.json").exists():continue
+                proof=read(p/"proof.json");folder=p/"brain" if (p/"brain").exists() else root/"brain-after"
+                for scene in ("incident",*proof["controls"]):
+                    dest=tmp/(p.name+"-"+scene);r=twin.replay(dest,folder,scene,video=False)
+                    src=p if scene=="incident" else p/"control"/scene
+                    assert r["record_sha256"]==read(src/"twin/meta.json")["record_sha256"]
+                    t=read(dest/"truth.json")
+                    if proof["passed"]:assert not t["contact_episodes"] and t["target_error_m"]<=.02
+                    physical[p.name+"/"+scene]={"contact_episodes":len(t["contact_episodes"]),"target_error_m":t["target_error_m"],"record_sha256":r["record_sha256"]}
+        return {"passed":True,"reported_fix_passed":result["passed"],"offline":True,"pixel_rederivations":rederived,
+                "diagnosis":chk,"attempts":checks,"voice":voice_check,"repo_spend_usd":accounting["repo_spend_usd"],
+                "run_cost_usd":accounting["total_cost_usd"],"physics":physical}
+
+
+def main():
+    ap=argparse.ArgumentParser();ap.add_argument("example",nargs="?",default="examples/arm")
+    ap.add_argument("--pixels-only",action="store_true");ap.add_argument("--write");a=ap.parse_args()
+    try:r=recheck(a.example,not a.pixels_only)
+    finally:
+        if sam._decoders is not None:sam._decoders.shutdown(wait=True);sam._decoders=None
+    if a.write:pathlib.Path(a.write).write_text(json.dumps(r,indent=1))
+    print(json.dumps(r,indent=1))
+
+
+if __name__=="__main__":main()

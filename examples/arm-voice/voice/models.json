@@ -1,0 +1,35 @@
+{
+ "calls": [
+  {
+   "model": "muse-voice-transcribe-1.0",
+   "where": "Meta Model API",
+   "purpose": "what the person said (push-to-talk)",
+   "seconds": 4.51,
+   "mode": "PUSH_TO_TALK",
+   "audio_seconds": 13.6,
+   "session": "voyager/transcribe/ABD8AC1561BA4A3582CA2523119D603C",
+   "cost_usd": 0.00068
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "when it happened and what it touched, from the person's words",
+   "seconds": 0.81,
+   "images": 0,
+   "input_tokens": 252,
+   "output_tokens": 28,
+   "cost_usd": 0.0
+  }
+ ],
+ "total_cost_usd": 0.00068,
+ "prices": {
+  "sam-3.1": "$0.20 per 1000 frames",
+  "muse-spark-open-1026": "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+  "muse-wonder-1.0": "$4.00 / 1M input, $0.20 / 1M cached input, $20.00 / 1M output",
+  "muse-spark-1.3": "Muse Code on Meta: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+  "muse-spark-1.3-contributor": "Muse Code on Meta: $0.10 / 1M input, $0.002 / 1M cached input, $0.20 / 1M output; the conversations may be used for training (the target and this repo are public)",
+  "muse-voice-transcribe-1.0": "$3.00 per 1000 audio minutes",
+  "muse-glimmer": "local (Ollama on this PC), $0",
+  "cached": "a SAM 3.1 reply for the same video bytes, concept and parameters, $0"
+ }
+}

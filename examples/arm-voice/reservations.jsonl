@@ -1,0 +1,8 @@
+{"t": 1793558696.9160492, "usd": 0.0006798, "what": "Muse Voice Transcribe", "phase": 3, "run": "."}
+{"t": 1793558701.4224823, "usd": 2.0000000000000486e-07, "what": "settle Muse Voice Transcribe", "phase": 3, "run": "."}
+{"t": 1793558703.0655286, "usd": 0.0302, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ./before/evidence/shot.mp4", "phase": 3, "run": "."}
+{"t": 1793558703.0664787, "usd": 0.0302, "what": "sam-3.1 'red block' on ./before/evidence/shot.mp4", "phase": 3, "run": "."}
+{"t": 1793558738.178074, "usd": 0.15816933333333336, "what": "arm diagnosis", "phase": 3, "run": "."}
+{"t": 1793558757.1360195, "usd": -0.06956093333333337, "what": "settle arm diagnosis", "phase": 3, "run": "."}
+{"t": 1793558780.1917002, "usd": 0.25, "what": "Muse Code attempt 1 maximum allowance", "phase": 3, "run": "."}
+{"t": 1793558846.7017794, "usd": -0.24498, "what": "settle Muse Code attempt 1", "phase": 3, "run": "."}

@@ -57,6 +57,12 @@ jobs:
           pip install -r requirements.txt
           env -u MODEL_API_KEY -u BASETEN_API_KEY python3 -m blinkflow.arm.recheck examples/arm --write /tmp/arm-recheck.json
           python3 -c "import json; r = json.load(open('/tmp/arm-recheck.json')); assert r['passed'] and r['offline']; print(json.dumps(r['physics']['determinism']))"
+      - name: The arm's logic bug and spoken run, re-checked offline
+        run: |
+          for e in arm-bug2 arm-voice; do
+            env -u MODEL_API_KEY -u BASETEN_API_KEY python3 -m blinkflow.arm.recheck examples/$e --write /tmp/$e.json
+            python3 -c "import json, sys; r = json.load(open(sys.argv[1])); assert r['passed'] and r['offline'] and all(a['passed'] for a in r['attempts'].values()); print(sys.argv[1], r['diagnosis']['file'], r['voice'])" /tmp/$e.json
+          done
       # The SIL log replays (results/sil.md): both bundles' hashes, every replay re-derived from the recorded
       # inputs through the saved brains, standard library only, sockets refused in each worker.
       - name: The SIL log replays, re-checked offline

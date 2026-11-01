@@ -91,7 +91,7 @@ class Guards(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=pathlib.Path(tmp);(root/"examples/arm").mkdir(parents=True)
             (root/"examples/arm/models.json").write_text('{"repo_spend_usd":2.99}')
-            with patch.object(budget,"STATE",root/"state"),patch.object(budget,"PRIOR",root/"examples/arm/models.json"):
+            with patch.object(budget,"STATE",root/"state"),patch.object(budget,"PRIOR",root/"examples/arm/models.json"),patch.object(budget,"ELSEWHERE",[]):
                 with self.assertRaisesRegex(RuntimeError,"STOP"):
                     budget.book(.02,"must not be sent")
                 self.assertAlmostEqual(budget.total(),2.99)

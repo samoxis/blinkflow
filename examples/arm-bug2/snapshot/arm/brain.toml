@@ -1,0 +1,6 @@
+[planner]
+clearance = 0.08
+
+[pd]
+kp = 100.0
+kd = 8.0

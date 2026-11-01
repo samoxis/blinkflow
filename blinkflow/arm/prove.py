@@ -35,13 +35,13 @@ def target_error(record):
     return math.dist(row["end_effector"],row["target"])
 
 
-def look(meta_path,out,reference=None,reuse=False,control=False):
+def look(meta_path,out,reference=None,reuse=False,control=False,said=None):
     arm_see.configure()
     meta_path,out=pathlib.Path(meta_path),pathlib.Path(out)
     meta=json.loads(meta_path.read_text())
     snap=see.load_snapshot(meta_path)
     ev=see.see(meta_path,out/"evidence",follow=(NAMES["robot"],NAMES["scenes"][meta["scene"]]["noun"]),
-               reuse=reuse,said="a couple of seconds ago the arm hit the red block")
+               reuse=reuse,said=said or "a couple of seconds ago the arm hit the red block")
     (out/"tracking-prompts.json").write_text(json.dumps({"robot":"robot arm","robot_prompt":arm_see.PROMPT,
              "robot_prompt_source":"box marked in the initial rendered image; identical before/after",
              "object_prompt":"red block","method":"SAM 3.1 masks, whole-mask gap <= 2 pixels"},indent=1))

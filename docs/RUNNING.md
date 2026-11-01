@@ -124,7 +124,7 @@ The same loop on a hand-written three-joint MuJoCo arm, [`blinkflow/arm/`](../bl
 
 - **Interpreter.** The example was made with `~/microduck_rl/.venv/bin/python` (Python 3.12.3, MuJoCo 3.10.0). That venv has neither `meta-sam-parser` nor the Muse Code SDK, which here live in `~/.local/lib/python3.12/site-packages` (`pip install --user`, the SDK from the launcher above; not vendored in this repo), so with it `PYTHONPATH` must name that folder. Since Nov 1 the system `python3` has `mujoco==3.10.0` in the same user site and runs everything below with `PYTHONPATH` unset; its replays give the example's record hashes.
 - **Rendering.** Offscreen through WSLg: `DISPLAY=:0`, `MUJOCO_GL` unset. `egl` and `osmesa` both fail in this WSL. No viewer window is opened. Replays without video need no display.
-- **State.** Runs, the SAM 3.1 cache and the spend ledger go to `~/blinkflow-runs/arm` (`BLINKFLOW_ARM_STATE` moves it), never into the repo. The ledger starts from the example's spend ($0.96209) and stops at $3.
+- **State.** Runs, the SAM 3.1 cache and the spend ledger go to `~/blinkflow-runs/arm` (`BLINKFLOW_ARM_STATE` moves it), never into the repo. The ledger starts from the public arm runs' spend ($1.30199: `examples/arm`'s ledger total plus `examples/arm-bug2` and `examples/arm-voice`) and stops at $3.
 
 ```bash
 # Offline: no key, network and model calls blocked

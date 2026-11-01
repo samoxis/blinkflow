@@ -1,0 +1,9 @@
+{
+ "base": "05d7402354255f060afb8948f44cf66fc1938ca8",
+ "started": 1793558672.113026,
+ "spoken": "a couple of seconds ago the arm hit the red block. A couple of seconds ago the arm hit the red block.",
+ "fix_kind": "clearance",
+ "phase": 3,
+ "input": "voice",
+ "press_s": 4.0
+}

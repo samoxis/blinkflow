@@ -1,0 +1,10 @@
+{
+ "mode": "blinkflow.voice.clip",
+ "press_s": 4.0,
+ "press_provenance": "specified on the saved replay timeline; not a captured physical key event",
+ "audio": "said.wav",
+ "moment_formula": "press_s - parsed seconds_ago",
+ "moment_s": 2.0,
+ "source_snapshot": "../before/twin/meta.json",
+ "rewind_snapshot": "./window/snapshot.json"
+}

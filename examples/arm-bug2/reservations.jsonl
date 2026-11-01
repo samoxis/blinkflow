@@ -1,0 +1,6 @@
+{"t": 1793558362.5073416, "usd": 0.036000000000000004, "what": "sam-3.1 'red block' on ./before/evidence/shot.mp4", "phase": 3, "run": "."}
+{"t": 1793558362.5087936, "usd": 0.036000000000000004, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ./before/evidence/shot.mp4", "phase": 3, "run": "."}
+{"t": 1793558392.9209423, "usd": 0.15815733333333334, "what": "arm diagnosis", "phase": 3, "run": "."}
+{"t": 1793558419.209667, "usd": -0.04848933333333334, "what": "settle arm diagnosis", "phase": 3, "run": "."}
+{"t": 1793558525.604627, "usd": 0.25, "what": "Muse Code attempt 1 maximum allowance", "phase": 3, "run": "."}
+{"t": 1793558554.3049698, "usd": -0.24648, "what": "settle Muse Code attempt 1", "phase": 3, "run": "."}

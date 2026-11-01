@@ -1,0 +1,188 @@
+{
+ "calls": [
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'red block'",
+   "seconds": 2.46,
+   "frames": 57,
+   "frames_returned": 57,
+   "cache_key": "91feaadb3bc9b223847c9bfc7d4696d111cad9c402d8a23f60a44eb5ff535c7b",
+   "original_seconds": 4.54,
+   "cost_usd": 0.0,
+   "stage": "attempt-1/control/obstacle_moved/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'robot arm'",
+   "seconds": 3.13,
+   "frames": 57,
+   "frames_returned": 57,
+   "cache_key": "da923f9c6655fcbc2c4299ab0549e20f1a78c963be6d6099126bc91f1018d266",
+   "original_seconds": 8.99,
+   "cost_usd": 0.0,
+   "stage": "attempt-1/control/obstacle_moved/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'red block'",
+   "seconds": 2.61,
+   "frames": 57,
+   "frames_returned": 57,
+   "cache_key": "927970b6d7978736ace04e7ec12f57ec4f802b3e03c0250f841568f3ad051d48",
+   "original_seconds": 5.37,
+   "cost_usd": 0.0,
+   "stage": "attempt-1/control/target_moved/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'robot arm'",
+   "seconds": 3.53,
+   "frames": 57,
+   "frames_returned": 57,
+   "cache_key": "b0e2a024f0ec112eacb925087a7302f3cc202a4fa5482c751ada3a4b0fb93069",
+   "original_seconds": 8.7,
+   "cost_usd": 0.0,
+   "stage": "attempt-1/control/target_moved/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'red block'",
+   "seconds": 1.78,
+   "frames": 180,
+   "frames_returned": 180,
+   "cache_key": "6090e8d0976c6b9cbe3d264f713291747265203b3483562e773d5975a6a36d8d",
+   "original_seconds": 10.36,
+   "cost_usd": 0.0,
+   "stage": "attempt-1/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'robot arm'",
+   "seconds": 9.71,
+   "frames": 180,
+   "frames_returned": 180,
+   "cache_key": "073ae818fcac1fb0a28acc8acb1fa7c0f34c8e727b0316acecb147be4a240368",
+   "original_seconds": 26.77,
+   "cost_usd": 0.0,
+   "stage": "attempt-1/evidence"
+  },
+  {
+   "model": "muse-spark-1.3-contributor",
+   "where": "Muse Code (muse serve, default profile) -> Meta Model API",
+   "purpose": "arm clearance fix attempt 1",
+   "seconds": 66.5,
+   "input_tokens": 132113,
+   "cached_input_tokens": 95699,
+   "output_tokens": 5924,
+   "cost_note": "from the host's token counts and the model catalog's prices",
+   "cost_usd": 0.00502,
+   "stage": "attempt-1"
+  },
+  {
+   "model": "muse-wonder-1.0",
+   "where": "Meta Model API",
+   "purpose": "arm diagnosis",
+   "seconds": 18.96,
+   "effort": "medium",
+   "status": "completed",
+   "images": 4,
+   "input_tokens": 8314,
+   "cached_input_tokens": 102,
+   "output_tokens": 2787,
+   "reasoning_tokens": 1384,
+   "cost_usd": 0.08861,
+   "stage": "before/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'red block'",
+   "seconds": 8.81,
+   "frames": 151,
+   "frames_returned": 151,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 151
+   },
+   "cache_key": "de2e2da66cf8c0aacf7ea44cfc2f3471a0140f0767d5548b4af8234df39edfe8",
+   "cost_usd": 0.0302,
+   "stage": "before/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'robot arm'",
+   "seconds": 25.3,
+   "frames": 151,
+   "frames_returned": 151,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 151
+   },
+   "cache_key": "fe76e556b7dc31afec300d01c72b67cbca1b3d4a405eff244c54d20cef7bd5f5",
+   "cost_usd": 0.0302,
+   "stage": "before/evidence"
+  },
+  {
+   "model": "muse-voice-transcribe-1.0",
+   "where": "Meta Model API",
+   "purpose": "what the person said (push-to-talk)",
+   "seconds": 4.51,
+   "mode": "PUSH_TO_TALK",
+   "audio_seconds": 13.6,
+   "session": "voyager/transcribe/ABD8AC1561BA4A3582CA2523119D603C",
+   "cost_usd": 0.00068,
+   "stage": "voice"
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "when it happened and what it touched, from the person's words",
+   "seconds": 0.81,
+   "images": 0,
+   "input_tokens": 252,
+   "output_tokens": 28,
+   "cost_usd": 0.0,
+   "stage": "voice"
+  }
+ ],
+ "total_cost_usd": 0.15471,
+ "prices": {
+  "sam-3.1": "$0.20 per 1000 frames",
+  "muse-spark-open-1026": "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+  "muse-wonder-1.0": "$4.00 / 1M input, $0.20 / 1M cached input, $20.00 / 1M output",
+  "muse-spark-1.3": "Muse Code on Meta: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+  "muse-spark-1.3-contributor": "Muse Code on Meta: $0.10 / 1M input, $0.002 / 1M cached input, $0.20 / 1M output; the conversations may be used for training (the target and this repo are public)",
+  "muse-voice-transcribe-1.0": "$3.00 per 1000 audio minutes",
+  "muse-glimmer": "local (Ollama on this PC), $0",
+  "cached": "a SAM 3.1 reply for the same video bytes, concept and parameters, $0"
+ },
+ "repo_spend_usd": 0.7271524,
+ "budget_cap_usd": 3.0,
+ "phase3_spend_usd": 0.3398964,
+ "phase3_cap_usd": 2.0,
+ "run_spend_usd": 0.1547084,
+ "includes": "every model call of this run; cache hits cost zero"
+}
