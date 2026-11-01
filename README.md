@@ -8,7 +8,7 @@
 
 **[See a real run, no install](https://samoxis.github.io/blinkflow/report/)**: the purple-box incident, from the snapshot to the proof. It is the static report of `examples/purple-box/`.
 
-**[Watch the 3-minute video](https://youtu.be/TDOurG4RWps)**: the same loop, said, fixed and proved, on the live simulator.
+**[Watch the 3-minute video](https://youtu.be/6EDwRU-f-xI)**: the same loop, said, fixed and proved, on the live simulator.
 
 <p align="center"><img src="docs/blinkflow.gif" width="640" alt="The example run's two replays in the twin, each at its own moment: before the fix the robot touches the purple box (1 contact at 11.46 s); with the fix it stops 107 px away; contacts 1 to 0"></p>
 
