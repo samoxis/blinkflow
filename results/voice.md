@@ -117,7 +117,7 @@ glasses' microphone (Bluetooth); BlinkFlow's clock is the brain's.
 
 ## The public example: a tap on the glasses (Oct 31)
 
-Run `voice/20261031-235414`, now [`examples/purple-box/`](../examples/purple-box), with `--tap-to-talk`: a tap on
+Run `voice/20261031-235414`, the public example until Nov 1 and the run the film shows ([`examples/purple-box/` at `9a585ea`](https://github.com/samoxis/blinkflow/tree/9a585ea/examples/purple-box)), with `--tap-to-talk`: a tap on
 the glasses' arm started the recording and the next one stopped it (`trigger: "glasses-tap"`).
 
 | said (Muse Voice Transcribe) | audio (s) | transcribed in (s) | read by Glimmer | key down (s) | moment said (s) | SAM 3.1 first contact (s) | moment said - seen (s) |
@@ -127,6 +127,24 @@ the glasses' arm started the recording and the next one stopped it (`trigger: "g
 - Fixed in attempt 1 (`side_memory_seconds` 0.0 → 3.0, kept as `93f3f41`): contacts 1 -> 0, control 5/5 as part
   of the acceptance, 386.6 s of machine time, $0.38 (50 of 58 SAM 3.1 replies cached). Both answers yes, in
   the console, after 3.3 s and 4.0 s.
+
+### The same inputs again (Nov 1)
+
+The control's rule changed on Nov 1 (each scene's own obstacle, and an obstacle seen in no frame is no verdict),
+so the example was run again from the Oct 31 run's saved inputs: `blinkflow.voice clip` with its 60 s clip, its
+sound (`said.wav`) and its key press, both questions answered by `--auto`. Run `voice/20261101-093835`, now
+[`examples/purple-box/`](../examples/purple-box); the input clip is in its `outside/`.
+
+| said (Muse Voice Transcribe) | audio (s) | transcribed in (s) | read by Glimmer | key down (s) | moment said (s) | SAM 3.1 first contact (s) | moment said - seen (s) |
+|---|---|---|---|---|---|---|---|
+| a couple of seconds ago the robot hit the purple box. | 4.8 | 2.68 | 2 s ago, contact, robot / purple box (1.09 s) | 13.483 | 11.483 | 10.903 (base reading) | **+0.58** |
+
+- The same sentence, moment and window (6.48-14.48 s) as on Oct 31. The window's video was cut and encoded
+  again from the clip, and SAM 3.1 saw the first contact one frame later (10.903 s against 10.869 s).
+- Fixed in attempt 1, the same change (`side_memory_seconds` 0.0 → 3.0, blob `a2deec7`, kept as `64e8f71` on
+  `~/duck-target`'s branch `example-20261101`): contacts 1 -> 0, control 5/5 with each scene's own obstacle,
+  368.0 s of machine time, $0.95 (22 of 52 SAM 3.1 replies cached; the replays' videos were encoded again,
+  so their replies were not).
 
 Still to run, for more than one data point:
 

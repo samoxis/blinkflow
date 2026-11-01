@@ -1,10 +1,8 @@
 {
- "feed": "live",
+ "feed": "clip",
+ "clip": "./outside/snapshot.json",
  "brain": "~/duck-target",
- "record": "~/blinkflow-runs/run-20261031-235414.jsonl.gz",
- "brain_start": 1793490876.207017,
- "clock": "WSL epoch",
- "heard_by": "push-to-talk (F9 or a tap on the glasses), Headset (RB Meta 0269)",
+ "clock": "brain time",
  "window_s": [
   5.0,
   3.0
@@ -25,14 +23,14 @@
     "rejected": null
    }
   ],
-  "press": 1793490889.6901286,
-  "release": 1793490893.8892608,
-  "trigger": "glasses-tap",
-  "moment": 1793490887.69,
-  "transcribe_s": 2.19,
-  "read_s": 1.37,
+  "press": 13.483,
+  "release": 18.283,
+  "trigger": null,
+  "moment": 11.483,
+  "transcribe_s": 2.68,
+  "read_s": 1.09,
   "moment_brain_s": 11.483,
-  "press_brain_s": 13.483
+  "heard_after_release_s": 3.78
  },
  "incident": {
   "kind": "contact",
@@ -44,12 +42,12 @@
   "robot_moved": true,
   "object_as_said": "purple box",
   "names_agree": true,
-  "incident_s": 10.869,
+  "incident_s": 10.903,
   "reading": "base",
-  "seconds": 24.7,
-  "evidence": "~/blinkflow-runs/voice/20261031-235414/window/evidence",
+  "seconds": 23.1,
+  "evidence": "~/blinkflow-runs/voice/20261101-093835/window/evidence",
   "snapshot": "./window/snapshot.json",
-  "see_cost_usd": 0.1024,
+  "see_cost_usd": 0.0852,
   "window_brain_s": [
    6.483,
    14.483
@@ -57,31 +55,14 @@
  },
  "loop": {
   "started": true,
-  "asked": true,
+  "asked": false,
   "rc": 0,
-  "seconds": 362.9,
-  "run": "~/blinkflow-runs/voice/20261031-235414/fix",
+  "seconds": 340.6,
+  "run": "~/blinkflow-runs/voice/20261101-093835/fix",
   "fixed": true,
   "kept": true,
   "attempts": 1,
-  "answers": [
-   {
-    "attempt": 1,
-    "question": "Fix it?",
-    "yes": true,
-    "seconds": 3.3,
-    "asked": 1793491002.1818397,
-    "answered": 1793491005.437154
-   },
-   {
-    "attempt": 1,
-    "question": "Keep the fix?",
-    "yes": true,
-    "seconds": 4.0,
-    "asked": 1793491283.7377057,
-    "answered": 1793491287.7450778
-   }
-  ],
+  "answers": [],
   "stopped": null
  }
 }

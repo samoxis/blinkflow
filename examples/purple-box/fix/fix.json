@@ -1,5 +1,5 @@
 {
- "run": "~/blinkflow-runs/voice/20261031-235414/fix",
+ "run": "~/blinkflow-runs/voice/20261101-093835/fix",
  "base": "b2fe90a08565089c3f0789c7058207c9e0bc82ff",
  "kind": "contact",
  "before": {
@@ -18,24 +18,24 @@
   "whole_mask_touch_s": 10.65,
   "closest_gap_px": 1.0,
   "closest_s": 10.685,
-  "robot_frames": 175,
-  "travel_m": 3.256,
-  "meta": "./before/twin/20261031-235525/meta.json",
-  "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/before/evidence",
-  "replay_s": 30.9,
-  "see_s": 19.1
+  "robot_frames": 171,
+  "travel_m": 3.106,
+  "meta": "./before/twin/20261101-093936/meta.json",
+  "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/before/evidence",
+  "replay_s": 31.2,
+  "see_s": 24.8
  },
  "attempts": [
   {
    "attempt": 1,
-   "diagnosis": "~/blinkflow-runs/voice/20261031-235414/window/evidence/diagnosis.md",
+   "diagnosis": "~/blinkflow-runs/voice/20261101-093835/window/evidence/diagnosis.md",
    "cause_key": "brain.toml::[obstacle] side_memory_seconds",
    "muse_code": {
-    "seconds": 41.6,
+    "seconds": 37.8,
     "outcome": "completed",
-    "summary": "I set `obstacle.side_memory_seconds` in brain.toml from 0.0 back to the built-in 3.0. With zero the robot forgot the close side wall returns as soon as the box left the central view, so it kept walking forward into it.",
+    "summary": "Changed `side_memory_seconds` in [brain.toml](~/duck-target/brain.toml) from 0.0 to 3.0, restoring the built-in default. This re-enables SIDE hazard memory so near-body wall returns seen only in the peripheral column are retained and fed into avoidance.",
     "problems": [],
-    "session": "01a19464-f191-7490-a829-7aaa05e6fbe1"
+    "session": "01a1967b-b0da-7e53-bd1c-1465d7c6a705"
    },
    "change": {
     "diff": "diff --git a/brain.toml b/brain.toml\nindex 86c6b1c..a2deec7 100644\n--- a/brain.toml\n+++ b/brain.toml\n@@ -26,7 +26,7 @@ first_row = 0             # frame rows used for walls (0 = top). Rows below last\n last_row = 4              # they are handled separately, as low objects and drops.\n corridor_half_width = 0.14 # half-width of the robot's swept corridor (m): body width + margin\n sensor_lateral = 0.0224   # the sensor sits this far left of the robot's axis (m; MJCF `tof` site)\n-side_memory_seconds = 0.0 # remember wall returns near the body for this long (s)\n+side_memory_seconds = 3.0 # remember wall returns near the body for this long (s)\n front_first_col = 1       # central columns used to decide whether the sensor is blind (0 = the sensor's left)\n front_last_col = 6\n min_zones = 2             # how many zones must be close for it to count (rejects single-zone noise)\n",
@@ -59,46 +59,18 @@
     "first_contact_s": null,
     "first_contact_frame": null,
     "whole_mask_touch_s": null,
-    "closest_gap_px": 106.2,
-    "closest_s": 12.925,
-    "robot_frames": 99,
-    "travel_m": 2.888,
-    "meta": "./attempt-1/twin/20261031-235727/meta.json",
-    "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/evidence",
-    "replay_s": 25.9,
-    "see_s": 10.7
+    "closest_gap_px": 106.8,
+    "closest_s": 12.89,
+    "robot_frames": 98,
+    "travel_m": 2.734,
+    "meta": "./attempt-1/twin/20261101-094128/meta.json",
+    "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/evidence",
+    "replay_s": 23.0,
+    "see_s": 12.9
    },
    "kept": true,
    "control": {
     "low_cube": {
-     "kind": "fall",
-     "incident": false,
-     "fixed": false,
-     "incident_s": null,
-     "fell_s": null,
-     "fall_reading": null,
-     "contact": false,
-     "valid": true,
-     "problems": [],
-     "reading": "whole_mask",
-     "first_contact_s": null,
-     "first_contact_frame": null,
-     "whole_mask_touch_s": null,
-     "closest_gap_px": null,
-     "closest_s": null,
-     "robot_frames": 200,
-     "travel_m": 2.446,
-     "clean": true,
-     "why": "no contact, no fall",
-     "names": [
-      "white robot",
-      "brown step"
-     ],
-     "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/low_cube/evidence",
-     "see_s": 18.2,
-     "render_s": 143.9
-    },
-    "ledge": {
      "kind": "contact",
      "incident": false,
      "fixed": false,
@@ -111,20 +83,50 @@
      "reading": "base",
      "first_contact_s": null,
      "first_contact_frame": null,
-     "whole_mask_touch_s": 18.105,
-     "closest_gap_px": 0.0,
-     "closest_s": 19.365,
+     "whole_mask_touch_s": null,
+     "closest_gap_px": 139.4,
+     "closest_s": 8.55,
+     "robot_frames": 200,
+     "travel_m": 2.446,
+     "clean": true,
+     "why": "no contact, no fall; closest gap 139 px",
+     "names": [
+      "white robot",
+      "orange cube"
+     ],
+     "named_by": "scene",
+     "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/low_cube/evidence",
+     "see_s": 11.5,
+     "render_s": 147.9
+    },
+    "ledge": {
+     "kind": "fall",
+     "incident": false,
+     "fixed": false,
+     "incident_s": null,
+     "fell_s": null,
+     "fall_reading": null,
+     "contact": false,
+     "valid": true,
+     "problems": [],
+     "reading": "base",
+     "first_contact_s": null,
+     "first_contact_frame": null,
+     "whole_mask_touch_s": null,
+     "closest_gap_px": 157.1,
+     "closest_s": 14.64,
      "robot_frames": 214,
      "travel_m": 2.488,
      "clean": true,
-     "why": "no contact, no fall; closest gap 0 px",
+     "why": "no contact, no fall; closest gap 157 px",
      "names": [
       "white robot",
-      "gray block"
+      "yellow floor"
      ],
-     "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/ledge/evidence",
-     "see_s": 28.4,
-     "render_s": 161.5
+     "named_by": "scene",
+     "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/ledge/evidence",
+     "see_s": 13.0,
+     "render_s": 168.8
     },
     "corner": {
      "kind": "contact",
@@ -150,9 +152,10 @@
       "white robot",
       "red barrier"
      ],
-     "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/corner/evidence",
-     "see_s": 12.2,
-     "render_s": 162.4
+     "named_by": "scene",
+     "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/corner/evidence",
+     "see_s": 8.0,
+     "render_s": 170.6
     },
     "doorway": {
      "kind": "contact",
@@ -168,76 +171,32 @@
      "first_contact_s": null,
      "first_contact_frame": null,
      "whole_mask_touch_s": null,
-     "closest_gap_px": 36.1,
-     "closest_s": 11.7,
+     "closest_gap_px": 13.6,
+     "closest_s": 8.97,
      "robot_frames": 193,
      "travel_m": 2.581,
      "clean": true,
-     "why": "no contact, no fall; closest gap 36 px",
+     "why": "no contact, no fall; closest gap 14 px",
      "names": [
       "white robot",
-      "white rectangle"
+      "blue block"
      ],
-     "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/doorway/evidence",
-     "see_s": 9.3,
-     "render_s": 158.8
+     "named_by": "scene",
+     "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/doorway/evidence",
+     "see_s": 8.7,
+     "render_s": 163.9
     }
    }
   }
  ],
  "fixed": true,
  "kept": true,
- "asked": true,
- "answers": [
-  {
-   "attempt": 1,
-   "question": "Fix it?",
-   "yes": true,
-   "seconds": 3.3,
-   "asked": 1793491002.1818397,
-   "answered": 1793491005.437154
-  },
-  {
-   "attempt": 1,
-   "question": "Keep the fix?",
-   "yes": true,
-   "seconds": 4.0,
-   "asked": 1793491283.7377057,
-   "answered": 1793491287.7450778
-  }
- ],
- "seen_s": 31.4,
+ "asked": false,
+ "answers": [],
+ "seen_s": 27.8,
  "control_skipped": false,
  "control": {
   "low_cube": {
-   "kind": "fall",
-   "incident": false,
-   "fixed": false,
-   "incident_s": null,
-   "fell_s": null,
-   "fall_reading": null,
-   "contact": false,
-   "valid": true,
-   "problems": [],
-   "reading": "whole_mask",
-   "first_contact_s": null,
-   "first_contact_frame": null,
-   "whole_mask_touch_s": null,
-   "closest_gap_px": null,
-   "closest_s": null,
-   "robot_frames": 200,
-   "travel_m": 2.446,
-   "clean": true,
-   "why": "no contact, no fall",
-   "names": [
-    "white robot",
-    "brown step"
-   ],
-   "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/low_cube/evidence",
-   "see_s": 18.2,
-   "render_s": 143.9
-  },
-  "ledge": {
    "kind": "contact",
    "incident": false,
    "fixed": false,
@@ -250,20 +209,50 @@
    "reading": "base",
    "first_contact_s": null,
    "first_contact_frame": null,
-   "whole_mask_touch_s": 18.105,
-   "closest_gap_px": 0.0,
-   "closest_s": 19.365,
+   "whole_mask_touch_s": null,
+   "closest_gap_px": 139.4,
+   "closest_s": 8.55,
+   "robot_frames": 200,
+   "travel_m": 2.446,
+   "clean": true,
+   "why": "no contact, no fall; closest gap 139 px",
+   "names": [
+    "white robot",
+    "orange cube"
+   ],
+   "named_by": "scene",
+   "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/low_cube/evidence",
+   "see_s": 11.5,
+   "render_s": 147.9
+  },
+  "ledge": {
+   "kind": "fall",
+   "incident": false,
+   "fixed": false,
+   "incident_s": null,
+   "fell_s": null,
+   "fall_reading": null,
+   "contact": false,
+   "valid": true,
+   "problems": [],
+   "reading": "base",
+   "first_contact_s": null,
+   "first_contact_frame": null,
+   "whole_mask_touch_s": null,
+   "closest_gap_px": 157.1,
+   "closest_s": 14.64,
    "robot_frames": 214,
    "travel_m": 2.488,
    "clean": true,
-   "why": "no contact, no fall; closest gap 0 px",
+   "why": "no contact, no fall; closest gap 157 px",
    "names": [
     "white robot",
-    "gray block"
+    "yellow floor"
    ],
-   "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/ledge/evidence",
-   "see_s": 28.4,
-   "render_s": 161.5
+   "named_by": "scene",
+   "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/ledge/evidence",
+   "see_s": 13.0,
+   "render_s": 168.8
   },
   "corner": {
    "kind": "contact",
@@ -289,9 +278,10 @@
     "white robot",
     "red barrier"
    ],
-   "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/corner/evidence",
-   "see_s": 12.2,
-   "render_s": 162.4
+   "named_by": "scene",
+   "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/corner/evidence",
+   "see_s": 8.0,
+   "render_s": 170.6
   },
   "doorway": {
    "kind": "contact",
@@ -307,25 +297,26 @@
    "first_contact_s": null,
    "first_contact_frame": null,
    "whole_mask_touch_s": null,
-   "closest_gap_px": 36.1,
-   "closest_s": 11.7,
+   "closest_gap_px": 13.6,
+   "closest_s": 8.97,
    "robot_frames": 193,
    "travel_m": 2.581,
    "clean": true,
-   "why": "no contact, no fall; closest gap 36 px",
+   "why": "no contact, no fall; closest gap 14 px",
    "names": [
     "white robot",
-    "white rectangle"
+    "blue block"
    ],
-   "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/doorway/evidence",
-   "see_s": 9.3,
-   "render_s": 158.8
+   "named_by": "scene",
+   "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/doorway/evidence",
+   "see_s": 8.7,
+   "render_s": 163.9
   }
  },
- "person_s": 3.3,
- "verified_s": 386.6,
- "fix_commit": "93f3f418bcc2a62204cdf48a6ba3fea9856a0abf",
- "seconds": 362.5,
+ "person_s": 0,
+ "verified_s": 368.0,
+ "fix_commit": "64e8f71c13706a00f9b1d357e0d525cc9b8618f6",
+ "seconds": 340.1,
  "stages": [
   {
    "stage": "Glimmer loaded and kept warm (background)",
@@ -335,52 +326,42 @@
   {
    "stage": "Muse Wonder's prompt cache: instructions + code (background)",
    "start": 0.0,
-   "seconds": 3.3
+   "seconds": 2.7
   },
   {
    "stage": "replay before any change: twin render (background)",
    "start": 0.0,
-   "seconds": 30.9
+   "seconds": 31.2
   },
   {
    "stage": "replay before any change: SAM 3.1 + verdict (background)",
-   "start": 30.9,
-   "seconds": 19.1
+   "start": 31.2,
+   "seconds": 24.8
   },
   {
    "stage": "understand (Glimmer key frames, Muse Wonder)",
-   "start": 3.3,
-   "seconds": 73.6
-  },
-  {
-   "stage": "attempt 1: the person decides to fix",
-   "start": 76.9,
-   "seconds": 3.3
+   "start": 2.7,
+   "seconds": 71.3
   },
   {
    "stage": "wait for the replay before any change",
-   "start": 80.1,
+   "start": 74.1,
    "seconds": 0.0
   },
   {
    "stage": "attempt 1: Muse Code edits the target",
-   "start": 80.1,
-   "seconds": 41.6
+   "start": 74.1,
+   "seconds": 37.8
   },
   {
    "stage": "attempt 1: replay and look again",
-   "start": 121.8,
-   "seconds": 36.6
+   "start": 111.9,
+   "seconds": 35.9
   },
   {
    "stage": "attempt 1: control, every other scene (pixels)",
-   "start": 158.3,
-   "seconds": 200.1
-  },
-  {
-   "stage": "attempt 1: the person decides to keep",
-   "start": 358.4,
-   "seconds": 4.0
+   "start": 147.8,
+   "seconds": 192.3
   }
  ]
 }

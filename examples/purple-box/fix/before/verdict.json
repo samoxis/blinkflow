@@ -14,10 +14,10 @@
  "whole_mask_touch_s": 10.65,
  "closest_gap_px": 1.0,
  "closest_s": 10.685,
- "robot_frames": 175,
- "travel_m": 3.256,
- "meta": "./twin/20261031-235525/meta.json",
- "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/before/evidence",
- "replay_s": 30.9,
- "see_s": 19.1
+ "robot_frames": 171,
+ "travel_m": 3.106,
+ "meta": "./twin/20261101-093936/meta.json",
+ "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/before/evidence",
+ "replay_s": 31.2,
+ "see_s": 24.8
 }

@@ -11,55 +11,55 @@ Make the smallest change to this workspace that removes the cause. Rules:
 ===== DIAGNOSIS =====
 # Diagnosis: white robot touches the purple box
 
-**Cause:** `brain.toml`, `obstacle.side_memory_seconds`, lines 29-29. The time for remembering wall returns near the robot's side is set to zero, so side hazards are never retained once they leave the current central view.
+**Cause:** `brain.toml`, `[obstacle] side_memory_seconds`, lines 29-29. side_memory_seconds is set to 0.0, disabling the hazard map's SIDE kind (hazards.py HazardMap._enabled requires side_memory_seconds > 0). Near-body wall returns in the peripheral sensor column are therefore never remembered or merged into the view ahead, so Forward never starts an avoidance episode for an object alongside the body.
 
-**In plain words:** The box was beside the robot rather than squarely ahead, so as the robot drew level with it the box slipped out of the sensor's central view and the way ahead looked clear. Because remembering nearby side obstacles was switched off, the robot forgot the close obstacle it had seen at its side and kept walking straight until it touched the box.
+**In plain words:** The purple box approached along the robot's flank rather than head-on, so it showed up only at the edge of the robot's depth view while the way straight ahead stayed clear. The robot therefore kept walking its straight line and clipped the box with its side. The safeguard meant to remember things seen close alongside the body was turned off in the settings, so those edge sightings were thrown away instead of making the robot steer away or stop.
 
-**What happened:** Robot walking forward in K1-K3 with the purple box close to its side, then touching it in K4, while the brain log stays in forward with vx=0.24 throughout.
+**What happened:** Robot walked straight forward into contact with a purple box that was visible only in the leftmost (peripheral) depth column at ~0.7m, while central columns stayed >1m clear.
 
-**Confidence:** 0.78  ·  **Fix direction (no patch):** Restore a positive remembering time for near-body wall returns in the configuration (for example the built-in few seconds), so a side obstacle seen shortly before it leaves the view still steers or stops the robot while it passes.
+**Confidence:** 0.72  ·  **Fix direction (no patch):** Restore a positive side-memory duration in the configuration (the built-in default is 3 seconds) so near-body side returns are retained and fed into avoidance.
 
 ## Evidence cited
 
-- *frame* `K1 t=9.869`: gap 34.0 px, feet -166.3 px past the base edge. The purple box is already close beside the robot, not directly in its central path.
-- *frame* `K2 t=10.369`: gap 8.2 px. The box remains beside the robot's leg as it keeps walking.
-- *frame* `K4 t=10.869`: gap 2.0 px. First contact with the box beside the robot's front.
-- *log* `log t=10.775`: dt=-0.094, state=forward. Just before contact the brain is still in forward, commanding vx=0.24 and only vyaw=+0.050; it never brakes or turns away.
-- *log* `depth t=10.775`: rows 0-4, cols 1-6 all >= about 124 cm. The central wall rows contain no near obstacle: the closest central-column returns are about 1.24 m, above both the 0.70 m steering distance and 0.28 m stop distance, so the current front view alone looks clear while the box is at the side.
-- *log* `depth t=7.918`: cols 0-3 rows 0-4 approx 62-97 cm. Earlier the sensor did register close returns on one side, around 0.62-0.89 m in the left-hand columns while the opposite side reached about 2.9 m; those are the kind of near-body wall returns that side memory exists to retain.
+- *frame* `K1 t=9.903s`: frame 102, gap 26.0 px. Purple box already close on the robot's side, 1s before contact, gap 26px, yet approaching.
+- *frame* `K2 t=10.403s`: frame 117. Box at the robot's left side 0.5s before contact, gap 2px on screen.
+- *frame* `K3 t=10.803s / K4 t=10.903s`: frames 129/132. Box remains very close at the side through first contact (gap 2px, feet -13.3px past base edge at K4).
+- *log* `log t=9.923s full frame`: col0 row2=77cm, col1 row2=129cm. Sensor did see the object in its leftmost column: column 0 reads 77cm in the wall rows while column 1 reads ~129cm  the object is peripheral, not in the central front columns.
+- *log* `log t=10.424s full frame`: col0 72-73cm. Object still only in column 0: rows 3-4 read 73/72cm there against 119/120cm in column 1.
+- *log* `log t=7.918s..11.126s`: state=forward throughout. Brain stayed in forward at vx=0.24 the whole approach, vyaw only small heading corrections, never brake/turn  it never treated the side object as an obstacle.
+- *code* `brain.toml line 29 vs config.py line 46`: 0.0 vs default 3.0. Configured side_memory_seconds=0.0 overrides the built-in default of 3.0s, switching off the only mechanism (hazards.py SIDE detection, SIDE_LOOKAHEAD 0.8m / SIDE_BAND 0.30m) that keeps near-body wall returns like this ~0.72m, column-0 return in play.
 
 ## Ruled out
 
-- Safety hold, fall detection or missing depth stopping it too late: Every log tick from t=7.918 to t=11.076 says safe=yes and stays in forward, and the robot visibly walks in K1-K3.
-- Sensor blindness or a blind-frame false clear: At t=9.873, t=10.374 and t=10.775 the central rows have many valid returns and no near central obstacle; there is no blind-frame signature, and the state never leaves forward.
-- Failure to brake after the front view reported an obstacle: At t=10.775 the central wall distances are roughly 1.24 m or more, far beyond the stop threshold, so a correctly triggered brake or turn state would have appeared in the log; none does.
-- Commanded walking speed below the stepping threshold: The log shows repeated commanded forward motion at 0.24 and the camera shows the robot actually advancing toward the box in K1-K4; this was not a stationary threshold failure.
-- Low-object or drop handling in the bottom rows as the primary failure: The contact in K4 is at the robot's side and the near hazard is absent from the central front columns in the t=10.775 frame, which matches a side obstacle lost from view rather than a low object or drop straight ahead in the bottom rows.
+- Head-on wall detection failure / blind sensor: Central front columns read over a metre at t=9.923s and t=10.925s while only column 0 was near; the view ahead was genuinely clear, so the stop-and-turn path correctly never fired.
+- Fall, unsafe state, or missing depth frames: Log shows safe=yes on every tick and the state never left forward for hold; valid depth arrived throughout.
+- Low-object (cube/ball) floor-geometry detection missed it: The object returns 72-77cm readings in the middle/upper rows (rows 3-4) of column 0, i.e. a tall body-height object, not a floor-level return in the bottom rows.
+- Sensor blindness / failed measurements: Depth frames are full of valid returns (nearest per row continuous in the log), so the frame was not blind; the near return was present but in the peripheral column only.
 
 ## Check against what was sent
 
-- file exists: True; lines in range: True; function found: True
-- key frames cited: K1, K2, K4; log ticks cited: 7.918, 9.869, 10.369, 10.775, 10.869
+- file exists: True; lines in range: True; function found: True; lines inside it: True
+- key frames cited: K1, K2, K3, K4; log ticks cited: 7.918, 9.903, 9.923, 10.403, 10.424, 10.803, 10.903, 11.126
 - references that match nothing sent: none
-- **grounded (file, lines and function real; key frames and log ticks cited that exist): yes**
+- **grounded (file, lines and function real, the lines inside it; key frames and log ticks cited that exist; every citation real): yes**
 
 ## Key frames
 
-**K1** 1 s before contact, t = 9.87 s. Glimmer: *The robot is walking forward with its legs apart and its feet on the ground, and the purple box is to the left of the robot in the picture, slightly below and in front of it, close to the robot’s left side.*
+**K1** 1 s before contact, t = 9.90 s. Glimmer: *The robot is walking forward with its legs apart and orange feet on the ground, and the purple box is to the left of the robot in the picture, slightly below and in front of it, close to the left edge.*
 
 
-**K2** 0.5 s before contact, t = 10.37 s. Glimmer: *The robot is walking forward with its legs positioned under its body, and the purple box is to the left of the robot, slightly in front of it and close to its left leg.*
+**K2** 0.5 s before contact, t = 10.40 s. Glimmer: *The robot is walking forward with its legs positioned under its body, and the purple box is to the left of the robot in the picture, slightly in front of it and close to its left side.*
 
 
-**K3** just before contact, t = 10.77 s. Glimmer: *The robot is walking forward toward the camera with its legs lifted off the ground, and the purple box is to the left of the robot in the picture, slightly in front of it and close to its left side.*
+**K3** just before contact, t = 10.80 s. Glimmer: *The robot is walking forward with its legs lifted off the ground, and the purple box is to the left of the robot in the picture, slightly in front of it and very close to its left side.*
 
 
-**K4** first contact, t = 10.87 s. Glimmer: *The robot is standing with its legs together and slightly bent, and the purple box is to the left of the robot in the picture, close to its front left side.*
+**K4** first contact, t = 10.90 s. Glimmer: *The robot is standing facing the camera with its orange feet planted on the ground and its legs slightly apart, and the purple box is to the left of the robot, partially in front of it and very close to its left side.*
 
 
 ## Model
 
-muse-wonder-1.0 (Meta Model API), effort medium, 41158 input tokens (30310 cached), 7708 output (6666 reasoning), $0.204, 63 s. Every call of this incident is in `models.json`.
+muse-wonder-1.0 (Meta Model API), effort medium, 41217 input tokens (30182 cached), 6954 output (5850 reasoning), $0.189, 61 s. Every call of this incident is in `models.json`.
 
 ===== WORKSPACE =====
 Its files (git ls-files): .gitignore, LICENSE, brain.toml, pyproject.toml, src/microduck_brain/__init__.py, src/microduck_brain/brain.py, src/microduck_brain/cli.py, src/microduck_brain/config.py, src/microduck_brain/depth.py, src/microduck_brain/hazards.py, src/microduck_brain/ipc.py, src/microduck_brain/plot.py, src/microduck_brain/record.py, src/microduck_brain/runner.py, uv.lock

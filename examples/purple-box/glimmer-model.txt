@@ -1,6 +1,7 @@
 # Muse Glimmer as this PC runs it (Windows 11, Ollama for Windows, RTX 4090), read Oct 29, 2026. Model ID
-# de878ce33ad8 is the one `ollama ps` showed in all 145 samples taken while this example ran (provenance.txt,
-# Oct 31, 23:54-00:01 UTC), 16 GB, 100 % GPU, context 8192.
+# de878ce33ad8 is the one Ollama answered with while this example ran (/api/ps, the glimmer.vram event in
+# events.jsonl: 16.7 GB, all in VRAM, Q4_K_M, context 8192), and the one `ollama ps` showed in all 145 samples
+# taken every ~3 s during the Oct 31 run this film shows (its provenance.txt: examples/purple-box at 9a585ea).
 #
 # Checkable without our GPU. The weights are Ollama's public library model muse-glimmer:30b-q4_K_M, which is
 # also its `latest`:

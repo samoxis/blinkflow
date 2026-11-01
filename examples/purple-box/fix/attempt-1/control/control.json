@@ -1,33 +1,5 @@
 {
  "low_cube": {
-  "kind": "fall",
-  "incident": false,
-  "fixed": false,
-  "incident_s": null,
-  "fell_s": null,
-  "fall_reading": null,
-  "contact": false,
-  "valid": true,
-  "problems": [],
-  "reading": "whole_mask",
-  "first_contact_s": null,
-  "first_contact_frame": null,
-  "whole_mask_touch_s": null,
-  "closest_gap_px": null,
-  "closest_s": null,
-  "robot_frames": 200,
-  "travel_m": 2.446,
-  "clean": true,
-  "why": "no contact, no fall",
-  "names": [
-   "white robot",
-   "brown step"
-  ],
-  "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/low_cube/evidence",
-  "see_s": 18.2,
-  "render_s": 143.9
- },
- "ledge": {
   "kind": "contact",
   "incident": false,
   "fixed": false,
@@ -40,20 +12,50 @@
   "reading": "base",
   "first_contact_s": null,
   "first_contact_frame": null,
-  "whole_mask_touch_s": 18.105,
-  "closest_gap_px": 0.0,
-  "closest_s": 19.365,
+  "whole_mask_touch_s": null,
+  "closest_gap_px": 139.4,
+  "closest_s": 8.55,
+  "robot_frames": 200,
+  "travel_m": 2.446,
+  "clean": true,
+  "why": "no contact, no fall; closest gap 139 px",
+  "names": [
+   "white robot",
+   "orange cube"
+  ],
+  "named_by": "scene",
+  "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/low_cube/evidence",
+  "see_s": 11.5,
+  "render_s": 147.9
+ },
+ "ledge": {
+  "kind": "fall",
+  "incident": false,
+  "fixed": false,
+  "incident_s": null,
+  "fell_s": null,
+  "fall_reading": null,
+  "contact": false,
+  "valid": true,
+  "problems": [],
+  "reading": "base",
+  "first_contact_s": null,
+  "first_contact_frame": null,
+  "whole_mask_touch_s": null,
+  "closest_gap_px": 157.1,
+  "closest_s": 14.64,
   "robot_frames": 214,
   "travel_m": 2.488,
   "clean": true,
-  "why": "no contact, no fall; closest gap 0 px",
+  "why": "no contact, no fall; closest gap 157 px",
   "names": [
    "white robot",
-   "gray block"
+   "yellow floor"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/ledge/evidence",
-  "see_s": 28.4,
-  "render_s": 161.5
+  "named_by": "scene",
+  "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/ledge/evidence",
+  "see_s": 13.0,
+  "render_s": 168.8
  },
  "corner": {
   "kind": "contact",
@@ -79,9 +81,10 @@
    "white robot",
    "red barrier"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/corner/evidence",
-  "see_s": 12.2,
-  "render_s": 162.4
+  "named_by": "scene",
+  "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/corner/evidence",
+  "see_s": 8.0,
+  "render_s": 170.6
  },
  "doorway": {
   "kind": "contact",
@@ -97,18 +100,19 @@
   "first_contact_s": null,
   "first_contact_frame": null,
   "whole_mask_touch_s": null,
-  "closest_gap_px": 36.1,
-  "closest_s": 11.7,
+  "closest_gap_px": 13.6,
+  "closest_s": 8.97,
   "robot_frames": 193,
   "travel_m": 2.581,
   "clean": true,
-  "why": "no contact, no fall; closest gap 36 px",
+  "why": "no contact, no fall; closest gap 14 px",
   "names": [
    "white robot",
-   "white rectangle"
+   "blue block"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/doorway/evidence",
-  "see_s": 9.3,
-  "render_s": 158.8
+  "named_by": "scene",
+  "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/doorway/evidence",
+  "see_s": 8.7,
+  "render_s": 163.9
  }
 }

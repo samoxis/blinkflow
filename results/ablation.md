@@ -17,7 +17,15 @@ real loop's history.
 | 1 | 2 | yes, in both | 0.0 → 3.0 | contacts 1 → 0, closest 106 px | 4/4 clean | 577.7 | 802.6 | $0.041 | $0.060 |
 | 2 | 2 | yes, in attempt 2 | 0.0 → 3.0 | contacts 1 → 0, closest 106 px | 4/4 clean | 596.5 | 820.1 | $0.034 | $0.013 |
 | 3 | 3 | yes, in attempt 3 | 0.0 → 3.0 | contacts 1 → 0, closest 106 px | 4/4 clean | 295.5 | 508.9 | $0.014 | $0.009 |
-| BlinkFlow, the example | 1 | yes | 0.0 → 3.0 | contacts 1 → 0, closest 106 px | 4/4 clean | 41.6 | 386.6 | $0.005 | (in the $0.38) |
+| BlinkFlow, the film's run (Oct 31) | 1 | yes | 0.0 → 3.0 | contacts 1 → 0, closest 106 px | 4/4 clean | 41.6 | 386.6 | $0.005 | (in the $0.38) |
+| BlinkFlow, the example (Nov 1) | 1 | yes | 0.0 → 3.0 | contacts 1 → 0, closest 107 px | 4/4 clean, each scene's own obstacle | 37.8 | 368.0 | $0.005 | (in the $0.95) |
+
+**The control in this table, and the rule since.** Here the control followed objects Glimmer named in each
+scene, as it did until Nov 1: run 1 followed a "brown edge" for the low cube, all three a "white rectangle" in
+the doorway, and in run 3 the ledge's "yellow pit" was found in no frame, which then counted as clean. Since
+Nov 1 each scene's own obstacle is followed, as the scene defines it (`blinkflow/scenes/obstacles.json`), and
+an obstacle seen in no frame is no verdict. All three runs kept the same blob (`a2deec7`) as BlinkFlow; with
+that rule, the Nov 1 example's control of that blob is 4/4 clean (closest 139, 157, 50 and 14 px).
 
 **Muse Code alone found the cause and the same fix in 3 of 3 runs**, byte for byte the change BlinkFlow kept
 (blob `a2deec7`), and that change passed the twin proof and the control every time. It did not get there on

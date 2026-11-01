@@ -1,5 +1,5 @@
 {
- "snapshot": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/corner/look/meta.json",
+ "snapshot": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/control/corner/look/meta.json",
  "kind": "twin",
  "clock": "simulated",
  "clip": "../look/every.mp4",
@@ -19,15 +19,9 @@
  "names": {
   "robot": "white robot",
   "object": "red barrier",
-  "object_is": "object",
-  "named_by": "glimmer",
-  "attempts": [
-   {
-    "namer": "glimmer",
-    "reply": "{\"objects\": [\"white robot\", \"red barrier\", \"green sphere\", \"cyan block\"], \"hazards\": [\"floor edge\", \"drop-off\"], \"robot\": \"white robot\", \"nearest\": \"red barrier\", \"nearest_is\": \"object\"}",
-    "rejected": null
-   }
-  ],
+  "object_is": "as in the incident",
+  "named_by": "incident",
+  "attempts": [],
   "object_warning": null,
   "said": null
  },

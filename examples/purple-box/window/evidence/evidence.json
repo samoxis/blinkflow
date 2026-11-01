@@ -2,18 +2,18 @@
  "snapshot": "../snapshot.json",
  "kind": "live",
  "clock": "wall",
- "clip": "../20261031-235458-e37024.mp4",
+ "clip": "../window.mp4",
  "shot": {
-  "first_frame": 44,
-  "frames": 226,
+  "first_frame": 42,
+  "frames": 198,
   "size": [
    1272,
    994
   ],
   "naming_frames": [
-   119,
-   194,
-   269
+   108,
+   173,
+   239
   ]
  },
  "names": {
@@ -24,7 +24,7 @@
   "attempts": [
    {
     "namer": "glimmer",
-    "reply": "{\"objects\": [\"white robot\", \"purple box\"], \"hazards\": [\"floor drop-off\"], \"robot\": \"white robot\", \"nearest\": \"purple box\", \"nearest_is\": \"object\"}",
+    "reply": "{\"objects\": [\"white robot\", \"purple box\"], \"hazards\": [\"gray drop-off\"], \"robot\": \"white robot\", \"nearest\": \"purple box\", \"nearest_is\": \"object\"}",
     "rejected": null
    }
   ],
@@ -35,39 +35,39 @@
   "robot": {
    "concept": "white robot",
    "status": "completed",
-   "frames_with_mask": 183,
+   "frames_with_mask": 159,
    "instances_max": 1
   },
   "object": {
    "concept": "purple box",
    "status": "completed",
-   "frames_with_mask": 216,
+   "frames_with_mask": 188,
    "instances_max": 1
   }
  },
  "object": {
   "box": [
    363,
-   176,
-   551,
+   177,
+   552,
    554
   ],
-  "frames": 216,
+  "frames": 188,
   "objects_named": 1,
   "others": []
  },
  "contact_px": 2,
  "base": {
   "method": "lit top face + side face",
-  "from_frame": 54,
+  "from_frame": 52,
   "down": [
    0.989,
-   0.149
+   0.15
   ],
-  "thickness_px": 141.0,
-  "feet_tolerance_px": 14.1,
-  "robot_height_px": 273.1,
-  "reach_px": 177.5
+  "thickness_px": 139.6,
+  "feet_tolerance_px": 14.0,
+  "robot_height_px": 277.8,
+  "reach_px": 180.5
  },
  "incident": "contact",
  "fall": {
@@ -77,35 +77,25 @@
  },
  "first_contact": {
   "reading": "base",
-  "frame": 133,
-  "shot_frame": 89,
-  "brain_s": 10.869,
+  "frame": 132,
+  "shot_frame": 90,
+  "brain_s": 10.903,
   "gap_px": 2.0,
-  "base_gap_px": 16.4,
-  "feet_depth_px": -13.9,
-  "robot_px": 327.1,
-  "wall_time": "2026-10-31T23:54:47.076+00:00",
+  "base_gap_px": 17.0,
+  "feet_depth_px": -13.3,
+  "robot_px": 329.4,
+  "wall_time": "2026-10-31T23:54:47.109+00:00",
   "brain_tick": {
-   "t": 10.875,
+   "t": 10.925,
    "state": "forward",
    "cmd": [
     "move",
     0.24,
-    -0.03464
+    -0.03494
    ],
    "why": null
   },
   "brain_ticks_before": [
-   {
-    "t": 10.374,
-    "state": "forward",
-    "cmd": [
-     "move",
-     0.24,
-     -0.06607
-    ],
-    "why": null
-   },
    {
     "t": 10.424,
     "state": "forward",
@@ -235,18 +225,28 @@
      0.07318
     ],
     "why": null
+   },
+   {
+    "t": 11.076,
+    "state": "forward",
+    "cmd": [
+     "move",
+     0.24,
+     0.12419
+    ],
+    "why": null
    }
   ]
  },
  "contacts": {
   "whole_mask": {
-   "frame": 119,
+   "frame": 117,
    "shot_frame": 75,
    "brain_s": 10.403,
    "gap_px": 2.0,
-   "base_gap_px": 81.6,
-   "feet_depth_px": -82.4,
-   "robot_px": 300.6,
+   "base_gap_px": 83.9,
+   "feet_depth_px": -84.4,
+   "robot_px": 300.0,
    "wall_time": "2026-10-31T23:54:46.609+00:00",
    "brain_tick": {
     "t": 10.424,
@@ -392,35 +392,25 @@
    ]
   },
   "base": {
-   "frame": 133,
-   "shot_frame": 89,
-   "brain_s": 10.869,
+   "frame": 132,
+   "shot_frame": 90,
+   "brain_s": 10.903,
    "gap_px": 2.0,
-   "base_gap_px": 16.4,
-   "feet_depth_px": -13.9,
-   "robot_px": 327.1,
-   "wall_time": "2026-10-31T23:54:47.076+00:00",
+   "base_gap_px": 17.0,
+   "feet_depth_px": -13.3,
+   "robot_px": 329.4,
+   "wall_time": "2026-10-31T23:54:47.109+00:00",
    "brain_tick": {
-    "t": 10.875,
+    "t": 10.925,
     "state": "forward",
     "cmd": [
      "move",
      0.24,
-     -0.03464
+     -0.03494
     ],
     "why": null
    },
    "brain_ticks_before": [
-    {
-     "t": 10.374,
-     "state": "forward",
-     "cmd": [
-      "move",
-      0.24,
-      -0.06607
-     ],
-     "why": null
-    },
     {
      "t": 10.424,
      "state": "forward",
@@ -550,1667 +540,1461 @@
       0.07318
      ],
      "why": null
+    },
+    {
+     "t": 11.076,
+     "state": "forward",
+     "cmd": [
+      "move",
+      0.24,
+      0.12419
+     ],
+     "why": null
     }
    ]
   },
   "body": null
  },
  "closest": {
-  "frame": 121,
+  "frame": 119,
   "shot_frame": 77,
   "brain_s": 10.469,
   "gap_px": 1.0,
-  "base_gap_px": 78.9,
-  "feet_depth_px": -80.3,
-  "robot_px": 304.4
+  "base_gap_px": 80.8,
+  "feet_depth_px": -81.5,
+  "robot_px": 304.7
  },
  "gap_by_frame": [
   {
    "frame": 81,
-   "shot_frame": 37,
-   "brain_s": 9.136,
-   "gap_px": 51.4,
-   "base_gap_px": 272.0,
-   "feet_depth_px": -270.1,
-   "robot_px": 130.1
-  },
-  {
-   "frame": 82,
-   "shot_frame": 38,
-   "brain_s": 9.169,
-   "gap_px": 47.9,
-   "base_gap_px": 270.0,
-   "feet_depth_px": -267.5,
-   "robot_px": 133.5
-  },
-  {
-   "frame": 83,
    "shot_frame": 39,
    "brain_s": 9.203,
    "gap_px": 47.4,
-   "base_gap_px": 268.0,
-   "feet_depth_px": -266.8,
-   "robot_px": 134.1
+   "base_gap_px": 270.0,
+   "feet_depth_px": -268.3,
+   "robot_px": 134.2
   },
   {
-   "frame": 84,
+   "frame": 82,
    "shot_frame": 40,
    "brain_s": 9.236,
    "gap_px": 47.4,
-   "base_gap_px": 268.0,
-   "feet_depth_px": -266.6,
-   "robot_px": 134.3
+   "base_gap_px": 270.0,
+   "feet_depth_px": -268.4,
+   "robot_px": 134.0
   },
   {
-   "frame": 85,
+   "frame": 83,
    "shot_frame": 41,
    "brain_s": 9.269,
    "gap_px": 48.3,
-   "base_gap_px": 269.0,
-   "feet_depth_px": -267.8,
-   "robot_px": 132.0
+   "base_gap_px": 271.0,
+   "feet_depth_px": -269.1,
+   "robot_px": 132.1
+  },
+  {
+   "frame": 84,
+   "shot_frame": 42,
+   "brain_s": 9.303,
+   "gap_px": 48.8,
+   "base_gap_px": 271.0,
+   "feet_depth_px": -259.5,
+   "robot_px": 139.6
+  },
+  {
+   "frame": 85,
+   "shot_frame": 43,
+   "brain_s": 9.336,
+   "gap_px": 51.0,
+   "base_gap_px": 273.0,
+   "feet_depth_px": -242.3,
+   "robot_px": 154.4
   },
   {
    "frame": 86,
-   "shot_frame": 42,
-   "brain_s": 9.303,
-   "gap_px": 48.3,
-   "base_gap_px": 269.0,
-   "feet_depth_px": -259.0,
-   "robot_px": 138.6
+   "shot_frame": 44,
+   "brain_s": 9.369,
+   "gap_px": 55.5,
+   "base_gap_px": 274.0,
+   "feet_depth_px": -234.1,
+   "robot_px": 160.8
   },
   {
    "frame": 87,
-   "shot_frame": 43,
-   "brain_s": 9.336,
-   "gap_px": 50.6,
-   "base_gap_px": 270.0,
-   "feet_depth_px": -240.8,
-   "robot_px": 154.5
-  },
-  {
-   "frame": 88,
-   "shot_frame": 44,
-   "brain_s": 9.369,
-   "gap_px": 55.8,
-   "base_gap_px": 272.1,
-   "feet_depth_px": -233.4,
-   "robot_px": 160.1
-  },
-  {
-   "frame": 89,
    "shot_frame": 45,
    "brain_s": 9.403,
    "gap_px": 55.2,
-   "base_gap_px": 266.3,
-   "feet_depth_px": -232.2,
-   "robot_px": 160.6
+   "base_gap_px": 268.2,
+   "feet_depth_px": -232.8,
+   "robot_px": 161.4
   },
   {
-   "frame": 90,
+   "frame": 88,
    "shot_frame": 46,
    "brain_s": 9.436,
    "gap_px": 55.2,
-   "base_gap_px": 266.3,
-   "feet_depth_px": -232.2,
-   "robot_px": 160.6
+   "base_gap_px": 268.2,
+   "feet_depth_px": -232.9,
+   "robot_px": 161.3
   },
   {
-   "frame": 91,
+   "frame": 89,
    "shot_frame": 47,
    "brain_s": 9.469,
    "gap_px": 47.4,
-   "base_gap_px": 256.2,
-   "feet_depth_px": -232.7,
-   "robot_px": 160.2
+   "base_gap_px": 257.9,
+   "feet_depth_px": -233.4,
+   "robot_px": 160.8
   },
   {
-   "frame": 92,
+   "frame": 90,
    "shot_frame": 48,
    "brain_s": 9.503,
    "gap_px": 30.4,
-   "base_gap_px": 240.1,
-   "feet_depth_px": -231.8,
-   "robot_px": 161.8
+   "base_gap_px": 242.1,
+   "feet_depth_px": -232.7,
+   "robot_px": 162.3
   },
   {
-   "frame": 93,
+   "frame": 91,
    "shot_frame": 49,
    "brain_s": 9.536,
-   "gap_px": 17.5,
-   "base_gap_px": 220.5,
-   "feet_depth_px": -219.4,
-   "robot_px": 175.3
+   "gap_px": 17.7,
+   "base_gap_px": 222.0,
+   "feet_depth_px": -220.5,
+   "robot_px": 175.7
   },
   {
-   "frame": 94,
+   "frame": 92,
    "shot_frame": 50,
    "brain_s": 9.569,
-   "gap_px": 19.4,
-   "base_gap_px": 208.0,
-   "feet_depth_px": -207.2,
+   "gap_px": 19.9,
+   "base_gap_px": 210.0,
+   "feet_depth_px": -208.5,
    "robot_px": 184.5
   },
   {
-   "frame": 95,
+   "frame": 93,
    "shot_frame": 51,
    "brain_s": 9.603,
    "gap_px": 19.6,
-   "base_gap_px": 208.0,
-   "feet_depth_px": -207.2,
+   "base_gap_px": 210.0,
+   "feet_depth_px": -208.6,
    "robot_px": 184.4
   },
   {
-   "frame": 96,
+   "frame": 94,
    "shot_frame": 52,
    "brain_s": 9.636,
-   "gap_px": 20.0,
-   "base_gap_px": 205.1,
-   "feet_depth_px": -205.0,
-   "robot_px": 186.7
+   "gap_px": 20.1,
+   "base_gap_px": 206.2,
+   "feet_depth_px": -205.8,
+   "robot_px": 187.3
   },
   {
-   "frame": 97,
+   "frame": 95,
    "shot_frame": 53,
    "brain_s": 9.669,
-   "gap_px": 20.1,
-   "base_gap_px": 205.0,
-   "feet_depth_px": -204.9,
-   "robot_px": 186.1
+   "gap_px": 21.0,
+   "base_gap_px": 207.0,
+   "feet_depth_px": -206.4,
+   "robot_px": 186.0
   },
   {
-   "frame": 98,
+   "frame": 96,
    "shot_frame": 54,
    "brain_s": 9.703,
-   "gap_px": 21.0,
-   "base_gap_px": 205.1,
-   "feet_depth_px": -200.4,
+   "gap_px": 21.2,
+   "base_gap_px": 207.1,
+   "feet_depth_px": -201.9,
    "robot_px": 188.5
   },
   {
-   "frame": 99,
+   "frame": 97,
    "shot_frame": 55,
    "brain_s": 9.736,
-   "gap_px": 21.8,
-   "base_gap_px": 205.4,
-   "feet_depth_px": -184.8,
-   "robot_px": 200.9
+   "gap_px": 22.0,
+   "base_gap_px": 207.3,
+   "feet_depth_px": -186.1,
+   "robot_px": 201.0
   },
   {
-   "frame": 100,
+   "frame": 98,
    "shot_frame": 56,
    "brain_s": 9.769,
-   "gap_px": 24.5,
-   "base_gap_px": 208.3,
-   "feet_depth_px": -169.1,
+   "gap_px": 25.0,
+   "base_gap_px": 210.3,
+   "feet_depth_px": -170.4,
    "robot_px": 212.5
   },
   {
-   "frame": 101,
+   "frame": 99,
    "shot_frame": 57,
    "brain_s": 9.803,
    "gap_px": 32.2,
-   "base_gap_px": 206.9,
-   "feet_depth_px": -166.0,
-   "robot_px": 213.9
+   "base_gap_px": 208.8,
+   "feet_depth_px": -167.0,
+   "robot_px": 214.2
+  },
+  {
+   "frame": 100,
+   "shot_frame": 58,
+   "brain_s": 9.836,
+   "gap_px": 32.1,
+   "base_gap_px": 208.9,
+   "feet_depth_px": -167.1,
+   "robot_px": 214.1
+  },
+  {
+   "frame": 101,
+   "shot_frame": 59,
+   "brain_s": 9.869,
+   "gap_px": 34.1,
+   "base_gap_px": 200.8,
+   "feet_depth_px": -167.5,
+   "robot_px": 213.6
   },
   {
    "frame": 102,
-   "shot_frame": 58,
-   "brain_s": 9.836,
-   "gap_px": 32.2,
-   "base_gap_px": 207.0,
-   "feet_depth_px": -166.0,
-   "robot_px": 214.0
+   "shot_frame": 60,
+   "brain_s": 9.903,
+   "gap_px": 26.0,
+   "base_gap_px": 188.2,
+   "feet_depth_px": -167.7,
+   "robot_px": 214.5
   },
   {
    "frame": 103,
-   "shot_frame": 59,
-   "brain_s": 9.869,
-   "gap_px": 34.0,
-   "base_gap_px": 198.8,
-   "feet_depth_px": -166.3,
-   "robot_px": 213.4
-  },
-  {
-   "frame": 104,
-   "shot_frame": 60,
-   "brain_s": 9.903,
-   "gap_px": 26.1,
-   "base_gap_px": 186.5,
-   "feet_depth_px": -166.6,
-   "robot_px": 214.3
-  },
-  {
-   "frame": 105,
    "shot_frame": 61,
    "brain_s": 9.936,
    "gap_px": 16.0,
-   "base_gap_px": 168.1,
-   "feet_depth_px": -163.4,
-   "robot_px": 220.0
+   "base_gap_px": 170.2,
+   "feet_depth_px": -164.6,
+   "robot_px": 220.2
   },
   {
-   "frame": 106,
+   "frame": 104,
    "shot_frame": 62,
    "brain_s": 9.969,
    "gap_px": 19.0,
-   "base_gap_px": 149.2,
-   "feet_depth_px": -148.7,
+   "base_gap_px": 151.3,
+   "feet_depth_px": -150.0,
    "robot_px": 238.9
   },
   {
-   "frame": 107,
+   "frame": 105,
    "shot_frame": 63,
    "brain_s": 10.003,
-   "gap_px": 18.7,
-   "base_gap_px": 145.4,
-   "feet_depth_px": -145.7,
-   "robot_px": 244.2
+   "gap_px": 18.4,
+   "base_gap_px": 147.4,
+   "feet_depth_px": -147.1,
+   "robot_px": 244.3
   },
   {
-   "frame": 108,
+   "frame": 106,
    "shot_frame": 64,
    "brain_s": 10.036,
-   "gap_px": 11.7,
-   "base_gap_px": 144.5,
-   "feet_depth_px": -145.3,
-   "robot_px": 245.1
+   "gap_px": 11.4,
+   "base_gap_px": 146.6,
+   "feet_depth_px": -146.8,
+   "robot_px": 245.0
   },
   {
-   "frame": 109,
+   "frame": 107,
    "shot_frame": 65,
    "brain_s": 10.069,
    "gap_px": 11.7,
-   "base_gap_px": 145.2,
-   "feet_depth_px": -145.8,
-   "robot_px": 244.6
+   "base_gap_px": 147.3,
+   "feet_depth_px": -147.1,
+   "robot_px": 244.8
   },
   {
-   "frame": 110,
+   "frame": 108,
    "shot_frame": 66,
    "brain_s": 10.103,
-   "gap_px": 10.3,
-   "base_gap_px": 145.5,
-   "feet_depth_px": -140.9,
-   "robot_px": 248.4
+   "gap_px": 10.0,
+   "base_gap_px": 147.5,
+   "feet_depth_px": -142.3,
+   "robot_px": 248.5
   },
   {
-   "frame": 111,
+   "frame": 109,
    "shot_frame": 67,
    "brain_s": 10.136,
-   "gap_px": 13.5,
-   "base_gap_px": 145.4,
-   "feet_depth_px": -128.4,
+   "gap_px": 12.8,
+   "base_gap_px": 147.6,
+   "feet_depth_px": -129.8,
    "robot_px": 257.4
   },
   {
-   "frame": 112,
+   "frame": 110,
    "shot_frame": 68,
    "brain_s": 10.169,
    "gap_px": 22.0,
-   "base_gap_px": 147.0,
-   "feet_depth_px": -110.0,
-   "robot_px": 271.9
+   "base_gap_px": 148.7,
+   "feet_depth_px": -111.8,
+   "robot_px": 271.5
   },
   {
-   "frame": 113,
+   "frame": 111,
    "shot_frame": 69,
    "brain_s": 10.203,
-   "gap_px": 28.2,
-   "base_gap_px": 148.6,
-   "feet_depth_px": -101.2,
+   "gap_px": 28.3,
+   "base_gap_px": 150.8,
+   "feet_depth_px": -102.5,
    "robot_px": 277.2
   },
   {
-   "frame": 114,
+   "frame": 112,
    "shot_frame": 70,
    "brain_s": 10.236,
    "gap_px": 28.0,
-   "base_gap_px": 148.6,
+   "base_gap_px": 150.8,
+   "feet_depth_px": -102.4,
+   "robot_px": 277.2
+  },
+  {
+   "frame": 113,
+   "shot_frame": 71,
+   "brain_s": 10.269,
+   "gap_px": 35.0,
+   "base_gap_px": 146.2,
+   "feet_depth_px": -100.4,
+   "robot_px": 277.5
+  },
+  {
+   "frame": 114,
+   "shot_frame": 72,
+   "brain_s": 10.303,
+   "gap_px": 32.8,
+   "base_gap_px": 135.1,
    "feet_depth_px": -100.9,
-   "robot_px": 277.4
+   "robot_px": 276.5
   },
   {
    "frame": 115,
-   "shot_frame": 71,
-   "brain_s": 10.269,
-   "gap_px": 35.1,
-   "base_gap_px": 144.2,
-   "feet_depth_px": -99.2,
-   "robot_px": 277.3
+   "shot_frame": 73,
+   "brain_s": 10.336,
+   "gap_px": 22.0,
+   "base_gap_px": 119.9,
+   "feet_depth_px": -101.0,
+   "robot_px": 277.2
   },
   {
    "frame": 116,
-   "shot_frame": 72,
-   "brain_s": 10.303,
-   "gap_px": 33.0,
-   "base_gap_px": 133.2,
-   "feet_depth_px": -99.8,
-   "robot_px": 276.2
+   "shot_frame": 74,
+   "brain_s": 10.369,
+   "gap_px": 9.0,
+   "base_gap_px": 99.7,
+   "feet_depth_px": -96.0,
+   "robot_px": 284.6
   },
   {
    "frame": 117,
-   "shot_frame": 73,
-   "brain_s": 10.336,
-   "gap_px": 21.8,
-   "base_gap_px": 117.9,
-   "feet_depth_px": -99.7,
-   "robot_px": 277.0
-  },
-  {
-   "frame": 118,
-   "shot_frame": 74,
-   "brain_s": 10.369,
-   "gap_px": 8.2,
-   "base_gap_px": 98.0,
-   "feet_depth_px": -94.7,
-   "robot_px": 284.5
-  },
-  {
-   "frame": 119,
    "shot_frame": 75,
    "brain_s": 10.403,
    "gap_px": 2.0,
-   "base_gap_px": 81.6,
-   "feet_depth_px": -82.4,
-   "robot_px": 300.6
+   "base_gap_px": 83.9,
+   "feet_depth_px": -84.4,
+   "robot_px": 300.0
   },
   {
-   "frame": 120,
+   "frame": 118,
    "shot_frame": 76,
    "brain_s": 10.436,
    "gap_px": 2.0,
-   "base_gap_px": 81.6,
-   "feet_depth_px": -82.4,
-   "robot_px": 300.6
+   "base_gap_px": 83.9,
+   "feet_depth_px": -84.3,
+   "robot_px": 300.0
   },
   {
-   "frame": 121,
+   "frame": 119,
    "shot_frame": 77,
    "brain_s": 10.469,
    "gap_px": 1.0,
-   "base_gap_px": 78.9,
-   "feet_depth_px": -80.3,
-   "robot_px": 304.4
+   "base_gap_px": 80.8,
+   "feet_depth_px": -81.5,
+   "robot_px": 304.7
   },
   {
-   "frame": 122,
+   "frame": 120,
    "shot_frame": 78,
    "brain_s": 10.503,
-   "gap_px": 2.0,
-   "base_gap_px": 78.8,
-   "feet_depth_px": -76.6,
-   "robot_px": 308.2
+   "gap_px": 1.4,
+   "base_gap_px": 79.9,
+   "feet_depth_px": -77.5,
+   "robot_px": 308.8
   },
   {
-   "frame": 123,
+   "frame": 121,
    "shot_frame": 79,
    "brain_s": 10.536,
-   "gap_px": 2.0,
-   "base_gap_px": 79.1,
-   "feet_depth_px": -67.8,
-   "robot_px": 315.5
-  },
-  {
-   "frame": 124,
-   "shot_frame": 80,
-   "brain_s": 10.569,
-   "gap_px": 5.1,
-   "base_gap_px": 78.4,
-   "feet_depth_px": -49.8,
-   "robot_px": 329.8
-  },
-  {
-   "frame": 125,
-   "shot_frame": 81,
-   "brain_s": 10.603,
-   "gap_px": 16.0,
-   "base_gap_px": 79.6,
-   "feet_depth_px": -31.0,
-   "robot_px": 342.6
-  },
-  {
-   "frame": 126,
-   "shot_frame": 82,
-   "brain_s": 10.636,
-   "gap_px": 24.0,
-   "base_gap_px": 83.0,
-   "feet_depth_px": -25.0,
-   "robot_px": 343.7
-  },
-  {
-   "frame": 127,
-   "shot_frame": 83,
-   "brain_s": 10.669,
-   "gap_px": 24.1,
-   "base_gap_px": 83.0,
-   "feet_depth_px": -25.0,
-   "robot_px": 343.6
-  },
-  {
-   "frame": 128,
-   "shot_frame": 84,
-   "brain_s": 10.703,
-   "gap_px": 28.6,
-   "base_gap_px": 77.2,
-   "feet_depth_px": -24.6,
-   "robot_px": 338.0
-  },
-  {
-   "frame": 129,
-   "shot_frame": 85,
-   "brain_s": 10.736,
-   "gap_px": 25.0,
-   "base_gap_px": 66.3,
-   "feet_depth_px": -24.9,
-   "robot_px": 330.3
-  },
-  {
-   "frame": 130,
-   "shot_frame": 86,
-   "brain_s": 10.769,
-   "gap_px": 13.9,
-   "base_gap_px": 49.3,
-   "feet_depth_px": -24.7,
-   "robot_px": 323.5
-  },
-  {
-   "frame": 131,
-   "shot_frame": 87,
-   "brain_s": 10.803,
-   "gap_px": 4.0,
-   "base_gap_px": 29.4,
-   "feet_depth_px": -21.4,
-   "robot_px": 321.6
-  },
-  {
-   "frame": 132,
-   "shot_frame": 88,
-   "brain_s": 10.836,
-   "gap_px": 4.0,
-   "base_gap_px": 29.4,
-   "feet_depth_px": -21.4,
-   "robot_px": 321.5
-  },
-  {
-   "frame": 133,
-   "shot_frame": 89,
-   "brain_s": 10.869,
-   "gap_px": 2.0,
-   "base_gap_px": 16.4,
-   "feet_depth_px": -13.9,
-   "robot_px": 327.1
-  },
-  {
-   "frame": 134,
-   "shot_frame": 90,
-   "brain_s": 10.903,
-   "gap_px": 2.0,
-   "base_gap_px": 15.6,
-   "feet_depth_px": -12.0,
-   "robot_px": 329.2
-  },
-  {
-   "frame": 135,
-   "shot_frame": 91,
-   "brain_s": 10.936,
-   "gap_px": 2.0,
-   "base_gap_px": 15.6,
-   "feet_depth_px": -7.3,
-   "robot_px": 331.7
-  },
-  {
-   "frame": 136,
-   "shot_frame": 92,
-   "brain_s": 10.969,
-   "gap_px": 2.0,
-   "base_gap_px": 15.6,
-   "feet_depth_px": -7.3,
-   "robot_px": 331.7
-  },
-  {
-   "frame": 137,
-   "shot_frame": 93,
-   "brain_s": 11.003,
-   "gap_px": 4.0,
-   "base_gap_px": 16.3,
-   "feet_depth_px": 15.9,
-   "robot_px": 335.5
-  },
-  {
-   "frame": 138,
-   "shot_frame": 94,
-   "brain_s": 11.036,
-   "gap_px": 3.6,
-   "base_gap_px": 16.3,
-   "feet_depth_px": 16.0,
-   "robot_px": 335.5
-  },
-  {
-   "frame": 139,
-   "shot_frame": 95,
-   "brain_s": 11.069,
-   "gap_px": 11.2,
-   "base_gap_px": 19.1,
-   "feet_depth_px": 31.5,
-   "robot_px": 335.9
-  },
-  {
-   "frame": 140,
-   "shot_frame": 96,
-   "brain_s": 11.103,
-   "gap_px": 20.1,
-   "base_gap_px": 25.8,
-   "feet_depth_px": 34.7,
-   "robot_px": 330.5
-  },
-  {
-   "frame": 141,
-   "shot_frame": 97,
-   "brain_s": 11.136,
-   "gap_px": 24.7,
-   "base_gap_px": 25.9,
-   "feet_depth_px": 34.9,
-   "robot_px": 322.3
-  },
-  {
-   "frame": 142,
-   "shot_frame": 98,
-   "brain_s": 11.169,
-   "gap_px": 21.0,
-   "base_gap_px": 21.0,
-   "feet_depth_px": 34.2,
-   "robot_px": 312.8
-  },
-  {
-   "frame": 143,
-   "shot_frame": 99,
-   "brain_s": 11.203,
-   "gap_px": 21.0,
-   "base_gap_px": 21.0,
-   "feet_depth_px": 34.2,
-   "robot_px": 312.8
-  },
-  {
-   "frame": 144,
-   "shot_frame": 100,
-   "brain_s": 11.236,
-   "gap_px": 2.0,
-   "base_gap_px": 5.4,
-   "feet_depth_px": 42.4,
-   "robot_px": 308.6
-  },
-  {
-   "frame": 145,
-   "shot_frame": 101,
-   "brain_s": 11.269,
-   "gap_px": 2.8,
-   "base_gap_px": 5.1,
-   "feet_depth_px": 42.5,
-   "robot_px": 308.6
-  },
-  {
-   "frame": 146,
-   "shot_frame": 102,
-   "brain_s": 11.303,
-   "gap_px": 2.0,
-   "base_gap_px": 11.0,
-   "feet_depth_px": 50.8,
+   "gap_px": 1.0,
+   "base_gap_px": 80.8,
+   "feet_depth_px": -69.0,
    "robot_px": 315.8
   },
   {
-   "frame": 147,
-   "shot_frame": 103,
-   "brain_s": 11.336,
-   "gap_px": 1.0,
-   "base_gap_px": 13.0,
-   "feet_depth_px": 52.3,
-   "robot_px": 314.8
+   "frame": 122,
+   "shot_frame": 80,
+   "brain_s": 10.569,
+   "gap_px": 5.0,
+   "base_gap_px": 80.4,
+   "feet_depth_px": -50.7,
+   "robot_px": 330.4
   },
   {
-   "frame": 148,
+   "frame": 123,
+   "shot_frame": 81,
+   "brain_s": 10.603,
+   "gap_px": 16.0,
+   "base_gap_px": 81.8,
+   "feet_depth_px": -32.3,
+   "robot_px": 342.6
+  },
+  {
+   "frame": 124,
+   "shot_frame": 82,
+   "brain_s": 10.636,
+   "gap_px": 24.0,
+   "base_gap_px": 84.9,
+   "feet_depth_px": -25.9,
+   "robot_px": 344.1
+  },
+  {
+   "frame": 125,
+   "shot_frame": 83,
+   "brain_s": 10.669,
+   "gap_px": 24.0,
+   "base_gap_px": 84.9,
+   "feet_depth_px": -25.9,
+   "robot_px": 344.1
+  },
+  {
+   "frame": 126,
+   "shot_frame": 84,
+   "brain_s": 10.703,
+   "gap_px": 28.6,
+   "base_gap_px": 79.1,
+   "feet_depth_px": -25.6,
+   "robot_px": 338.7
+  },
+  {
+   "frame": 127,
+   "shot_frame": 85,
+   "brain_s": 10.736,
+   "gap_px": 25.0,
+   "base_gap_px": 68.0,
+   "feet_depth_px": -25.9,
+   "robot_px": 330.6
+  },
+  {
+   "frame": 128,
+   "shot_frame": 86,
+   "brain_s": 10.769,
+   "gap_px": 14.0,
+   "base_gap_px": 51.5,
+   "feet_depth_px": -26.0,
+   "robot_px": 323.7
+  },
+  {
+   "frame": 129,
+   "shot_frame": 87,
+   "brain_s": 10.803,
+   "gap_px": 4.0,
+   "base_gap_px": 31.0,
+   "feet_depth_px": -22.6,
+   "robot_px": 321.8
+  },
+  {
+   "frame": 130,
+   "shot_frame": 88,
+   "brain_s": 10.836,
+   "gap_px": 4.0,
+   "base_gap_px": 31.3,
+   "feet_depth_px": -22.6,
+   "robot_px": 321.6
+  },
+  {
+   "frame": 131,
+   "shot_frame": 89,
+   "brain_s": 10.869,
+   "gap_px": 2.0,
+   "base_gap_px": 18.4,
+   "feet_depth_px": -15.4,
+   "robot_px": 327.1
+  },
+  {
+   "frame": 132,
+   "shot_frame": 90,
+   "brain_s": 10.903,
+   "gap_px": 2.0,
+   "base_gap_px": 17.0,
+   "feet_depth_px": -13.3,
+   "robot_px": 329.4
+  },
+  {
+   "frame": 133,
+   "shot_frame": 91,
+   "brain_s": 10.936,
+   "gap_px": 2.0,
+   "base_gap_px": 17.0,
+   "feet_depth_px": -8.5,
+   "robot_px": 331.8
+  },
+  {
+   "frame": 134,
+   "shot_frame": 92,
+   "brain_s": 10.969,
+   "gap_px": 1.0,
+   "base_gap_px": 17.0,
+   "feet_depth_px": -8.6,
+   "robot_px": 331.8
+  },
+  {
+   "frame": 135,
+   "shot_frame": 93,
+   "brain_s": 11.003,
+   "gap_px": 3.2,
+   "base_gap_px": 17.7,
+   "feet_depth_px": 14.9,
+   "robot_px": 335.7
+  },
+  {
+   "frame": 136,
+   "shot_frame": 94,
+   "brain_s": 11.036,
+   "gap_px": 3.2,
+   "base_gap_px": 17.7,
+   "feet_depth_px": 15.0,
+   "robot_px": 335.7
+  },
+  {
+   "frame": 137,
+   "shot_frame": 95,
+   "brain_s": 11.069,
+   "gap_px": 12.0,
+   "base_gap_px": 19.8,
+   "feet_depth_px": 30.2,
+   "robot_px": 336.0
+  },
+  {
+   "frame": 138,
+   "shot_frame": 96,
+   "brain_s": 11.103,
+   "gap_px": 20.4,
+   "base_gap_px": 26.9,
+   "feet_depth_px": 33.4,
+   "robot_px": 330.7
+  },
+  {
+   "frame": 139,
+   "shot_frame": 97,
+   "brain_s": 11.136,
+   "gap_px": 25.1,
+   "base_gap_px": 26.8,
+   "feet_depth_px": 33.6,
+   "robot_px": 322.3
+  },
+  {
+   "frame": 140,
+   "shot_frame": 98,
+   "brain_s": 11.169,
+   "gap_px": 21.6,
+   "base_gap_px": 21.1,
+   "feet_depth_px": 32.8,
+   "robot_px": 312.9
+  },
+  {
+   "frame": 141,
+   "shot_frame": 99,
+   "brain_s": 11.203,
+   "gap_px": 21.4,
+   "base_gap_px": 21.1,
+   "feet_depth_px": 32.8,
+   "robot_px": 312.6
+  },
+  {
+   "frame": 142,
+   "shot_frame": 100,
+   "brain_s": 11.236,
+   "gap_px": 3.0,
+   "base_gap_px": 5.8,
+   "feet_depth_px": 41.0,
+   "robot_px": 308.5
+  },
+  {
+   "frame": 143,
+   "shot_frame": 101,
+   "brain_s": 11.269,
+   "gap_px": 3.0,
+   "base_gap_px": 6.0,
+   "feet_depth_px": 40.8,
+   "robot_px": 308.3
+  },
+  {
+   "frame": 144,
+   "shot_frame": 102,
+   "brain_s": 11.303,
+   "gap_px": 2.0,
+   "base_gap_px": 12.0,
+   "feet_depth_px": 49.1,
+   "robot_px": 315.5
+  },
+  {
+   "frame": 145,
+   "shot_frame": 103,
+   "brain_s": 11.336,
+   "gap_px": 1.4,
+   "base_gap_px": 12.4,
+   "feet_depth_px": 50.7,
+   "robot_px": 314.4
+  },
+  {
+   "frame": 146,
    "shot_frame": 104,
    "brain_s": 11.369,
    "gap_px": 1.0,
    "base_gap_px": 13.0,
-   "feet_depth_px": 57.9,
-   "robot_px": 313.7
+   "feet_depth_px": 56.5,
+   "robot_px": 313.6
   },
   {
-   "frame": 149,
+   "frame": 147,
    "shot_frame": 105,
    "brain_s": 11.403,
    "gap_px": 1.0,
    "base_gap_px": 13.0,
-   "feet_depth_px": 57.9,
-   "robot_px": 313.7
+   "feet_depth_px": 56.5,
+   "robot_px": 313.6
+  },
+  {
+   "frame": 148,
+   "shot_frame": 106,
+   "brain_s": 11.436,
+   "gap_px": 2.0,
+   "base_gap_px": 13.0,
+   "feet_depth_px": 68.9,
+   "robot_px": 316.0
+  },
+  {
+   "frame": 149,
+   "shot_frame": 107,
+   "brain_s": 11.469,
+   "gap_px": 3.6,
+   "base_gap_px": 13.0,
+   "feet_depth_px": 90.7,
+   "robot_px": 328.3
   },
   {
    "frame": 150,
-   "shot_frame": 106,
-   "brain_s": 11.436,
-   "gap_px": 1.4,
+   "shot_frame": 108,
+   "brain_s": 11.503,
+   "gap_px": 13.0,
    "base_gap_px": 13.0,
-   "feet_depth_px": 70.3,
-   "robot_px": 316.1
+   "feet_depth_px": 110.6,
+   "robot_px": 337.1
   },
   {
    "frame": 151,
-   "shot_frame": 107,
-   "brain_s": 11.469,
-   "gap_px": 3.0,
-   "base_gap_px": 12.6,
-   "feet_depth_px": 92.2,
-   "robot_px": 328.5
+   "shot_frame": 109,
+   "brain_s": 11.536,
+   "gap_px": 21.1,
+   "base_gap_px": 21.0,
+   "feet_depth_px": 114.1,
+   "robot_px": 335.7
   },
   {
    "frame": 152,
-   "shot_frame": 108,
-   "brain_s": 11.503,
-   "gap_px": 12.0,
-   "base_gap_px": 13.0,
-   "feet_depth_px": 112.1,
-   "robot_px": 337.2
-  },
-  {
-   "frame": 153,
-   "shot_frame": 109,
-   "brain_s": 11.536,
-   "gap_px": 21.0,
-   "base_gap_px": 21.0,
-   "feet_depth_px": 115.6,
-   "robot_px": 335.8
-  },
-  {
-   "frame": 154,
    "shot_frame": 110,
    "brain_s": 11.569,
-   "gap_px": 22.4,
+   "gap_px": 23.5,
    "base_gap_px": 23.3,
-   "feet_depth_px": 116.1,
+   "feet_depth_px": 114.6,
    "robot_px": 331.0
   },
   {
-   "frame": 155,
+   "frame": 153,
    "shot_frame": 111,
    "brain_s": 11.603,
-   "gap_px": 16.8,
-   "base_gap_px": 16.5,
-   "feet_depth_px": 115.7,
-   "robot_px": 324.6
+   "gap_px": 17.0,
+   "base_gap_px": 16.8,
+   "feet_depth_px": 114.3,
+   "robot_px": 324.5
   },
   {
-   "frame": 156,
+   "frame": 154,
    "shot_frame": 112,
    "brain_s": 11.636,
-   "gap_px": 17.0,
-   "base_gap_px": 16.5,
-   "feet_depth_px": 115.8,
-   "robot_px": 324.7
+   "gap_px": 16.8,
+   "base_gap_px": 16.8,
+   "feet_depth_px": 114.3,
+   "robot_px": 324.5
   },
   {
-   "frame": 157,
+   "frame": 155,
    "shot_frame": 113,
    "brain_s": 11.669,
-   "gap_px": 2.8,
-   "base_gap_px": 2.0,
-   "feet_depth_px": 115.8,
+   "gap_px": 3.0,
+   "base_gap_px": 1.0,
+   "feet_depth_px": 114.5,
    "robot_px": 318.6
   },
   {
-   "frame": 158,
+   "frame": 156,
    "shot_frame": 114,
    "brain_s": 11.703,
-   "gap_px": 4.5,
+   "gap_px": 5.0,
    "base_gap_px": 6.0,
-   "feet_depth_px": 115.5,
-   "robot_px": 315.3
+   "feet_depth_px": 114.1,
+   "robot_px": 315.2
   },
   {
-   "frame": 159,
+   "frame": 157,
    "shot_frame": 115,
    "brain_s": 11.736,
-   "gap_px": 4.0,
-   "base_gap_px": 6.0,
-   "feet_depth_px": 116.4,
+   "gap_px": 4.1,
+   "base_gap_px": 6.1,
+   "feet_depth_px": 115.0,
    "robot_px": 312.4
   },
   {
-   "frame": 160,
+   "frame": 158,
    "shot_frame": 116,
    "brain_s": 11.769,
    "gap_px": 4.0,
-   "base_gap_px": 8.6,
-   "feet_depth_px": 127.1,
-   "robot_px": 316.4
+   "base_gap_px": 9.4,
+   "feet_depth_px": 125.8,
+   "robot_px": 316.5
+  },
+  {
+   "frame": 159,
+   "shot_frame": 117,
+   "brain_s": 11.803,
+   "gap_px": 14.6,
+   "base_gap_px": 14.1,
+   "feet_depth_px": 145.7,
+   "robot_px": 323.6
+  },
+  {
+   "frame": 160,
+   "shot_frame": 118,
+   "brain_s": 11.836,
+   "gap_px": 15.0,
+   "base_gap_px": 14.3,
+   "feet_depth_px": 145.8,
+   "robot_px": 323.7
   },
   {
    "frame": 161,
-   "shot_frame": 117,
-   "brain_s": 11.803,
-   "gap_px": 14.1,
-   "base_gap_px": 14.0,
-   "feet_depth_px": 147.4,
-   "robot_px": 323.9
+   "shot_frame": 119,
+   "brain_s": 11.869,
+   "gap_px": 17.1,
+   "base_gap_px": 17.0,
+   "feet_depth_px": 163.0,
+   "robot_px": 324.6
   },
   {
    "frame": 162,
-   "shot_frame": 118,
-   "brain_s": 11.836,
-   "gap_px": 14.0,
-   "base_gap_px": 14.0,
-   "feet_depth_px": 147.4,
-   "robot_px": 323.9
+   "shot_frame": 120,
+   "brain_s": 11.903,
+   "gap_px": 26.0,
+   "base_gap_px": 25.3,
+   "feet_depth_px": 170.5,
+   "robot_px": 318.2
   },
   {
    "frame": 163,
-   "shot_frame": 119,
-   "brain_s": 11.869,
-   "gap_px": 17.0,
-   "base_gap_px": 17.0,
-   "feet_depth_px": 164.6,
-   "robot_px": 324.8
-  },
-  {
-   "frame": 164,
-   "shot_frame": 120,
-   "brain_s": 11.903,
-   "gap_px": 25.7,
-   "base_gap_px": 25.3,
-   "feet_depth_px": 171.9,
-   "robot_px": 318.3
-  },
-  {
-   "frame": 165,
    "shot_frame": 121,
    "brain_s": 11.936,
-   "gap_px": 32.0,
+   "gap_px": 32.1,
    "base_gap_px": 32.0,
-   "feet_depth_px": 173.8,
+   "feet_depth_px": 172.5,
    "robot_px": 309.2
   },
   {
-   "frame": 166,
+   "frame": 164,
    "shot_frame": 122,
    "brain_s": 11.969,
    "gap_px": 30.0,
    "base_gap_px": 30.0,
-   "feet_depth_px": 174.0,
-   "robot_px": 299.8
+   "feet_depth_px": 172.4,
+   "robot_px": 299.6
   },
   {
-   "frame": 167,
+   "frame": 165,
    "shot_frame": 123,
    "brain_s": 12.003,
    "gap_px": 19.0,
-   "base_gap_px": 19.0,
-   "feet_depth_px": 174.1,
-   "robot_px": 292.3
+   "base_gap_px": 18.1,
+   "feet_depth_px": 172.8,
+   "robot_px": 292.4
   },
   {
-   "frame": 168,
+   "frame": 166,
    "shot_frame": 124,
    "brain_s": 12.036,
    "gap_px": 19.0,
-   "base_gap_px": 19.0,
-   "feet_depth_px": 174.1,
+   "base_gap_px": 18.1,
+   "feet_depth_px": 172.8,
    "robot_px": 292.3
   },
   {
-   "frame": 169,
+   "frame": 167,
    "shot_frame": 125,
    "brain_s": 12.069,
    "gap_px": 7.0,
-   "base_gap_px": 7.0,
-   "feet_depth_px": 175.8,
-   "robot_px": 289.5
+   "base_gap_px": 6.1,
+   "feet_depth_px": 174.4,
+   "robot_px": 289.4
   },
   {
-   "frame": 170,
+   "frame": 168,
    "shot_frame": 126,
    "brain_s": 12.103,
-   "gap_px": 2.0,
+   "gap_px": 2.2,
    "base_gap_px": 0.0,
-   "feet_depth_px": 182.1,
+   "feet_depth_px": 180.5,
    "robot_px": 294.7
   },
   {
-   "frame": 171,
+   "frame": 169,
    "shot_frame": 127,
    "brain_s": 12.136,
    "gap_px": 4.0,
    "base_gap_px": 3.0,
-   "feet_depth_px": 186.8,
-   "robot_px": 295.7
+   "feet_depth_px": 185.2,
+   "robot_px": 295.5
+  },
+  {
+   "frame": 170,
+   "shot_frame": 128,
+   "brain_s": 12.169,
+   "gap_px": 14.0,
+   "base_gap_px": 13.6,
+   "feet_depth_px": 197.1,
+   "robot_px": 299.3
+  },
+  {
+   "frame": 171,
+   "shot_frame": 129,
+   "brain_s": 12.203,
+   "gap_px": 14.0,
+   "base_gap_px": 13.6,
+   "feet_depth_px": 197.1,
+   "robot_px": 299.3
   },
   {
    "frame": 172,
-   "shot_frame": 128,
-   "brain_s": 12.169,
-   "gap_px": 13.3,
-   "base_gap_px": 13.6,
-   "feet_depth_px": 198.6,
-   "robot_px": 299.5
-  },
-  {
-   "frame": 173,
-   "shot_frame": 129,
-   "brain_s": 12.203,
-   "gap_px": 13.2,
-   "base_gap_px": 13.6,
-   "feet_depth_px": 198.6,
-   "robot_px": 299.5
-  },
-  {
-   "frame": 174,
    "shot_frame": 130,
    "brain_s": 12.236,
    "gap_px": 27.0,
-   "base_gap_px": 26.9,
-   "feet_depth_px": 224.3,
+   "base_gap_px": 26.2,
+   "feet_depth_px": 223.0,
    "robot_px": 298.0
   },
   {
-   "frame": 175,
+   "frame": 173,
    "shot_frame": 131,
    "brain_s": 12.269,
-   "gap_px": 26.9,
-   "base_gap_px": 26.9,
-   "feet_depth_px": 224.4,
-   "robot_px": 298.2
+   "gap_px": 27.0,
+   "base_gap_px": 26.1,
+   "feet_depth_px": 222.9,
+   "robot_px": 298.0
   },
   {
-   "frame": 176,
+   "frame": 174,
    "shot_frame": 132,
    "brain_s": 12.303,
-   "gap_px": 39.2,
-   "base_gap_px": 39.6,
-   "feet_depth_px": 226.1,
+   "gap_px": 39.8,
+   "base_gap_px": 39.3,
+   "feet_depth_px": 224.8,
    "robot_px": 288.1
   },
   {
-   "frame": 177,
+   "frame": 175,
    "shot_frame": 133,
    "brain_s": 12.336,
-   "gap_px": 36.0,
+   "gap_px": 36.2,
    "base_gap_px": 36.0,
-   "feet_depth_px": 226.4,
+   "feet_depth_px": 225.1,
    "robot_px": 277.7
   },
   {
-   "frame": 178,
+   "frame": 176,
    "shot_frame": 134,
    "brain_s": 12.369,
    "gap_px": 26.0,
-   "base_gap_px": 26.0,
-   "feet_depth_px": 231.7,
-   "robot_px": 273.1
+   "base_gap_px": 25.0,
+   "feet_depth_px": 230.1,
+   "robot_px": 273.0
+  },
+  {
+   "frame": 177,
+   "shot_frame": 135,
+   "brain_s": 12.403,
+   "gap_px": 11.4,
+   "base_gap_px": 10.2,
+   "feet_depth_px": 241.7,
+   "robot_px": 277.4
+  },
+  {
+   "frame": 178,
+   "shot_frame": 136,
+   "brain_s": 12.436,
+   "gap_px": 11.2,
+   "base_gap_px": 10.0,
+   "feet_depth_px": 241.9,
+   "robot_px": 277.6
   },
   {
    "frame": 179,
-   "shot_frame": 135,
-   "brain_s": 12.403,
-   "gap_px": 11.0,
-   "base_gap_px": 11.0,
-   "feet_depth_px": 243.2,
-   "robot_px": 277.5
-  },
-  {
-   "frame": 180,
-   "shot_frame": 136,
-   "brain_s": 12.436,
-   "gap_px": 11.0,
-   "base_gap_px": 11.0,
-   "feet_depth_px": 243.2,
-   "robot_px": 277.5
-  },
-  {
-   "frame": 181,
    "shot_frame": 137,
    "brain_s": 12.469,
    "gap_px": 2.0,
    "base_gap_px": 0.0,
-   "feet_depth_px": 258.7,
+   "feet_depth_px": 257.3,
    "robot_px": 288.1
   },
   {
-   "frame": 182,
+   "frame": 180,
    "shot_frame": 138,
    "brain_s": 12.503,
    "gap_px": 2.0,
    "base_gap_px": 0.0,
-   "feet_depth_px": 261.2,
+   "feet_depth_px": 259.9,
    "robot_px": 286.0
   },
   {
-   "frame": 183,
+   "frame": 181,
    "shot_frame": 139,
    "brain_s": 12.536,
    "gap_px": 2.0,
    "base_gap_px": 0.0,
-   "feet_depth_px": 261.6,
+   "feet_depth_px": 260.2,
    "robot_px": 277.4
   },
   {
-   "frame": 184,
+   "frame": 182,
    "shot_frame": 140,
    "brain_s": 12.569,
    "gap_px": 2.0,
    "base_gap_px": 0.0,
-   "feet_depth_px": 270.2,
-   "robot_px": 274.4
+   "feet_depth_px": 268.9,
+   "robot_px": 274.6
+  },
+  {
+   "frame": 183,
+   "shot_frame": 141,
+   "brain_s": 12.603,
+   "gap_px": 10.0,
+   "base_gap_px": 9.0,
+   "feet_depth_px": 287.3,
+   "robot_px": 280.3
+  },
+  {
+   "frame": 184,
+   "shot_frame": 142,
+   "brain_s": 12.636,
+   "gap_px": 10.0,
+   "base_gap_px": 9.1,
+   "feet_depth_px": 287.3,
+   "robot_px": 280.3
   },
   {
    "frame": 185,
-   "shot_frame": 141,
-   "brain_s": 12.603,
-   "gap_px": 9.0,
-   "base_gap_px": 10.0,
-   "feet_depth_px": 288.6,
-   "robot_px": 280.1
+   "shot_frame": 143,
+   "brain_s": 12.669,
+   "gap_px": 24.0,
+   "base_gap_px": 23.0,
+   "feet_depth_px": 304.0,
+   "robot_px": 284.5
   },
   {
    "frame": 186,
-   "shot_frame": 142,
-   "brain_s": 12.636,
-   "gap_px": 9.0,
-   "base_gap_px": 10.0,
-   "feet_depth_px": 288.6,
-   "robot_px": 280.2
-  },
-  {
-   "frame": 187,
-   "shot_frame": 143,
-   "brain_s": 12.669,
-   "gap_px": 23.0,
-   "base_gap_px": 24.0,
-   "feet_depth_px": 305.3,
-   "robot_px": 284.2
-  },
-  {
-   "frame": 188,
    "shot_frame": 144,
    "brain_s": 12.703,
    "gap_px": 35.0,
-   "base_gap_px": 35.0,
-   "feet_depth_px": 310.8,
+   "base_gap_px": 34.0,
+   "feet_depth_px": 309.3,
    "robot_px": 280.5
   },
   {
-   "frame": 189,
+   "frame": 187,
    "shot_frame": 145,
    "brain_s": 12.736,
    "gap_px": 41.0,
-   "base_gap_px": 41.0,
-   "feet_depth_px": 311.3,
-   "robot_px": 271.8
+   "base_gap_px": 40.0,
+   "feet_depth_px": 310.2,
+   "robot_px": 272.1
   },
   {
-   "frame": 190,
+   "frame": 188,
    "shot_frame": 146,
    "brain_s": 12.769,
    "gap_px": 40.0,
-   "base_gap_px": 40.0,
-   "feet_depth_px": 316.7,
+   "base_gap_px": 39.0,
+   "feet_depth_px": 315.4,
+   "robot_px": 268.5
+  },
+  {
+   "frame": 189,
+   "shot_frame": 147,
+   "brain_s": 12.803,
+   "gap_px": 32.4,
+   "base_gap_px": 31.8,
+   "feet_depth_px": 324.0,
    "robot_px": 268.4
   },
   {
-   "frame": 191,
-   "shot_frame": 147,
-   "brain_s": 12.803,
-   "gap_px": 32.2,
-   "base_gap_px": 32.2,
-   "feet_depth_px": 325.4,
-   "robot_px": 268.3
-  },
-  {
-   "frame": 192,
+   "frame": 190,
    "shot_frame": 148,
    "brain_s": 12.836,
-   "gap_px": 32.2,
-   "base_gap_px": 32.2,
-   "feet_depth_px": 325.4,
+   "gap_px": 32.4,
+   "base_gap_px": 31.8,
+   "feet_depth_px": 324.0,
    "robot_px": 268.3
   },
   {
-   "frame": 193,
+   "frame": 191,
    "shot_frame": 149,
    "brain_s": 12.869,
-   "gap_px": 22.8,
-   "base_gap_px": 22.5,
-   "feet_depth_px": 336.4,
+   "gap_px": 23.3,
+   "base_gap_px": 22.8,
+   "feet_depth_px": 334.8,
    "robot_px": 272.0
   },
   {
-   "frame": 194,
+   "frame": 192,
    "shot_frame": 150,
    "brain_s": 12.903,
-   "gap_px": 30.0,
-   "base_gap_px": 29.5,
-   "feet_depth_px": 347.8,
-   "robot_px": 278.0
+   "gap_px": 30.9,
+   "base_gap_px": 30.0,
+   "feet_depth_px": 346.1,
+   "robot_px": 277.8
   },
   {
-   "frame": 195,
+   "frame": 193,
    "shot_frame": 151,
    "brain_s": 12.936,
    "gap_px": 36.4,
-   "base_gap_px": 36.1,
-   "feet_depth_px": 349.7,
-   "robot_px": 274.2
+   "base_gap_px": 35.9,
+   "feet_depth_px": 348.5,
+   "robot_px": 274.5
+  },
+  {
+   "frame": 194,
+   "shot_frame": 152,
+   "brain_s": 12.969,
+   "gap_px": 37.2,
+   "base_gap_px": 36.2,
+   "feet_depth_px": 354.9,
+   "robot_px": 271.0
+  },
+  {
+   "frame": 195,
+   "shot_frame": 153,
+   "brain_s": 13.003,
+   "gap_px": 43.0,
+   "base_gap_px": 42.0,
+   "feet_depth_px": 369.1,
+   "robot_px": 274.0
   },
   {
    "frame": 196,
-   "shot_frame": 152,
-   "brain_s": 12.969,
-   "gap_px": 36.3,
-   "base_gap_px": 37.1,
-   "feet_depth_px": 356.3,
-   "robot_px": 271.1
-  },
-  {
-   "frame": 197,
-   "shot_frame": 153,
-   "brain_s": 13.003,
-   "gap_px": 42.4,
-   "base_gap_px": 42.3,
-   "feet_depth_px": 370.7,
-   "robot_px": 274.3
-  },
-  {
-   "frame": 198,
    "shot_frame": 154,
    "brain_s": 13.036,
    "gap_px": 55.0,
    "base_gap_px": 54.6,
-   "feet_depth_px": 385.2,
-   "robot_px": 276.9
+   "feet_depth_px": 384.0,
+   "robot_px": 277.1
   },
   {
-   "frame": 199,
+   "frame": 197,
    "shot_frame": 155,
    "brain_s": 13.069,
    "gap_px": 55.0,
    "base_gap_px": 54.6,
-   "feet_depth_px": 385.2,
-   "robot_px": 276.9
+   "feet_depth_px": 384.0,
+   "robot_px": 277.1
+  },
+  {
+   "frame": 198,
+   "shot_frame": 156,
+   "brain_s": 13.103,
+   "gap_px": 63.0,
+   "base_gap_px": 62.4,
+   "feet_depth_px": 397.2,
+   "robot_px": 278.3
+  },
+  {
+   "frame": 199,
+   "shot_frame": 157,
+   "brain_s": 13.136,
+   "gap_px": 70.8,
+   "base_gap_px": 70.1,
+   "feet_depth_px": 406.7,
+   "robot_px": 277.2
   },
   {
    "frame": 200,
-   "shot_frame": 156,
-   "brain_s": 13.103,
-   "gap_px": 62.8,
-   "base_gap_px": 62.4,
-   "feet_depth_px": 398.3,
-   "robot_px": 277.9
+   "shot_frame": 158,
+   "brain_s": 13.169,
+   "gap_px": 78.5,
+   "base_gap_px": 77.8,
+   "feet_depth_px": 417.5,
+   "robot_px": 278.4
   },
   {
    "frame": 201,
-   "shot_frame": 157,
-   "brain_s": 13.136,
-   "gap_px": 70.2,
-   "base_gap_px": 70.1,
-   "feet_depth_px": 407.9,
-   "robot_px": 277.0
+   "shot_frame": 159,
+   "brain_s": 13.203,
+   "gap_px": 78.5,
+   "base_gap_px": 77.8,
+   "feet_depth_px": 417.5,
+   "robot_px": 278.4
   },
   {
    "frame": 202,
-   "shot_frame": 158,
-   "brain_s": 13.169,
-   "gap_px": 77.8,
-   "base_gap_px": 77.8,
-   "feet_depth_px": 418.9,
-   "robot_px": 278.3
+   "shot_frame": 160,
+   "brain_s": 13.236,
+   "gap_px": 83.8,
+   "base_gap_px": 83.2,
+   "feet_depth_px": 439.4,
+   "robot_px": 283.1
   },
   {
    "frame": 203,
-   "shot_frame": 159,
-   "brain_s": 13.203,
-   "gap_px": 77.8,
-   "base_gap_px": 77.8,
-   "feet_depth_px": 418.9,
-   "robot_px": 278.3
+   "shot_frame": 161,
+   "brain_s": 13.269,
+   "gap_px": 83.8,
+   "base_gap_px": 83.2,
+   "feet_depth_px": 439.2,
+   "robot_px": 282.8
   },
   {
    "frame": 204,
-   "shot_frame": 160,
-   "brain_s": 13.236,
-   "gap_px": 83.5,
-   "base_gap_px": 83.2,
-   "feet_depth_px": 440.5,
-   "robot_px": 282.8
+   "shot_frame": 162,
+   "brain_s": 13.303,
+   "gap_px": 89.0,
+   "base_gap_px": 88.6,
+   "feet_depth_px": 446.8,
+   "robot_px": 283.6
   },
   {
    "frame": 205,
-   "shot_frame": 161,
-   "brain_s": 13.269,
-   "gap_px": 83.5,
-   "base_gap_px": 83.2,
-   "feet_depth_px": 440.5,
-   "robot_px": 282.8
+   "shot_frame": 163,
+   "brain_s": 13.336,
+   "gap_px": 91.4,
+   "base_gap_px": 91.0,
+   "feet_depth_px": 451.1,
+   "robot_px": 283.0
   },
   {
    "frame": 206,
-   "shot_frame": 162,
-   "brain_s": 13.303,
-   "gap_px": 88.6,
-   "base_gap_px": 88.2,
-   "feet_depth_px": 448.0,
-   "robot_px": 283.4
+   "shot_frame": 164,
+   "brain_s": 13.369,
+   "gap_px": 79.1,
+   "base_gap_px": 78.5,
+   "feet_depth_px": 457.3,
+   "robot_px": 284.4
   },
   {
    "frame": 207,
-   "shot_frame": 163,
-   "brain_s": 13.336,
-   "gap_px": 90.9,
-   "base_gap_px": 90.9,
-   "feet_depth_px": 452.2,
-   "robot_px": 282.8
+   "shot_frame": 165,
+   "brain_s": 13.403,
+   "gap_px": 78.2,
+   "base_gap_px": 77.4,
+   "feet_depth_px": 467.9,
+   "robot_px": 286.5
   },
   {
    "frame": 208,
-   "shot_frame": 164,
-   "brain_s": 13.369,
-   "gap_px": 78.8,
-   "base_gap_px": 78.8,
-   "feet_depth_px": 458.6,
-   "robot_px": 284.3
+   "shot_frame": 166,
+   "brain_s": 13.436,
+   "gap_px": 78.5,
+   "base_gap_px": 77.7,
+   "feet_depth_px": 467.9,
+   "robot_px": 286.5
   },
   {
    "frame": 209,
-   "shot_frame": 165,
-   "brain_s": 13.403,
-   "gap_px": 77.7,
-   "base_gap_px": 77.7,
-   "feet_depth_px": 469.3,
-   "robot_px": 286.6
+   "shot_frame": 167,
+   "brain_s": 13.469,
+   "gap_px": 85.9,
+   "base_gap_px": 85.1,
+   "feet_depth_px": 481.0,
+   "robot_px": 290.2
   },
   {
    "frame": 210,
-   "shot_frame": 166,
-   "brain_s": 13.436,
-   "gap_px": 78.2,
-   "base_gap_px": 77.7,
-   "feet_depth_px": 469.4,
-   "robot_px": 286.6
-  },
-  {
-   "frame": 211,
-   "shot_frame": 167,
-   "brain_s": 13.469,
-   "gap_px": 85.8,
-   "base_gap_px": 85.1,
-   "feet_depth_px": 482.4,
-   "robot_px": 290.1
-  },
-  {
-   "frame": 212,
    "shot_frame": 168,
    "brain_s": 13.503,
-   "gap_px": 101.8,
+   "gap_px": 102.6,
    "base_gap_px": 101.8,
-   "feet_depth_px": 495.7,
-   "robot_px": 292.4
-  },
-  {
-   "frame": 213,
-   "shot_frame": 169,
-   "brain_s": 13.536,
-   "gap_px": 129.0,
-   "base_gap_px": 129.0,
-   "feet_depth_px": 506.4,
-   "robot_px": 292.4
-  },
-  {
-   "frame": 214,
-   "shot_frame": 170,
-   "brain_s": 13.569,
-   "gap_px": 139.5,
-   "base_gap_px": 139.1,
-   "feet_depth_px": 517.5,
+   "feet_depth_px": 495.0,
    "robot_px": 293.1
   },
   {
-   "frame": 215,
-   "shot_frame": 171,
-   "brain_s": 13.603,
-   "gap_px": 147.2,
-   "base_gap_px": 146.8,
-   "feet_depth_px": 528.6,
-   "robot_px": 294.4
+   "frame": 211,
+   "shot_frame": 169,
+   "brain_s": 13.536,
+   "gap_px": 129.5,
+   "base_gap_px": 128.7,
+   "feet_depth_px": 505.8,
+   "robot_px": 293.3
   },
   {
-   "frame": 216,
+   "frame": 212,
+   "shot_frame": 170,
+   "brain_s": 13.569,
+   "gap_px": 139.8,
+   "base_gap_px": 139.5,
+   "feet_depth_px": 516.7,
+   "robot_px": 293.8
+  },
+  {
+   "frame": 213,
+   "shot_frame": 171,
+   "brain_s": 13.603,
+   "gap_px": 147.6,
+   "base_gap_px": 147.2,
+   "feet_depth_px": 527.0,
+   "robot_px": 294.0
+  },
+  {
+   "frame": 214,
    "shot_frame": 172,
    "brain_s": 13.636,
    "gap_px": 147.6,
    "base_gap_px": 147.2,
-   "feet_depth_px": 528.1,
-   "robot_px": 293.7
+   "feet_depth_px": 527.0,
+   "robot_px": 294.1
+  },
+  {
+   "frame": 215,
+   "shot_frame": 173,
+   "brain_s": 13.669,
+   "gap_px": 154.0,
+   "base_gap_px": 153.6,
+   "feet_depth_px": 537.6,
+   "robot_px": 294.9
+  },
+  {
+   "frame": 216,
+   "shot_frame": 174,
+   "brain_s": 13.703,
+   "gap_px": 159.1,
+   "base_gap_px": 158.8,
+   "feet_depth_px": 546.0,
+   "robot_px": 295.0
   },
   {
    "frame": 217,
-   "shot_frame": 173,
-   "brain_s": 13.669,
-   "gap_px": 153.5,
-   "base_gap_px": 153.1,
-   "feet_depth_px": 538.6,
-   "robot_px": 294.8
+   "shot_frame": 175,
+   "brain_s": 13.736,
+   "gap_px": 166.8,
+   "base_gap_px": 166.2,
+   "feet_depth_px": 552.4,
+   "robot_px": 295.4
   },
   {
    "frame": 218,
-   "shot_frame": 174,
-   "brain_s": 13.703,
-   "gap_px": 158.8,
-   "base_gap_px": 158.4,
-   "feet_depth_px": 547.8,
-   "robot_px": 295.8
-  },
-  {
-   "frame": 219,
-   "shot_frame": 175,
-   "brain_s": 13.736,
-   "gap_px": 167.1,
-   "base_gap_px": 166.4,
-   "feet_depth_px": 553.1,
-   "robot_px": 294.7
-  },
-  {
-   "frame": 220,
    "shot_frame": 176,
    "brain_s": 13.769,
    "gap_px": 150.0,
    "base_gap_px": 149.3,
-   "feet_depth_px": 557.3,
-   "robot_px": 294.5
+   "feet_depth_px": 556.5,
+   "robot_px": 295.1
+  },
+  {
+   "frame": 219,
+   "shot_frame": 177,
+   "brain_s": 13.803,
+   "gap_px": 146.0,
+   "base_gap_px": 145.4,
+   "feet_depth_px": 563.9,
+   "robot_px": 296.8
+  },
+  {
+   "frame": 220,
+   "shot_frame": 178,
+   "brain_s": 13.836,
+   "gap_px": 146.0,
+   "base_gap_px": 145.4,
+   "feet_depth_px": 564.0,
+   "robot_px": 296.8
   },
   {
    "frame": 221,
-   "shot_frame": 177,
-   "brain_s": 13.803,
-   "gap_px": 146.4,
-   "base_gap_px": 145.8,
-   "feet_depth_px": 565.0,
-   "robot_px": 296.4
-  },
-  {
-   "frame": 222,
-   "shot_frame": 178,
-   "brain_s": 13.836,
-   "gap_px": 146.2,
-   "base_gap_px": 145.6,
-   "feet_depth_px": 565.0,
-   "robot_px": 296.4
-  },
-  {
-   "frame": 223,
    "shot_frame": 179,
    "brain_s": 13.869,
    "gap_px": 152.0,
    "base_gap_px": 151.4,
-   "feet_depth_px": 577.1,
-   "robot_px": 299.0
+   "feet_depth_px": 576.0,
+   "robot_px": 299.3
   },
   {
-   "frame": 224,
+   "frame": 222,
    "shot_frame": 180,
    "brain_s": 13.903,
-   "gap_px": 163.6,
-   "base_gap_px": 163.1,
-   "feet_depth_px": 591.2,
-   "robot_px": 301.6
+   "gap_px": 163.4,
+   "base_gap_px": 162.8,
+   "feet_depth_px": 590.1,
+   "robot_px": 301.9
   },
   {
-   "frame": 225,
+   "frame": 223,
    "shot_frame": 181,
    "brain_s": 13.936,
    "gap_px": 181.4,
    "base_gap_px": 180.8,
-   "feet_depth_px": 604.2,
-   "robot_px": 302.2
+   "feet_depth_px": 602.6,
+   "robot_px": 301.9
   },
   {
-   "frame": 226,
+   "frame": 224,
    "shot_frame": 182,
    "brain_s": 13.969,
    "gap_px": 205.2,
-   "base_gap_px": 205.1,
-   "feet_depth_px": 614.0,
-   "robot_px": 299.6
+   "base_gap_px": 204.6,
+   "feet_depth_px": 612.9,
+   "robot_px": 300.1
   },
   {
-   "frame": 227,
+   "frame": 225,
    "shot_frame": 183,
    "brain_s": 14.003,
-   "gap_px": 226.4,
-   "base_gap_px": 226.1,
-   "feet_depth_px": 623.4,
-   "robot_px": 297.1
-  },
-  {
-   "frame": 228,
-   "shot_frame": 184,
-   "brain_s": 14.036,
-   "gap_px": 226.4,
-   "base_gap_px": 226.1,
-   "feet_depth_px": 623.4,
+   "gap_px": 226.0,
+   "base_gap_px": 225.7,
+   "feet_depth_px": 622.0,
    "robot_px": 297.2
   },
   {
-   "frame": 229,
+   "frame": 226,
+   "shot_frame": 184,
+   "brain_s": 14.036,
+   "gap_px": 226.2,
+   "base_gap_px": 226.0,
+   "feet_depth_px": 622.0,
+   "robot_px": 297.2
+  },
+  {
+   "frame": 227,
    "shot_frame": 185,
    "brain_s": 14.069,
    "gap_px": 232.1,
    "base_gap_px": 231.8,
-   "feet_depth_px": 627.9,
-   "robot_px": 290.4
+   "feet_depth_px": 626.5,
+   "robot_px": 290.5
   },
   {
-   "frame": 230,
+   "frame": 228,
    "shot_frame": 186,
    "brain_s": 14.103,
-   "gap_px": 236.9,
-   "base_gap_px": 236.6,
-   "feet_depth_px": 626.8,
+   "gap_px": 237.2,
+   "base_gap_px": 236.9,
+   "feet_depth_px": 625.4,
    "robot_px": 279.4
   },
   {
-   "frame": 231,
+   "frame": 229,
    "shot_frame": 187,
    "brain_s": 14.136,
-   "gap_px": 241.2,
-   "base_gap_px": 240.9,
-   "feet_depth_px": 623.8,
-   "robot_px": 268.6
+   "gap_px": 241.4,
+   "base_gap_px": 241.1,
+   "feet_depth_px": 622.4,
+   "robot_px": 268.5
   },
   {
-   "frame": 232,
+   "frame": 230,
    "shot_frame": 188,
    "brain_s": 14.169,
-   "gap_px": 249.6,
-   "base_gap_px": 249.0,
-   "feet_depth_px": 619.6,
+   "gap_px": 249.8,
+   "base_gap_px": 249.2,
+   "feet_depth_px": 618.2,
    "robot_px": 258.9
   },
   {
-   "frame": 233,
+   "frame": 231,
    "shot_frame": 189,
    "brain_s": 14.203,
-   "gap_px": 239.3,
-   "base_gap_px": 238.9,
-   "feet_depth_px": 615.6,
+   "gap_px": 239.4,
+   "base_gap_px": 238.8,
+   "feet_depth_px": 614.2,
    "robot_px": 251.8
+  },
+  {
+   "frame": 232,
+   "shot_frame": 190,
+   "brain_s": 14.236,
+   "gap_px": 239.7,
+   "base_gap_px": 239.1,
+   "feet_depth_px": 614.2,
+   "robot_px": 251.6
+  },
+  {
+   "frame": 233,
+   "shot_frame": 191,
+   "brain_s": 14.269,
+   "gap_px": 240.2,
+   "base_gap_px": 239.7,
+   "feet_depth_px": 613.0,
+   "robot_px": 244.4
   },
   {
    "frame": 234,
-   "shot_frame": 190,
-   "brain_s": 14.236,
-   "gap_px": 239.3,
-   "base_gap_px": 238.9,
-   "feet_depth_px": 615.6,
-   "robot_px": 251.8
-  },
-  {
-   "frame": 235,
-   "shot_frame": 191,
-   "brain_s": 14.269,
-   "gap_px": 240.6,
-   "base_gap_px": 240.2,
-   "feet_depth_px": 614.4,
-   "robot_px": 243.9
-  },
-  {
-   "frame": 236,
    "shot_frame": 192,
    "brain_s": 14.303,
    "gap_px": 249.1,
    "base_gap_px": 248.7,
-   "feet_depth_px": 614.9,
+   "feet_depth_px": 613.5,
    "robot_px": 234.2
   },
   {
-   "frame": 237,
+   "frame": 235,
    "shot_frame": 193,
    "brain_s": 14.336,
-   "gap_px": 262.1,
-   "base_gap_px": 261.6,
-   "feet_depth_px": 618.8,
-   "robot_px": 226.9
+   "gap_px": 262.5,
+   "base_gap_px": 262.1,
+   "feet_depth_px": 617.2,
+   "robot_px": 226.5
   },
   {
-   "frame": 238,
+   "frame": 236,
    "shot_frame": 194,
    "brain_s": 14.369,
    "gap_px": 280.9,
-   "base_gap_px": 280.5,
-   "feet_depth_px": 621.5,
+   "base_gap_px": 280.4,
+   "feet_depth_px": 620.1,
    "robot_px": 217.0
   },
   {
-   "frame": 239,
+   "frame": 237,
    "shot_frame": 195,
    "brain_s": 14.403,
-   "gap_px": 302.7,
+   "gap_px": 303.0,
    "base_gap_px": 302.7,
-   "feet_depth_px": 625.8,
-   "robot_px": 207.3
+   "feet_depth_px": 624.5,
+   "robot_px": 207.2
   },
   {
-   "frame": 240,
+   "frame": 238,
    "shot_frame": 196,
    "brain_s": 14.436,
    "gap_px": 303.0,
    "base_gap_px": 302.7,
-   "feet_depth_px": 625.8,
-   "robot_px": 207.4
+   "feet_depth_px": 624.4,
+   "robot_px": 207.3
   },
   {
-   "frame": 241,
+   "frame": 239,
    "shot_frame": 197,
    "brain_s": 14.469,
-   "gap_px": 309.5,
-   "base_gap_px": 309.2,
-   "feet_depth_px": 628.3,
-   "robot_px": 197.4
-  },
-  {
-   "frame": 242,
-   "shot_frame": 198,
-   "brain_s": 14.503,
-   "gap_px": 316.1,
-   "base_gap_px": 316.0,
-   "feet_depth_px": 628.9,
-   "robot_px": 186.5
-  },
-  {
-   "frame": 243,
-   "shot_frame": 199,
-   "brain_s": 14.536,
-   "gap_px": 321.4,
-   "base_gap_px": 321.4,
-   "feet_depth_px": 629.1,
-   "robot_px": 177.9
-  },
-  {
-   "frame": 244,
-   "shot_frame": 200,
-   "brain_s": 14.569,
-   "gap_px": 328.5,
-   "base_gap_px": 328.3,
-   "feet_depth_px": 626.8,
-   "robot_px": 168.7
-  },
-  {
-   "frame": 245,
-   "shot_frame": 201,
-   "brain_s": 14.603,
-   "gap_px": 335.0,
-   "base_gap_px": 334.5,
-   "feet_depth_px": 624.8,
-   "robot_px": 162.8
-  },
-  {
-   "frame": 246,
-   "shot_frame": 202,
-   "brain_s": 14.636,
-   "gap_px": 334.5,
-   "base_gap_px": 334.1,
-   "feet_depth_px": 624.8,
-   "robot_px": 162.9
-  },
-  {
-   "frame": 247,
-   "shot_frame": 203,
-   "brain_s": 14.669,
-   "gap_px": 332.4,
-   "base_gap_px": 332.0,
-   "feet_depth_px": 623.5,
-   "robot_px": 156.3
-  },
-  {
-   "frame": 248,
-   "shot_frame": 204,
-   "brain_s": 14.703,
-   "gap_px": 339.5,
-   "base_gap_px": 339.2,
-   "feet_depth_px": 623.5,
-   "robot_px": 146.9
-  },
-  {
-   "frame": 249,
-   "shot_frame": 205,
-   "brain_s": 14.736,
-   "gap_px": 350.2,
-   "base_gap_px": 349.9,
-   "feet_depth_px": 624.1,
-   "robot_px": 136.3
-  },
-  {
-   "frame": 250,
-   "shot_frame": 206,
-   "brain_s": 14.769,
-   "gap_px": 364.6,
-   "base_gap_px": 364.2,
-   "feet_depth_px": 626.0,
-   "robot_px": 125.9
-  },
-  {
-   "frame": 251,
-   "shot_frame": 207,
-   "brain_s": 14.803,
-   "gap_px": 381.1,
-   "base_gap_px": 380.8,
-   "feet_depth_px": 628.5,
-   "robot_px": 116.6
-  },
-  {
-   "frame": 252,
-   "shot_frame": 208,
-   "brain_s": 14.836,
-   "gap_px": 392.3,
-   "base_gap_px": 392.1,
-   "feet_depth_px": 630.6,
-   "robot_px": 106.8
-  },
-  {
-   "frame": 253,
-   "shot_frame": 209,
-   "brain_s": 14.869,
-   "gap_px": 392.3,
-   "base_gap_px": 392.1,
-   "feet_depth_px": 630.5,
-   "robot_px": 106.8
-  },
-  {
-   "frame": 254,
-   "shot_frame": 210,
-   "brain_s": 14.903,
-   "gap_px": 399.3,
-   "base_gap_px": 399.1,
-   "feet_depth_px": 632.1,
-   "robot_px": 97.2
-  },
-  {
-   "frame": 255,
-   "shot_frame": 211,
-   "brain_s": 14.936,
-   "gap_px": 407.2,
-   "base_gap_px": 407.0,
-   "feet_depth_px": 632.8,
-   "robot_px": 87.2
-  },
-  {
-   "frame": 256,
-   "shot_frame": 212,
-   "brain_s": 14.969,
-   "gap_px": 414.2,
-   "base_gap_px": 414.0,
-   "feet_depth_px": 632.7,
-   "robot_px": 78.6
-  },
-  {
-   "frame": 257,
-   "shot_frame": 213,
-   "brain_s": 15.003,
-   "gap_px": 423.8,
-   "base_gap_px": 423.7,
-   "feet_depth_px": 631.6,
-   "robot_px": 70.1
-  },
-  {
-   "frame": 258,
-   "shot_frame": 214,
-   "brain_s": 15.036,
-   "gap_px": 435.5,
-   "base_gap_px": 435.1,
-   "feet_depth_px": 630.2,
-   "robot_px": 65.0
-  },
-  {
-   "frame": 259,
-   "shot_frame": 215,
-   "brain_s": 15.069,
-   "gap_px": 435.4,
-   "base_gap_px": 435.1,
-   "feet_depth_px": 630.2,
-   "robot_px": 65.0
-  },
-  {
-   "frame": 260,
-   "shot_frame": 216,
-   "brain_s": 15.103,
-   "gap_px": 436.7,
-   "base_gap_px": 436.4,
-   "feet_depth_px": 629.1,
-   "robot_px": 59.0
-  },
-  {
-   "frame": 261,
-   "shot_frame": 217,
-   "brain_s": 15.136,
-   "gap_px": 445.3,
-   "base_gap_px": 444.9,
-   "feet_depth_px": 628.8,
-   "robot_px": 48.6
-  },
-  {
-   "frame": 262,
-   "shot_frame": 218,
-   "brain_s": 15.169,
-   "gap_px": 457.7,
-   "base_gap_px": 457.4,
-   "feet_depth_px": 629.5,
-   "robot_px": 37.3
-  },
-  {
-   "frame": 263,
-   "shot_frame": 219,
-   "brain_s": 15.203,
-   "gap_px": 457.7,
-   "base_gap_px": 457.5,
-   "feet_depth_px": 629.5,
-   "robot_px": 37.3
+   "gap_px": 309.2,
+   "base_gap_px": 309.0,
+   "feet_depth_px": 626.9,
+   "robot_px": 197.6
   }
  ]
 }

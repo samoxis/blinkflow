@@ -59,10 +59,10 @@ sh ~/microduck/scripts/seed-policies.sh ~/.cache/duck-sim/policies
 
 **4. One loop on the purple box**
 
-Without the sidecar (any Linux, no simulator window): the recorded live clip in [`examples/purple-box/window/`](../examples/purple-box/window) plays on the clock as if it were the 60 s buffer, the key goes down at 13.48 s of the brain's time (the leg touches the box at 10.87 s), and the sentence is typed. From there on it is the same loop as live; only the proof needs the twin.
+Without the sidecar (any Linux, no simulator window): the recorded live clip in [`examples/purple-box/outside/`](../examples/purple-box/outside) plays on the clock as if it were the 60 s buffer, the key goes down at 13.48 s of the brain's time (the leg touches the box at about 10.9 s), and the sentence is typed (or spoken: `--wav examples/purple-box/said.wav` instead of `--text`, as the example was run). From there on it is the same loop as live; only the proof needs the twin.
 
 ```bash
-python3 -m blinkflow.voice clip examples/purple-box/window/snapshot.json --press 13.48 \
+python3 -m blinkflow.voice clip examples/purple-box/outside/snapshot.json --press 13.48 \
   --text "a couple of seconds ago the robot hit the purple box" --brain ~/duck-target --auto
 ```
 

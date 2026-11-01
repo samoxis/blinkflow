@@ -3,181 +3,291 @@
   {
    "model": "sam-3.1",
    "where": "cached",
-   "purpose": "track 'white robot' (frames 0-93, sent from 0)",
+   "purpose": "track 'white robot' (frames 0-90, sent from 0)",
    "seconds": 0.0,
-   "frames": 94,
+   "frames": 91,
    "frames_returned": 0,
-   "cache_key": "e793129761971da10c3e49def073154a9abbc2ae5cd18d4dc9ca94e90f817c97",
-   "original_seconds": 3.9,
+   "cache_key": "827d4eb846112b38e73ce6d6a037c629d440055eca5d02ec1e89e98c16842830",
+   "original_seconds": 4.52,
    "cost_usd": 0.0
   },
   {
    "model": "sam-3.1",
    "where": "cached",
-   "purpose": "track 'white robot' (frames 189-283, sent from 174)",
+   "purpose": "track 'white robot' (frames 91-181, sent from 76)",
    "seconds": 0.0,
-   "frames": 110,
+   "frames": 106,
    "frames_returned": 0,
-   "cache_key": "4b590488cd96a2309a37516cba95a7d29655772ed5e313604e3312d0a08d4d69",
-   "original_seconds": 4.1,
+   "cache_key": "3057d60306c9c1703ad889ff2d140c791f705e56cb32b716e4aaab8a113f4040",
+   "original_seconds": 4.92,
    "cost_usd": 0.0
   },
   {
    "model": "sam-3.1",
    "where": "cached",
-   "purpose": "track 'white robot' (frames 94-188, sent from 79)",
+   "purpose": "track 'white robot' (frames 182-272, sent from 167)",
    "seconds": 0.0,
-   "frames": 110,
+   "frames": 106,
    "frames_returned": 0,
-   "cache_key": "7f2d0da49378e993f571d5621a995c7185888e3ddc5e620935b040ae3c25a567",
-   "original_seconds": 4.23,
+   "cache_key": "3f4fb2dab0c1e5717288102ea308b17978c666fe21ac256237ddc02c615596bb",
+   "original_seconds": 4.5,
    "cost_usd": 0.0
   },
   {
    "model": "sam-3.1",
    "where": "cached",
-   "purpose": "track 'white robot' (frames 662-755, sent from 647)",
-   "seconds": 0.0,
-   "frames": 109,
-   "frames_returned": 0,
-   "cache_key": "73f3e8ef2b4fe37f7fa2f9fcdaa08658c356a498999b859bffed0a8cd57a964d",
-   "original_seconds": 4.86,
-   "cost_usd": 0.0
-  },
-  {
-   "model": "sam-3.1",
-   "where": "cached",
-   "purpose": "track 'white robot' (frames 284-377, sent from 269)",
-   "seconds": 0.0,
-   "frames": 109,
-   "frames_returned": 0,
-   "cache_key": "1f4ac9b1d22d6bb17abe3bb97ef26f6589921613bd94e10591dbc2bd68ff4bc5",
-   "original_seconds": 4.7,
-   "cost_usd": 0.0
-  },
-  {
-   "model": "sam-3.1",
-   "where": "cached",
-   "purpose": "track 'white robot' (frames 567-661, sent from 552)",
-   "seconds": 0.0,
-   "frames": 110,
-   "frames_returned": 0,
-   "cache_key": "b3bb858948c0ee4f8d653d0173f81e9305813452bfb44124ed5c2777d2afd19b",
-   "original_seconds": 4.25,
-   "cost_usd": 0.0
-  },
-  {
-   "model": "sam-3.1",
-   "where": "cached",
-   "purpose": "track 'white robot' (frames 378-471, sent from 363)",
-   "seconds": 0.19,
-   "frames": 109,
-   "frames_returned": 23,
-   "cache_key": "ab1bc28aeae5825ef8c5d2a61162abd2e9a0c1d736fd8f0feefb4ac0275a22a2",
-   "original_seconds": 5.18,
-   "cost_usd": 0.0
-  },
-  {
-   "model": "sam-3.1",
-   "where": "cached",
-   "purpose": "track 'white robot' (frames 472-566, sent from 457)",
-   "seconds": 0.68,
-   "frames": 110,
+   "purpose": "track 'purple box' (frames 0-90, sent from 0)",
+   "seconds": 0.87,
+   "frames": 91,
    "frames_returned": 91,
-   "cache_key": "eb6697be797fef5543ef804b642c5f219180cedc9d2a3173f0211054465d06f0",
-   "original_seconds": 7.36,
+   "cache_key": "1abdca8643c12f4060bb8b0ef8953f454d480ad3bd405ef787186645a765e1ff",
+   "original_seconds": 14.14,
    "cost_usd": 0.0
   },
   {
    "model": "sam-3.1",
    "where": "cached",
-   "purpose": "track 'purple box' (frames 189-283, sent from 174)",
-   "seconds": 3.04,
-   "frames": 110,
-   "frames_returned": 110,
-   "cache_key": "ccb83115997211f386f58c977508dfaa0cf08fc24010224d07387b0e3e506dc1",
-   "original_seconds": 11.36,
+   "purpose": "track 'purple box' (frames 182-272, sent from 167)",
+   "seconds": 1.75,
+   "frames": 106,
+   "frames_returned": 106,
+   "cache_key": "cdee53e29746f5419811520e1a84d3a2c76dfc28ddd3462ba4a7155f525f2cc5",
+   "original_seconds": 14.67,
    "cost_usd": 0.0
   },
   {
    "model": "sam-3.1",
    "where": "cached",
-   "purpose": "track 'purple box' (frames 0-93, sent from 0)",
-   "seconds": 3.33,
-   "frames": 94,
-   "frames_returned": 94,
-   "cache_key": "5153cff09293649905f7de2e6e7e106db8fe1e1e7b852dbda5af60e6d68a276e",
-   "original_seconds": 8.89,
+   "purpose": "track 'purple box' (frames 91-181, sent from 76)",
+   "seconds": 2.33,
+   "frames": 106,
+   "frames_returned": 106,
+   "cache_key": "d1d7ae1d1edc7d7cf4a2d22ca0096dfe0bb08060006ca926e6cf1e64927d1840",
+   "original_seconds": 13.25,
    "cost_usd": 0.0
   },
   {
    "model": "sam-3.1",
-   "where": "cached",
-   "purpose": "track 'purple box' (frames 567-661, sent from 552)",
-   "seconds": 4.68,
-   "frames": 110,
-   "frames_returned": 110,
-   "cache_key": "0322c02a34ead94a60d7e32d79123acf13cca97c6db59b533ba467407520aaab",
-   "original_seconds": 8.15,
-   "cost_usd": 0.0
+   "where": "Meta Model API",
+   "purpose": "track 'white robot' (frames 546-636, sent from 531)",
+   "seconds": 4.21,
+   "frames": 106,
+   "frames_returned": 0,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 106
+   },
+   "cache_key": "d8786db856bbd12a67d6595e908d010b91fb1c3894f284fdcaa21bd53b29473c",
+   "cost_usd": 0.0212
   },
   {
    "model": "sam-3.1",
-   "where": "cached",
-   "purpose": "track 'purple box' (frames 378-471, sent from 363)",
-   "seconds": 5.29,
-   "frames": 109,
-   "frames_returned": 109,
-   "cache_key": "d6546df542d7c77b6d8069d8bdacf37750a09d178b0a939718329dad0d0d83e6",
-   "original_seconds": 8.28,
-   "cost_usd": 0.0
+   "where": "Meta Model API",
+   "purpose": "track 'white robot' (frames 273-363, sent from 258)",
+   "seconds": 4.64,
+   "frames": 106,
+   "frames_returned": 0,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 106
+   },
+   "cache_key": "6c2c621796afa8cd20de6dfda70fd0551bd41e9a54affacb6b5930d6f1ff166a",
+   "cost_usd": 0.0212
   },
   {
    "model": "sam-3.1",
-   "where": "cached",
-   "purpose": "track 'purple box' (frames 284-377, sent from 269)",
-   "seconds": 5.4,
-   "frames": 109,
-   "frames_returned": 109,
-   "cache_key": "8de5b3ad1b10ed9bf440a07352cede0f38a4874606b6af730ccc26a8a8928927",
-   "original_seconds": 8.27,
-   "cost_usd": 0.0
+   "where": "Meta Model API",
+   "purpose": "track 'white robot' (frames 637-727, sent from 622)",
+   "seconds": 4.71,
+   "frames": 106,
+   "frames_returned": 0,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 106
+   },
+   "cache_key": "5a3c0c3708211f83b7b4518f1b4876b407358f75637fb79f9894c4c78a1c8dc7",
+   "cost_usd": 0.0212
   },
   {
    "model": "sam-3.1",
-   "where": "cached",
-   "purpose": "track 'purple box' (frames 472-566, sent from 457)",
-   "seconds": 6.07,
-   "frames": 110,
-   "frames_returned": 110,
-   "cache_key": "f3a06e6736eb3034d58a77bb048c8bd7c8a20b18fea5e5e96704682abc84857e",
-   "original_seconds": 11.02,
-   "cost_usd": 0.0
+   "where": "Meta Model API",
+   "purpose": "track 'white robot' (frames 364-454, sent from 349)",
+   "seconds": 5.83,
+   "frames": 106,
+   "frames_returned": 7,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 106
+   },
+   "cache_key": "1ad49beb199924d50bea41f776faf4a71820b54dd12b4302641fdc421269e690",
+   "cost_usd": 0.0212
   },
   {
    "model": "sam-3.1",
-   "where": "cached",
-   "purpose": "track 'purple box' (frames 94-188, sent from 79)",
-   "seconds": 6.08,
-   "frames": 110,
-   "frames_returned": 110,
-   "cache_key": "994e4fba8e1d493b4ccb2d7b1e5ed869c95b32764bc5677c7b9addb62b66d435",
-   "original_seconds": 11.47,
-   "cost_usd": 0.0
+   "where": "Meta Model API",
+   "purpose": "track 'white robot' (frames 455-545, sent from 440)",
+   "seconds": 6.71,
+   "frames": 106,
+   "frames_returned": 104,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 106
+   },
+   "cache_key": "c9e68858dc442e5826e391c5d5b70923a8f28672465749a602e16bd948c6f313",
+   "cost_usd": 0.0212
   },
   {
    "model": "sam-3.1",
-   "where": "cached",
-   "purpose": "track 'purple box' (frames 662-755, sent from 647)",
-   "seconds": 6.39,
-   "frames": 109,
-   "frames_returned": 109,
-   "cache_key": "e8e81215bae86892dc6bcded3f28ea1ab43eee936918dc908d8a2010c43d0a05",
-   "original_seconds": 8.14,
-   "cost_usd": 0.0
+   "where": "Meta Model API",
+   "purpose": "track 'purple box' (frames 273-363, sent from 258)",
+   "seconds": 8.13,
+   "frames": 106,
+   "frames_returned": 106,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 106
+   },
+   "cache_key": "fa300fb2b471dddaacbf57c25926aa4b244d489d5064d9f6bc45313398d34cc3",
+   "cost_usd": 0.0212
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'purple box' (frames 637-727, sent from 622)",
+   "seconds": 8.19,
+   "frames": 106,
+   "frames_returned": 106,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 106
+   },
+   "cache_key": "9b6a31078e0e258882a5b0a186241e48b6bf109514d1d45d217eb629d6ce00c0",
+   "cost_usd": 0.0212
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'purple box' (frames 546-636, sent from 531)",
+   "seconds": 8.35,
+   "frames": 106,
+   "frames_returned": 106,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 106
+   },
+   "cache_key": "dd71dec34ed1697d46073acf67795bc7ec3ca759344132f0cf41d9eb112fa657",
+   "cost_usd": 0.0212
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'purple box' (frames 455-545, sent from 440)",
+   "seconds": 8.48,
+   "frames": 106,
+   "frames_returned": 106,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 106
+   },
+   "cache_key": "41cd47ac4dfc534a0fdae65a0c8aeae776ae86e82e223a93aa6e96cd5bd1e419",
+   "cost_usd": 0.0212
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'purple box' (frames 364-454, sent from 349)",
+   "seconds": 8.73,
+   "frames": 106,
+   "frames_returned": 106,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 106
+   },
+   "cache_key": "9c780450dcc93a8cabe2b4578b807d0a5a343486d1115f9fde2b5f5b8b77ac13",
+   "cost_usd": 0.0212
   }
  ],
- "total_cost_usd": 0.0,
+ "total_cost_usd": 0.212,
  "prices": {
   "sam-3.1": "$0.20 per 1000 frames",
   "muse-spark-open-1026": "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",

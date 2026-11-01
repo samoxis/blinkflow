@@ -1,20 +1,10 @@
 {
  "calls": [
   {
-   "model": "muse-glimmer",
-   "where": "local",
-   "purpose": "name the robot and the object or hazard nearest to it",
-   "seconds": 2.55,
-   "images": 3,
-   "input_tokens": 1411,
-   "output_tokens": 53,
-   "cost_usd": 0.0
-  },
-  {
    "model": "sam-3.1",
    "where": "cached",
    "purpose": "track 'white robot' (frames 0-109, sent from 0)",
-   "seconds": 0.23,
+   "seconds": 0.25,
    "frames": 110,
    "frames_returned": 110,
    "cache_key": "238ec8a1ec91d6393d3719170927ee6b5f99a6b671fdcd1a7d556ec361af0a08",
@@ -24,19 +14,19 @@
   {
    "model": "sam-3.1",
    "where": "cached",
-   "purpose": "track 'white robot' (frames 110-219, sent from 95)",
-   "seconds": 1.13,
-   "frames": 125,
-   "frames_returned": 117,
-   "cache_key": "dbc11741473060e318c8b93107dfb5725c5ce25d9d2b4cb0ef3a5795003c576f",
-   "original_seconds": 7.79,
+   "purpose": "track 'red barrier' (frames 0-109, sent from 0)",
+   "seconds": 2.14,
+   "frames": 110,
+   "frames_returned": 110,
+   "cache_key": "e40ad89bcf0bffae04706bc5e823f3dfdde57a18dd87258609dc01268f7bb043",
+   "original_seconds": 12.88,
    "cost_usd": 0.0
   },
   {
    "model": "sam-3.1",
    "where": "cached",
    "purpose": "track 'red barrier' (frames 110-219, sent from 95)",
-   "seconds": 2.9,
+   "seconds": 3.37,
    "frames": 125,
    "frames_returned": 125,
    "cache_key": "d3324bca946e081ab1d8584f79307473ef0cdd85237328189c7ea7176e12ba01",
@@ -46,12 +36,12 @@
   {
    "model": "sam-3.1",
    "where": "cached",
-   "purpose": "track 'red barrier' (frames 0-109, sent from 0)",
-   "seconds": 4.5,
-   "frames": 110,
-   "frames_returned": 110,
-   "cache_key": "e40ad89bcf0bffae04706bc5e823f3dfdde57a18dd87258609dc01268f7bb043",
-   "original_seconds": 12.88,
+   "purpose": "track 'white robot' (frames 110-219, sent from 95)",
+   "seconds": 3.44,
+   "frames": 125,
+   "frames_returned": 117,
+   "cache_key": "dbc11741473060e318c8b93107dfb5725c5ce25d9d2b4cb0ef3a5795003c576f",
+   "original_seconds": 7.79,
    "cost_usd": 0.0
   }
  ],

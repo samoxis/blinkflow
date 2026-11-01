@@ -12,12 +12,12 @@
  "first_contact_s": null,
  "first_contact_frame": null,
  "whole_mask_touch_s": null,
- "closest_gap_px": 106.2,
- "closest_s": 12.925,
- "robot_frames": 99,
- "travel_m": 2.888,
- "meta": "./twin/20261031-235727/meta.json",
- "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/evidence",
- "replay_s": 25.9,
- "see_s": 10.7
+ "closest_gap_px": 106.8,
+ "closest_s": 12.89,
+ "robot_frames": 98,
+ "travel_m": 2.734,
+ "meta": "./twin/20261101-094128/meta.json",
+ "evidence": "~/blinkflow-runs/voice/20261101-093835/fix/attempt-1/evidence",
+ "replay_s": 23.0,
+ "see_s": 12.9
 }
