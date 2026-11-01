@@ -1,0 +1,24 @@
+{
+  "change": {
+    "after": 3.0,
+    "before": 0.0,
+    "file": "brain.toml",
+    "key": "obstacle.side_memory_seconds"
+  },
+  "cost_usd": 0,
+  "format": 1,
+  "model_api_calls": 0,
+  "new_work": "BlinkFlow adapter, decision divergence measurement, report and tests.",
+  "recordings": {
+    "run.jsonl.gz": "BlinkFlow examples/purple-box/window/run.jsonl.gz (live simulator)",
+    "sanity/after.jsonl.gz": "BlinkFlow examples/purple-box/fix/attempt-1/twin/20261101-094128/run.jsonl.gz",
+    "sanity/before.jsonl.gz": "BlinkFlow examples/purple-box/fix/before/twin/20261101-093936/run.jsonl.gz"
+  },
+  "replay_attribution": "Pre-existing microduck_brain.record.replay; Pollen Robotics / Hugging Face Microduck ecosystem, Apache-2.0.",
+  "scope": "Open-loop decision divergence, not outcome proof. No physical robot was tested.",
+  "snapshot_policy": "Only brain.toml, actually imported sources, unchanged upstream LICENSE and local NOTICE. No upstream NOTICE exists.",
+  "source_revisions": {
+    "after": "64e8f71c13706a00f9b1d357e0d525cc9b8618f6",
+    "before": "b2fe90a08565089c3f0789c7058207c9e0bc82ff"
+  }
+}

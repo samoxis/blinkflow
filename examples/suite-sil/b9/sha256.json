@@ -1,0 +1,31 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "brain-after/LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "brain-after/NOTICE": "a9d34c6c5060e19535b832e7d438a6daa99605813e29422d4896a48fccc01f21",
+    "brain-after/brain.toml": "560bce1bbac96fd7cd7405253ac67a118345265b96f0ec3fb9278e70dc05b5e0",
+    "brain-after/src/microduck_brain/__init__.py": "781c3db68a13b3d0453730b8087bdce7bd55445e1709be966788d2cb77960d56",
+    "brain-after/src/microduck_brain/brain.py": "7a0762ab8cc7d9f3fc29f71651b5229936df1760d0ca59b0dc2caecb19d503ba",
+    "brain-after/src/microduck_brain/config.py": "ecfb3d24c08b89824f3b6e9bb022ebc8d78d90efcfe281cbefb0b86e84b620c0",
+    "brain-after/src/microduck_brain/depth.py": "de9670a66a543ac6b8c112b1a510c3773e7229e65d75c54ba689d28b96453dfb",
+    "brain-after/src/microduck_brain/hazards.py": "7f4451a892cc191d4a4742e7a03780864226966a83533bf7f0fc7d9d2097f909",
+    "brain-after/src/microduck_brain/record.py": "ab02baf967b67bd8fe72e921fabd1b8bbc538219fbe8dc75c615b5bc59424bd0",
+    "brain-before/LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "brain-before/NOTICE": "7ee92fdbf687726fd0fd76f51635a86552b7d4a576fbbdc33cd87c3fcf85075f",
+    "brain-before/brain.toml": "560bce1bbac96fd7cd7405253ac67a118345265b96f0ec3fb9278e70dc05b5e0",
+    "brain-before/src/microduck_brain/__init__.py": "781c3db68a13b3d0453730b8087bdce7bd55445e1709be966788d2cb77960d56",
+    "brain-before/src/microduck_brain/brain.py": "7a0762ab8cc7d9f3fc29f71651b5229936df1760d0ca59b0dc2caecb19d503ba",
+    "brain-before/src/microduck_brain/config.py": "ecfb3d24c08b89824f3b6e9bb022ebc8d78d90efcfe281cbefb0b86e84b620c0",
+    "brain-before/src/microduck_brain/depth.py": "87abba9e4c20b408401653c411d941073a887c2cb8234950010ea51961174ec0",
+    "brain-before/src/microduck_brain/hazards.py": "7f4451a892cc191d4a4742e7a03780864226966a83533bf7f0fc7d9d2097f909",
+    "brain-before/src/microduck_brain/record.py": "ab02baf967b67bd8fe72e921fabd1b8bbc538219fbe8dc75c615b5bc59424bd0",
+    "case.json": "29e0b7fde1bf4a32f0be628f7662c33a78ae4f0a8b95a4a259e46d78858d2888",
+    "change.diff": "5914c33438d82ec54840aba3b6d9ab7d1229afc9ae579b6ef0a2c7d21e0342d9",
+    "commands.png": "2af84286b6a0145dbab3058c42c653da3e767fed00ac8c01cee99b2ad9caf6d7",
+    "divergence.json": "469e2b248a6de075e4121e9a092217d9a639d09273a89adbfd833048c047dd11",
+    "event.json": "8653615ebaf985f553c39fc4910b4bed7bc49660800f080231ea024973abdb61",
+    "impact.json": "a6d1197dd0e53b4c748be8421d60940872ecf6868591c826850b10e155d62cfd",
+    "report.md": "94d5fa7b51bb2654fbd61fa0c0a1eb4c79418e63798ffcd4b92f46288e16e59f",
+    "run.jsonl.gz": "fc689ba7f61b39776ad460f898572f74adca191ecf6779a8ce10ca34e28fb08e"
+  }
+}

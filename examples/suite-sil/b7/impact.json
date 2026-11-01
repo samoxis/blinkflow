@@ -1,0 +1,16 @@
+{
+  "cited_tick_elapsed_s": 10.05,
+  "event_kind": "fall",
+  "pixel_contact_elapsed_s": 10.055,
+  "reading": "pixels",
+  "recorded_cmd": [
+    "move",
+    0.24,
+    -0.21333
+  ],
+  "scope": "Saved deterministic-twin pixel event; not scorer contact time or a physical-robot result.",
+  "shot_frame": 373,
+  "source_evidence_sha256": "a77493031add05764eadf80c25304cb94ba6c5aadf5819d9fb6663aa617aea1e",
+  "tick_alignment": "Saved pixel fall has no cited brain_tick; derived the nearest original input tick using BlinkFlow's first-tick time origin.",
+  "video_frame": 373
+}

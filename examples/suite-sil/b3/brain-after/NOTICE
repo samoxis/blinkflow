@@ -1,0 +1,9 @@
+Local redistribution NOTICE (not an upstream-authored NOTICE)
+
+Pre-existing microduck-brain source and record.py replay, unchanged.
+Microduck robotics ecosystem: Pollen Robotics / Hugging Face.
+Stored frozen-code source revision: 0f6e0e69cb42f9013e2264b6e85c0ffc529f8498
+Apache-2.0; upstream LICENSE retained byte-identically.
+No NOTICE exists in this supplied upstream revision.
+Only brain.toml and the Python modules actually imported by replay are included.
+No ownership is reassigned and no source code is changed here.

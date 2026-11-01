@@ -1,0 +1,13 @@
+diff --git a/src/microduck_brain/hazards.py b/src/microduck_brain/hazards.py
+index b97dfb3..afb8fa8 100644
+--- a/src/microduck_brain/hazards.py
++++ b/src/microduck_brain/hazards.py
+@@ -82,7 +82,7 @@ class HazardMap:
+ 
+     def _half_width(self, kind: str) -> float:
+         if kind == SIDE:
+-            return self.cfg.obstacle.corridor_half_width
++            return max(self.cfg.obstacle.corridor_half_width, self.cfg.low.corridor_half_width)
+         return self.cfg.low.corridor_half_width if kind == LOW else self.cfg.drop.corridor_half_width
+ 
+     # --- detection ------------------------------------------------------------------

@@ -1,0 +1,13 @@
+diff --git a/brain.toml b/brain.toml
+index 0d6d75d..e4795a7 100644
+--- a/brain.toml
++++ b/brain.toml
+@@ -47,7 +47,7 @@ nominal_pitch_deg = 0.0           # nominal downward pitch of the sensor (degree
+ nominal_sensor_forward = 0.064    # how far ahead of the trunk origin the sensor is (m)
+ tilt_tolerance_deg = 1.5          # pose error tolerated with a pose (timing, gait sway)
+ tilt_tolerance_nopose_deg = 4.5   # without a pose: wider, covers ±3° pitch and ±3° roll at once (catches fewer objects)
+-range_margin = 0.4                # relative margin (sensor noise + height error)
++range_margin = 0.25               # relative margin (sensor noise + height error)
+ min_range = 0.10                  # readings closer than this are crosstalk noise and are ignored
+ confirm_time = 0.12               # an object must be seen continuously this long (≈ 2 frames) to count
+ corridor_half_width = 0.15        # an object closer than this to the robot's axis is "in the way" (m)

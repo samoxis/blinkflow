@@ -1,0 +1,28 @@
+{
+  "alignment": "BlinkFlow see.brain_ticks subtracts the first input timestamp, then rounds to milliseconds. Match the cited 10.925 s to the unique original log tick; do not pass rounded times to Brain.tick.",
+  "cited_tick_elapsed_s": 10.925,
+  "pixel_contact_elapsed_s": 10.903,
+  "reading": "base",
+  "recorded_cmd": [
+    "move",
+    0.24,
+    -0.03494
+  ],
+  "scope": "Saved BlinkFlow pixel-contact citation, not a new contact measurement or physical-robot trial. The live recording was made in the live simulator.",
+  "shot_frame": 90,
+  "sources": {
+    "evidence/diagnosis.json": {
+      "path": "examples/purple-box/window/evidence/diagnosis.json",
+      "sha256": "4cbbe90ffe5fa3c97b9be0dec5b49c96b616052ce588147ee1bad7fd77fa298b"
+    },
+    "evidence/evidence.json": {
+      "path": "examples/purple-box/window/evidence/evidence.json",
+      "sha256": "cd8715661f5d3f0a0192356c7524b65b4466e03d878f47ee7c9e85e116d690d6"
+    },
+    "snapshot.json": {
+      "path": "examples/purple-box/window/snapshot.json",
+      "sha256": "27f3cfbd0e24fcd13c6e323e1fc920aab6ffd69b1b77e12ab66124f93eb4feb4"
+    }
+  },
+  "video_frame": 132
+}

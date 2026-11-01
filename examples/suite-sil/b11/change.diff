@@ -1,0 +1,13 @@
+diff --git a/brain.toml b/brain.toml
+index db1e6ed..e34798f 100644
+--- a/brain.toml
++++ b/brain.toml
+@@ -57,7 +57,7 @@ wall_margin = 0.25                # a low reading with a wall row in the same co
+ 
+ [drop]
+ # Drops: where the floor should be clearly visible, "nothing in range" or a clearly longer range = the floor is missing.
+-max_expected = 0.3        # only zones whose expected floor is closer than this (m): rows 6-7 when standing
++max_expected = 0.9        # only zones whose expected floor is closer than this (m): rows 6-7 when standing
+ range_margin = 0.10       # how much longer than the furthest plausible floor (head tilted up) a reading must be
+ min_zones = 2             # how many floor-less zones in the same frame (a single one is noise)
+ confirm_time = 0.12       # seen continuously this long to count

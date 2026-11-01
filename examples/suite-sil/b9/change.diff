@@ -1,0 +1,13 @@
+diff --git a/src/microduck_brain/depth.py b/src/microduck_brain/depth.py
+index 06c3d0e..7ea627d 100644
+--- a/src/microduck_brain/depth.py
++++ b/src/microduck_brain/depth.py
+@@ -270,7 +270,7 @@ def low_obstacles(frame: DepthFrame, pose: Pose | None, cfg) -> list[LowObstacle
+                 continue                                # under ~10 cm the sensor reports phantom returns
+             exp_nom = model.expected(i, 0.0)
+             ratio = d / exp_nom if math.isfinite(exp_nom) else 0.0
+-            out.append(LowObstacle(r, c, d, d * by, d * bx, ratio))
++            out.append(LowObstacle(r, c, d, d * bx, d * by, ratio))
+     return out
+ 
+ 

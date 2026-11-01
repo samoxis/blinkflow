@@ -1,0 +1,11 @@
+diff --git a/src/microduck_brain/depth.py b/src/microduck_brain/depth.py
+index 105bf56..7ea627d 100644
+--- a/src/microduck_brain/depth.py
++++ b/src/microduck_brain/depth.py
+@@ -317,5 +317,5 @@ def drop_zones(frame: DepthFrame, pose: Pose | None, cfg) -> list[DropZone]:
+             else:
+                 continue                     # floor (or closer: an object), or a failed measurement
+             bx, by, _ = BEAMS[i]
+-            out.append(DropZone(r, c, nominal * by, nominal * bx, no_target))
++            out.append(DropZone(r, c, nominal * bx, nominal * by, no_target))
+     return out if len(out) >= dr.min_zones else []

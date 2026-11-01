@@ -1,0 +1,29 @@
+{
+  "event_kind": "contact",
+  "selected_event": {
+    "base_gap_px": 17.7,
+    "brain_s": 10.125,
+    "brain_tick": {
+      "cmd": [
+        "move",
+        0.24,
+        -0.02249
+      ],
+      "state": "forward",
+      "t": 10.1,
+      "why": null
+    },
+    "feet_depth_px": 27.0,
+    "frame": 375,
+    "gap_px": 1.4,
+    "reading": "base",
+    "robot_px": 122.8,
+    "shot_frame": 375
+  },
+  "selection": "first_contact",
+  "source": {
+    "path": "suite-layers/b3/fix/before/evidence/evidence.json",
+    "sha256": "a271ee28a16d009505a6c9cd72b724a3364023401c53cf53de86fc993eae1af4"
+  },
+  "tick_alignment": "Matched the tick explicitly cited by saved contact evidence."
+}

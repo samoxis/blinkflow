@@ -1,0 +1,20 @@
+{
+  "event_kind": "fall",
+  "selected_event": {
+    "brain_s": 10.055,
+    "drop_px": 96.0,
+    "frame": 373,
+    "from_shot_frame": 359,
+    "how": "dropped and tipped over",
+    "reading": "pixels",
+    "robot_px": 118.0,
+    "shot_frame": 373,
+    "turn_deg": 74.9
+  },
+  "selection": "fall.pixels",
+  "source": {
+    "path": "suite-layers/b10/fix/before/evidence/evidence.json",
+    "sha256": "a722a8b1295c8acb5da238573e62eec5c4bdaf3053417124fc4193bd76192841"
+  },
+  "tick_alignment": "Saved pixel fall has no cited brain_tick; derived the nearest original input tick using BlinkFlow's first-tick time origin."
+}

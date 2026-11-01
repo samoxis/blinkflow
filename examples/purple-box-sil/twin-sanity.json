@@ -1,0 +1,54 @@
+{
+  "after_baseline_command_differences": 0,
+  "after_recording_sha256": "1934f53f783c0198a0fed39cefa631a7e9791bf04f1cb3f7daad467fea296cbf",
+  "before_baseline_command_differences": 0,
+  "before_recording_sha256": "604f65eb24a390cf68cf474a766e8ea00887c8ae45c9b474c7def55862997040",
+  "first_divergence": {
+    "cmd_A": [
+      "move",
+      0.24,
+      0.2171428571428572
+    ],
+    "cmd_B": [
+      "move",
+      0.24,
+      0.2281279818198097
+    ],
+    "elapsed_s": 1.7000000000000002,
+    "index": 34,
+    "state_A": "forward",
+    "state_B": "forward",
+    "t": 4.7,
+    "why_B": null
+  },
+  "fixed_SIL_matches_after_command_at_onset": true,
+  "format": 1,
+  "identical_input_prefix_ticks": 35,
+  "passed": true,
+  "recorded_first_divergence": {
+    "cmd_after": [
+      "move",
+      0.24,
+      0.22813
+    ],
+    "cmd_before": [
+      "move",
+      0.24,
+      0.21714
+    ],
+    "index": 34,
+    "t": 4.7
+  },
+  "scope": "open-loop onset sanity only; later SIL inputs are not the after-twin trajectory",
+  "ticks_per_recording": 450,
+  "totals_on_before_inputs": {
+    "A_vs_recorded_command_differences": 0,
+    "A_vs_recorded_state_differences": 0,
+    "B_vs_recorded_command_differences": 410,
+    "B_vs_recorded_state_differences": 338,
+    "command_differences": 410,
+    "duration_s": 22.45,
+    "state_differences": 338,
+    "ticks": 450
+  }
+}

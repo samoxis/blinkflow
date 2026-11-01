@@ -1,0 +1,44 @@
+{
+  "bug": "b6",
+  "event_kind": "contact",
+  "fix": "side_memory_seconds 0.05 -> 5.0 (TOML)",
+  "kept_attempt": 1,
+  "recording_provenance": {
+    "original_compressed_sha256": "c164570d99341b110238657bf87a1059cf4f66a477fcb29970edff05f46398af",
+    "original_decompressed_sha256": "ac928a85949cbbfb5bdef002933a7122a239bc07b97600b5aef32ac8a4952b79",
+    "public_compressed_sha256": "bc2de6b23a2cdc81e4cf6d26dddd655a24672fe4f2f370aa8c9a801bf36dceb5",
+    "public_header": {
+      "config": "brain.toml",
+      "format": 1,
+      "kind": "microduck-brain-run",
+      "twin": true
+    },
+    "tick_payload_sha256": "c51588bcca4019d47714410a40b847f1e52fab44d20ead7488cf0cba9dadb6ba",
+    "transformation": "Only header.config personal path replaced with brain.toml; gzip recompressed with mtime=0. Tick payload bytes unchanged."
+  },
+  "scene": "box",
+  "source_files": {
+    "before_recording": {
+      "path": "suite-layers/b6/fix/before/twin/20261028-093034/run.jsonl.gz",
+      "sha256": "c164570d99341b110238657bf87a1059cf4f66a477fcb29970edff05f46398af"
+    },
+    "fix_metadata": {
+      "path": "suite-layers/b6/fix/fix.json",
+      "sha256": "5ab398e43e60ec4c5dea71a5e1a13fc3521e1359702c6dca861dab9006e9f072"
+    },
+    "kept_patch": {
+      "path": "suite-layers/b6/fix/attempt-1/change.diff",
+      "sha256": "f49ede54c2a1c67a74443994b2bf98c4bb371533947589381ca9ce5d4f3cd34d"
+    },
+    "pixel_evidence": {
+      "path": "suite-layers/b6/fix/before/evidence/evidence.json",
+      "sha256": "91c755018d0a425a99492b989f99a720fca2aaaea7a241af89729c0ab9b90a4a"
+    }
+  },
+  "source_policy": "Unmodified minimal modules from stored immutable buggy/fixed Git commits. Saved kept change.diff equals their Git diff. Local worktrees are registered only in local copies, never the read-only runs.",
+  "source_revisions": {
+    "after": "66aaa70f09c14b8d0a6b9ba13220b0b35c4c2f5e",
+    "before": "9054c835cba2d5dc9c943077a34a27184d8f6f23"
+  },
+  "status": "processed"
+}

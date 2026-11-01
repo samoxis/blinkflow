@@ -1,0 +1,11 @@
+Local redistribution NOTICE (not an upstream-authored NOTICE)
+
+Pre-existing microduck-brain source and record.py replay, unchanged.
+Microduck robotics ecosystem: Pollen Robotics / Hugging Face.
+Upstream snapshot supplied from the BlinkFlow microduck-brain target:
+  revision b2fe90a08565089c3f0789c7058207c9e0bc82ff
+License: Apache-2.0; the upstream LICENSE is included unchanged.
+No NOTICE file exists in the supplied upstream revision.
+This local NOTICE records provenance; it does not assign new ownership.
+Only brain.toml and Python source modules actually imported by replay
+are redistributed. No source changes were made to these files.

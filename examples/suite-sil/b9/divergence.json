@@ -1,0 +1,7459 @@
+{
+  "brain_A_sha256": {
+    "brain.toml": "560bce1bbac96fd7cd7405253ac67a118345265b96f0ec3fb9278e70dc05b5e0",
+    "src/microduck_brain/__init__.py": "781c3db68a13b3d0453730b8087bdce7bd55445e1709be966788d2cb77960d56",
+    "src/microduck_brain/brain.py": "7a0762ab8cc7d9f3fc29f71651b5229936df1760d0ca59b0dc2caecb19d503ba",
+    "src/microduck_brain/config.py": "ecfb3d24c08b89824f3b6e9bb022ebc8d78d90efcfe281cbefb0b86e84b620c0",
+    "src/microduck_brain/depth.py": "87abba9e4c20b408401653c411d941073a887c2cb8234950010ea51961174ec0",
+    "src/microduck_brain/hazards.py": "7f4451a892cc191d4a4742e7a03780864226966a83533bf7f0fc7d9d2097f909",
+    "src/microduck_brain/record.py": "ab02baf967b67bd8fe72e921fabd1b8bbc538219fbe8dc75c615b5bc59424bd0"
+  },
+  "brain_B_sha256": {
+    "brain.toml": "560bce1bbac96fd7cd7405253ac67a118345265b96f0ec3fb9278e70dc05b5e0",
+    "src/microduck_brain/__init__.py": "781c3db68a13b3d0453730b8087bdce7bd55445e1709be966788d2cb77960d56",
+    "src/microduck_brain/brain.py": "7a0762ab8cc7d9f3fc29f71651b5229936df1760d0ca59b0dc2caecb19d503ba",
+    "src/microduck_brain/config.py": "ecfb3d24c08b89824f3b6e9bb022ebc8d78d90efcfe281cbefb0b86e84b620c0",
+    "src/microduck_brain/depth.py": "de9670a66a543ac6b8c112b1a510c3773e7229e65d75c54ba689d28b96453dfb",
+    "src/microduck_brain/hazards.py": "7f4451a892cc191d4a4742e7a03780864226966a83533bf7f0fc7d9d2097f909",
+    "src/microduck_brain/record.py": "ab02baf967b67bd8fe72e921fabd1b8bbc538219fbe8dc75c615b5bc59424bd0"
+  },
+  "case": {
+    "bug": "b9",
+    "event_kind": "contact",
+    "fix": "restore low-object forward/lateral components",
+    "kept_attempt": 1,
+    "scene": "low_cube"
+  },
+  "command_comparison": "exact kind, vx, vyaw; unrounded brain outputs",
+  "diverges_before_impact_tick": true,
+  "diverges_before_pixel_contact": true,
+  "first_divergence": {
+    "cmd_A": [
+      "move",
+      0.24,
+      0.3866159608785901
+    ],
+    "cmd_B": [
+      "move",
+      0.24,
+      0.3888235294203159
+    ],
+    "elapsed_s": 3.4000000000000004,
+    "index": 68,
+    "state_A": "forward",
+    "state_B": "forward",
+    "t": 6.4,
+    "why_B": null
+  },
+  "first_divergence_at_upstream_tolerance": {
+    "cmd_A": [
+      "move",
+      0.24,
+      0.3866159608785901
+    ],
+    "cmd_B": [
+      "move",
+      0.24,
+      0.3888235294203159
+    ],
+    "elapsed_s": 3.4000000000000004,
+    "index": 68,
+    "state_A": "forward",
+    "state_B": "forward",
+    "t": 6.4,
+    "why_B": null
+  },
+  "format": 1,
+  "impact": {
+    "citation": {
+      "cited_tick_elapsed_s": 10.1,
+      "event_kind": "contact",
+      "pixel_contact_elapsed_s": 10.125,
+      "reading": "base",
+      "recorded_cmd": [
+        "move",
+        0.24,
+        -0.02249
+      ],
+      "scope": "Saved deterministic-twin pixel event; not scorer contact time or a physical-robot result.",
+      "shot_frame": 375,
+      "source_evidence_sha256": "04e0021df1f729088cbfa2a25b4fa03f01e2b51f55627873eab1793b0665e347",
+      "tick_alignment": "Matched the tick explicitly cited by saved contact evidence.",
+      "video_frame": 375
+    },
+    "elapsed_s": 10.1,
+    "index": 202,
+    "pixel_to_tick_offset_s": -0.025000000000000355,
+    "t": 13.1
+  },
+  "lead_to_impact_tick_s": 6.699999999999999,
+  "lead_to_pixel_contact_s": 6.725,
+  "mode": "open-loop decision divergence; not an outcome proof",
+  "recorded_comparison": "upstream tolerance: same kind, abs(speed delta) < 1e-4",
+  "recording_sha256": "fc689ba7f61b39776ad460f898572f74adca191ecf6779a8ce10ca34e28fb08e",
+  "replay_engine": "microduck_brain.record.replay (pre-existing), with a per-tick observer",
+  "suite_analysis": {
+    "classification": "continuous-only",
+    "classification_policy": "Classify on the prefix ending at the first exact different command. discrete-decision-before-impact requires a pre-impact first different command and B's differential stop/in-place turn or protective state while A stays forward, with no earlier different command. Earlier continuous steering makes the result continuous-only (inconclusive), even if a later state differs before impact. Without a command difference strictly before the cited impact tick, classify no-divergence-before-impact. No numerical threshold replaces exact equality.",
+    "first_B_differential_stop_or_turn": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.09652619232704245
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 5.9,
+      "index": 118,
+      "lead_to_impact_tick_s": 4.199999999999999,
+      "lead_to_saved_pixel_event_s": 4.225,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 8.9,
+      "why_B": null,
+      "within_shared_command_prefix": false
+    },
+    "first_B_protective_state_while_A_forward": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.09652619232704245
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 5.9,
+      "index": 118,
+      "lead_to_impact_tick_s": 4.199999999999999,
+      "lead_to_saved_pixel_event_s": 4.225,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 8.9,
+      "why_B": null,
+      "within_shared_command_prefix": false
+    },
+    "first_B_stop_or_turn_after_forward": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.09652619232704245
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 5.9,
+      "index": 118,
+      "lead_to_impact_tick_s": 4.199999999999999,
+      "lead_to_saved_pixel_event_s": 4.225,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 8.9,
+      "why_B": null,
+      "within_shared_command_prefix": false
+    },
+    "first_B_stop_or_turn_command": {
+      "cmd_A": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.0,
+      "index": 0,
+      "lead_to_impact_tick_s": 10.1,
+      "lead_to_saved_pixel_event_s": 10.125,
+      "previous_state_A": null,
+      "previous_state_B": null,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.0,
+      "why_B": null,
+      "within_shared_command_prefix": true
+    },
+    "first_exact_divergence": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3866159608785901
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3888235294203159
+      ],
+      "elapsed_s": 3.4000000000000004,
+      "index": 68,
+      "lead_to_impact_tick_s": 6.699999999999999,
+      "lead_to_saved_pixel_event_s": 6.725,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.4,
+      "why_B": null,
+      "within_shared_command_prefix": true
+    },
+    "first_state_divergence": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.09652619232704245
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 5.9,
+      "index": 118,
+      "lead_to_impact_tick_s": 4.199999999999999,
+      "lead_to_saved_pixel_event_s": 4.225,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 8.9,
+      "why_B": null,
+      "within_shared_command_prefix": false
+    },
+    "impact_tick_elapsed_s": 10.1,
+    "impact_tick_index": 202,
+    "interpretation": "Continuous-only (inconclusive): later state/stop differences are outside the shared prefix and cannot establish the fixed trajectory.",
+    "pixel_event_before_impact_tick_s": -0.025000000000000355,
+    "pixel_event_elapsed_s": 10.125,
+    "pixel_event_kind": "contact",
+    "shared_command_prefix_last_index": 68,
+    "supported_discrete_decision": null
+  },
+  "ticks": [
+    {
+      "cmd_A": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.0,
+      "index": 0,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.04999999999999982,
+      "index": 1,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.10000000000000009,
+      "index": 2,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.1499999999999999,
+      "index": 3,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.20000000000000018,
+      "index": 4,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.25,
+      "index": 5,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.2999999999999998,
+      "index": 6,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.3500000000000001,
+      "index": 7,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.3999999999999999,
+      "index": 8,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.4500000000000002,
+      "index": 9,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.5,
+      "index": 10,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.5499999999999998,
+      "index": 11,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.6000000000000001,
+      "index": 12,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.6499999999999999,
+      "index": 13,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.7000000000000002,
+      "index": 14,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.75,
+      "index": 15,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.7999999999999998,
+      "index": 16,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.8500000000000001,
+      "index": 17,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.8999999999999999,
+      "index": 18,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.9500000000000002,
+      "index": 19,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.0,
+      "index": 20,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.0499999999999998,
+      "index": 21,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.0999999999999996,
+      "index": 22,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.1500000000000004,
+      "index": 23,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.2000000000000002,
+      "index": 24,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.25,
+      "index": 25,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.2999999999999998,
+      "index": 26,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.3499999999999996,
+      "index": 27,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.4000000000000004,
+      "index": 28,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.4500000000000002,
+      "index": 29,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.5,
+      "index": 30,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.14999999999999947
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.14999999999999947
+      ],
+      "elapsed_s": 1.5499999999999998,
+      "index": 31,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.21523809523809528
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.21523809523809528
+      ],
+      "elapsed_s": 1.5999999999999996,
+      "index": 32,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.21523809523809528
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.21523809523809528
+      ],
+      "elapsed_s": 1.6500000000000004,
+      "index": 33,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2281279818198097
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.2281279818198097
+      ],
+      "elapsed_s": 1.7000000000000002,
+      "index": 34,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2374467453232968
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.2374467453232968
+      ],
+      "elapsed_s": 1.75,
+      "index": 35,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.239727237119409
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.239727237119409
+      ],
+      "elapsed_s": 1.7999999999999998,
+      "index": 36,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24165328843280115
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24165328843280115
+      ],
+      "elapsed_s": 1.8499999999999996,
+      "index": 37,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24123976182011317
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24123976182011317
+      ],
+      "elapsed_s": 1.9000000000000004,
+      "index": 38,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24196786584428423
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24196786584428423
+      ],
+      "elapsed_s": 1.9500000000000002,
+      "index": 39,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24292518636714322
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24292518636714322
+      ],
+      "elapsed_s": 2.0,
+      "index": 40,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24299313380513066
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24299313380513066
+      ],
+      "elapsed_s": 2.05,
+      "index": 41,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24322656398668047
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24322656398668047
+      ],
+      "elapsed_s": 2.0999999999999996,
+      "index": 42,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24370433748961295
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24370433748961295
+      ],
+      "elapsed_s": 2.1500000000000004,
+      "index": 43,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24518099612438915
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24518099612438915
+      ],
+      "elapsed_s": 2.2,
+      "index": 44,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24525230315465776
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24525230315465776
+      ],
+      "elapsed_s": 2.25,
+      "index": 45,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2452220256686943
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.2452220256686943
+      ],
+      "elapsed_s": 2.3,
+      "index": 46,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24487365607467626
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24487365607467626
+      ],
+      "elapsed_s": 2.3499999999999996,
+      "index": 47,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24761581711825592
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.24761581711825592
+      ],
+      "elapsed_s": 2.4000000000000004,
+      "index": 48,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.25225488395385787
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.25225488395385787
+      ],
+      "elapsed_s": 2.45,
+      "index": 49,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2587271737769883
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.2587271737769883
+      ],
+      "elapsed_s": 2.5,
+      "index": 50,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2728580466365455
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.2728580466365455
+      ],
+      "elapsed_s": 2.55,
+      "index": 51,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2751064704121554
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.2751064704121554
+      ],
+      "elapsed_s": 2.5999999999999996,
+      "index": 52,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.28761908915715145
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.28761908915715145
+      ],
+      "elapsed_s": 2.6500000000000004,
+      "index": 53,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.29221698867648976
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.29221698867648976
+      ],
+      "elapsed_s": 2.7,
+      "index": 54,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3035627949030826
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3035627949030826
+      ],
+      "elapsed_s": 2.75,
+      "index": 55,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3218245736364314
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3218245736364314
+      ],
+      "elapsed_s": 2.8,
+      "index": 56,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2914285714285713
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.2914285714285713
+      ],
+      "elapsed_s": 2.8499999999999996,
+      "index": 57,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2996376273241191
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.2996376273241191
+      ],
+      "elapsed_s": 2.9000000000000004,
+      "index": 58,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3047619047619047
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3047619047619047
+      ],
+      "elapsed_s": 2.95,
+      "index": 59,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 5.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.33309782481389694
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.33309782481389694
+      ],
+      "elapsed_s": 3.0,
+      "index": 60,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3396950347960193
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3396950347960193
+      ],
+      "elapsed_s": 3.05,
+      "index": 61,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.34526084311746175
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.34526084311746175
+      ],
+      "elapsed_s": 3.0999999999999996,
+      "index": 62,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3486277344036361
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3486277344036361
+      ],
+      "elapsed_s": 3.1500000000000004,
+      "index": 63,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3629249794302263
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3629249794302263
+      ],
+      "elapsed_s": 3.2,
+      "index": 64,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3703495028424455
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3703495028424455
+      ],
+      "elapsed_s": 3.25,
+      "index": 65,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3801182686089929
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3801182686089929
+      ],
+      "elapsed_s": 3.3,
+      "index": 66,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.38934088517683574
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.38934088517683574
+      ],
+      "elapsed_s": 3.3499999999999996,
+      "index": 67,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3866159608785901
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3888235294203159
+      ],
+      "elapsed_s": 3.4000000000000004,
+      "index": 68,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3924491765679674
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3924491765679674
+      ],
+      "elapsed_s": 3.45,
+      "index": 69,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4234855054440096
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.4234855054440096
+      ],
+      "elapsed_s": 3.5,
+      "index": 70,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4268695528304046
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.4268695528304046
+      ],
+      "elapsed_s": 3.55,
+      "index": 71,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.43339549996266924
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.43339549996266924
+      ],
+      "elapsed_s": 3.5999999999999996,
+      "index": 72,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4397338152297162
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.4397338152297162
+      ],
+      "elapsed_s": 3.6500000000000004,
+      "index": 73,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.435592715410737
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.435592715410737
+      ],
+      "elapsed_s": 3.7,
+      "index": 74,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.44428166564077287
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.47857514501857734
+      ],
+      "elapsed_s": 3.75,
+      "index": 75,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4842775070976981
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.4842775070976981
+      ],
+      "elapsed_s": 3.8,
+      "index": 76,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4724762122571661
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.4805289267037751
+      ],
+      "elapsed_s": 3.8499999999999996,
+      "index": 77,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4841090349529566
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.4860143452844759
+      ],
+      "elapsed_s": 3.9000000000000004,
+      "index": 78,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4959822848826401
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.4959822848826401
+      ],
+      "elapsed_s": 3.95,
+      "index": 79,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 6.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5007236512260023
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.5037087308982188
+      ],
+      "elapsed_s": 4.0,
+      "index": 80,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5080820981007251
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.5136190757390896
+      ],
+      "elapsed_s": 4.05,
+      "index": 81,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5149806948918465
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.6636190757390891
+      ],
+      "elapsed_s": 4.1,
+      "index": 82,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5230298520377584
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7706804365209107
+      ],
+      "elapsed_s": 4.15,
+      "index": 83,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5461529012457261
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.79810199503801
+      ],
+      "elapsed_s": 4.2,
+      "index": 84,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5623855549119993
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.6481019950380106
+      ],
+      "elapsed_s": 4.25,
+      "index": 85,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5971118498417587
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.5971118498417587
+      ],
+      "elapsed_s": 4.3,
+      "index": 86,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.6121071226565182
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.6121071226565182
+      ],
+      "elapsed_s": 4.35,
+      "index": 87,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4621071226565161
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.5260948314364541
+      ],
+      "elapsed_s": 4.4,
+      "index": 88,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.31210712265651663
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.5260948314364541
+      ],
+      "elapsed_s": 4.45,
+      "index": 89,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.27472119498961595
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.584887076639047
+      ],
+      "elapsed_s": 4.5,
+      "index": 90,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.282424413788275
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.5772698783480137
+      ],
+      "elapsed_s": 4.55,
+      "index": 91,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.43242441378827445
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.6528386756385436
+      ],
+      "elapsed_s": 4.6,
+      "index": 92,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5824244137882766
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.6658168348890804
+      ],
+      "elapsed_s": 4.65,
+      "index": 93,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4324244137882771
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.5937190005695863
+      ],
+      "elapsed_s": 4.7,
+      "index": 94,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.28242441378827765
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.6010178303334617
+      ],
+      "elapsed_s": 4.75,
+      "index": 95,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.13242441378827818
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.4510178303334622
+      ],
+      "elapsed_s": 4.8,
+      "index": 96,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.017575586211721284
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.30101783033346274
+      ],
+      "elapsed_s": 4.85,
+      "index": 97,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.020274216650394375
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.1510178303334606
+      ],
+      "elapsed_s": 4.9,
+      "index": 98,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.051080869390991
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.3010178303334601
+      ],
+      "elapsed_s": 4.95,
+      "index": 99,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 7.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.09510630280118439
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.45101783033345955
+      ],
+      "elapsed_s": 5.0,
+      "index": 100,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.056658750109579534
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.6010178303334617
+      ],
+      "elapsed_s": 5.050000000000001,
+      "index": 101,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.006588689263619052
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7121408002283167
+      ],
+      "elapsed_s": 5.1,
+      "index": 102,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0731871070467427
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7335551823446251
+      ],
+      "elapsed_s": 5.15,
+      "index": 103,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1531697873200157
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.5835551823446283
+      ],
+      "elapsed_s": 5.199999999999999,
+      "index": 104,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1578371150583157
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.4335551823446262
+      ],
+      "elapsed_s": 5.25,
+      "index": 105,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.10752978117583813
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.5835551823446283
+      ],
+      "elapsed_s": 5.300000000000001,
+      "index": 106,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.04418174456582431
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.6979092096187087
+      ],
+      "elapsed_s": 5.35,
+      "index": 107,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.02589257051010181
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7078347396862005
+      ],
+      "elapsed_s": 5.4,
+      "index": 108,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.04536428125042958
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7124108637863185
+      ],
+      "elapsed_s": 5.449999999999999,
+      "index": 109,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.0019382786862030682
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7318561658548233
+      ],
+      "elapsed_s": 5.5,
+      "index": 110,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.044062341596409184
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7840056355163085
+      ],
+      "elapsed_s": 5.550000000000001,
+      "index": 111,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1149614523360298
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7735676107221672
+      ],
+      "elapsed_s": 5.6,
+      "index": 112,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.13425474041293886
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7735676107221672
+      ],
+      "elapsed_s": 5.65,
+      "index": 113,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.09200814149363755
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7833174267995857
+      ],
+      "elapsed_s": 5.699999999999999,
+      "index": 114,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.027792643626612434
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7811651161730881
+      ],
+      "elapsed_s": 5.75,
+      "index": 115,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.06799005101355379
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7882396284661695
+      ],
+      "elapsed_s": 5.800000000000001,
+      "index": 116,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.10197632353420442
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.7913756760997863
+      ],
+      "elapsed_s": 5.85,
+      "index": 117,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 8.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.09652619232704245
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 5.9,
+      "index": 118,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 8.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.04628072934847908
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 5.949999999999999,
+      "index": 119,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 8.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03621785643392084
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 6.0,
+      "index": 120,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 9.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07072710029834234
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 6.050000000000001,
+      "index": 121,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 9.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.06864204216290919
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 6.1,
+      "index": 122,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 9.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.028571428571428394
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 6.15,
+      "index": 123,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 9.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0042616031626775755
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 6.199999999999999,
+      "index": 124,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 9.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.0249197999654891
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 6.25,
+      "index": 125,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.06010259423201991
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.300000000000001,
+      "index": 126,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.016472626754837377
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.35,
+      "index": 127,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.09498665863766315
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.4,
+      "index": 128,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.12458872537848516
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.449999999999999,
+      "index": 129,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.003809523809523818
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.5,
+      "index": 130,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.055238095238095086
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.550000000000001,
+      "index": 131,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07047619047619035
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.6,
+      "index": 132,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07047619047619035
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.65,
+      "index": 133,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.004996272153679995
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.699999999999999,
+      "index": 134,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.025555063787352717
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.75,
+      "index": 135,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.08000987992282137
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.800000000000001,
+      "index": 136,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1331281155446177
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.85,
+      "index": 137,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.16068775067510224
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.9,
+      "index": 138,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.05142857142857127
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 6.949999999999999,
+      "index": 139,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.12380952380952373
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.0,
+      "index": 140,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.12380952380952373
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.050000000000001,
+      "index": 141,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.01333333333333335
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.1,
+      "index": 142,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.007429743437561786
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.15,
+      "index": 143,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03540514667048133
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.199999999999999,
+      "index": 144,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07738656997176878
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.25,
+      "index": 145,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.10851840676808794
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.300000000000001,
+      "index": 146,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.13203303242153216
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.35,
+      "index": 147,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07619047619047607
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.4,
+      "index": 148,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07619047619047607
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.449999999999999,
+      "index": 149,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03979717583990691
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.5,
+      "index": 150,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.009820913725113033
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.550000000000001,
+      "index": 151,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.00826516271069213
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.6,
+      "index": 152,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.02976621649809095
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.65,
+      "index": 153,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07187116758325768
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.699999999999999,
+      "index": 154,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.08412589203432047
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.75,
+      "index": 155,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.09786857318240601
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.800000000000001,
+      "index": 156,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.030476190476190296
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.85,
+      "index": 157,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.01333333333333335
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.9,
+      "index": 158,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.010297558439905825
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 7.949999999999999,
+      "index": 159,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.054268963827556686
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.0,
+      "index": 160,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.0010964134686613294
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.05,
+      "index": 161,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.05484624342310879
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.1,
+      "index": 162,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.10455780681786263
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.15,
+      "index": 163,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1598384388016564
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.2,
+      "index": 164,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1295423083161138
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.25,
+      "index": 165,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07047619047619035
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.3,
+      "index": 166,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.01276037547473409
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.35,
+      "index": 167,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.05582922757004599
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.4,
+      "index": 168,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.05945563536907447
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.45,
+      "index": 169,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        1.7214700485795875e-05
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.5,
+      "index": 170,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.05592716136869501
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.55,
+      "index": 171,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.12590981721689942
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.6,
+      "index": 172,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.14060977491582344
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.65,
+      "index": 173,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.06476190476190462
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.7,
+      "index": 174,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.049523809523809366
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.75,
+      "index": 175,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.013758078419295154
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.8,
+      "index": 176,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.026946861186713293
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.85,
+      "index": 177,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.018227453948916582
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.9,
+      "index": 178,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.04941294545361794
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 8.95,
+      "index": 179,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1461098929054786
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.0,
+      "index": 180,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.179604346061921
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.05,
+      "index": 181,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.04761904761904745
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.1,
+      "index": 182,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.11999999999999991
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.15,
+      "index": 183,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.020952380952380972
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.2,
+      "index": 184,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.020952380952380976
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.25,
+      "index": 185,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.01570514516032807
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.3,
+      "index": 186,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.045746440458883965
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.35,
+      "index": 187,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.13151630807830533
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.4,
+      "index": 188,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1533576617400339
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.45,
+      "index": 189,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.17745137008457243
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.5,
+      "index": 190,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.06476190476190462
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.55,
+      "index": 191,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.030476190476190296
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.6,
+      "index": 192,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.030476190476190296
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.65,
+      "index": 193,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.018994297202774662
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.7,
+      "index": 194,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.00862928251794421
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.75,
+      "index": 195,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.10214330188284568
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.8,
+      "index": 196,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1340000428452611
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.85,
+      "index": 197,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1586637667853381
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.9,
+      "index": 198,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.16510730845357577
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 9.95,
+      "index": 199,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 12.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.015107308453573637
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.0,
+      "index": 200,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.003809523809523813
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.05,
+      "index": 201,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.022487761410340326
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.1,
+      "index": 202,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.01776683786027787
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.15,
+      "index": 203,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.055340735096100976
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.2,
+      "index": 204,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.10630697530477495
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.25,
+      "index": 205,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1306412136364091
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.3,
+      "index": 206,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1591400480330568
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.35,
+      "index": 207,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0844596626589248
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.4,
+      "index": 208,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.005788058478205307
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.45,
+      "index": 209,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.04591269893048069
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.5,
+      "index": 210,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.08038600579221007
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.55,
+      "index": 211,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.23038600579220686
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.6,
+      "index": 212,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.23583597568771966
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.65,
+      "index": 213,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.19131919808652476
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.7,
+      "index": 214,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.15106877012956244
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.75,
+      "index": 215,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.21707908357512049
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.8,
+      "index": 216,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2824398755493921
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.85,
+      "index": 217,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3398646035980826
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.9,
+      "index": 218,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.46552994248116875
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 10.95,
+      "index": 219,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 13.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3904761904761905
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.0,
+      "index": 220,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 14.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.40910032650834244
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.05,
+      "index": 221,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 14.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5577190448100633
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.1,
+      "index": 222,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 14.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5631051050203685
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.15,
+      "index": 223,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 14.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5488510940020668
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.2,
+      "index": 224,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 14.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5429266266233526
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.25,
+      "index": 225,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 14.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5310228420332201
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.3,
+      "index": 226,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 14.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.35,
+      "index": 227,
+      "state_A": "brake",
+      "state_B": "turn",
+      "t": 14.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.4,
+      "index": 228,
+      "state_A": "brake",
+      "state_B": "turn",
+      "t": 14.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.45,
+      "index": 229,
+      "state_A": "brake",
+      "state_B": "turn",
+      "t": 14.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.5,
+      "index": 230,
+      "state_A": "brake",
+      "state_B": "turn",
+      "t": 14.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.55,
+      "index": 231,
+      "state_A": "brake",
+      "state_B": "turn",
+      "t": 14.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.6,
+      "index": 232,
+      "state_A": "brake",
+      "state_B": "turn",
+      "t": 14.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.65,
+      "index": 233,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 14.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.7,
+      "index": 234,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 14.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.75,
+      "index": 235,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 14.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.8,
+      "index": 236,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 14.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.85,
+      "index": 237,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 14.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.9,
+      "index": 238,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 14.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 11.95,
+      "index": 239,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 14.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.0,
+      "index": 240,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 15.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.05,
+      "index": 241,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 15.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.1,
+      "index": 242,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 15.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.15,
+      "index": 243,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 15.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.2,
+      "index": 244,
+      "state_A": "turn",
+      "state_B": "turn",
+      "t": 15.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.25,
+      "index": 245,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.3,
+      "index": 246,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.35,
+      "index": 247,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.4,
+      "index": 248,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.45,
+      "index": 249,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.5,
+      "index": 250,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.55,
+      "index": 251,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.6,
+      "index": 252,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.65,
+      "index": 253,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.7,
+      "index": 254,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.75,
+      "index": 255,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.8,
+      "index": 256,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.85,
+      "index": 257,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.9,
+      "index": 258,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 12.95,
+      "index": 259,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 15.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.0,
+      "index": 260,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 16.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.15000000000000213
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.05,
+      "index": 261,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 16.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.30000000000000426
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.100000000000001,
+      "index": 262,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 16.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.44999999999999574
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.149999999999999,
+      "index": 263,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 16.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5112690321393565
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.2,
+      "index": 264,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 16.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.6612690321393586
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.25,
+      "index": 265,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 16.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.7975911758110065
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.3,
+      "index": 266,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 16.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.350000000000001,
+      "index": 267,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 16.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.399999999999999,
+      "index": 268,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 16.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.45,
+      "index": 269,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 16.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.5,
+      "index": 270,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 16.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.55,
+      "index": 271,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 16.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.600000000000001,
+      "index": 272,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 16.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.649999999999999,
+      "index": 273,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 16.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.7,
+      "index": 274,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 16.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.75,
+      "index": 275,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 16.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.8,
+      "index": 276,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 16.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.850000000000001,
+      "index": 277,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 16.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.899999999999999,
+      "index": 278,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 16.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 13.95,
+      "index": 279,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 16.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.0,
+      "index": 280,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.05,
+      "index": 281,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.100000000000001,
+      "index": 282,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.149999999999999,
+      "index": 283,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.2,
+      "index": 284,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.25,
+      "index": 285,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.3,
+      "index": 286,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.350000000000001,
+      "index": 287,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.399999999999999,
+      "index": 288,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.45,
+      "index": 289,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.5,
+      "index": 290,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.55,
+      "index": 291,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.600000000000001,
+      "index": 292,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.649999999999999,
+      "index": 293,
+      "state_A": "turn",
+      "state_B": "bigturn",
+      "t": 17.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.7,
+      "index": 294,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 17.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.006831712893587757
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.75,
+      "index": 295,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 17.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.0043631620841840775
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.8,
+      "index": 296,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 17.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.041029163727073686
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.850000000000001,
+      "index": 297,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 17.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.10124286916056498
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.899999999999999,
+      "index": 298,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 17.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2512428691605671
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 14.95,
+      "index": 299,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 17.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4012428691605692
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.0,
+      "index": 300,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 18.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5512428691605713
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.05,
+      "index": 301,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 18.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.40124286916056917
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.100000000000001,
+      "index": 302,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 18.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2512428691605777
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.149999999999999,
+      "index": 303,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 18.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.40124286916057983
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.2,
+      "index": 304,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 18.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.551242869160582
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.25,
+      "index": 305,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 18.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.7012428691605841
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.3,
+      "index": 306,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 18.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.350000000000001,
+      "index": 307,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 18.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.399999999999999,
+      "index": 308,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 18.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.45,
+      "index": 309,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 18.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.5,
+      "index": 310,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 18.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.55,
+      "index": 311,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 18.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.600000000000001,
+      "index": 312,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 18.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.649999999999999,
+      "index": 313,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 18.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.7,
+      "index": 314,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 18.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.75,
+      "index": 315,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 18.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.8,
+      "index": 316,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 18.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.850000000000001,
+      "index": 317,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 18.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.899999999999999,
+      "index": 318,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 18.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 15.95,
+      "index": 319,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 18.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.0,
+      "index": 320,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.05,
+      "index": 321,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.1,
+      "index": 322,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.15,
+      "index": 323,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.2,
+      "index": 324,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.25,
+      "index": 325,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.3,
+      "index": 326,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.35,
+      "index": 327,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.4,
+      "index": 328,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.45,
+      "index": 329,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.5,
+      "index": 330,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.55,
+      "index": 331,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.6,
+      "index": 332,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.65,
+      "index": 333,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.7,
+      "index": 334,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.75,
+      "index": 335,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.8,
+      "index": 336,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.85,
+      "index": 337,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.9,
+      "index": 338,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 16.95,
+      "index": 339,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 19.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.0,
+      "index": 340,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.05,
+      "index": 341,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.1,
+      "index": 342,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.15,
+      "index": 343,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.2,
+      "index": 344,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.25,
+      "index": 345,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.3,
+      "index": 346,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.35,
+      "index": 347,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.4,
+      "index": 348,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.45,
+      "index": 349,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.5,
+      "index": 350,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.55,
+      "index": 351,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.6,
+      "index": 352,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.65,
+      "index": 353,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.7,
+      "index": 354,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.75,
+      "index": 355,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.8,
+      "index": 356,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.85,
+      "index": 357,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.9,
+      "index": 358,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 17.95,
+      "index": 359,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 20.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.0,
+      "index": 360,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.05,
+      "index": 361,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.1,
+      "index": 362,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.15,
+      "index": 363,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.2,
+      "index": 364,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.25,
+      "index": 365,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.3,
+      "index": 366,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.35,
+      "index": 367,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.4,
+      "index": 368,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.45,
+      "index": 369,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.5,
+      "index": 370,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.55,
+      "index": 371,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.6,
+      "index": 372,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.65,
+      "index": 373,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.7,
+      "index": 374,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.75,
+      "index": 375,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.8,
+      "index": 376,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.85,
+      "index": 377,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.9,
+      "index": 378,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 18.95,
+      "index": 379,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 21.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.0,
+      "index": 380,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.05,
+      "index": 381,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.1,
+      "index": 382,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.15,
+      "index": 383,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.2,
+      "index": 384,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.25,
+      "index": 385,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.3,
+      "index": 386,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.35,
+      "index": 387,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.4,
+      "index": 388,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.45,
+      "index": 389,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.5,
+      "index": 390,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.55,
+      "index": 391,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.6,
+      "index": 392,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.65,
+      "index": 393,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.7,
+      "index": 394,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.75,
+      "index": 395,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.8,
+      "index": 396,
+      "state_A": "bigturn",
+      "state_B": "bigturn",
+      "t": 22.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        1.4
+      ],
+      "elapsed_s": 19.85,
+      "index": 397,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 22.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 19.9,
+      "index": 398,
+      "state_A": "brake",
+      "state_B": "forward",
+      "t": 22.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 19.95,
+      "index": 399,
+      "state_A": "brake",
+      "state_B": "brake",
+      "t": 22.95,
+      "why_B": null
+    }
+  ],
+  "time_origin": "t is the original input timestamp; elapsed_s is t minus first input timestamp",
+  "totals": {
+    "A_vs_recorded_command_differences": 0,
+    "A_vs_recorded_state_differences": 0,
+    "B_vs_recorded_command_differences": 196,
+    "B_vs_recorded_state_differences": 186,
+    "command_differences": 196,
+    "duration_s": 19.95,
+    "state_differences": 186,
+    "ticks": 400
+  },
+  "why_B_meaning": "upstream input safety/hold reason when holding; null otherwise; no avoidance reason exposed"
+}

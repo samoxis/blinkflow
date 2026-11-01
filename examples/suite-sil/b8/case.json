@@ -1,0 +1,44 @@
+{
+  "bug": "b8",
+  "event_kind": "contact",
+  "fix": "SIDE half-width = max(obstacle width, low width); configured 0.05 retained",
+  "kept_attempt": 3,
+  "recording_provenance": {
+    "original_compressed_sha256": "e4f4a5d0e6efc172eb1988b51179bd7e8f8776c352ec43a047c24cf5422c8530",
+    "original_decompressed_sha256": "d6db12662363cb546ed4e527e597c3f43b4e4eb9cb0db99de83fae5a660b5d3e",
+    "public_compressed_sha256": "e93a4399f45000147921140d2604318954b4536d07639d9a66b0279c5d6ecf99",
+    "public_header": {
+      "config": "brain.toml",
+      "format": 1,
+      "kind": "microduck-brain-run",
+      "twin": true
+    },
+    "tick_payload_sha256": "09fca19d8dba8c8ee05761fcd8191454f64bd7786a64e554f37549edb2aaa489",
+    "transformation": "Only header.config personal path replaced with brain.toml; gzip recompressed with mtime=0. Tick payload bytes unchanged."
+  },
+  "scene": "box",
+  "source_files": {
+    "before_recording": {
+      "path": "suite-layers/b8/fix/before/twin/20261028-093754/run.jsonl.gz",
+      "sha256": "e4f4a5d0e6efc172eb1988b51179bd7e8f8776c352ec43a047c24cf5422c8530"
+    },
+    "fix_metadata": {
+      "path": "suite-layers/b8/fix/fix.json",
+      "sha256": "e252611c0e61689550c7d2ab5ba2d094142168b32b454be0bd7a6a5fd3f5440d"
+    },
+    "kept_patch": {
+      "path": "suite-layers/b8/fix/attempt-3/change.diff",
+      "sha256": "708be84bb05fdbb9e3c9dec007a8e24933da480330e727066c387989f11ed39e"
+    },
+    "pixel_evidence": {
+      "path": "suite-layers/b8/fix/before/evidence/evidence.json",
+      "sha256": "cdb45d1f785738ff4e99101432d3a7a5a0840212536ac5210f653e1b8bb5a83b"
+    }
+  },
+  "source_policy": "Unmodified minimal modules from stored immutable buggy/fixed Git commits. Saved kept change.diff equals their Git diff. Local worktrees are registered only in local copies, never the read-only runs.",
+  "source_revisions": {
+    "after": "0d44b319e8a7938d169dd072283f3036c58b86cf",
+    "before": "9adfe4830169b77cb1bef281c7e99669f27d760d"
+  },
+  "status": "processed"
+}

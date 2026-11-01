@@ -94,6 +94,7 @@ What it films is the simulator's window on your screen, not a camera on the robo
 - **The twin:** [`blinkflow/twin.py`](blinkflow/twin.py) (`Twin`, `Video`), the scenes in [`blinkflow/scenes/`](blinkflow/scenes).
 - **Proof, rollback, "Keep the fix?":** [`blinkflow/prove.py`](blinkflow/prove.py) (`replay`, `verdict`, `control`); [`blinkflow/fix.py`](blinkflow/fix.py) (`fix`, `undo`, `terminal_ask`).
 - **The arm:** [`blinkflow/arm/robot/`](blinkflow/arm/robot), the controller and Muse Code's only target (`brain.py`, `brain.toml`); outside it, [`blinkflow/arm/world/`](blinkflow/arm/world) (the scene, `scene.xml`, and the names given to SAM 3.1) and, in [`blinkflow/arm/`](blinkflow/arm), the twin (`twin.py`), the adapters to SAM 3.1's box prompt, the proof and Muse Wonder (`see.py`, `prove.py`, `diagnose.py`), the loop (`run.py`) and the offline re-check (`recheck.py`).
+- **Log replay (SIL):** [`blinkflow/sil/`](blinkflow/sil): recorded inputs replayed through two brains with Pollen's `microduck_brain.record.replay`, one Python process per brain with no site packages and sockets refused (`replay.py`, `_worker.py`), the per-case classification and summary (`suite.py`), the reports (`report.py`), the twin check (`sanity.py`) and the offline re-check (`recheck.py`).
 
 ## Results
 
@@ -111,6 +112,7 @@ Measured during the hackathon; each number links to the file it comes from.
 | Voice | **5/5** TTS sentences heard, read and seen; real speech through Ray-Ban Meta glasses (F9, or a tap on their arm): transcribed, read, seen, fixed, as in [`examples/purple-box/`](examples/purple-box) | [`results/voice.md`](results/voice.md) |
 | Muse Code alone, from the sentence only (ablation) | On both bugs tried, the purple box (a setting) and b7 (a line of code), the cause was findable from the code alone (3/3 runs each); what BlinkFlow adds is the fix on the first attempt and the proof, the twin replay and the control that say which change works | [`results/ablation.md`](results/ablation.md) |
 | A second robot: a 3-joint MuJoCo arm with a planted zero clearance | contacts **1 → 0** from pixels (first contact 2.035 s on pixels, 2.010 s in MuJoCo's log), controls **2/2** clean, Muse Wonder grounded (`bad_refs=[]`), Muse Code one line on the first attempt, accepted from pixels alone; **$0.27** the loop. The arm is tracked from a box on the first frame, not from text | [`results/arm.md`](results/arm.md) |
+| Log replay (SIL), open-loop: recorded inputs through the buggy and the fixed brain | 8 suite bugs: **4** a discrete decision before impact (the fixed brain brakes 2.85–8.2 s earlier, the buggy one walks on), **4** continuous-only (inconclusive); purple box continuous-only. Decision evidence, not an outcome proof; twin recordings, not a physical robot; $0 | [`results/sil.md`](results/sil.md) |
 | Pixel rule against ground truth | 92 saved looks re-measured: 60/64 incidents caught, false alarms 1 → 0 after one correction | [`results/control.md`](results/control.md) |
 | Cost of one loop (model calls) | **$0.95** for the example run: 30 of its 52 SAM 3.1 replies paid ($0.63), 22 from the cache ($0), Muse Wonder $0.31. The run the film shows (Oct 31): $0.38, 50 of 58 SAM 3.1 replies cached; $0.84 (run 233019, 29 of 58 SAM replies cached). Earlier: $0.88 for the profiled loop; $0.34–$1.71 over the 10 runs (measuring the four control scenes adds SAM 3.1) | [`results/quick_loop.md`](results/quick_loop.md), [`results/loop_times.md`](results/loop_times.md) |
 
@@ -190,6 +192,8 @@ BlinkFlow needs three things: a screen, a log and a folder of code. Only the det
 
 On a real robot the proof changes: the real world never repeats exactly, but the robot's recorded sensor log can be replayed through the fixed brain ("with exactly what it saw, would it turn now?"), then checked in simulation, then on the robot, and only with a person's "Keep the fix?".
 
+When there is no simulator to replay in, the same recorded sensor inputs can be replayed through the brain before and after a fix ([`blinkflow/sil/`](blinkflow/sil), built Nov 1). On 4 of the 8 suite bugs the fixed brain brakes 2.85–8.2 s before the recorded impact while the buggy one keeps walking; on the other 4 and on the purple box the result is inconclusive (the first difference is a small steering change). Open-loop decision evidence only, not an outcome proof: [`results/sil.md`](results/sil.md).
+
 ## Limits
 
 - **The twin is not the live simulator.** It starts the robot standing (no sit-to-stand boot) and re-states robotd's controller in Python, so robotd itself is bypassed.
@@ -219,6 +223,8 @@ Existed before, used only as the test target, not part of this repo:
 
 The arm uses the same MuJoCo (3.10.0) as the duck's simulation, declared above. Its scene (`blinkflow/arm/world/`), controller (`blinkflow/arm/robot/`), twin and adapters (`blinkflow/arm/`) and its example (`examples/arm/`) are new work from Nov 1.
 
+The log replay uses `microduck_brain.record.replay`, part of Pollen's pre-existing brain, unchanged. The adapter, measurement, classification and tests (`blinkflow/sil/`) and its examples (`examples/purple-box-sil/`, `examples/suite-sil/`) are new work from Nov 1.
+
 ## Honesty notes
 
 - The simulator's own contact log is never given to BlinkFlow. It is used only as ground truth to score whether a fix worked.
@@ -226,7 +232,7 @@ The arm uses the same MuJoCo (3.10.0) as the duck's simulation, declared above. 
 - Results are measured during the hackathon, on BlinkFlow's own fixes, including bugs injected blind into the robot's code.
 - Every incident report lists each model call: model, where it ran, tokens.
 - Speed-ups in the demo video are labelled on screen.
-- The arm (`blinkflow/arm/`, `examples/arm/`) was built on Nov 1 with Codex (GPT-6.1 Sol), in a separate repo from a written brief, and moved here.
+- The arm (`blinkflow/arm/`, `examples/arm/`) was built on Nov 1 with Codex (GPT-6.1 Sol), in a separate repo from a written brief, and moved here. So was the log replay (`blinkflow/sil/`, `examples/*-sil/`).
 
 ## Safety
 

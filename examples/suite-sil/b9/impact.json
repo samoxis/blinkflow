@@ -1,0 +1,16 @@
+{
+  "cited_tick_elapsed_s": 10.1,
+  "event_kind": "contact",
+  "pixel_contact_elapsed_s": 10.125,
+  "reading": "base",
+  "recorded_cmd": [
+    "move",
+    0.24,
+    -0.02249
+  ],
+  "scope": "Saved deterministic-twin pixel event; not scorer contact time or a physical-robot result.",
+  "shot_frame": 375,
+  "source_evidence_sha256": "04e0021df1f729088cbfa2a25b4fa03f01e2b51f55627873eab1793b0665e347",
+  "tick_alignment": "Matched the tick explicitly cited by saved contact evidence.",
+  "video_frame": 375
+}

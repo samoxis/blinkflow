@@ -1,0 +1,13 @@
+diff --git a/brain.toml b/brain.toml
+index 4535869..c45a5fc 100644
+--- a/brain.toml
++++ b/brain.toml
+@@ -26,7 +26,7 @@ first_row = 0             # frame rows used for walls (0 = top). Rows below last
+ last_row = 4              # they are handled separately, as low objects and drops.
+ corridor_half_width = 0.14 # half-width of the robot's swept corridor (m): body width + margin
+ sensor_lateral = 0.0224   # the sensor sits this far left of the robot's axis (m; MJCF `tof` site)
+-side_memory_seconds = 0.05 # remember wall returns near the body for this long (s)
++side_memory_seconds = 5.0 # remember wall returns near the body for this long (s)
+ front_first_col = 1       # central columns used to decide whether the sensor is blind (0 = the sensor's left)
+ front_last_col = 6
+ min_zones = 2             # how many zones must be close for it to count (rejects single-zone noise)

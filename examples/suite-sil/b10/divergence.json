@@ -1,0 +1,6941 @@
+{
+  "brain_A_sha256": {
+    "brain.toml": "1f6bcbbe4dcb954cddc8f0054c79dc461a930cf610fe3da0b0b7ade0d9aee2cd",
+    "src/microduck_brain/__init__.py": "781c3db68a13b3d0453730b8087bdce7bd55445e1709be966788d2cb77960d56",
+    "src/microduck_brain/brain.py": "7a0762ab8cc7d9f3fc29f71651b5229936df1760d0ca59b0dc2caecb19d503ba",
+    "src/microduck_brain/config.py": "745a51fa4a0fc1334890360937e1e9f77929cfb60c2b81d767875cc76aeff71f",
+    "src/microduck_brain/depth.py": "de9670a66a543ac6b8c112b1a510c3773e7229e65d75c54ba689d28b96453dfb",
+    "src/microduck_brain/hazards.py": "7f4451a892cc191d4a4742e7a03780864226966a83533bf7f0fc7d9d2097f909",
+    "src/microduck_brain/record.py": "ab02baf967b67bd8fe72e921fabd1b8bbc538219fbe8dc75c615b5bc59424bd0"
+  },
+  "brain_B_sha256": {
+    "brain.toml": "6dab9b377d0254f39b06a75e2c72657515dc1e3b31f176eb03cc8640df17a98d",
+    "src/microduck_brain/__init__.py": "781c3db68a13b3d0453730b8087bdce7bd55445e1709be966788d2cb77960d56",
+    "src/microduck_brain/brain.py": "7a0762ab8cc7d9f3fc29f71651b5229936df1760d0ca59b0dc2caecb19d503ba",
+    "src/microduck_brain/config.py": "8625b219ccfd9f6da147937f31db15af40765b913d50d3cd9cc12a16acb6396b",
+    "src/microduck_brain/depth.py": "de9670a66a543ac6b8c112b1a510c3773e7229e65d75c54ba689d28b96453dfb",
+    "src/microduck_brain/hazards.py": "7f4451a892cc191d4a4742e7a03780864226966a83533bf7f0fc7d9d2097f909",
+    "src/microduck_brain/record.py": "ab02baf967b67bd8fe72e921fabd1b8bbc538219fbe8dc75c615b5bc59424bd0"
+  },
+  "case": {
+    "bug": "b10",
+    "event_kind": "fall",
+    "fix": "[drop] range_margin 0.6 -> 0.2 (TOML and default)",
+    "kept_attempt": 1,
+    "scene": "ledge"
+  },
+  "command_comparison": "exact kind, vx, vyaw; unrounded brain outputs",
+  "diverges_before_impact_tick": true,
+  "diverges_before_pixel_contact": true,
+  "first_divergence": {
+    "cmd_A": [
+      "move",
+      0.24,
+      0.24165328872397987
+    ],
+    "cmd_B": [
+      "stop",
+      0.0,
+      0.0
+    ],
+    "elapsed_s": 1.8499999999999996,
+    "index": 37,
+    "state_A": "forward",
+    "state_B": "brake",
+    "t": 4.85,
+    "why_B": null
+  },
+  "first_divergence_at_upstream_tolerance": {
+    "cmd_A": [
+      "move",
+      0.24,
+      0.24165328872397987
+    ],
+    "cmd_B": [
+      "stop",
+      0.0,
+      0.0
+    ],
+    "elapsed_s": 1.8499999999999996,
+    "index": 37,
+    "state_A": "forward",
+    "state_B": "brake",
+    "t": 4.85,
+    "why_B": null
+  },
+  "format": 1,
+  "impact": {
+    "citation": {
+      "cited_tick_elapsed_s": 10.05,
+      "event_kind": "fall",
+      "pixel_contact_elapsed_s": 10.055,
+      "reading": "pixels",
+      "recorded_cmd": [
+        "move",
+        0.24,
+        -0.21333
+      ],
+      "scope": "Saved deterministic-twin pixel event; not scorer contact time or a physical-robot result.",
+      "shot_frame": 373,
+      "source_evidence_sha256": "a722a8b1295c8acb5da238573e62eec5c4bdaf3053417124fc4193bd76192841",
+      "tick_alignment": "Saved pixel fall has no cited brain_tick; derived the nearest original input tick using BlinkFlow's first-tick time origin.",
+      "video_frame": 373
+    },
+    "elapsed_s": 10.05,
+    "index": 201,
+    "pixel_to_tick_offset_s": -0.004999999999999005,
+    "t": 13.05
+  },
+  "lead_to_impact_tick_s": 8.200000000000001,
+  "lead_to_pixel_contact_s": 8.205,
+  "mode": "open-loop decision divergence; not an outcome proof",
+  "recorded_comparison": "upstream tolerance: same kind, abs(speed delta) < 1e-4",
+  "recording_sha256": "8d6a1949f5d70eb70ec4cb6ea24b76bff65b9818e069e8a4e71bbc5589ea4c20",
+  "replay_engine": "microduck_brain.record.replay (pre-existing), with a per-tick observer",
+  "suite_analysis": {
+    "classification": "discrete-decision-before-impact",
+    "classification_policy": "Classify on the prefix ending at the first exact different command. discrete-decision-before-impact requires a pre-impact first different command and B's differential stop/in-place turn or protective state while A stays forward, with no earlier different command. Earlier continuous steering makes the result continuous-only (inconclusive), even if a later state differs before impact. Without a command difference strictly before the cited impact tick, classify no-divergence-before-impact. No numerical threshold replaces exact equality.",
+    "first_B_differential_stop_or_turn": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24165328872397987
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.8499999999999996,
+      "index": 37,
+      "lead_to_impact_tick_s": 8.200000000000001,
+      "lead_to_saved_pixel_event_s": 8.205,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 4.85,
+      "why_B": null,
+      "within_shared_command_prefix": true
+    },
+    "first_B_protective_state_while_A_forward": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24165328872397987
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.8499999999999996,
+      "index": 37,
+      "lead_to_impact_tick_s": 8.200000000000001,
+      "lead_to_saved_pixel_event_s": 8.205,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 4.85,
+      "why_B": null,
+      "within_shared_command_prefix": true
+    },
+    "first_B_stop_or_turn_after_forward": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24165328872397987
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.8499999999999996,
+      "index": 37,
+      "lead_to_impact_tick_s": 8.200000000000001,
+      "lead_to_saved_pixel_event_s": 8.205,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 4.85,
+      "why_B": null,
+      "within_shared_command_prefix": true
+    },
+    "first_B_stop_or_turn_command": {
+      "cmd_A": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.0,
+      "index": 0,
+      "lead_to_impact_tick_s": 10.05,
+      "lead_to_saved_pixel_event_s": 10.055,
+      "previous_state_A": null,
+      "previous_state_B": null,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.0,
+      "why_B": null,
+      "within_shared_command_prefix": true
+    },
+    "first_exact_divergence": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24165328872397987
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.8499999999999996,
+      "index": 37,
+      "lead_to_impact_tick_s": 8.200000000000001,
+      "lead_to_saved_pixel_event_s": 8.205,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 4.85,
+      "why_B": null,
+      "within_shared_command_prefix": true
+    },
+    "first_state_divergence": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24165328872397987
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.8499999999999996,
+      "index": 37,
+      "lead_to_impact_tick_s": 8.200000000000001,
+      "lead_to_saved_pixel_event_s": 8.205,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 4.85,
+      "why_B": null,
+      "within_shared_command_prefix": true
+    },
+    "impact_tick_elapsed_s": 10.05,
+    "impact_tick_index": 201,
+    "interpretation": "B changes a discrete decision on the shared prefix before the saved event; this remains decision evidence, not evidence of avoiding the outcome.",
+    "pixel_event_before_impact_tick_s": -0.004999999999999005,
+    "pixel_event_elapsed_s": 10.055,
+    "pixel_event_kind": "fall",
+    "shared_command_prefix_last_index": 37,
+    "supported_discrete_decision": {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24165328872397987
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.8499999999999996,
+      "index": 37,
+      "lead_to_impact_tick_s": 8.200000000000001,
+      "lead_to_saved_pixel_event_s": 8.205,
+      "previous_state_A": "forward",
+      "previous_state_B": "forward",
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 4.85,
+      "why_B": null,
+      "within_shared_command_prefix": true
+    }
+  },
+  "ticks": [
+    {
+      "cmd_A": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.0,
+      "index": 0,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.04999999999999982,
+      "index": 1,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.10000000000000009,
+      "index": 2,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.1499999999999999,
+      "index": 3,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.20000000000000018,
+      "index": 4,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.25,
+      "index": 5,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.2999999999999998,
+      "index": 6,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.3500000000000001,
+      "index": 7,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.3999999999999999,
+      "index": 8,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.4500000000000002,
+      "index": 9,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.5,
+      "index": 10,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.5499999999999998,
+      "index": 11,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.6000000000000001,
+      "index": 12,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.6499999999999999,
+      "index": 13,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.7000000000000002,
+      "index": 14,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.75,
+      "index": 15,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.7999999999999998,
+      "index": 16,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.8500000000000001,
+      "index": 17,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.8999999999999999,
+      "index": 18,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 0.9500000000000002,
+      "index": 19,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 3.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.0,
+      "index": 20,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.0499999999999998,
+      "index": 21,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.0999999999999996,
+      "index": 22,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.1500000000000004,
+      "index": 23,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.2000000000000002,
+      "index": 24,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.25,
+      "index": 25,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.2999999999999998,
+      "index": 26,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.3499999999999996,
+      "index": 27,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.4000000000000004,
+      "index": 28,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.4500000000000002,
+      "index": 29,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 4.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.5,
+      "index": 30,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.14999999999999947
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.14999999999999947
+      ],
+      "elapsed_s": 1.5499999999999998,
+      "index": 31,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.21523809523809528
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.21523809523809528
+      ],
+      "elapsed_s": 1.5999999999999996,
+      "index": 32,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.21523809523809528
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.21523809523809528
+      ],
+      "elapsed_s": 1.6500000000000004,
+      "index": 33,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2281279818198093
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.2281279818198093
+      ],
+      "elapsed_s": 1.7000000000000002,
+      "index": 34,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.23744674532329657
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.23744674532329657
+      ],
+      "elapsed_s": 1.75,
+      "index": 35,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.23972723701063484
+      ],
+      "cmd_B": [
+        "move",
+        0.24,
+        0.23972723701063484
+      ],
+      "elapsed_s": 1.7999999999999998,
+      "index": 36,
+      "state_A": "forward",
+      "state_B": "forward",
+      "t": 4.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24165328872397987
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.8499999999999996,
+      "index": 37,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 4.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24123976163709596
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.9000000000000004,
+      "index": 38,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 4.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2419678657915446
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 1.9500000000000002,
+      "index": 39,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 4.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2429251846903825
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 2.0,
+      "index": 40,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 5.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24299313166375003
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 2.05,
+      "index": 41,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 5.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2432265610770179
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 2.0999999999999996,
+      "index": 42,
+      "state_A": "forward",
+      "state_B": "brake",
+      "t": 5.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2437043343406375
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 2.1500000000000004,
+      "index": 43,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24518099500657176
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.2,
+      "index": 44,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24525230087891076
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.25,
+      "index": 45,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24522202608635257
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.3,
+      "index": 46,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.24487365842650846
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.3499999999999996,
+      "index": 47,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2476158240224392
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.4000000000000004,
+      "index": 48,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2522548846193808
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.45,
+      "index": 49,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2587271505967898
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.5,
+      "index": 50,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2728580466365457
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.55,
+      "index": 51,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2751064704121554
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.5999999999999996,
+      "index": 52,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.28761909815063635
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.6500000000000004,
+      "index": 53,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2922170012559424
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.7,
+      "index": 54,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3035628098168571
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.75,
+      "index": 55,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.32182459206441333
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.8,
+      "index": 56,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.2914285714285713
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.8499999999999996,
+      "index": 57,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.29963762732411886
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.9000000000000004,
+      "index": 58,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3047619047619047
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 2.95,
+      "index": 59,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 5.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.33309782481389694
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.0,
+      "index": 60,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3396245872364631
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.05,
+      "index": 61,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3452221050455196
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.0999999999999996,
+      "index": 62,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3486624092451362
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.1500000000000004,
+      "index": 63,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.36303938045588585
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.2,
+      "index": 64,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3701648339950511
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.25,
+      "index": 65,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.3801242763495081
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.3,
+      "index": 66,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.38934088517683585
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.3499999999999996,
+      "index": 67,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.38661596087859
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.4000000000000004,
+      "index": 68,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.39238546651328615
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.45,
+      "index": 69,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4234855054440094
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.5,
+      "index": 70,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.42727125167898006
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.55,
+      "index": 71,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.43464073615706256
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.5999999999999996,
+      "index": 72,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.44164468907284676
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.6500000000000004,
+      "index": 73,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4359428974465292
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.7,
+      "index": 74,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4446795721281291
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.75,
+      "index": 75,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4860687641150726
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.8,
+      "index": 76,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.47487610056313906
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.8499999999999996,
+      "index": 77,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4887077440164318
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.9000000000000004,
+      "index": 78,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5009024013487148
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 3.95,
+      "index": 79,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 6.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5077150559745481
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.0,
+      "index": 80,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5156022646197096
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.05,
+      "index": 81,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5222171975877955
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.1,
+      "index": 82,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5305415753866094
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.15,
+      "index": 83,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5575387426986445
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.2,
+      "index": 84,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.5516537316960947
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.25,
+      "index": 85,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.4016537316960952
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.3,
+      "index": 86,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.25165373169609573
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.35,
+      "index": 87,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.1016537316960936
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.4,
+      "index": 88,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.04834626830390587
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.45,
+      "index": 89,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.01857426296469885
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.5,
+      "index": 90,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.007630890494916824
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.55,
+      "index": 91,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0017145429527033861
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.6,
+      "index": 92,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0745449317090928
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.65,
+      "index": 93,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.13923289046312595
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.7,
+      "index": 94,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.18351192912009479
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.75,
+      "index": 95,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.2277247430039448
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.8,
+      "index": 96,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.18735918424452158
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.85,
+      "index": 97,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.27809523809523795
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.9,
+      "index": 98,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.12809523809523848
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 4.95,
+      "index": 99,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 7.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.021904761904760983
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.0,
+      "index": 100,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.03532484415077882
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.050000000000001,
+      "index": 101,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0005501971954289878
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.1,
+      "index": 102,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03664041485086591
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.15,
+      "index": 103,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07430668614820206
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.199999999999999,
+      "index": 104,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03393250940218022
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.25,
+      "index": 105,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.04026293283793499
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.300000000000001,
+      "index": 106,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.10786962976196045
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.35,
+      "index": 107,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.17987288934369286
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.4,
+      "index": 108,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.1858713137619852
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.449999999999999,
+      "index": 109,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.1327002407040953
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.5,
+      "index": 110,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.07464979370634794
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.550000000000001,
+      "index": 111,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.004330581998220354
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.6,
+      "index": 112,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.015614033549212982
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.65,
+      "index": 113,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.042080719181572614
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.699999999999999,
+      "index": 114,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.11192040471294873
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.75,
+      "index": 115,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.18604295821176287
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.800000000000001,
+      "index": 116,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.22292907348432198
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.85,
+      "index": 117,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.19210443750177533
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.9,
+      "index": 118,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.13276155975840953
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 5.949999999999999,
+      "index": 119,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 8.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.02567915340514683
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.0,
+      "index": 120,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.020626473186865793
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.050000000000001,
+      "index": 121,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0226928894029062
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.1,
+      "index": 122,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.03293972965192159
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.15,
+      "index": 123,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.13501742989233134
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.199999999999999,
+      "index": 124,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.15875379686043442
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.25,
+      "index": 125,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.19115199227849697
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.300000000000001,
+      "index": 126,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.145208827116289
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.35,
+      "index": 127,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.02388817061470777
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.4,
+      "index": 128,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.013941375017102728
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.449999999999999,
+      "index": 129,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.057816705017647706
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.5,
+      "index": 130,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.05333333333333318
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.550000000000001,
+      "index": 131,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.06476190476190462
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.6,
+      "index": 132,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.06476190476190462
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.65,
+      "index": 133,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.008278313815908142
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.699999999999999,
+      "index": 134,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.03393049588496084
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.75,
+      "index": 135,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07712619442059168
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.800000000000001,
+      "index": 136,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.12467732290158307
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.85,
+      "index": 137,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.15388439860918923
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.9,
+      "index": 138,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.06285714285714271
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 6.949999999999999,
+      "index": 139,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 9.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.13333333333333328
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.0,
+      "index": 140,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.13333333333333328
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.050000000000001,
+      "index": 141,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03619047619047602
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.1,
+      "index": 142,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.0056491617844735
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.15,
+      "index": 143,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.05811188814625329
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.199999999999999,
+      "index": 144,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.10790882133955355
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.25,
+      "index": 145,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.13601982305582316
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.300000000000001,
+      "index": 146,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.06476190476190462
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.35,
+      "index": 147,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1371428571428571
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.4,
+      "index": 148,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.1371428571428571
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.449999999999999,
+      "index": 149,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0857142857142856
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.5,
+      "index": 150,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.0032878944611085537
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.550000000000001,
+      "index": 151,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.013097801985863864
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.6,
+      "index": 152,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.023215692786038272
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.65,
+      "index": 153,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.06807009681054382
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.699999999999999,
+      "index": 154,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.08875636166378488
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.75,
+      "index": 155,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0876190476190475
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.800000000000001,
+      "index": 156,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0876190476190475
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.85,
+      "index": 157,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.07428571428571416
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.9,
+      "index": 158,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.0019524920773313775
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 7.949999999999999,
+      "index": 159,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 10.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.06986035074213272
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.0,
+      "index": 160,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.02009480769409313
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.05,
+      "index": 161,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03541050886930198
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.1,
+      "index": 162,
+      "state_A": "forward",
+      "state_B": "turn",
+      "t": 11.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.08200489813865107
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 8.15,
+      "index": 163,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03809523809523793
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.2,
+      "index": 164,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03809523809523793
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.25,
+      "index": 165,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.11999999999999991
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.3,
+      "index": 166,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03619047619047602
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.35,
+      "index": 167,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.0016787962324586042
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.4,
+      "index": 168,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0020097498301357196
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.45,
+      "index": 169,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.06063053440323607
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.5,
+      "index": 170,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.037570230754379
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.55,
+      "index": 171,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.045308597063308316
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.6,
+      "index": 172,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.05180290643293004
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.65,
+      "index": 173,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.13523809523809519
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.7,
+      "index": 174,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.08952380952380941
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.75,
+      "index": 175,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.0011877013053691599
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.8,
+      "index": 176,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.040114220000835886
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.85,
+      "index": 177,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.009891809994908268
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.9,
+      "index": 178,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.027834169539306258
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 8.95,
+      "index": 179,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 11.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.09436837132017832
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.0,
+      "index": 180,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.048722682932740936
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.05,
+      "index": 181,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.058030128208055115
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.1,
+      "index": 182,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.08952380952380941
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.15,
+      "index": 183,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.0006091163095210544
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.2,
+      "index": 184,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.038689076961098974
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.25,
+      "index": 185,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.25,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.06357104198557995
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.3,
+      "index": 186,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.3,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.01976022082381896
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.35,
+      "index": 187,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.35,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.03599022711651332
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.4,
+      "index": 188,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.4,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.05655966559034023
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.45,
+      "index": 189,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.45,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.0551037203649577
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.5,
+      "index": 190,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.5,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.008678188091928024
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.55,
+      "index": 191,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.55,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.09875088407211341
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.6,
+      "index": 192,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.6,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.13026873891533244
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.65,
+      "index": 193,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.65,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.15519618086215284
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.7,
+      "index": 194,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.7,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        0.12869655682801082
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.75,
+      "index": 195,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.75,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.021303443171991315
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.8,
+      "index": 196,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.8,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.13662874430116403
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.85,
+      "index": 197,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.85,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.216549588879146
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.9,
+      "index": 198,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.9,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.20605666969900005
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 9.95,
+      "index": 199,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 12.95,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.22490825317387944
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 10.0,
+      "index": 200,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 13.0,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.21333333333333335
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 10.05,
+      "index": 201,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 13.05,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.2323809523809524
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 10.1,
+      "index": 202,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 13.1,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "move",
+        0.24,
+        -0.38238095238095454
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 10.15,
+      "index": 203,
+      "state_A": "forward",
+      "state_B": "bigturn",
+      "t": 13.15,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "move",
+        0.0,
+        -1.4
+      ],
+      "elapsed_s": 10.2,
+      "index": 204,
+      "state_A": "brake",
+      "state_B": "bigturn",
+      "t": 13.2,
+      "why_B": null
+    },
+    {
+      "cmd_A": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "stop",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.25,
+      "index": 205,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.25,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.3,
+      "index": 206,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.3,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.35,
+      "index": 207,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.35,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.4,
+      "index": 208,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.4,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.45,
+      "index": 209,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.45,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.5,
+      "index": 210,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.5,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.55,
+      "index": 211,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.55,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.6,
+      "index": 212,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.6,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.65,
+      "index": 213,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.65,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.7,
+      "index": 214,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.7,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.75,
+      "index": 215,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.75,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.8,
+      "index": 216,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.8,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.85,
+      "index": 217,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.85,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.9,
+      "index": 218,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.9,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 10.95,
+      "index": 219,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 13.95,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.0,
+      "index": 220,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.0,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.05,
+      "index": 221,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.05,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.1,
+      "index": 222,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.1,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.15,
+      "index": 223,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.15,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.2,
+      "index": 224,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.2,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.25,
+      "index": 225,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.25,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.3,
+      "index": 226,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.3,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.35,
+      "index": 227,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.35,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.4,
+      "index": 228,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.4,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.45,
+      "index": 229,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.45,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.5,
+      "index": 230,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.5,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.55,
+      "index": 231,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.55,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.6,
+      "index": 232,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.6,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.65,
+      "index": 233,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.65,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.7,
+      "index": 234,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.7,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.75,
+      "index": 235,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.75,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.8,
+      "index": 236,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.8,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.85,
+      "index": 237,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.85,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.9,
+      "index": 238,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.9,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 11.95,
+      "index": 239,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 14.95,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.0,
+      "index": 240,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.0,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.05,
+      "index": 241,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.05,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.1,
+      "index": 242,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.1,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.15,
+      "index": 243,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.15,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.2,
+      "index": 244,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.2,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.25,
+      "index": 245,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.25,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.3,
+      "index": 246,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.3,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.35,
+      "index": 247,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.35,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.4,
+      "index": 248,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.4,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.45,
+      "index": 249,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.45,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.5,
+      "index": 250,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.5,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.55,
+      "index": 251,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.55,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.6,
+      "index": 252,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.6,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.65,
+      "index": 253,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.65,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.7,
+      "index": 254,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.7,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.75,
+      "index": 255,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.75,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.8,
+      "index": 256,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.8,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.85,
+      "index": 257,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.85,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.9,
+      "index": 258,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.9,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 12.95,
+      "index": 259,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 15.95,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.0,
+      "index": 260,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.0,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.05,
+      "index": 261,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.05,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.100000000000001,
+      "index": 262,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.1,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.149999999999999,
+      "index": 263,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.15,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.2,
+      "index": 264,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.2,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.25,
+      "index": 265,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.25,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.3,
+      "index": 266,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.3,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.350000000000001,
+      "index": 267,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.35,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.399999999999999,
+      "index": 268,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.4,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.45,
+      "index": 269,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.45,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.5,
+      "index": 270,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.5,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.55,
+      "index": 271,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.55,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.600000000000001,
+      "index": 272,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.6,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.649999999999999,
+      "index": 273,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.65,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.7,
+      "index": 274,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.7,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.75,
+      "index": 275,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.75,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.8,
+      "index": 276,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.8,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.850000000000001,
+      "index": 277,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.85,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.899999999999999,
+      "index": 278,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.9,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 13.95,
+      "index": 279,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 16.95,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.0,
+      "index": 280,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.0,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.05,
+      "index": 281,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.05,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.100000000000001,
+      "index": 282,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.1,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.149999999999999,
+      "index": 283,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.15,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.2,
+      "index": 284,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.2,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.25,
+      "index": 285,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.25,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.3,
+      "index": 286,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.3,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.350000000000001,
+      "index": 287,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.35,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.399999999999999,
+      "index": 288,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.4,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.45,
+      "index": 289,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.45,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.5,
+      "index": 290,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.5,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.55,
+      "index": 291,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.55,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.600000000000001,
+      "index": 292,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.6,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.649999999999999,
+      "index": 293,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.65,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.7,
+      "index": 294,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.7,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.75,
+      "index": 295,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.75,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.8,
+      "index": 296,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.8,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.850000000000001,
+      "index": 297,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.85,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.899999999999999,
+      "index": 298,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.9,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 14.95,
+      "index": 299,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 17.95,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.0,
+      "index": 300,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.0,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.05,
+      "index": 301,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.05,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.100000000000001,
+      "index": 302,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.1,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.149999999999999,
+      "index": 303,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.15,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.2,
+      "index": 304,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.2,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.25,
+      "index": 305,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.25,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.3,
+      "index": 306,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.3,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.350000000000001,
+      "index": 307,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.35,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.399999999999999,
+      "index": 308,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.4,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.45,
+      "index": 309,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.45,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.5,
+      "index": 310,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.5,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.55,
+      "index": 311,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.55,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.600000000000001,
+      "index": 312,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.6,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.649999999999999,
+      "index": 313,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.65,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.7,
+      "index": 314,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.7,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.75,
+      "index": 315,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.75,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.8,
+      "index": 316,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.8,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.850000000000001,
+      "index": 317,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.85,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.899999999999999,
+      "index": 318,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.9,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 15.95,
+      "index": 319,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 18.95,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.0,
+      "index": 320,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.0,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.05,
+      "index": 321,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.05,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.1,
+      "index": 322,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.1,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.15,
+      "index": 323,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.15,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.2,
+      "index": 324,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.2,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.25,
+      "index": 325,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.25,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.3,
+      "index": 326,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.3,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.35,
+      "index": 327,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.35,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.4,
+      "index": 328,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.4,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.45,
+      "index": 329,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.45,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.5,
+      "index": 330,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.5,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.55,
+      "index": 331,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.55,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.6,
+      "index": 332,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.6,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.65,
+      "index": 333,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.65,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.7,
+      "index": 334,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.7,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.75,
+      "index": 335,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.75,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.8,
+      "index": 336,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.8,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.85,
+      "index": 337,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.85,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.9,
+      "index": 338,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.9,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 16.95,
+      "index": 339,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 19.95,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.0,
+      "index": 340,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.0,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.05,
+      "index": 341,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.05,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.1,
+      "index": 342,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.1,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.15,
+      "index": 343,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.15,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.2,
+      "index": 344,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.2,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.25,
+      "index": 345,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.25,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.3,
+      "index": 346,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.3,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.35,
+      "index": 347,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.35,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.4,
+      "index": 348,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.4,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.45,
+      "index": 349,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.45,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.5,
+      "index": 350,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.5,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.55,
+      "index": 351,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.55,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.6,
+      "index": 352,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.6,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.65,
+      "index": 353,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.65,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.7,
+      "index": 354,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.7,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.75,
+      "index": 355,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.75,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.8,
+      "index": 356,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.8,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.85,
+      "index": 357,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.85,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.9,
+      "index": 358,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.9,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 17.95,
+      "index": 359,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 20.95,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 18.0,
+      "index": 360,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 21.0,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 18.05,
+      "index": 361,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 21.05,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 18.1,
+      "index": 362,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 21.1,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 18.15,
+      "index": 363,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 21.15,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 18.2,
+      "index": 364,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 21.2,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 18.25,
+      "index": 365,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 21.25,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 18.3,
+      "index": 366,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 21.3,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 18.35,
+      "index": 367,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 21.35,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 18.4,
+      "index": 368,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 21.4,
+      "why_B": "the robot has fallen"
+    },
+    {
+      "cmd_A": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "cmd_B": [
+        "none",
+        0.0,
+        0.0
+      ],
+      "elapsed_s": 18.45,
+      "index": 369,
+      "state_A": "hold",
+      "state_B": "hold",
+      "t": 21.45,
+      "why_B": "the robot has fallen"
+    }
+  ],
+  "time_origin": "t is the original input timestamp; elapsed_s is t minus first input timestamp",
+  "totals": {
+    "A_vs_recorded_command_differences": 0,
+    "A_vs_recorded_state_differences": 0,
+    "B_vs_recorded_command_differences": 168,
+    "B_vs_recorded_state_differences": 168,
+    "command_differences": 168,
+    "duration_s": 18.45,
+    "state_differences": 168,
+    "ticks": 370
+  },
+  "why_B_meaning": "upstream input safety/hold reason when holding; null otherwise; no avoidance reason exposed"
+}
