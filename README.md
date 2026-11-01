@@ -76,7 +76,7 @@ What it films is the simulator's window on your screen, not a camera on the robo
 
 - **The 60 s buffer:** [`sidecar/capture.py`](sidecar/capture.py) on Windows keeps the ring of 1 s segments; [`blinkflow/capture.py`](blinkflow/capture.py) (`Sidecar`) starts it and cuts snapshots from WSL.
 - **Muse Glimmer:** [`blinkflow/models.py`](blinkflow/models.py) (`glimmer`), called to name objects in [`see.py`](blinkflow/see.py) (`name_objects`), describe key frames in [`diagnose.py`](blinkflow/diagnose.py) (`build_frames`), read the sentence in [`voice.py`](blinkflow/voice.py) (`parse`) and watch in [`watch.py`](blinkflow/watch.py) (`Watcher`).
-- **SAM 3.1 and the contact:** [`blinkflow/sam.py`](blinkflow/sam.py) (`track`) calls it, [`maskcodec.py`](blinkflow/maskcodec.py) decodes the masks, [`see.py`](blinkflow/see.py) (`gap`, `base_of`, `measure`) turns them into distances and a first contact.
+- **SAM 3.1 and the contact:** [`blinkflow/sam.py`](blinkflow/sam.py) (`track`) calls it, Meta's `meta-sam-parser` decodes the masks ([`masks.py`](blinkflow/masks.py) keeps them, decoded, for the page), [`see.py`](blinkflow/see.py) (`gap`, `base_of`, `measure`) turns them into distances and a first contact.
 - **Muse Wonder and the citation check:** [`blinkflow/diagnose.py`](blinkflow/diagnose.py) (`ask`, `check`).
 - **Muse Code and the gate:** [`blinkflow/fix.py`](blinkflow/fix.py) (`muse_code`, `gate`, `audit`) and the PreToolUse hook [`muse-gate/hooks/pre_tool_use.py`](muse-gate/hooks/pre_tool_use.py).
 - **The twin:** [`blinkflow/twin.py`](blinkflow/twin.py) (`Twin`, `Video`), the scenes in [`blinkflow/scenes/`](blinkflow/scenes).
@@ -221,7 +221,4 @@ The icon was made with Meta's Muse Image; provenance in results/icon/.
 
 The deterministic twin (`blinkflow/twin.py`) is new code, but the physics, the scenes, the depth sensor and the walking policies it runs are imported from [Pollen Robotics' Microduck](https://github.com/pollen-robotics/microduck) (`microduck_rl`), not copied.
 
-
-SAM 3.1's mask decoder (`blinkflow/maskcodec.py`, `blinkflow/console/static/maskcodec.js`) is a port of the decoder in Meta's [`@meta-sam/parser`](https://www.npmjs.com/package/@meta-sam/parser) 0.1.0 (`dist/mask-codec.js`: the base-85 payload, the range decoder, the one-bit and lossless mask coders), under the SAM License: those two files are distributed under it, with Meta's copyright notice and the licence's text in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
-
-Everything else is Apache-2.0 (see `LICENSE`). Microduck and its simulation are by Pollen Robotics and Hugging Face, Apache-2.0. Code in this repository is written with AI coding assistants under the author's direction.
+This repository is Apache-2.0 (see `LICENSE`). SAM 3.1's masks are decoded with Meta's [`meta-sam-parser`](https://pypi.org/project/meta-sam-parser/) 0.1.0 (SAM License), installed as a dependency (`requirements-judge.txt`), not included here. Microduck and its simulation are by Pollen Robotics and Hugging Face, Apache-2.0. Code in this repository is written with AI coding assistants under the author's direction.

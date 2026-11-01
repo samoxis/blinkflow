@@ -63,9 +63,31 @@ async function text(p) {
 // a part fades in the first time it is drawn, not on every redraw
 const faded = new Set();
 const fx = (k) => (faded.has(k) ? "" : (faded.add(k), "fade"));
+// a SAM 3.1 reply's masks, decoded by the server (blinkflow.masks): per frame [{box, w, h, rle}], the runs over
+// the box row by row, zeros first; frame(f) unpacks them once into [{box, w, h, mask: Uint8Array(h * w)}]
+class Track {
+  constructor(doc) { this.frames = doc.frames || {}; this.cache = new Map(); }
+  frame(f) {
+    if (!this.cache.has(f)) {
+      this.cache.set(f, (this.frames[f] || []).map(({ box, w, h, rle }) => {
+        const mask = new Uint8Array(w * h);
+        let at = 0;
+        rle.forEach((n, i) => { if (i % 2) mask.fill(1, at, at + n); at += n; });
+        return { box, w, h, mask };
+      }));
+    }
+    return this.cache.get(f);
+  }
+}
 const tracks = new Map();
+async function masks(p) {
+  if (STATIC) return text(p);
+  const r = await fetch("/masks?p=" + encodeURIComponent(p));
+  if (!r.ok) throw new Error(`${r.status} ${p}`);
+  return r.text();
+}
 function track(p) {
-  if (!tracks.has(p)) tracks.set(p, text(p).then((t) => new MaskCodec.Track(t)));
+  if (!tracks.has(p)) tracks.set(p, masks(p).then((t) => new Track(JSON.parse(t))));
   return tracks.get(p);
 }
 

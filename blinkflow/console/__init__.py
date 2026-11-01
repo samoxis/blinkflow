@@ -27,7 +27,7 @@ import time
 import urllib.parse
 import urllib.request
 
-from .. import events, sim
+from .. import events, masks, sim
 
 HOME = pathlib.Path.home()
 STATIC = pathlib.Path(__file__).resolve().parent / "static"
@@ -35,7 +35,7 @@ DOCS = pathlib.Path(__file__).resolve().parents[2] / "docs"
 ICONS = ("icon.png", "favicon-32.png", "icon-180.png")   # header, tab, home screen
 ROOTS = (HOME / "blinkflow-runs",)
 NEVER = re.compile(r"(^contacts.*\.csv$|^truth\.json$|\.xml$|^cam-.*\.csv$)")
-PAGE_FILES = ("index.html", "console.css", "console.js", "maskcodec.js")
+PAGE_FILES = ("index.html", "console.css", "console.js")
 
 
 # ── the stream ───────────────────────────────────────────────────────────────
@@ -151,6 +151,12 @@ def handler(fixed, frames):
                     p = stream()
                     f = p and servable(q.get("p", ""), read_events(p), p)
                     return self.file(f) if f else self.send(404, b"not in this run's stream")
+                if u.path == "/masks":                          # a SAM reply's masks, decoded here (blinkflow.masks)
+                    p = stream()
+                    f = p and servable(q.get("p", ""), read_events(p), p)
+                    if not f or not f.name.startswith("sam-") or f.suffix != ".txt":
+                        return self.send(404, b"not a SAM reply in this run's stream")
+                    return self.send(200, masks.load(f).encode(), "application/json")
                 if u.path == "/sim.jpg":
                     p = stream()
                     feed = next((e for e in reversed(read_events(p)) if e["type"] == "feed"), None) if p else None
@@ -268,7 +274,7 @@ def rel(path):
 
 def report(path, out=None):
     """The page with the stream embedded and every file it names copied beside it. Texts the page reads
-    (SAM replies) are wrapped as scripts, so the report also opens from disk (file://)."""
+    (SAM replies, as their decoded masks) are wrapped as scripts, so the report also opens from disk (file://)."""
     path = pathlib.Path(path).expanduser().resolve()
     evs = read_events(path)
     out = pathlib.Path(out).expanduser() if out else path.parent / "console-report"
@@ -286,9 +292,10 @@ def report(path, out=None):
             continue
         n += 1
         dest = f"assets/{n:03d}-{f.name}"
-        if f.suffix == ".txt":                      # SAM replies: read by the page as text
+        if f.suffix == ".txt":                      # read by the page as text: a SAM reply as its decoded masks
             dest += ".js"
-            (out / dest).write_text(f"window.BLINKFLOW_TEXT[{json.dumps(p)}] = {json.dumps(f.read_text())};\n")
+            t = masks.load(f) if f.name.startswith("sam-") else f.read_text()
+            (out / dest).write_text(f"window.BLINKFLOW_TEXT[{json.dumps(p)}] = {json.dumps(t)};\n")
         else:
             shutil.copy(f, out / dest)
         files[p] = dest

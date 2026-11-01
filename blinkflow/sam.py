@@ -5,7 +5,8 @@ The reply streams as text, one line per frame:
     <12f>0<|box;x1=..;y1=..;x2=..;y2=..;w=W;h=H;c=0.93|><|mask;x=0;y=0;data=H,W,PAYLOAD|>,1<|box;...|>...
 
 Box corners are inclusive; the mask covers exactly the box. Lines can be split across stream deltas,
-so text is buffered until a newline.
+so text is buffered until a newline. Masks are decoded by Meta's `meta-sam-parser` (SAM License), installed as a
+dependency (requirements-judge.txt), not part of this repository.
 
 A completed reply is kept under the SHA-256 of the video's exact bytes, the concept and the request's
 parameters. The twin is deterministic, so a replay before a change and an unchanged control scene give the
@@ -23,8 +24,8 @@ import time
 
 import numpy as np
 import requests
+from meta_sam_parser import SegmentationMask, decode_mask_to_raster
 
-from . import maskcodec
 from .models import API, SAM_PER_FRAME, api_key, sam_reserve
 
 FRAME = re.compile(r"^<(\d+)f(?:;[^>]*)?>(.*)$")
@@ -59,6 +60,13 @@ def _fields(body):
     return out
 
 
+def decode_mask(payload, w, h):
+    """A mask payload ("~..." lossless or "!..." one_bit) -> (h, w) uint8 of 0 and 1, row-major."""
+    enc = {"~": "lossless", "!": "one_bit"}[payload[0]]
+    raw = decode_mask_to_raster(SegmentationMask(enc, payload, w, h))
+    return np.frombuffer(raw, np.uint8).reshape(h, w).copy()
+
+
 def parse_line(line):
     """One output line -> (frame, [Instance]) or None for anything that is not a frame line."""
     m = FRAME.match(line.strip())
@@ -75,7 +83,7 @@ def parse_line(line):
             continue
         h, w = int(data.group(1)), int(data.group(2))
         coords = tuple(int(box[k]) for k in ("x1", "y1", "x2", "y2"))
-        raster = maskcodec.decode(data.group(3), w, h)
+        raster = decode_mask(data.group(3), w, h)
         found.append(Instance(rec.group(1), coords, (int(box["w"]), int(box["h"])), raster,
                               float(box["c"]) if "c" in box else None))
     return frame, found
@@ -86,7 +94,7 @@ _decoders = None
 
 def decoders():
     """Processes that decode masks. Each mask is a range-coded stream of its own, decoded pixel by pixel
-    in Python: ~40 ms for a box, 26 s for one followed through 658 frames, all of it holding the GIL
+    in Python (meta-sam-parser): ~100 ms for a box, about a minute for one followed through 658 frames, all of it holding the GIL
     while the replies stream in. Frames are independent, so they are decoded side by side."""
     global _decoders
     if _decoders is None:

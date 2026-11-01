@@ -2,3 +2,4 @@ numpy==2.5.4
 scipy==1.18.1
 requests==2.34.2
 matplotlib==3.11.2
+meta-sam-parser==0.1.0

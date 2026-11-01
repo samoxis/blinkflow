@@ -11,6 +11,7 @@ written as "~". Adds:
   provenance.txt `ollama ps` and `nvidia-smi` sampled every ~3 s while the run ran, timestamps kept: the run's own
                  (`voice live` writes it), or --provenance
   --extra        other text files (an earlier run's models.json...), scrubbed the same way
+  <sam-*>.masks.json  each copied SAM 3.1 reply's masks, decoded (blinkflow.masks): the report reads these
   left-out.json  what was not copied: SAM 3.1's replies for the control scenes (masks do not compress; their
                  verdicts stay in the stream and their calls in models.json), unless --all
 Then `python3 -m blinkflow.console report examples/<name>/events.jsonl` builds the static report.
@@ -26,6 +27,7 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
+from blinkflow import masks  # noqa: E402
 from blinkflow.console import NEVER, named_paths, read_events, servable  # noqa: E402
 
 HOME = str(pathlib.Path.home())
@@ -107,6 +109,8 @@ def main():
             dest.write_bytes(gzip.compress(scrub(gzip.decompress(f.read_bytes()).decode()).encode(), mtime=0))
         else:
             shutil.copy(f, dest)
+        if f.name.startswith("sam-") and f.suffix == ".txt":
+            masks.load(dest)                    # its masks decoded beside it, for the report (blinkflow.masks)
     for f in sorted(root.rglob("*")):
         rel = f.relative_to(root)
         if (f.is_file() and f.suffix in TEXT and not NEVER.search(f.name) and not f.name.startswith("sam-")
