@@ -1,0 +1,7 @@
+{
+ "robot": "robot arm",
+ "robot_prompt": "<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>",
+ "robot_prompt_source": "box marked in the initial rendered image; identical before/after",
+ "object_prompt": "red block",
+ "method": "SAM 3.1 masks, whole-mask gap <= 2 pixels"
+}

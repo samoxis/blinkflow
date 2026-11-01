@@ -1,0 +1,141 @@
+You are fixing the controller of a fixed-base three-joint robot arm; this workspace is its code. In a simulator the arm hit a red block on its way to a green target. BlinkFlow filmed it, measured it from the pixels and read the controller's own log; its diagnosis follows.
+Make the smallest change to this workspace that removes the cause. Rules:
+- Edit only files inside this workspace. Do not commit or otherwise touch git.
+- Do not read anything outside this workspace.
+- Keep the arm's behaviour otherwise the same: it must still reach the target.
+- You cannot run the simulator. When you finish, BlinkFlow replays the same scene in a deterministic twin and looks at the camera again. No delegation.
+DIAGNOSIS
+The robot lifts to max(z0, z1) + clearance and then traverses horizontally brain.py:33-35; with clearance = 0.0 brain.toml:2, the traverse height equals the higher endpoint, so the tool sweeps straight into the red block that sits above that plane between start and target. Log confirms the tool stays at ~0.220 m and does not climb: t = 1.350 s -> t = 2.000 s EE z ~0.22004 -> 0.22018 m while clearance stays 0.0 and waypoint = 2 brain.py:30-35, brain.toml:1-2. Frames K1..K4 show the blue arm’s hand/tool closing on the green block rendered in green: 78.0 px (K1 t=1.035 s) -> 70.7 px (K2 t=1.535 s) -> 17.0 px (K3 t=1.935 s) -> 1.0 px (K4 t=2.035 s), the first mask contact (gap <= 2 px) at 2.035 s. Alternatives ruled out: (a) joint PD gains kp = 100.0, kd = 8.0 brain.toml:4-6 cause overshoot — rejected: joint targets vary smoothly and monotonically (1.4219, -2.4785 -> 1.2216, -2.1803 rad) and EE z holds ~0.220 m with no overshoot spike log t=1.350 s, t=2.000 s, code brain.py:43-45; (b) wrong IK / unreachable waypoint brain.py:13-20 — rejected: no ValueError; ik returns finite targets and EE tracks x smoothly rightward log t=1.350-2.000 s; (c) frames/camera mislabel — rejected: mask gap decreases geometrically consistent with log x-motion and frame K4 gap = 1.0 px meets the given <= 2 px contact rule; (d) waypoint timing/wrong segment (stale target) — rejected: waypoint index advances 1 -> 2 exactly at segment boundary t=1.35 s log and tool moves right at constant z per code brain.py:34-40; (e} target itself blocked — rejected; final descent to (x1, z1) occurs after traverse brain.py:35, so raising lift preserves the green target.
+
+{
+ "cause": {
+  "file": "brain.toml",
+  "function": "planner.clearance",
+  "lines": {
+   "end": 2,
+   "start": 1
+  },
+  "what": "clearance = 0.0 in brain.toml:2, read at brain.py:26"
+ },
+ "confidence": 0.95,
+ "evidence": [
+  {
+   "ref": "Brain.py:30-35",
+   "shows": "Lift = max(z0, z1) + clearance; the plan goes up to lift then goes along horizontally, so 0 clearance means no lift above start/target height.",
+   "source": "code",
+   "value": "brain.py:33-35"
+  },
+  {
+   "ref": "Gap narrows 78 -> 2 px by t~2.035 s",
+   "shows": "Frame K1 (t=1.035 s, gap 78 px) to K2 (t=1.535 s, gap 70.7 px) to K3 (t=1.935 s, gap 17 px) to K4 (t=2.035 s, gap 1 px): the arm\u2019s hand/tool walks right toward the green block and then hits it; gap <= 2 px = mask contact first at 2.035 s.",
+   "source": "frame",
+   "value": "K1, K2, K3, K4"
+  },
+  {
+   "ref": "Waypoint 2 at lift height while z stays ~0.22 m",
+   "shows": "Waypoint switches 1 -> 2 at t=1.35 s and remains 2 at t=2.0 s; EE z stays ~0.2200 m while x moves -0.0999 m -> -0.0311 m -> -0.0202 m, matching the code\u2019s planned horizontal traverse, not a dip.",
+   "source": "log",
+   "value": "t = 1.350 s, t = 1.950 s, t = 2.000 s"
+  }
+ ],
+ "explanation": "The robot lifts to max(z0, z1) + clearance and then traverses horizontally brain.py:33-35; with clearance = 0.0 brain.toml:2, the traverse height equals the higher endpoint, so the tool sweeps straight into the red block that sits above that plane between start and target. Log confirms the tool stays at ~0.220 m and does not climb: t = 1.350 s -> t = 2.000 s EE z ~0.22004 -> 0.22018 m while clearance stays 0.0 and waypoint = 2 brain.py:30-35, brain.toml:1-2. Frames K1..K4 show the blue arm\u2019s hand/tool closing on the green block rendered in green: 78.0 px (K1 t=1.035 s) -> 70.7 px (K2 t=1.535 s) -> 17.0 px (K3 t=1.935 s) -> 1.0 px (K4 t=2.035 s), the first mask contact (gap <= 2 px) at 2.035 s. Alternatives ruled out: (a) joint PD gains kp = 100.0, kd = 8.0 brain.toml:4-6 cause overshoot \u2014 rejected: joint targets vary smoothly and monotonically (1.4219, -2.4785 -> 1.2216, -2.1803 rad) and EE z holds ~0.220 m with no overshoot spike log t=1.350 s, t=2.000 s, code brain.py:43-45; (b) wrong IK / unreachable waypoint brain.py:13-20 \u2014 rejected: no ValueError; ik returns finite targets and EE tracks x smoothly rightward log t=1.350-2.000 s; (c) frames/camera mislabel \u2014 rejected: mask gap decreases geometrically consistent with log x-motion and frame K4 gap = 1.0 px meets the given <= 2 px contact rule; (d) waypoint timing/wrong segment (stale target) \u2014 rejected: waypoint index advances 1 -> 2 exactly at segment boundary t=1.35 s log and tool moves right at constant z per code brain.py:34-40; (e} target itself blocked \u2014 rejected; final descent to (x1, z1) occurs after traverse brain.py:35, so raising lift preserves the green target.",
+ "fix_direction": "Raise planner.clearance in brain.toml so the traverse passes above the red block\u2019s top, while keeping the final target point unchanged so the fixed robot still reaches the green target; no patch provided.",
+ "observed": "Frames K1-K4 show the blue three-joint arm in side view, fixed base left, tool at mid height, moving right toward the small green target at right with the tall green/red block between them; gap closes 78.0 px (K1, t=1.035 s) -> 70.7 px (K2, t=1.535 s) -> 17.0 px (K3, t=1.935 s) -> 1.0 px (K4, t=2.035 s). Log shows EE z stays ~0.220 m while x moves right and waypoint stays 2 during the traverse (t=1.350 s z=0.22000 m; t=2.000 s z=0.22018 m), and clearance reads 0.0 throughout (t=1.350 s, t=2.000 s).",
+ "plain": {
+  "camera": "The side camera shows the blue arm sliding right at the same low height.",
+  "robot": " Its hand runs straight into the tall block in front of the green target.",
+  "why": " The lift setting is zero, so it never rises over the block."
+ },
+ "ruled_out": [
+  {
+   "because": "Log shows smooth monotonic joint targets (1.4219 -> 1.2216 rad) and EE z locked ~0.220 m (t=1.350 s, t=2.000 s) following the planned traverse; no oscillatory overshoot or tracking lag.",
+   "cause": "PD gains kp=100.0, kd=8.0 too low/high brain.toml:5-6 -> overshoot into block"
+  },
+  {
+   "because": "IK returns valid finite targets every tick and the tool follows the smooth joint targets (code brain.py:13-20); no unreachable exception.",
+   "cause": "Elbow-up IK sign or TOOL offset brain.py:13-20 -> wrong pose"
+  },
+  {
+   "because": "Waypoints switch 1->2 on schedule at t=1.35 s and the EE then moves right at constant z ~0.220 m (log t=1.350 s, t=2.000 s); the planned path (brain.py:33-35) is exactly horizontal.",
+   "cause": "Waypoint timing/sequencing bug brain.py:30-41 -> premature descent"
+  },
+  {
+   "because": "Gap closes monotonically 78.0 px (K1 t=1.035 s) -> 1.0 px (K4 t=2.035 s) in step with the log x-motion; geometry is self-consistent.",
+   "cause": "Mask/view artefact - not real contact"
+  },
+  {
+   "because": "Frames K1-K4 show the tool still left of/at the block at K4 (t=2.035 s, gap 1.0 px), well before the planned descend segment t>=3.4 s (brain.py:35).",
+   "cause": "Descent segment into target (t=3.4-4.3 s) too early"
+  }
+ ]
+}
+
+CODE
+Debug a fixed-base three-joint robot manipulator in the x-z plane, not a biped.
+The controller plans Cartesian waypoints, solves inverse kinematics and runs joint PD at 200 Hz.
+Find one causal code/config location from the frames, pixel gaps, controller log and numbered code.
+Every claim cites its source: frame K1..K4, measurement at a sent key-frame time,
+log t=... from the provided table, or code file:line. Cite at least one key frame and one log tick.
+No contact truth from the simulator is supplied. Mask contact means gap <= 2 pixels in this side view.
+The cause is one real file, function/config key, and line range <=30 lines. Cite the exact setting
+when a configuration value is the cause. Explain alternatives ruled out by the evidence.
+Do not write a patch. Suggest a direction for the fix.
+The fixed robot must still reach the green target. Return JSON matching the schema.
+plain has three short everyday sentences (camera, robot, why); confidence is your estimate.
+
+===== brain.py (45 lines) =====
+   1| """Deterministic Cartesian waypoints, elbow-up inverse kinematics and 200 Hz PD."""
+   2| import math
+   3| import pathlib
+   4| import tomllib
+   5| 
+   6| import numpy as np
+   7| 
+   8| BASE = (-0.38, 0.16)
+   9| L1, L2, TOOL = 0.36, 0.34, 0.06
+  10| START = (-0.10, 0.22)
+  11| 
+  12| 
+  13| def ik(x, z):
+  14|     x, z = x - BASE[0] - TOOL, z - BASE[1]
+  15|     c = (x*x + z*z - L1*L1 - L2*L2) / (2*L1*L2)
+  16|     if not -1 <= c <= 1:
+  17|         raise ValueError(f"unreachable waypoint: {x}, {z}")
+  18|     elbow = -math.acos(c)
+  19|     shoulder = math.atan2(z, x) - math.atan2(L2*math.sin(elbow), L1+L2*math.cos(elbow))
+  20|     return np.array([shoulder, elbow, -shoulder-elbow])
+  21| 
+  22| 
+  23| class Brain:
+  24|     def __init__(self, folder, target):
+  25|         cfg = tomllib.loads((pathlib.Path(folder)/"brain.toml").read_text())
+  26|         self.clearance = cfg["planner"]["clearance"]
+  27|         self.kp, self.kd = cfg["pd"]["kp"], cfg["pd"]["kd"]
+  28|         self.target = (float(target[0]), float(target[2]))
+  29| 
+  30|     def waypoint(self, t):
+  31|         x0, z0 = START
+  32|         x1, z1 = self.target
+  33|         lift = max(z0, z1) + self.clearance
+  34|         points = [(0., (x0,z0)), (0.5, (x0,z0)), (1.3, (x0,lift)),
+  35|                   (3.4, (x1,lift)), (4.3, (x1,z1)), (6., (x1,z1))]
+  36|         for i, ((ta,a),(tb,b)) in enumerate(zip(points,points[1:])):
+  37|             if t <= tb:
+  38|                 u = max(0., min(1., (t-ta)/(tb-ta)))
+  39|                 s = u*u*(3-2*u)
+  40|                 return ik(*(a[j]+s*(b[j]-a[j]) for j in range(2))), i
+  41|         return ik(x1,z1), len(points)-2
+  42| 
+  43|     def tick(self, t, q, dq):
+  44|         targets, waypoint = self.waypoint(t)
+  45|         return self.kp*(targets-q)-self.kd*dq, targets, waypoint
+
+===== brain.toml (6 lines) =====
+   1| [planner]
+   2| clearance = 0.0
+   3| 
+   4| [pd]
+   5| kp = 100.0
+   6| kd = 8.0
+
+EARLIER FAILED ATTEMPTS

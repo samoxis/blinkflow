@@ -88,7 +88,9 @@ def pack(source,dest,lost=False,caption=CAPTION):
         if not f.is_file():continue
         if f.suffix in TEXT:f.write_text(scrub(f.read_text(),f))
         elif f.name.endswith('.jsonl.gz'):
-            f.write_bytes(gzip.compress(scrub(gzip.decompress(f.read_bytes()).decode(),f).encode(),mtime=0))
+            # rewritten only if a path was replaced: a record's hash is of its bytes (the voice window's cut)
+            text=gzip.decompress(f.read_bytes()).decode()
+            if scrub(text,f)!=text:f.write_bytes(gzip.compress(scrub(text,f).encode(),mtime=0))
     for tag,path in [('before',out/'before/twin/shot.mp4'),('after',out/f"attempt-{result['attempt']}/twin/shot.mp4")]:
         subprocess.run(['ffmpeg','-v','error','-y','-i',str(path),'-vf','fps=10,scale=480:-1','-loop','0',str(out/f'{tag}.gif')],check=True)
     (out/'preview.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8"><title>BlinkFlow arm</title>'

@@ -1,0 +1,93 @@
+{
+ "passed": true,
+ "offline": true,
+ "pixel_rederivations": {
+  "before": {
+   "valid": true,
+   "contact": true,
+   "first_contact_s": 2.035,
+   "target_error_m": 0.3052196859876684
+  },
+  "attempt-1": {
+   "valid": true,
+   "contact": false,
+   "first_contact_s": null,
+   "target_error_m": 6.689828278682872e-13
+  },
+  "attempt-1/control/obstacle_moved": {
+   "valid": true,
+   "contact": false,
+   "first_contact_s": null,
+   "target_error_m": 6.689828278682872e-13
+  },
+  "attempt-1/control/target_moved": {
+   "valid": true,
+   "contact": false,
+   "first_contact_s": null,
+   "target_error_m": 1.2451809368536465e-12
+  }
+ },
+ "diagnosis": {
+  "file": "brain.toml",
+  "file_ok": true,
+  "lines_ok": true,
+  "function_ok": true,
+  "lines_in_function": true,
+  "frames_cited": [],
+  "log_ticks_cited": [
+   2.035
+  ],
+  "bad_refs": [
+   "Brain.py",
+   "Waypoint 2 at lift height while z stays ~0.22 m"
+  ],
+  "grounded": false
+ },
+ "attempts": {
+  "attempt-1": {
+   "passed": true,
+   "files": [
+    "blinkflow/arm/robot/brain.toml"
+   ],
+   "audit_problems": []
+  }
+ },
+ "voice": {
+  "said": "a couple of seconds ago the arm hit the red block a couple of seconds ago the arm arm hit the red block",
+  "seconds_ago": 2.0,
+  "press_s": 4.0,
+  "moment_s": 2.0,
+  "window_s": [
+   -3.0,
+   5.0
+  ],
+  "audio_sha256": "ee7359b998472795574f00009d47c00b2a4f14d0bd2631ce26aa4d1868b4ae2b"
+ },
+ "repo_spend_usd": 1.85567,
+ "run_cost_usd": 0.27251,
+ "physics": {
+  "determinism": {
+   "before_record_sha256": "291bd97ee218e2c03c8c44ef19209c7276c1c59af1954f4229808f9f4732f08a",
+   "repeats": 2
+  },
+  "before": {
+   "first_contact_s": 2.01,
+   "episodes": 1
+  },
+  "attempt-1/incident": {
+   "contact_episodes": 0,
+   "target_error_m": 6.310456942395995e-13,
+   "record_sha256": "ea5f8535894aed132304d40912bd539efa939eb7eafe8c346d4411c6b0c87ee8"
+  },
+  "attempt-1/obstacle_moved": {
+   "contact_episodes": 0,
+   "target_error_m": 6.310456942395995e-13,
+   "record_sha256": "ea5f8535894aed132304d40912bd539efa939eb7eafe8c346d4411c6b0c87ee8"
+  },
+  "attempt-1/target_moved": {
+   "contact_episodes": 0,
+   "target_error_m": 1.172239257573459e-12,
+   "record_sha256": "b2d355a6916e0e6d3442adbae5faabb99ec330dfd973e86d47fff6ac6deaddea"
+  }
+ }
+}

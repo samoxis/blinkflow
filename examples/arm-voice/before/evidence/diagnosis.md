@@ -1,0 +1,64 @@
+The robot lifts to max(z0, z1) + clearance and then traverses horizontally brain.py:33-35; with clearance = 0.0 brain.toml:2, the traverse height equals the higher endpoint, so the tool sweeps straight into the red block that sits above that plane between start and target. Log confirms the tool stays at ~0.220 m and does not climb: t = 1.350 s -> t = 2.000 s EE z ~0.22004 -> 0.22018 m while clearance stays 0.0 and waypoint = 2 brain.py:30-35, brain.toml:1-2. Frames K1..K4 show the blue arm’s hand/tool closing on the green block rendered in green: 78.0 px (K1 t=1.035 s) -> 70.7 px (K2 t=1.535 s) -> 17.0 px (K3 t=1.935 s) -> 1.0 px (K4 t=2.035 s), the first mask contact (gap <= 2 px) at 2.035 s. Alternatives ruled out: (a) joint PD gains kp = 100.0, kd = 8.0 brain.toml:4-6 cause overshoot — rejected: joint targets vary smoothly and monotonically (1.4219, -2.4785 -> 1.2216, -2.1803 rad) and EE z holds ~0.220 m with no overshoot spike log t=1.350 s, t=2.000 s, code brain.py:43-45; (b) wrong IK / unreachable waypoint brain.py:13-20 — rejected: no ValueError; ik returns finite targets and EE tracks x smoothly rightward log t=1.350-2.000 s; (c) frames/camera mislabel — rejected: mask gap decreases geometrically consistent with log x-motion and frame K4 gap = 1.0 px meets the given <= 2 px contact rule; (d) waypoint timing/wrong segment (stale target) — rejected: waypoint index advances 1 -> 2 exactly at segment boundary t=1.35 s log and tool moves right at constant z per code brain.py:34-40; (e} target itself blocked — rejected; final descent to (x1, z1) occurs after traverse brain.py:35, so raising lift preserves the green target.
+
+{
+ "cause": {
+  "file": "brain.toml",
+  "function": "planner.clearance",
+  "lines": {
+   "end": 2,
+   "start": 1
+  },
+  "what": "clearance = 0.0 in brain.toml:2, read at brain.py:26"
+ },
+ "confidence": 0.95,
+ "evidence": [
+  {
+   "ref": "Brain.py:30-35",
+   "shows": "Lift = max(z0, z1) + clearance; the plan goes up to lift then goes along horizontally, so 0 clearance means no lift above start/target height.",
+   "source": "code",
+   "value": "brain.py:33-35"
+  },
+  {
+   "ref": "Gap narrows 78 -> 2 px by t~2.035 s",
+   "shows": "Frame K1 (t=1.035 s, gap 78 px) to K2 (t=1.535 s, gap 70.7 px) to K3 (t=1.935 s, gap 17 px) to K4 (t=2.035 s, gap 1 px): the arm\u2019s hand/tool walks right toward the green block and then hits it; gap <= 2 px = mask contact first at 2.035 s.",
+   "source": "frame",
+   "value": "K1, K2, K3, K4"
+  },
+  {
+   "ref": "Waypoint 2 at lift height while z stays ~0.22 m",
+   "shows": "Waypoint switches 1 -> 2 at t=1.35 s and remains 2 at t=2.0 s; EE z stays ~0.2200 m while x moves -0.0999 m -> -0.0311 m -> -0.0202 m, matching the code\u2019s planned horizontal traverse, not a dip.",
+   "source": "log",
+   "value": "t = 1.350 s, t = 1.950 s, t = 2.000 s"
+  }
+ ],
+ "explanation": "The robot lifts to max(z0, z1) + clearance and then traverses horizontally brain.py:33-35; with clearance = 0.0 brain.toml:2, the traverse height equals the higher endpoint, so the tool sweeps straight into the red block that sits above that plane between start and target. Log confirms the tool stays at ~0.220 m and does not climb: t = 1.350 s -> t = 2.000 s EE z ~0.22004 -> 0.22018 m while clearance stays 0.0 and waypoint = 2 brain.py:30-35, brain.toml:1-2. Frames K1..K4 show the blue arm\u2019s hand/tool closing on the green block rendered in green: 78.0 px (K1 t=1.035 s) -> 70.7 px (K2 t=1.535 s) -> 17.0 px (K3 t=1.935 s) -> 1.0 px (K4 t=2.035 s), the first mask contact (gap <= 2 px) at 2.035 s. Alternatives ruled out: (a) joint PD gains kp = 100.0, kd = 8.0 brain.toml:4-6 cause overshoot \u2014 rejected: joint targets vary smoothly and monotonically (1.4219, -2.4785 -> 1.2216, -2.1803 rad) and EE z holds ~0.220 m with no overshoot spike log t=1.350 s, t=2.000 s, code brain.py:43-45; (b) wrong IK / unreachable waypoint brain.py:13-20 \u2014 rejected: no ValueError; ik returns finite targets and EE tracks x smoothly rightward log t=1.350-2.000 s; (c) frames/camera mislabel \u2014 rejected: mask gap decreases geometrically consistent with log x-motion and frame K4 gap = 1.0 px meets the given <= 2 px contact rule; (d) waypoint timing/wrong segment (stale target) \u2014 rejected: waypoint index advances 1 -> 2 exactly at segment boundary t=1.35 s log and tool moves right at constant z per code brain.py:34-40; (e} target itself blocked \u2014 rejected; final descent to (x1, z1) occurs after traverse brain.py:35, so raising lift preserves the green target.",
+ "fix_direction": "Raise planner.clearance in brain.toml so the traverse passes above the red block\u2019s top, while keeping the final target point unchanged so the fixed robot still reaches the green target; no patch provided.",
+ "observed": "Frames K1-K4 show the blue three-joint arm in side view, fixed base left, tool at mid height, moving right toward the small green target at right with the tall green/red block between them; gap closes 78.0 px (K1, t=1.035 s) -> 70.7 px (K2, t=1.535 s) -> 17.0 px (K3, t=1.935 s) -> 1.0 px (K4, t=2.035 s). Log shows EE z stays ~0.220 m while x moves right and waypoint stays 2 during the traverse (t=1.350 s z=0.22000 m; t=2.000 s z=0.22018 m), and clearance reads 0.0 throughout (t=1.350 s, t=2.000 s).",
+ "plain": {
+  "camera": "The side camera shows the blue arm sliding right at the same low height.",
+  "robot": " Its hand runs straight into the tall block in front of the green target.",
+  "why": " The lift setting is zero, so it never rises over the block."
+ },
+ "ruled_out": [
+  {
+   "because": "Log shows smooth monotonic joint targets (1.4219 -> 1.2216 rad) and EE z locked ~0.220 m (t=1.350 s, t=2.000 s) following the planned traverse; no oscillatory overshoot or tracking lag.",
+   "cause": "PD gains kp=100.0, kd=8.0 too low/high brain.toml:5-6 -> overshoot into block"
+  },
+  {
+   "because": "IK returns valid finite targets every tick and the tool follows the smooth joint targets (code brain.py:13-20); no unreachable exception.",
+   "cause": "Elbow-up IK sign or TOOL offset brain.py:13-20 -> wrong pose"
+  },
+  {
+   "because": "Waypoints switch 1->2 on schedule at t=1.35 s and the EE then moves right at constant z ~0.220 m (log t=1.350 s, t=2.000 s); the planned path (brain.py:33-35) is exactly horizontal.",
+   "cause": "Waypoint timing/sequencing bug brain.py:30-41 -> premature descent"
+  },
+  {
+   "because": "Gap closes monotonically 78.0 px (K1 t=1.035 s) -> 1.0 px (K4 t=2.035 s) in step with the log x-motion; geometry is self-consistent.",
+   "cause": "Mask/view artefact - not real contact"
+  },
+  {
+   "because": "Frames K1-K4 show the tool still left of/at the block at K4 (t=2.035 s, gap 1.0 px), well before the planned descend segment t>=3.4 s (brain.py:35).",
+   "cause": "Descent segment into target (t=3.4-4.3 s) too early"
+  }
+ ]
+}
