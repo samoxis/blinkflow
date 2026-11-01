@@ -374,10 +374,90 @@ def norm_function(name):
     return re.sub(r"\(.*$", "", name or "").split(".")[-1].strip().lower()
 
 
+def resolve(path, files):
+    """The target's file a cited path names: the path itself, or the one file it ends (on whole path
+    components; a bare name only when one file has it). A path that is not in the target names nothing,
+    even when its file name is."""
+    p = re.sub(r"^(\./|/)+", "", path.strip().strip("`'\""))
+    hits = [n for n in files if n == p or n.endswith("/" + p)]
+    return hits[0] if len(hits) == 1 else None
+
+
+def function_span(text, fn):
+    """Every (first, last) line of a def named fn: from its decorators to its last line before the next
+    statement at its own indent or less."""
+    lines, spans = text.splitlines(), []
+    for i, line in enumerate(lines):
+        m = re.match(rf"(\s*)(?:async\s+)?def {re.escape(fn)}\b", line)
+        if not m:
+            continue
+        ind, first, last = len(m.group(1)), i, i
+        while first > 0 and lines[first - 1].strip().startswith("@"):
+            first -= 1
+        for j in range(i + 1, len(lines)):
+            t = lines[j]
+            if not t.strip() or t.strip().startswith("#"):
+                continue
+            if len(t) - len(t.lstrip()) <= ind and not t.strip().startswith(")"):
+                break
+            last = j
+        spans.append((first + 1, last + 1))
+    return spans
+
+
+def toml_keys(text):
+    """brain.toml's keys: {line: (section, key)}."""
+    out, section = {}, ""
+    for i, line in enumerate(text.splitlines(), 1):
+        if m := re.match(r"\s*\[([^\]]+)\]", line):
+            section = m.group(1).strip()
+        elif m := re.match(r"\s*([A-Za-z_]\w*)\s*=", line):
+            out[i] = (section, m.group(1))
+    return out
+
+
+def in_function(name, text, function, a, b):
+    """Do the cited lines lie inside what the cause names? Python: inside a def of that name. brain.toml:
+    when the name mentions a key of the file (and maybe its section), the lines set that key there."""
+    if name.endswith(".toml"):
+        keys = toml_keys(text)
+        named = {k for _, k in keys.values() if re.search(rf"\b{re.escape(k)}\b", function)}
+        if not named:
+            return True
+        sections = {s for s, _ in keys.values()}
+        said = {m for m in re.findall(r"\[([^\]]+)\]|\b(\w+)\.\w", function) for m in m if m in sections}
+        return any(k in named and (not said or s in said) for i, (s, k) in keys.items() if a <= i <= b)
+    return any(f <= a and b <= l for f, l in function_span(text, norm_function(function)))
+
+
+FILE_REF = re.compile(r"([\w./-]+\.(?:py|toml))\b((?:\s*(?::|\blines?\b)\s*\d+(?:\s*[-–]\s*\d+)?"
+                      r"(?:\s*(?:,\s*and|,|and)\s*\d+(?:\s*[-–]\s*\d+)?\b(?!\.\d|\s*[A-Za-z]))*)?)")
+
+
+def file_refs(ref, files):
+    """Every file and line a reference cites, and those that point at nothing: a file not in the target,
+    or a line past its end."""
+    bad = []
+    for path, spec in FILE_REF.findall(ref):
+        name = resolve(path, files)
+        if name is None:
+            bad.append(path)
+            continue
+        n = len(files[name].splitlines())
+        for lo, hi in re.findall(r"(\d+)(?:\s*[-–]\s*(\d+))?", spec):
+            lo, hi = int(lo), int(hi or lo)
+            if not 1 <= lo <= hi <= n:
+                bad.append(f"{path}:{lo}-{hi}" if hi != lo else f"{path}:{lo}")
+    return bad
+
+
 def check(d, files, frames, tick_times):
-    """Does the answer point at real code, and does it cite real frames and log ticks?"""
+    """Does the answer point at real code, and does every citation point at something real? Rejected: a
+    path not in the target (whatever its file name), lines outside the named function, a key frame that
+    was not sent (even beside one that was), a log reference with no real tick, a file or line that does
+    not exist in any citation."""
     c = d["cause"]
-    name = next((n for n in files if n == c["file"] or n.endswith("/" + c["file"].split("/")[-1])), None)
+    name = resolve(c["file"], files)
     text = files.get(name, "")
     n_lines = len(text.splitlines())
     fn = norm_function(c["function"])
@@ -385,12 +465,15 @@ def check(d, files, frames, tick_times):
     tags = {k["tag"] for k in frames}
     frames_cited, ticks_cited, bad = set(), set(), []
     for e in d["evidence"]:
+        ref = e["ref"]
+        bad += file_refs(ref, files)
         # Models label depth frames from the log as "frame" and key frames as "log" now and then: look
         # for key-frame tags and tick times in every non-code reference, whatever its label.
         if e["source"] == "code":
             continue
-        ref = e["ref"]
-        got = set(re.findall(r"K\d", ref)) & tags
+        named = set(re.findall(r"\bK\d+\b", ref))
+        got = named & tags
+        bad += sorted(named - tags)
         hits = [t for t in map(float, re.findall(r"\d+\.\d+", ref))
                 if any(abs(t - u) <= 0.026 for u in tick_times)]
         frames_cited |= got
@@ -400,11 +483,13 @@ def check(d, files, frames, tick_times):
     file_ok = name is not None
     lines_ok = file_ok and 1 <= a <= b <= n_lines
     function_ok = bool(fn) and (re.search(rf"\bdef {re.escape(fn)}\b", text) is not None or name == "brain.toml")
-    # grounded only when every check holds: the file, its lines and its function are real, it cites key
-    # frames that were sent and log ticks that exist, and no frame or log reference points at nothing
+    inside = lines_ok and function_ok and in_function(name, text, c["function"], a, b)
+    # grounded only when every check holds: the file, its lines and its function are real and the lines lie in
+    # it, it cites key frames that were sent and log ticks that exist, and no citation points at nothing
     return {"file": name, "file_ok": file_ok, "lines_ok": lines_ok, "function_ok": function_ok,
-            "frames_cited": sorted(frames_cited), "log_ticks_cited": sorted(ticks_cited), "bad_refs": bad,
-            "grounded": file_ok and lines_ok and function_ok and bool(frames_cited) and bool(ticks_cited) and not bad}
+            "lines_in_function": inside, "frames_cited": sorted(frames_cited),
+            "log_ticks_cited": sorted(ticks_cited), "bad_refs": bad,
+            "grounded": inside and bool(frames_cited) and bool(ticks_cited) and not bad}
 
 
 def cause_key(d, chk, files):
@@ -466,11 +551,13 @@ def write_md(path, ev, frames, main, compare):
     out += [f"- *{e['source']}* `{e['ref']}`: {e['value']}. {e['shows']}" for e in d["evidence"]]
     out += ["", "## Ruled out", ""] + [f"- {r['cause']}: {r['because']}" for r in d["ruled_out"]]
     out += ["", "## Check against what was sent", "",
-            f"- file exists: {chk['file_ok']}; lines in range: {chk['lines_ok']}; function found: {chk['function_ok']}",
+            f"- file exists: {chk['file_ok']}; lines in range: {chk['lines_ok']}; function found: {chk['function_ok']}; "
+            f"lines inside it: {chk.get('lines_in_function')}",
             f"- key frames cited: {', '.join(chk['frames_cited']) or 'none'}; log ticks cited: "
             f"{', '.join(f'{t:.3f}' for t in chk['log_ticks_cited']) or 'none'}",
             f"- references that match nothing sent: {chk['bad_refs'] or 'none'}",
-            f"- **grounded (file, lines and function real; key frames and log ticks cited that exist): {'yes' if chk['grounded'] else 'NO'}**", "",
+            f"- **grounded (file, lines and function real, the lines inside it; key frames and log ticks cited that exist; "
+            f"every citation real): {'yes' if chk['grounded'] else 'NO'}**", "",
             "## Key frames", ""]
     for k in frames:
         out += [f"**{k['tag']}** {k['label']}, t = {k['brain_s']:.2f} s. Glimmer: *{k['glimmer']}*", "",
