@@ -39,3 +39,21 @@ jobs:
         run: |
           pip install -r requirements.txt pytest==9.2.0
           python3 -m pytest -q tests
+
+  # The arm (results/arm.md): every measurement re-derived from the saved SAM 3.1 replies, the citation check,
+  # the diff and the physics replayed to the same record hashes, offline, with no key and the network blocked.
+  arm-recheck:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: ffmpeg
+        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+      - name: The arm, re-checked offline
+        run: |
+          pip install -r requirements.txt
+          env -u MODEL_API_KEY -u BASETEN_API_KEY python3 -m blinkflow.arm.recheck examples/arm --write /tmp/arm-recheck.json
+          python3 -c "import json; r = json.load(open('/tmp/arm-recheck.json')); assert r['passed'] and r['offline']; print(json.dumps(r['physics']['determinism']))"

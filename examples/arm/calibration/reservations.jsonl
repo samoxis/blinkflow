@@ -1,0 +1,29 @@
+{"t": 1793554090.1929598, "usd": 0.021, "what": "sam-3.1 'red block' on ~/blinkflow-arm/runs/arm-loop/before/evidence/piece-1.mp4"}
+{"t": 1793554090.1933198, "usd": 0.021, "what": "sam-3.1 'robot arm' on ~/blinkflow-arm/runs/arm-loop/before/evidence/piece-1.mp4"}
+{"t": 1793554090.1937547, "usd": 0.018000000000000002, "what": "sam-3.1 'robot arm' on ~/blinkflow-arm/runs/arm-loop/before/evidence/piece-0.mp4"}
+{"t": 1793554090.195717, "usd": 0.018000000000000002, "what": "sam-3.1 'red block' on ~/blinkflow-arm/runs/arm-loop/before/evidence/piece-0.mp4"}
+{"t": 1793554140.0964568, "usd": 0.0012000000000000001, "what": "sam-3.1 'robot arm' on runs/perception-probe/clip.mp4"}
+{"t": 1793554165.6810334, "usd": 0.0012000000000000001, "what": "sam-3.1 'orange robot' on runs/perception-probe/clip.mp4"}
+{"t": 1793554168.015939, "usd": 0.0012000000000000001, "what": "sam-3.1 'robotic arm' on runs/perception-probe/clip.mp4"}
+{"t": 1793554170.2728362, "usd": 0.0012000000000000001, "what": "sam-3.1 'orange arm' on runs/perception-probe/clip.mp4"}
+{"t": 1793554225.906325, "usd": 0.0012000000000000001, "what": "sam-3.1 'orange pipes' on runs/perception-probe/clip.mp4"}
+{"t": 1793554227.626045, "usd": 0.0012000000000000001, "what": "sam-3.1 'orange object' on runs/perception-probe/clip.mp4"}
+{"t": 1793554229.517645, "usd": 0.0012000000000000001, "what": "sam-3.1 'robot' on runs/perception-probe/clip.mp4"}
+{"t": 1793554268.8947453, "usd": 0.0012000000000000001, "what": "sam-3.1 'robot arm' on runs/perception-probe2/clip.mp4"}
+{"t": 1793554271.6857374, "usd": 0.0012000000000000001, "what": "sam-3.1 'orange cylinder' on runs/perception-probe2/clip.mp4"}
+{"t": 1793554274.0384362, "usd": 0.0012000000000000001, "what": "sam-3.1 'red block' on runs/perception-probe2/clip.mp4"}
+{"t": 1793554319.3782856, "usd": 0.0012000000000000001, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=520;y2=580;w=960;h=720|>' on runs/perception-probe2/clip.mp4"}
+{"t": 1793554322.3928425, "usd": 0.0012000000000000001, "what": "sam-3.1 'orange' on runs/perception-probe2/clip.mp4"}
+{"t": 1793554324.1658096, "usd": 0.0012000000000000001, "what": "sam-3.1 'cyan sphere' on runs/perception-probe2/clip.mp4"}
+{"t": 1793554375.836988, "usd": 0.036000000000000004, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../before/evidence/shot.mp4"}
+{"t": 1793554375.8385253, "usd": 0.036000000000000004, "what": "sam-3.1 'red block' on ../before/evidence/shot.mp4"}
+{"t": 1793554419.3792412, "usd": 0.15811733333333333, "what": "arm diagnosis"}
+{"t": 1793554443.534196, "usd": -0.060761333333333334, "what": "settle arm diagnosis"}
+{"t": 1793554493.5117393, "usd": 0.25, "what": "Muse Code attempt 1 maximum allowance"}
+{"t": 1793554601.3604815, "usd": -0.2433, "what": "settle Muse Code attempt 1"}
+{"t": 1793554603.7839146, "usd": 0.036000000000000004, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../attempt-1/evidence/shot.mp4"}
+{"t": 1793554603.7856014, "usd": 0.036000000000000004, "what": "sam-3.1 'red block' on ../attempt-1/evidence/shot.mp4"}
+{"t": 1793554635.235464, "usd": 0.0114, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../attempt-1/control/obstacle_moved/evidence/shot.mp4"}
+{"t": 1793554635.236553, "usd": 0.0114, "what": "sam-3.1 'red block' on ../attempt-1/control/obstacle_moved/evidence/shot.mp4"}
+{"t": 1793554646.5772345, "usd": 0.0114, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../attempt-1/control/target_moved/evidence/shot.mp4"}
+{"t": 1793554646.5779727, "usd": 0.0114, "what": "sam-3.1 'red block' on ../attempt-1/control/target_moved/evidence/shot.mp4"}

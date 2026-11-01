@@ -117,3 +117,30 @@ The console only reads the loop's event log (`events.jsonl`); the loop runs the 
 ## Cost
 
 The SAM 3.1 replies are cached by the exact hash of the video bytes, the concept and the parameters: the twin is deterministic, so an unchanged scene gives the same video and is not paid twice. Muse Spark runs on Baseten (`meta-models/muse-spark-open-1026`); Muse Wonder stays on the Meta Model API. Muse Code now runs on `muse-spark-1.3-contributor` ($0.10 / $0.20 per 1M tokens in / out, against $1.25 / $4.25; its conversations may be used for training, and the target and this repo are public): one purple-box loop gave the same fix, 1 → 0, control 5/5, and $0.0053 for Muse Code instead of $0.070 (`BLINKFLOW_MUSE_MODEL=muse-spark-1.3` goes back). Of the ten loops in [`results/loop_times.md`](../results/loop_times.md), the first eight ran Muse Code on `muse-spark-1.3` and the last two on `muse-spark-1.3-contributor`, as did the fresh-setup run ([`results/fresh_setup.md`](../results/fresh_setup.md)); every loop cost includes Muse Code. `python3 tools/spend.py --day YYYY-MM-DD` sums the `models.json` of every run that day, per model and per provider.
+
+## The arm
+
+The same loop on a hand-written three-joint MuJoCo arm, [`blinkflow/arm/`](../blinkflow/arm) (results: [`results/arm.md`](../results/arm.md)). It needs MuJoCo 3.10.0 besides `requirements.txt`; run from the repo root, with `PYTHONPATH` unset.
+
+- **Interpreter.** The example was made with `~/microduck_rl/.venv/bin/python` (Python 3.12.3, MuJoCo 3.10.0). That venv has neither `meta-sam-parser` nor the Muse Code SDK, which here live in `~/.local/lib/python3.12/site-packages` (`pip install --user`, the SDK from the launcher above; not vendored in this repo), so with it `PYTHONPATH` must name that folder. Since Nov 1 the system `python3` has `mujoco==3.10.0` in the same user site and runs everything below with `PYTHONPATH` unset; its replays give the example's record hashes.
+- **Rendering.** Offscreen through WSLg: `DISPLAY=:0`, `MUJOCO_GL` unset. `egl` and `osmesa` both fail in this WSL. No viewer window is opened. Replays without video need no display.
+- **State.** Runs, the SAM 3.1 cache and the spend ledger go to `~/blinkflow-runs/arm` (`BLINKFLOW_ARM_STATE` moves it), never into the repo. The ledger starts from the example's spend ($0.38726) and stops at $3.
+
+```bash
+# Offline: no key, network and model calls blocked
+env -u MODEL_API_KEY -u BASETEN_API_KEY python3 -m blinkflow.arm.recheck examples/arm
+
+# A replay of either brain (6 s, 960x720 at 30 fps); each --out must be new
+DISPLAY=:0 python3 -m blinkflow.arm.twin --brain examples/arm/brain-before --out ~/blinkflow-runs/arm/manual-before
+DISPLAY=:0 python3 -m blinkflow.arm.twin --out ~/blinkflow-runs/arm/manual-after
+```
+
+A new paid loop: Muse Code's target is `blinkflow/arm/` itself (the gate allows no path outside it), and the loop starts only on a clean tree. Plant the bug and commit it on a branch, then run:
+
+```bash
+git switch -c arm-loop
+cp examples/arm/brain-before/brain.toml blinkflow/arm/brain.toml && git commit -am "arm: plant clearance = 0.0"
+DISPLAY=:0 python3 -m blinkflow.arm.run --out ~/blinkflow-runs/arm/loop-1      # --until see | diagnose to stop early
+```
+
+At most three attempts; a failed one restores only `blinkflow/arm/`. The fix is committed on that branch when the proof and both controls pass.

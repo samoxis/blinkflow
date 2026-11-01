@@ -1,0 +1,619 @@
+{
+ "calls": [
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'red block'",
+   "seconds": 4.54,
+   "frames": 57,
+   "frames_returned": 57,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 57
+   },
+   "cache_key": "91feaadb3bc9b223847c9bfc7d4696d111cad9c402d8a23f60a44eb5ff535c7b",
+   "cost_usd": 0.0114,
+   "stage": "attempt-1/control/obstacle_moved/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'robot arm'",
+   "seconds": 8.99,
+   "frames": 57,
+   "frames_returned": 57,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 57
+   },
+   "cache_key": "da923f9c6655fcbc2c4299ab0549e20f1a78c963be6d6099126bc91f1018d266",
+   "cost_usd": 0.0114,
+   "stage": "attempt-1/control/obstacle_moved/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'red block'",
+   "seconds": 5.37,
+   "frames": 57,
+   "frames_returned": 57,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 57
+   },
+   "cache_key": "927970b6d7978736ace04e7ec12f57ec4f802b3e03c0250f841568f3ad051d48",
+   "cost_usd": 0.0114,
+   "stage": "attempt-1/control/target_moved/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'robot arm'",
+   "seconds": 8.7,
+   "frames": 57,
+   "frames_returned": 57,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 57
+   },
+   "cache_key": "b0e2a024f0ec112eacb925087a7302f3cc202a4fa5482c751ada3a4b0fb93069",
+   "cost_usd": 0.0114,
+   "stage": "attempt-1/control/target_moved/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'red block'",
+   "seconds": 10.36,
+   "frames": 180,
+   "frames_returned": 180,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 180
+   },
+   "cache_key": "6090e8d0976c6b9cbe3d264f713291747265203b3483562e773d5975a6a36d8d",
+   "cost_usd": 0.036,
+   "stage": "attempt-1/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'robot arm'",
+   "seconds": 26.77,
+   "frames": 180,
+   "frames_returned": 180,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 180
+   },
+   "cache_key": "073ae818fcac1fb0a28acc8acb1fa7c0f34c8e727b0316acecb147be4a240368",
+   "cost_usd": 0.036,
+   "stage": "attempt-1/evidence"
+  },
+  {
+   "model": "muse-spark-1.3-contributor",
+   "where": "Muse Code (muse serve, default profile) -> Meta Model API",
+   "purpose": "arm clearance fix attempt 1",
+   "seconds": 107.84,
+   "input_tokens": 330735,
+   "cached_input_tokens": 284808,
+   "output_tokens": 7685,
+   "cost_note": "from the host's token counts and the model catalog's prices",
+   "cost_usd": 0.0067,
+   "stage": "attempt-1"
+  },
+  {
+   "model": "muse-wonder-1.0",
+   "where": "Meta Model API",
+   "purpose": "arm diagnosis",
+   "seconds": 24.15,
+   "effort": "medium",
+   "status": "completed",
+   "images": 4,
+   "input_tokens": 8304,
+   "cached_input_tokens": 0,
+   "output_tokens": 3207,
+   "reasoning_tokens": 1972,
+   "cost_usd": 0.09736,
+   "stage": "before/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'red block'",
+   "seconds": 10.8,
+   "frames": 180,
+   "frames_returned": 180,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 180
+   },
+   "cache_key": "aefd370efe2a9f28016374322b6746b4f430583fd18838f671615d515c35afc7",
+   "cost_usd": 0.036,
+   "stage": "before/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "track 'robot arm'",
+   "seconds": 26.87,
+   "frames": 180,
+   "frames_returned": 180,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 180
+   },
+   "cache_key": "f8aa6caca28413e32f54f63ff7b84463c753c58266a6257a5b33434606b7cfc0",
+   "cost_usd": 0.036,
+   "stage": "before/evidence"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: orange object",
+   "seconds": 1.89,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "06fdf142d4dba014b5a5e0f28c65e684a66ce0e8fb7fee77acabb94b811ad558",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/06fdf142d4dba014b5a5e0f28c65e684a66ce0e8fb7fee77acabb94b811ad558.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: robot arm",
+   "seconds": 2.05,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "133ebff6b77cb52c3dfac285cec8b9647d9b8d67074209ce3c774766b06bc139",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/133ebff6b77cb52c3dfac285cec8b9647d9b8d67074209ce3c774766b06bc139.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: orange cylinder",
+   "seconds": 2.35,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "20a343c808ca77fee441e08625cdfbf42e50873b398193b942d7403ea7d89d9e",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/20a343c808ca77fee441e08625cdfbf42e50873b398193b942d7403ea7d89d9e.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: robotic arm",
+   "seconds": 2.26,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "2e2db8c6ed0e58f184e79d311f63af47f1fe4358237f36c838aec38ef3d80379",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/2e2db8c6ed0e58f184e79d311f63af47f1fe4358237f36c838aec38ef3d80379.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: cyan sphere",
+   "seconds": 1.79,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "347ba3d5bc7437b2e4559aeb47943becd60c42c2e965cfcd557e8f36392507a6",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/347ba3d5bc7437b2e4559aeb47943becd60c42c2e965cfcd557e8f36392507a6.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: red block",
+   "seconds": 7.44,
+   "frames": 105,
+   "cost_usd": 0.021,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 105
+   },
+   "cache_key": "3e1c651989836d0c7a189e833b8f82e6b635d6a7ca107e37a18f087663da0155",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/3e1c651989836d0c7a189e833b8f82e6b635d6a7ca107e37a18f087663da0155.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: robot arm",
+   "seconds": 4.06,
+   "frames": 90,
+   "cost_usd": 0.018000000000000002,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 90
+   },
+   "cache_key": "52c2a8a5270d21b023fc7eb2af52e6f59a0b222e0e3cc112a33b9ae818043ce9",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/52c2a8a5270d21b023fc7eb2af52e6f59a0b222e0e3cc112a33b9ae818043ce9.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: robot arm",
+   "seconds": 2.79,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "5342a66ac6b8e7d7cc2f56349cc41f31afbe89fc89c9db747411d2f4aead91ca",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/5342a66ac6b8e7d7cc2f56349cc41f31afbe89fc89c9db747411d2f4aead91ca.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: robot arm",
+   "seconds": 4.88,
+   "frames": 105,
+   "cost_usd": 0.021,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 105
+   },
+   "cache_key": "67070f1788f9d3988b5e35dc7e93d268e62efe62b286a1aa6746b3f053936cd0",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/67070f1788f9d3988b5e35dc7e93d268e62efe62b286a1aa6746b3f053936cd0.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: red block",
+   "seconds": 6.47,
+   "frames": 90,
+   "cost_usd": 0.018000000000000002,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 90
+   },
+   "cache_key": "706f5f2a90149e98d5f45ff1b7a1ce4a26f6c8512e5d35ff00e00ad37e450c03",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/706f5f2a90149e98d5f45ff1b7a1ce4a26f6c8512e5d35ff00e00ad37e450c03.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: orange pipes",
+   "seconds": 1.72,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "8b52aeedb3ec69ccd3190ebc3e0c9f23e79f7fdf240c47c0b3891912ca17088f",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/8b52aeedb3ec69ccd3190ebc3e0c9f23e79f7fdf240c47c0b3891912ca17088f.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: <0f>1<|box;x1=108;y1=180;x2=520;y2=580;w=960;h=720|>",
+   "seconds": 3.01,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "a3500d90474a95fd451654af27d9fb34d5a970aa5b2e1b505f7a735556748ac6",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/a3500d90474a95fd451654af27d9fb34d5a970aa5b2e1b505f7a735556748ac6.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: orange",
+   "seconds": 1.77,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "bced0d50f5842d319f337c59f99d820e6a08ee02fc94f297def0a9a8440b7af7",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/bced0d50f5842d319f337c59f99d820e6a08ee02fc94f297def0a9a8440b7af7.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: orange arm",
+   "seconds": 2.14,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "c39467f383216497bfe32a500780b39b46e281569ef042d0f9c3439bcedc6c64",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/c39467f383216497bfe32a500780b39b46e281569ef042d0f9c3439bcedc6c64.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: orange robot",
+   "seconds": 2.33,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "c9fe2dad91c3940d5fa022c07db85c89d85eb46e5433912b9b831e1b5089cc3d",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/c9fe2dad91c3940d5fa022c07db85c89d85eb46e5433912b9b831e1b5089cc3d.json"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration: robot",
+   "seconds": 2.1,
+   "frames": 6,
+   "cost_usd": 0.0012000000000000001,
+   "usage": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "cached_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "total_tokens": 0,
+    "video_frames_processed": 50
+   },
+   "cache_key": "cf4920f0ed4af8f1623409c9e41d9612b9b33a8afcae8dde2370d40a35aa7170",
+   "stage": "calibration",
+   "raw_reply": "./calibration/sam-cache/cf4920f0ed4af8f1623409c9e41d9612b9b33a8afcae8dde2370d40a35aa7170.json"
+  },
+  {
+   "model": "muse-glimmer",
+   "where": "local",
+   "purpose": "identify arm rendering",
+   "seconds": 17.24,
+   "images": 1,
+   "input_tokens": 470,
+   "output_tokens": 115,
+   "cost_usd": 0.0,
+   "stage": "calibration"
+  },
+  {
+   "model": "sam-3.1",
+   "where": "Meta Model API",
+   "purpose": "calibration red block; decoder failed",
+   "frames": 6,
+   "cost_usd": 0.0012,
+   "stage": "calibration",
+   "status": "response received; local decoder failed",
+   "raw_reply": null,
+   "cost_note": "full frame charge retained; no fabricated reply"
+  }
+ ],
+ "total_cost_usd": 0.38726,
+ "repo_spend_usd": 0.387256,
+ "budget_cap_usd": 3.0,
+ "includes": "finished loop plus all paid calibration and failed calls",
+ "prices": {
+  "sam-3.1": "$0.20 per 1000 frames",
+  "muse-spark-open-1026": "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+  "muse-wonder-1.0": "$4.00 / 1M input, $0.20 / 1M cached input, $20.00 / 1M output",
+  "muse-spark-1.3": "Muse Code on Meta: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",
+  "muse-spark-1.3-contributor": "Muse Code on Meta: $0.10 / 1M input, $0.002 / 1M cached input, $0.20 / 1M output; the conversations may be used for training (the target and this repo are public)",
+  "muse-voice-transcribe-1.0": "$3.00 per 1000 audio minutes",
+  "muse-glimmer": "local (Ollama on this PC), $0",
+  "cached": "a SAM 3.1 reply for the same video bytes, concept and parameters, $0"
+ }
+}

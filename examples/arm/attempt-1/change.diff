@@ -1,0 +1,11 @@
+diff --git a/arm/brain.toml b/arm/brain.toml
+index d7b4291..7ad54d6 100644
+--- a/arm/brain.toml
++++ b/arm/brain.toml
+@@ -1,5 +1,5 @@
+ [planner]
+-clearance = 0.0
++clearance = 0.08
+ 
+ [pd]
+ kp = 100.0

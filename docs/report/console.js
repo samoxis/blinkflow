@@ -1406,6 +1406,7 @@ if (STATIC) {
   btn.hidden = FILM;
   btn.onclick = () => replay();
   document.getElementById("video").hidden = FILM;      // the demo video: in the report, not live, not filmed
+  document.getElementById("arm").hidden = FILM;        // the arm's before | after (docs/arm, from examples/arm)
   document.title = `BlinkFlow report · ${tilde(STATIC.source).split("/").slice(-2, -1)[0] || "run"}`;
   if (SPEED) replay(SPEED);
 } else if (SPEED || SCRIPTED) {

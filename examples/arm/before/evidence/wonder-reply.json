@@ -1,0 +1,84 @@
+{
+  "cause": {
+    "file": "brain.toml",
+    "function": "planner configuration",
+    "lines": {
+      "end": 2,
+      "start": 1
+    },
+    "what": "planner.clearance is set to clearance = 0.0 in brain.toml:1-2. Brain loads that value at brain.py:26 and computes lift = max(z0, z1) + self.clearance at brain.py:33, so the transit height is no higher than the start/target height. The log confirms clearance(m)=0.0 while waypoint 2 begins horizontal travel at log t=1.350."
+  },
+  "confidence": 0.95,
+  "evidence": [
+    {
+      "ref": "K4",
+      "shows": "First mask contact at t=2.035, frame 61, with gap=1.0 px, which is <=2 px under the stated mask-contact rule."
+    ,
+      "source": "frame"
+    ,
+      "value": "K4 t=2.035 gap=1.0 px"
+    },
+    {
+      "ref": "K3",
+      "shows": "Just before contact the gap has narrowed to 17.0 px, showing a closing horizontal approach rather than a sudden visual jump."
+    ,
+      "source": "frame"
+    ,
+      "value": "K3 t=1.935 gap=17.0 px"
+    },
+    {
+      "ref": "log t=1.350",
+      "shows": "Waypoint becomes 2 while ee_xyz stays essentially at z=0.220 m and x begins moving from -0.100 m toward the target, with clearance(m)=0.0."
+    ,
+      "source": "log"
+    ,
+      "value": "ee [-0.0999, 0, 0.2200], waypoint=2, clearance=0.0"
+    },
+    {
+      "ref": "log t=2.000",
+      "shows": "EE has advanced to x=-0.0202 m while z remains 0.2202 m, matching contact with the intervening block before the target rather than a descent onto the target."
+    ,
+      "source": "log"
+    ,
+      "value": "ee [-0.0202, 0, 0.22018], waypoint=2, clearance=0.0"
+    },
+    {
+      "ref": "brain.py:33-35",
+      "shows": "The planner sets lift from max start/target z plus clearance, then travels horizontally at that lift from (x0,lift) to (x1,lift); with clearance=0.0 there is no extra height over the block."
+    ,
+      "source": "code"
+    ,
+      "value": "lift = max(z0, z1) + self.clearance"
+    }
+  ],
+  "explanation": "With clearance = 0.0, the vertical lift segment produces no actual lift above the higher endpoint. The arm therefore translates sideways at about z=0.22 m during waypoint 2 until the tool/end-effector reaches the red block, consistent with the gap sequence in K1-K4 and the constant-height log trace. This is not primarily a PD tracking failure because the log shows the end effector following the commanded constant height while x advances smoothly.",
+  "fix_direction": "Increase planner.clearance upward (positive z) in brain.toml only; do not lower it or change the target. Raise the transit lift enough that the tool bottom clears the block top, while keeping lift reachable for the fixed-base IK.",
+  "observed": "Frames K1-K4 show the blue manipulator moving rightward toward the block/target with gaps 77.4 px, 70.7 px, 17.0 px, then 1.0 px at K4 t=2.035, satisfying mask contact <=2 px. Logs around log t=1.350 and log t=2.000 show waypoint=2 horizontal motion at nearly constant z=0.220 m and clearance(m)=0.0.",
+  "plain": {
+    "camera": "The camera shows the blue arm sliding right and getting closer to the block.",
+    "robot": "At about two seconds the arm reaches the block and touches it.",
+    "why": "It never rose high enough to pass over the block."
+  },
+  "ruled_out": [
+    {
+      "because": "Log t=1.350 through t=2.000 shows z staying near 0.220 m while x advances smoothly; there is no sag below the commanded transit height or oscillatory divergence before K4 contact."
+    ,
+      "cause": "PD gains too weak or unstable"
+    },
+    {
+      "because": "The joint targets and ee position change smoothly in the log, and K1-K4 show continuous approach from 77.4 px to 1.0 px rather than a teleport or reversed elbow jump."
+    ,
+      "cause": "IK discontinuity or wrong elbow branch"
+    },
+    {
+      "because": "Waypoint sequence changes as coded from brain.py:34-35, and waypoint=2 is exactly the horizontal lift-height segment; the problem is the lift value itself because lift = max(z0,z1)+clearance at brain.py:33 with clearance = 0.0 from brain.toml:2."
+    ,
+      "cause": "Waypoint timing/order error"
+    },
+    {
+      "because": "K1 gap=77.4 px, K2 gap=70.7 px, K3 gap=17.0 px and K4 gap=1.0 px form a monotonic physical approach, and log t=2.000 shows the EE at the corresponding forward x and unchanged z."
+    ,
+      "cause": "Camera mask false contact"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+ "passed": true,
+ "offline": true,
+ "pixel_rederivations": {
+  "before": {
+   "valid": true,
+   "contact": true,
+   "first_contact_s": 2.035,
+   "target_error_m": 0.30521968625478957
+  },
+  "attempt-1": {
+   "valid": true,
+   "contact": false,
+   "first_contact_s": null,
+   "target_error_m": 3.649259552631773e-13
+  },
+  "attempt-1/control/obstacle_moved": {
+   "valid": true,
+   "contact": false,
+   "first_contact_s": null,
+   "target_error_m": 3.649259552631773e-13
+  },
+  "attempt-1/control/target_moved": {
+   "valid": true,
+   "contact": false,
+   "first_contact_s": null,
+   "target_error_m": 6.062714087186849e-13
+  }
+ },
+ "diagnosis": {
+  "file": "brain.toml",
+  "file_ok": true,
+  "lines_ok": true,
+  "function_ok": true,
+  "lines_in_function": true,
+  "frames_cited": [
+   "K3",
+   "K4"
+  ],
+  "log_ticks_cited": [
+   1.35,
+   2.0
+  ],
+  "bad_refs": [],
+  "grounded": true
+ },
+ "fix_files": [
+  "arm/brain.toml"
+ ],
+ "repo_spend_usd": 0.387256,
+ "physics": {
+  "determinism": {
+   "before_record_sha256": "291bd97ee218e2c03c8c44ef19209c7276c1c59af1954f4229808f9f4732f08a",
+   "repeats": 2
+  },
+  "incident": {
+   "contact_episodes": 0,
+   "target_error_m": 3.4430513211198717e-13,
+   "record_sha256": "2a4c4acc0e9cecbc19513979208d708f542aaaf33a13cd405c8396a330aabae5"
+  },
+  "obstacle_moved": {
+   "contact_episodes": 0,
+   "target_error_m": 3.4430513211198717e-13,
+   "record_sha256": "2a4c4acc0e9cecbc19513979208d708f542aaaf33a13cd405c8396a330aabae5"
+  },
+  "target_moved": {
+   "contact_episodes": 0,
+   "target_error_m": 5.706544726597844e-13,
+   "record_sha256": "00c94457d60aeccf75ef1ec637224cf03abf2826aa762792a7c89cc82d38c3c6"
+  }
+ }
+}

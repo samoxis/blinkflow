@@ -30,9 +30,19 @@
 - **The proof is the same scene, played again.** A deterministic twin replays it exactly, and it is measured again on pixels. A fix that fails is undone and tried again. Then the person answers "Keep the fix?".
 - **A referee the agent never sees, and a gate.** Results are scored from contact logs that BlinkFlow never gets. The gate is a filter, not an isolation: it checks every Muse Code call against the target folder and refuses, before it runs, one that names a path outside it.
 
+## Beyond the duck: the same loop on a 3-joint arm
+
+The loop is not tied to the biped. A hand-written MuJoCo arm (a 43-line scene, a 45-line controller) has a planted bug, `clearance = 0.0`, so it sweeps through a red block. The same SAM 3.1 measurement, Muse Wonder diagnosis, citation check, gated Muse Code fix and pixel proof run on it through thin adapters ([`blinkflow/arm/`](blinkflow/arm)).
+
+| Before: contact | After: target reached |
+|---|---|
+| <img src="examples/arm/before.gif" width="360" alt="The arm's end effector sweeps through the red block"> | <img src="examples/arm/after.gif" width="360" alt="With the fix the arm lifts over the red block and reaches the green target"> |
+
+Contacts **1 → 0**, controls **2/2** clean, Muse Wonder's cause grounded with no bad references, and Muse Code's fix is one line, made on the first attempt (`0.0` → `0.08`). The finished loop cost **$0.29**. One limit: SAM 3.1 did not find the arm from text, so the arm is tracked from a box marked once on the first frame, the same before and after. The run is in [`examples/arm/`](examples/arm) and the numbers and limits are in [`results/arm.md`](results/arm.md).
+
 ## Contents
 
-[For the judges](#for-the-judges-5-minutes) · [What is new](#what-is-new-here) · [The robot](#the-robot-in-the-demo) · [How it works](#how-it-works) · [Why the Meta stack](#why-the-meta-stack) · [The code](#where-it-is-in-the-code) · [Results](#results) · [Try it in ~2 min](#try-it-in-2-min-no-gpu) · [Run the full loop](#run-the-full-loop-3060-min-gpu) · [Glimmer provenance](#muse-glimmer-on-this-pc--provenance) · [Limits](#limits) · [Pre-existing vs built](#pre-existing-vs-built-during-the-hackathon) · [Safety](#safety)
+[For the judges](#for-the-judges-5-minutes) · [What is new](#what-is-new-here) · [The arm](#beyond-the-duck-the-same-loop-on-a-3-joint-arm) · [The robot](#the-robot-in-the-demo) · [How it works](#how-it-works) · [Why the Meta stack](#why-the-meta-stack) · [The code](#where-it-is-in-the-code) · [Results](#results) · [Try it in ~2 min](#try-it-in-2-min-no-gpu) · [Run the full loop](#run-the-full-loop-3060-min-gpu) · [Glimmer provenance](#muse-glimmer-on-this-pc--provenance) · [Limits](#limits) · [Pre-existing vs built](#pre-existing-vs-built-during-the-hackathon) · [Safety](#safety)
 
 ## The robot in the demo
 
@@ -83,6 +93,7 @@ What it films is the simulator's window on your screen, not a camera on the robo
 - **Muse Code and the gate:** [`blinkflow/fix.py`](blinkflow/fix.py) (`muse_code`, `gate`, `audit`) and the PreToolUse hook [`muse-gate/hooks/pre_tool_use.py`](muse-gate/hooks/pre_tool_use.py).
 - **The twin:** [`blinkflow/twin.py`](blinkflow/twin.py) (`Twin`, `Video`), the scenes in [`blinkflow/scenes/`](blinkflow/scenes).
 - **Proof, rollback, "Keep the fix?":** [`blinkflow/prove.py`](blinkflow/prove.py) (`replay`, `verdict`, `control`); [`blinkflow/fix.py`](blinkflow/fix.py) (`fix`, `undo`, `terminal_ask`).
+- **The arm:** [`blinkflow/arm/`](blinkflow/arm): the scene and controller (`scene.xml`, `brain.py`, `brain.toml`), its twin (`twin.py`), the adapters to SAM 3.1's box prompt, the proof and Muse Wonder (`see.py`, `prove.py`, `diagnose.py`), the loop (`run.py`) and the offline re-check (`recheck.py`).
 
 ## Results
 
@@ -99,6 +110,7 @@ Measured during the hackathon; each number links to the file it comes from.
 | Watcher (nobody speaks) | **0 false alarms** in 16 runs without an incident; **14/17** incidents caught. Optimistic: the suite gave Glimmer a look every 0.97 s, live beside the simulator it is ~1.45 s | [`results/watcher.md`](results/watcher.md) |
 | Voice | **5/5** TTS sentences heard, read and seen; real speech through Ray-Ban Meta glasses (F9, or a tap on their arm): transcribed, read, seen, fixed, as in [`examples/purple-box/`](examples/purple-box) | [`results/voice.md`](results/voice.md) |
 | Muse Code alone, from the sentence only (ablation) | On both bugs tried, the purple box (a setting) and b7 (a line of code), the cause was findable from the code alone (3/3 runs each); what BlinkFlow adds is the fix on the first attempt and the proof, the twin replay and the control that say which change works | [`results/ablation.md`](results/ablation.md) |
+| A second robot: a 3-joint MuJoCo arm with a planted zero clearance | contacts **1 → 0** from pixels (first contact 2.035 s on pixels, 2.010 s in MuJoCo's log), controls **2/2** clean, Muse Wonder grounded (`bad_refs=[]`), Muse Code one line on the first attempt; **$0.29** the loop. The arm is tracked from a box on the first frame, not from text | [`results/arm.md`](results/arm.md) |
 | Pixel rule against ground truth | 92 saved looks re-measured: 60/64 incidents caught, false alarms 1 → 0 after one correction | [`results/control.md`](results/control.md) |
 | Cost of one loop (model calls) | **$0.95** for the example run: 30 of its 52 SAM 3.1 replies paid ($0.63), 22 from the cache ($0), Muse Wonder $0.31. The run the film shows (Oct 31): $0.38, 50 of 58 SAM 3.1 replies cached; $0.84 (run 233019, 29 of 58 SAM replies cached). Earlier: $0.88 for the profiled loop; $0.34–$1.71 over the 10 runs (measuring the four control scenes adds SAM 3.1) | [`results/quick_loop.md`](results/quick_loop.md), [`results/loop_times.md`](results/loop_times.md) |
 
@@ -205,6 +217,8 @@ Existed before, used only as the test target, not part of this repo:
 - The script that first made the target (strip the README, tests and hint comments). Not in this repo. It was started before the kickoff (Oct 26, 14:42) and its list of hint comments was last edited at 19:32 that day. **`tools/make_target.py` replaces it: rewritten from scratch on Oct 28, no code copied**, and it makes the same target file for file.
 - Preparation tests made before the kickoff on Oct 26: a first API call, SAM 3.1 tracking on an old clip, a headless Muse Code session, a Muse Glimmer test and a prototype screen buffer. None of that code is included; the buffer was rewritten from scratch here.
 
+The arm uses the same MuJoCo (3.10.0) as the duck's simulation, declared above. Its scene, controller, twin and adapters (`blinkflow/arm/`) and its example (`examples/arm/`) are new work from Nov 1.
+
 ## Honesty notes
 
 - The simulator's own contact log is never given to BlinkFlow. It is used only as ground truth to score whether a fix worked.
@@ -212,6 +226,7 @@ Existed before, used only as the test target, not part of this repo:
 - Results are measured during the hackathon, on BlinkFlow's own fixes, including bugs injected blind into the robot's code.
 - Every incident report lists each model call: model, where it ran, tokens.
 - Speed-ups in the demo video are labelled on screen.
+- The arm (`blinkflow/arm/`, `examples/arm/`) was built on Nov 1 with Codex (GPT-6.1 Sol), in a separate repo from a written brief, and moved here.
 
 ## Safety
 
