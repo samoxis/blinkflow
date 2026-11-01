@@ -1,76 +1,66 @@
 {
  "cause": {
   "file": "brain.toml",
-  "function": "planner.clearance config key",
+  "function": "[planner] configuration",
   "lines": {
    "end": 2,
    "start": 1
   },
-  "what": "Clearance is exactly zero, so the transit height equals the higher endpoint and the arm travels horizontally into the block. Evidence: K4 shows mask contact at t=2.035 s, frame 61, gap=1.0 px (<=2 px), and log t=1.950 shows waypoint=2 with ee_xyz=[-0.0311, 0.0, 0.22017] moving right at essentially constant z."
+  "what": "clearance = 0.0"
  },
- "confidence": 0.88,
+ "confidence": 0.96,
  "evidence": [
   {
-   "ref": "K1-K4",
-   "shows": "Gap closes monotonically: K1 t=1.035 frame 31 gap=77.4 px, K2 t=1.535 frame 46 gap=70.7 px, K3 t=1.935 frame 58 gap=17.0 px, K4 t=2.035 frame 61 gap=1.0 px, i.e. mask contact by the <=2 px rule.",
+   "ref": "frame K4",
+   "shows": "At t=2.035 s the blue arm is 1.0 px from the block, meeting mask contact at gap <= 2 px after the gap shrinks from 77.4 px at K1 (t=1.035 s) and 17.0 px at K3 (t=1.935 s).",
    "source": "frame",
-   "value": "77.4 -> 70.7 -> 17.0 -> 1.0 px"
+   "value": "First mask contact: 2.035 s; K1 gap 77.4 px; K3 gap 17.0 px; K4 gap 1.0 px"
   },
   {
-   "ref": "log t=0.000",
-   "shows": "Start EE is [-0.10, 0.0, 0.22] with clearance(m)=0.0, so START height is z=0.22 m.",
+   "ref": "log t=2.000",
+   "shows": "During waypoint 2 the end effector moves horizontally from the start side toward the target while z stays about 0.220 m, so the planned path itself passes through the block height rather than arcing over it.",
    "source": "log",
-   "value": "ee z=0.220 m, clearance=0.0"
+   "value": "t=1.300 | ee_xyz=[-0.1, 0.0, 0.22] | waypoint 1 | clearance 0.0; t=2.000 | ee_xyz=[-0.020195409357585133, 0.0, 0.2201802036793991] | waypoint 2 | clearance 0.0"
   },
   {
-   "ref": "log t=1.350 to t=2.000",
-   "shows": "During waypoint=2 the EE moves horizontally: x goes -0.0999 -> -0.0202 while z stays 0.22000 -> 0.22018, i.e. no lift is being commanded before contact at 2.035 s.",
-   "source": "log",
-   "value": "waypoint=2, z approx 0.220 m constant"
+   "ref": "brain.toml:2",
+   "shows": "The planner clearance setting is exactly zero.",
+   "source": "code",
+   "value": "clearance = 0.0"
   },
   {
    "ref": "brain.py:26",
-   "shows": "Brain reads self.clearance = cfg[\"planner\"][\"clearance\"].",
+   "shows": "Brain loads self.clearance from cfg['planner']['clearance'].",
    "source": "code",
    "value": "self.clearance = cfg[\"planner\"][\"clearance\"]"
   },
   {
-   "ref": "brain.py:33-35",
-   "shows": "lift = max(z0, z1) + self.clearance and waypoints go (x0,lift) at 1.3 s to (x1,lift) at 3.4 s; with clearance 0 this is a flat transit at endpoint height.",
+   "ref": "brain.py:30-35",
+   "shows": "Waypoint planning computes lift = max(z0, z1) + self.clearance and travels from (x0,lift) to (x1,lift) before descending, so zero clearance means the traverse height is only max(start z, target z) with no extra height above the intervening block.",
    "source": "code",
-   "value": "lift = max(z0, z1) + self.clearance"
-  },
-  {
-   "ref": "brain.toml:2",
-   "shows": "The causal setting itself.",
-   "source": "code",
-   "value": "clearance = 0.0"
+   "value": "lift = max(z0, z1) + self.clearance; points include (1.3, (x0,lift)), (3.4, (x1,lift)), (4.3, (x1,z1))"
   }
  ],
- "explanation": "With clearance = 0.0 at brain.toml:2, brain.py:33 computes lift = max(z0,z1) + 0.0. Log t=0.000 gives z0=0.22 m and the target is at the same height in K1-K4, so the 1.3-3.4 s transit (brain.py:34-35) is a flat line at z approx 0.22 m. Log t=1.950 (waypoint=2) confirms the EE is still at z=0.22017 m while x advances toward the block, and K4 at t=2.035 s shows gap=1.0 px (mask contact). In K4 the block top sits roughly 50 px above the EE centre; at the arm's scale (L1=0.36 m, brain.py:9, spanning roughly 330 px in K1) that is about 0.05-0.06 m, putting the block top near z=0.27-0.28 m, well above the EE bottom at the commanded height.",
- "fix_direction": "Increase planner.clearance in brain.toml (direction only, no patch). The EE centre must pass with its underside above the block top: block top is about 0.055 m above the 0.22 m EE centre (K4, log t=0.000) plus roughly 0.04 m EE half-height plus margin, so a clearance of at least ~0.12 m is physically sufficient; 0.15 m gives a safe margin. Reachability is preserved: lift becomes about 0.37 m, and from BASE=(-0.38,0.16) at brain.py:8 the required reach stays under L1+L2=0.70 m (brain.py:9), so the arm can still descend to the green target in the 3.4-4.3 s segment (brain.py:35).",
- "observed": "Blue end-effector translates right at fixed height and strikes the side of the tall block between the start and the green target: K3 t=1.935 gap=17.0 px closing to K4 t=2.035 gap=1.0 px, while log t=1.950 shows waypoint=2 and ee z=0.22017 m.",
+ "explanation": "With clearance = 0.0 in brain.toml:2, brain.py:33 sets lift to max start/target height only. The waypoint sequence in brain.py:34-35 therefore moves the arm across to the target at essentially the starting height instead of lifting above the red block. The log confirms the executed plan: at log t=2.000 the robot is on waypoint 2 with clearance 0.0 and z still about 0.220 m, and frame K4 at 2.035 s shows mask contact at gap 1.0 px. Alternatives are ruled out: PD tracking is not the cause because the logged waypoint target height itself remains low rather than the arm sagging below a high plan; IK is not failing because brain.py:16-17 would raise for unreachable c and the log shows continuous joint target updates and waypoint progression; the descent is not early because contact occurs during waypoint 2, before the later descent segment toward (x1,z1). The fix direction is to increase the planner clearance enough that the horizontal traverse clears the block top, while keeping the final Cartesian target and descent to the green target unchanged so the fixed robot still reaches it.",
+ "fix_direction": "Increase planner clearance so the lift waypoint clears the block, while keeping the final target waypoint descent intact so the arm still reaches the green target.",
+ "observed": "blue robot arm contacting the red/green block in the side view",
  "plain": {
-  "camera": "The camera shows the blue arm gliding sideways toward a tall block.",
-  "robot": "The robot arm bumps into the block about two seconds in.",
-  "why": "It flies too low because its extra lift is set to zero."
+  "camera": " The camera shows the blue arm sliding sideways toward the block.",
+  "robot": " The arm stays low and reaches the block at head height.",
+  "why": " It was planned with no extra lift, so it never rises over the block."
  },
  "ruled_out": [
   {
-   "because": "K1-K4 show a smooth elbow-up posture progressing rightward and log t=1.350-2.000 shows joint targets changing continuously without the ValueError path at brain.py:16-17 triggering; motion proceeds, so IK is solving.",
-   "cause": "Inverse kinematics failure / unreachable waypoint"
+   "because": "frame K4 and log t=2.000 jointly show contact while waypoint 2 is active at clearance 0.0; frame K4 gap is 1.0 px at t=2.035 s and log t=2.000 has waypoint 2 with clearance 0.0.",
+   "cause": "PD controller instability or poor tracking"
   },
   {
-   "because": "Log t=1.350 to t=2.000 shows EE z held at 0.2200-0.2202 m exactly as the flat plan commands, with smooth x progression; a PD sag or oscillation would show z droop or jitter, which is absent. kp=100.0, kd=8.0 at brain.toml:5-6 are not implicated.",
-   "cause": "PD gains (kp/kd) causing droop or oscillation"
+   "because": "brain.py:33 uses clearance for lift, log t=1.300 to t=2.000 keeps z about 0.220 m during the traverse, and frame K3 still has a 17.0 px gap just before contact rather than showing a drop.",
+   "cause": "arm sagging below an otherwise safe planned path"
   },
   {
-   "because": "Contact occurs at K4 t=2.035 s during waypoint=2 per log t=1.950-2.000, which is the horizontal transit segment (1.3-3.4 s, brain.py:35), long before the descent segment at 3.4-4.3 s.",
-   "cause": "Descending too early onto the target/block"
-  },
-  {
-   "because": "Gap shrinks steadily from 77.4 px at K1 t=1.035 to 1.0 px at K4 t=2.035 in step with the logged x motion from log t=1.350 onward; this is planned-path geometry, not a frame artefact. No simulator contact truth is used; only the <=2 px mask rule.",
-   "cause": "Camera/mask artefact"
+   "because": "brain.py:13-20 returns joint targets and log t=2.000 shows changing joint_targets on waypoint 2 while frame K4 shows the resulting contact, so execution is following the planned low path.",
+   "cause": "inverse kinematics failure"
   }
  ],
  "check": {
@@ -80,12 +70,9 @@
   "function_ok": true,
   "lines_in_function": true,
   "frames_cited": [
-   "K1",
    "K4"
   ],
   "log_ticks_cited": [
-   0.0,
-   1.35,
    2.0
   ],
   "bad_refs": [],
@@ -181,14 +168,14 @@
   "model": "muse-wonder-1.0",
   "where": "Meta Model API",
   "purpose": "arm diagnosis",
-  "seconds": 29.77,
+  "seconds": 18.69,
   "effort": "medium",
   "status": "completed",
   "images": 4,
-  "input_tokens": 8304,
+  "input_tokens": 8300,
   "cached_input_tokens": 0,
-  "output_tokens": 3717,
-  "reasoning_tokens": 2182,
-  "cost_usd": 0.10756
+  "output_tokens": 2328,
+  "reasoning_tokens": 1263,
+  "cost_usd": 0.07976
  }
 }

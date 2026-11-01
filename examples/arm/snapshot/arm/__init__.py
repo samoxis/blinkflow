@@ -1,7 +1,8 @@
 """BlinkFlow's loop on a second robot: a hand-written three-joint MuJoCo arm.
 
-robot/ is the robot (scene.xml, brain.py, brain.toml) and the arm's target, as ~/duck-target is the duck's:
-Muse Code may edit only files under it, and the gate refuses any path outside it, this harness included.
+robot/ is the robot's controller (brain.py, brain.toml) and the arm's target, as ~/duck-target is the duck's:
+Muse Code may edit only files under it, and the gate refuses any path outside it: the world (world/: the
+scene and the names SAM 3.1 is given) and this harness included.
 run and recheck make it the target with use_target(); importing the package changes nothing, so the duck's
 modules keep ~/duck-target.
 Runs, the SAM 3.1 cache and the spend ledger live in ~/blinkflow-runs/arm (BLINKFLOW_ARM_STATE moves it).
@@ -15,6 +16,7 @@ import blinkflow
 HERE = pathlib.Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 ROBOT = HERE / "robot"
+WORLD = HERE / "world"
 REL = str(ROBOT.relative_to(REPO))                    # "blinkflow/arm/robot", as git names it
 STATE = pathlib.Path(os.environ.get("BLINKFLOW_ARM_STATE") or pathlib.Path.home() / "blinkflow-runs/arm").expanduser()
 READS_TARGET = ("blinkflow", "blinkflow.fix", "blinkflow.diagnose", "blinkflow.prove")

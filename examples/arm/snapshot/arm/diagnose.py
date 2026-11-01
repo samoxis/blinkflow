@@ -14,7 +14,7 @@ log t=... from the provided table, or code file:line. Cite at least one key fram
 No contact truth from the simulator is supplied. Mask contact means gap <= 2 pixels in this side view.
 The cause is one real file, function/config key, and line range <=30 lines. Cite the exact setting
 when a configuration value is the cause. Explain alternatives ruled out by the evidence.
-Do not write a patch. Suggest a direction and a physically sufficient clearance in metres.
+Do not write a patch. Suggest a direction for the fix.
 The fixed robot must still reach the green target. Return JSON matching the schema.
 plain has three short everyday sentences (camera, robot, why); confidence is your estimate.
 """
@@ -68,9 +68,4 @@ def diagnose(evdir,ledger):
     (evdir/"diagnosis.md").write_text(d["explanation"]+"\n\n"+json.dumps(d,indent=1)+"\n")
     if not check["grounded"] or check["bad_refs"]:
         raise RuntimeError(f"Ungrounded diagnosis: {check}")
-    name=check["file"]
-    lines=files[name].splitlines()
-    a,b=d["cause"]["lines"]["start"],d["cause"]["lines"]["end"]
-    if not any("clearance" in s for s in lines[a-1:b]):
-        raise RuntimeError("Diagnosis does not cite the clearance location")
     return doc

@@ -1,5 +1,5 @@
 [planner]
-clearance = 0.12
+clearance = 0.15
 
 [pd]
 kp = 100.0

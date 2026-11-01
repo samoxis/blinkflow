@@ -13,7 +13,7 @@
  "first_contact_frame": 61,
  "whole_mask_touch_s": 2.035,
  "closest_gap_px": 0.0,
- "closest_s": 2.335,
+ "closest_s": 2.365,
  "robot_frames": 180,
  "travel_m": 0.083,
  "target_error_m": 0.30521968625478957,

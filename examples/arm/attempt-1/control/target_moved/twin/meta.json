@@ -67,6 +67,6 @@
  "brain_start_sim": 0.0,
  "fps": 9.5,
  "step": 0.005,
- "record_sha256": "f443028245ba68b01e4d0ec024f1c93750d6e507cd861980b42248c9f328587d",
- "wall_s": 0.7
+ "record_sha256": "b2d355a6916e0e6d3442adbae5faabb99ec330dfd973e86d47fff6ac6deaddea",
+ "wall_s": 0.65
 }

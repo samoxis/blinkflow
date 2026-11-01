@@ -1,13 +1,13 @@
-{"t": 1793557189.0728798, "usd": 0.387256, "what": "prior public repo spend"}
-{"t": 1793557189.0736246, "usd": 0.036000000000000004, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../before/evidence/shot.mp4"}
-{"t": 1793557189.0742195, "usd": 0.036000000000000004, "what": "sam-3.1 'red block' on ../before/evidence/shot.mp4"}
-{"t": 1793557220.0752058, "usd": 0.15811733333333333, "what": "arm diagnosis"}
-{"t": 1793557249.8501916, "usd": -0.05056133333333333, "what": "settle arm diagnosis"}
-{"t": 1793557249.8544252, "usd": 0.25, "what": "Muse Code attempt 1 maximum allowance"}
-{"t": 1793557285.048082, "usd": -0.24646, "what": "settle Muse Code attempt 1"}
-{"t": 1793557287.3604877, "usd": 0.036000000000000004, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../attempt-1/evidence/shot.mp4"}
-{"t": 1793557287.3613343, "usd": 0.036000000000000004, "what": "sam-3.1 'red block' on ../attempt-1/evidence/shot.mp4"}
-{"t": 1793557318.518602, "usd": 0.0114, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../attempt-1/control/obstacle_moved/evidence/shot.mp4"}
-{"t": 1793557318.5193548, "usd": 0.0114, "what": "sam-3.1 'red block' on ../attempt-1/control/obstacle_moved/evidence/shot.mp4"}
-{"t": 1793557330.3883207, "usd": 0.0114, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../attempt-1/control/target_moved/evidence/shot.mp4"}
-{"t": 1793557330.389241, "usd": 0.0114, "what": "sam-3.1 'red block' on ../attempt-1/control/target_moved/evidence/shot.mp4"}
+{"t": 1793558317.4822936, "usd": 0.687952, "what": "prior public repo spend"}
+{"t": 1793558317.482381, "usd": 0.036000000000000004, "what": "sam-3.1 'red block' on ../before/evidence/shot.mp4"}
+{"t": 1793558317.482884, "usd": 0.036000000000000004, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../before/evidence/shot.mp4"}
+{"t": 1793558349.232275, "usd": 0.15806933333333334, "what": "arm diagnosis"}
+{"t": 1793558367.924097, "usd": -0.07830933333333334, "what": "settle arm diagnosis"}
+{"t": 1793558367.9317706, "usd": 0.25, "what": "Muse Code attempt 1 maximum allowance"}
+{"t": 1793558442.5545251, "usd": -0.24522, "what": "settle Muse Code attempt 1"}
+{"t": 1793558444.8434196, "usd": 0.036000000000000004, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../attempt-1/evidence/shot.mp4"}
+{"t": 1793558444.8442712, "usd": 0.036000000000000004, "what": "sam-3.1 'red block' on ../attempt-1/evidence/shot.mp4"}
+{"t": 1793558475.882634, "usd": 0.0114, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../attempt-1/control/obstacle_moved/evidence/shot.mp4"}
+{"t": 1793558475.8835242, "usd": 0.0114, "what": "sam-3.1 'red block' on ../attempt-1/control/obstacle_moved/evidence/shot.mp4"}
+{"t": 1793558487.4630063, "usd": 0.0114, "what": "sam-3.1 '<0f>1<|box;x1=108;y1=180;x2=480;y2=580;w=960;h=720|>' on ../attempt-1/control/target_moved/evidence/shot.mp4"}
+{"t": 1793558487.4638405, "usd": 0.0114, "what": "sam-3.1 'red block' on ../attempt-1/control/target_moved/evidence/shot.mp4"}

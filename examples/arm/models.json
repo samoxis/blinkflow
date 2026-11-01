@@ -4,7 +4,7 @@
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'red block'",
-   "seconds": 4.19,
+   "seconds": 4.3,
    "frames": 57,
    "frames_returned": 57,
    "usage": {
@@ -19,7 +19,7 @@
     "total_tokens": 0,
     "video_frames_processed": 57
    },
-   "cache_key": "2ff4cd5f482be899f711120d93c864ba5270b182e5d4016b586c1814b007f12b",
+   "cache_key": "5d11a959e7000920a091a365b614a8fc64482ecc93c6538b6ac2d1119ded52ce",
    "cost_usd": 0.0114,
    "stage": "attempt-1/control/obstacle_moved/evidence"
   },
@@ -27,7 +27,7 @@
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'robot arm'",
-   "seconds": 9.4,
+   "seconds": 9.42,
    "frames": 57,
    "frames_returned": 57,
    "usage": {
@@ -42,7 +42,7 @@
     "total_tokens": 0,
     "video_frames_processed": 57
    },
-   "cache_key": "c9bc88bcd143f9f38a449a412d2b96571c3fbd6e5aecc15d9832bc30d2cfd931",
+   "cache_key": "8342b47e39dfed1796732466a19d0db90fddaff5b01fa03dbb6316cb3ede3850",
    "cost_usd": 0.0114,
    "stage": "attempt-1/control/obstacle_moved/evidence"
   },
@@ -50,7 +50,7 @@
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'red block'",
-   "seconds": 4.77,
+   "seconds": 4.02,
    "frames": 57,
    "frames_returned": 57,
    "usage": {
@@ -65,7 +65,7 @@
     "total_tokens": 0,
     "video_frames_processed": 57
    },
-   "cache_key": "e520db408b5f29ce916a60dea55eafda4d0759b426d517e8d74388941081fb93",
+   "cache_key": "f4db09e07aa2ace15ae00f2f08bed5525c146b239fe58adda738f83e7b26b2b0",
    "cost_usd": 0.0114,
    "stage": "attempt-1/control/target_moved/evidence"
   },
@@ -73,7 +73,7 @@
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'robot arm'",
-   "seconds": 10.05,
+   "seconds": 9.0,
    "frames": 57,
    "frames_returned": 57,
    "usage": {
@@ -88,7 +88,7 @@
     "total_tokens": 0,
     "video_frames_processed": 57
    },
-   "cache_key": "7aa71804c757116d10282e2451bcdf9e64ff65979ac945a475e591ffc92d0b2e",
+   "cache_key": "2202dcae751264e96fc27b084172a6aba27cf81e0d8acad80cf7cd7a0735e10e",
    "cost_usd": 0.0114,
    "stage": "attempt-1/control/target_moved/evidence"
   },
@@ -96,7 +96,7 @@
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'red block'",
-   "seconds": 10.16,
+   "seconds": 10.12,
    "frames": 180,
    "frames_returned": 180,
    "usage": {
@@ -111,7 +111,7 @@
     "total_tokens": 0,
     "video_frames_processed": 180
    },
-   "cache_key": "d8591b5333eef6a1a180b935b05e4bb37bb20b1550950ebb362cdbba6f127392",
+   "cache_key": "f02decffc5ca6a5fe8e4d00a08499767204c375db29d5d7fb72492e730354203",
    "cost_usd": 0.036,
    "stage": "attempt-1/evidence"
   },
@@ -119,7 +119,7 @@
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'robot arm'",
-   "seconds": 27.01,
+   "seconds": 27.32,
    "frames": 180,
    "frames_returned": 180,
    "usage": {
@@ -134,42 +134,42 @@
     "total_tokens": 0,
     "video_frames_processed": 180
    },
-   "cache_key": "b99bcc8b31df004f5b054ea00b5c82e132681cc56b635338b7801a309f2038f9",
+   "cache_key": "0841219dd580e58d43f1d4cf58b7ba80c40c9a139f1320cd651ba08b2316a69c",
    "cost_usd": 0.036,
    "stage": "attempt-1/evidence"
   },
   {
    "model": "muse-spark-1.3-contributor",
    "where": "Muse Code (muse serve, default profile) -> Meta Model API",
-   "purpose": "arm clearance fix attempt 1",
-   "seconds": 35.19,
-   "input_tokens": 96056,
-   "cached_input_tokens": 63586,
-   "output_tokens": 811,
+   "purpose": "arm fix attempt 1",
+   "seconds": 74.61,
+   "input_tokens": 169101,
+   "cached_input_tokens": 132548,
+   "output_tokens": 4276,
    "cost_note": "from the host's token counts and the model catalog's prices",
-   "cost_usd": 0.00354,
+   "cost_usd": 0.00478,
    "stage": "attempt-1"
   },
   {
    "model": "muse-wonder-1.0",
    "where": "Meta Model API",
    "purpose": "arm diagnosis",
-   "seconds": 29.77,
+   "seconds": 18.69,
    "effort": "medium",
    "status": "completed",
    "images": 4,
-   "input_tokens": 8304,
+   "input_tokens": 8300,
    "cached_input_tokens": 0,
-   "output_tokens": 3717,
-   "reasoning_tokens": 2182,
-   "cost_usd": 0.10756,
+   "output_tokens": 2328,
+   "reasoning_tokens": 1263,
+   "cost_usd": 0.07976,
    "stage": "before/evidence"
   },
   {
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'red block'",
-   "seconds": 10.33,
+   "seconds": 10.56,
    "frames": 180,
    "frames_returned": 180,
    "usage": {
@@ -192,7 +192,7 @@
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'robot arm'",
-   "seconds": 26.28,
+   "seconds": 27.64,
    "frames": 180,
    "frames_returned": 180,
    "usage": {
@@ -212,8 +212,8 @@
    "stage": "before/evidence"
   }
  ],
- "total_cost_usd": 0.3007,
- "repo_spend_usd": 0.687952,
+ "total_cost_usd": 0.27414,
+ "repo_spend_usd": 0.962092,
  "budget_cap_usd": 3.0,
  "includes": "finished loop plus all paid calibration and failed calls",
  "prices": {

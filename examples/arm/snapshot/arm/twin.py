@@ -11,7 +11,7 @@ import time
 import mujoco
 import numpy as np
 
-from . import ROBOT, STATE
+from . import ROBOT, STATE, WORLD
 
 STEP = 0.005
 SCENES = ("incident", "obstacle_moved", "target_moved")
@@ -23,7 +23,7 @@ def replay(out, brain=ROBOT, scene="incident", seconds=6., fps=30., video=True):
     spec = importlib.util.spec_from_file_location("arm_controller", brain/"brain.py")
     ctl = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ctl)
-    model = mujoco.MjModel.from_xml_path(str(ROBOT/"scene.xml"))
+    model = mujoco.MjModel.from_xml_path(str(WORLD/"scene.xml"))
     gid = lambda name: mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
     if scene not in SCENES:
         raise ValueError(scene)
@@ -54,7 +54,7 @@ def replay(out, brain=ROBOT, scene="incident", seconds=6., fps=30., video=True):
             point = data.site_xpos[ee].copy()
             rows.append({"t":t,"joint_targets":targets.tolist(),"q":data.qpos.tolist(),
                          "end_effector":point.tolist(),"target":target.tolist(),"waypoint":waypoint,
-                         "clearance":controller.clearance,"pos":point[:2].tolist(),
+                         "clearance":getattr(controller,"clearance",None),"pos":point[:2].tolist(),
                          "state":str(waypoint),"safe":True,"yaw":0.,"cmd":["move",0.,0.]})
             touching = []
             for c in data.contact[:data.ncon]:
