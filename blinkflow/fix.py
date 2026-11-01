@@ -5,7 +5,7 @@
   2. see and understand: blinkflow.see and blinkflow.diagnose on the incident (or reuse --evidence);
   3. the replay of the incident's scenario in the twin, before any change, must show the incident too
      (the contact, or the fall), or there is nothing to prove;
-  4. Muse Code (`muse serve`, the host's default sandboxed profile) gets diagnosis.md and makes the
+  4. Muse Code (`muse serve`, the host's default profile; tool calls and changed paths are checked against the robot's folder, a filter, not isolation) gets diagnosis.md and makes the
      smallest change in the target. Before each tool call, BlinkFlow's gate (muse-gate/, a PreToolUse
      hook) denies it if it names a path outside the target; after the turn every tool call is audited
      the same way, and the agent must not commit;
@@ -831,8 +831,8 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
                              if done.get("control_skipped") else
                              "every other twin scene replayed with the change and judged from pixels before anything "
                              "was called fixed; a scene not clean undoes the change."),
-            "- Muse Code ran under the host's default sandboxed profile (not `:unrestricted`; it does not stop a read "
-            "or a write outside the target), approval mode "
+            "- Muse Code ran under the host's default profile (not `:unrestricted`): tool calls and changed paths are checked "
+            "against the robot's folder (a filter, not isolation), approval mode "
             "`promptUnmatched`; edits are approved only when every path is inside the target.",
             f"- BlinkFlow's gate (muse-gate/, a PreToolUse hook: a filter on the paths each call names, not an "
             f"isolation) checked every tool call before it ran: "
