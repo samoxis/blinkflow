@@ -1,9 +1,0 @@
-{
- "base": "6451419715e7cd01d8e17576cc2a4debb5474065",
- "started": 1793558360.1413188,
- "spoken": "a couple of seconds ago the arm hit the red block",
- "fix_kind": "logic",
- "phase": 3,
- "input": "text",
- "press_s": null
-}

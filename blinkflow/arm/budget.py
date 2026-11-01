@@ -8,9 +8,11 @@ import time
 from . import REPO, STATE
 
 # the spend ledger is STATE's; a new one starts from what the public runs spent: examples/arm's ledger total
-# (every run made from this repo) plus the runs made in the arm's own repo after it moved here
+# (the clearance runs), the bug 2 and voice runs' totals, and what the first bug 2 and voice runs cost (made in
+# the arm's own repo, published here until they were re-run with this loop; their ledgers are at 6b2d5a6)
 PRIOR = REPO/"examples/arm/models.json"
 ELSEWHERE = [REPO/"examples/arm-bug2/models.json", REPO/"examples/arm-voice/models.json"]
+REPLACED = 0.18519 + 0.15471
 CAP = 3.0
 LOCK = threading.Lock()
 
@@ -42,7 +44,7 @@ def total():
 
 def prior():
     return (json.loads(PRIOR.read_text())["repo_spend_usd"]
-            + sum(json.loads(p.read_text())["total_cost_usd"] for p in ELSEWHERE if p.exists()))
+            + sum(json.loads(p.read_text())["total_cost_usd"] for p in ELSEWHERE if p.exists()) + REPLACED)
 
 
 def configure():

@@ -20,7 +20,7 @@ plain has three short everyday sentences (camera, robot, why); confidence is you
 """
 
 
-def diagnose(evdir,ledger):
+def diagnose(evdir,ledger,spoken=None):
     evdir=pathlib.Path(evdir)
     ev=prove.pixels(json.loads((evdir/"evidence.json").read_text()))
     snap=see.load_snapshot(ev["snapshot"])
@@ -50,7 +50,8 @@ def diagnose(evdir,ledger):
     files={n:(target/n).read_text() for n in ("brain.py","brain.toml")}
     (evdir/"source.json").write_text(json.dumps(files,indent=1))
     measurements="\n".join(f"{k['tag']}: t={k['brain_s']:.3f}, frame={k['frame']}, gap={k['gap_px']} px" for k in keys)
-    text=f"Spoken sentence: a couple of seconds ago the arm hit the red block\nFirst mask contact: {tc:.3f} s\n{measurements}\n\n{table}"
+    spoken=spoken or ev["names"].get("said") or "a couple of seconds ago the arm hit the red block"
+    text=f"Spoken sentence: {spoken}\nFirst mask contact: {tc:.3f} s\n{measurements}\n\n{table}"
     content=[{"type":"input_text","text":INSTRUCTIONS+"\n"+original.code_text(files)},
              {"type":"input_text","text":text}]
     for k in keys:

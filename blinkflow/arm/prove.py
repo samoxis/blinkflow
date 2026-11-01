@@ -63,16 +63,16 @@ def look(meta_path,out,reference=None,reuse=False,control=False,said=None):
     return v
 
 
-def prove(out,brain=ROBOT,reference=None):
+def prove(out,brain=ROBOT,reference=None,said=None):
     out=pathlib.Path(out)
     meta=twin.replay(out/"twin",brain)
-    incident=look(out/"twin/meta.json",out,reference)
+    incident=look(out/"twin/meta.json",out,reference,said=said)
     controls={}
     if incident["fixed"]:
         for scene in twin.SCENES[1:]:
             p=out/"control"/scene
             twin.replay(p/"twin",brain,scene,fps=9.5)
-            controls[scene]=look(p/"twin/meta.json",p,control=True)
+            controls[scene]=look(p/"twin/meta.json",p,control=True,said=said)
     result={"incident":incident,"controls":controls,
             "passed":incident["fixed"] and len(controls)==2 and all(v["clean"] for v in controls.values())}
     (out/"proof.json").write_text(json.dumps(result,indent=1))

@@ -8,7 +8,7 @@ import subprocess
 import time
 
 from blinkflow import events, fix, models, prove as original_prove
-from . import REL, REPO, ROBOT, STATE, budget, diagnose, prove, twin, use_target
+from . import REL, REPO, ROBOT, STATE, budget, diagnose, prove, twin, use_target, voice
 
 
 def git(*args):
@@ -50,7 +50,9 @@ def rollback(base):
             p.unlink()
 
 
-def run(out,until="done",attempts=3):
+def run(out,until="done",attempts=3,wav=None,press=4.):
+    """`wav`: a recorded sentence, heard through blinkflow.voice.clip as if its key was pressed at `press` s of
+    the replay; the window it cuts is the loop's `before`. Without it the sentence is fixed text."""
     if not 1<=attempts<=3: raise ValueError("at most three attempts")
     out=pathlib.Path(out).resolve()
     out.mkdir(parents=True,exist_ok=True)
@@ -69,14 +71,25 @@ def run(out,until="done",attempts=3):
         for name in ("brain.py","brain.toml"):
             shutil.copy(ROBOT/name,out/"brain-before"/name)
         manifest.write_text(json.dumps({"base":base,"started":time.time(),"spoken":
-                            "a couple of seconds ago the arm hit the red block"},indent=1))
+                            "a couple of seconds ago the arm hit the red block","input":"voice" if wav else "text",
+                            "press_s":press if wav else None},indent=1))
     else:
         base=json.loads(manifest.read_text())["base"]
     try:
         if not (out/"before/twin/meta.json").exists():
             twin.replay(out/"before/twin",out/"brain-before")
+        spoken=json.loads(manifest.read_text())["spoken"]
+        if wav:
+            if not (out/"voice/voice.json").exists():
+                voice_doc=voice.recorded(out/"before/twin/meta.json",out,pathlib.Path(wav).resolve(),press)
+            else:
+                voice_doc=json.loads((out/"voice/voice.json").read_text())
+            if not voice_doc["incident"]["confirmed"]: raise RuntimeError("voice incident not confirmed")
+            spoken=voice_doc["heard"]["said"]
+            state=json.loads(manifest.read_text());state["spoken"]=spoken
+            manifest.write_text(json.dumps(state,indent=1))
         if not (out/"before/verdict.json").exists():
-            before=prove.look(out/"before/twin/meta.json",out/"before")
+            before=prove.look(out/"before/twin/meta.json",out/"before",said=spoken)
         else:
             before=json.loads((out/"before/verdict.json").read_text())
         truth=json.loads((out/"before/twin/truth.json").read_text())
@@ -90,7 +103,7 @@ def run(out,until="done",attempts=3):
         evdir=out/"before/evidence"
         if not (evdir/"diagnosis.json").exists():
             l=models.Ledger()
-            try: diagnose.diagnose(evdir,l)
+            try: diagnose.diagnose(evdir,l,spoken)
             finally: l.write(evdir/"diagnosis-models.json")
         d=json.loads((evdir/"diagnosis.json").read_text())
         if not d["check"]["grounded"] or d["check"]["bad_refs"]:
@@ -138,7 +151,7 @@ def run(out,until="done",attempts=3):
                 l.write(p/"models.json")
                 if rec["problems"]: raise RuntimeError(str(rec["problems"]))
                 if not rec["change"]["files"]: raise RuntimeError("Muse Code changed nothing")
-                result=prove.prove(p,reference=before["travel_m"])
+                result=prove.prove(p,reference=before["travel_m"],said=spoken)
                 if not result["passed"]: raise RuntimeError("proof or control failed")
                 git("commit","-m","Fix the arm with Muse Code; prove incident and controls")
                 result.update(commit=git("rev-parse","HEAD").strip(),attempt=i)
@@ -160,8 +173,10 @@ def main():
     ap.add_argument("--out",default=str(STATE/"arm-loop"))
     ap.add_argument("--until",choices=("see","diagnose","done"),default="done")
     ap.add_argument("--attempts",type=int,default=3)
+    ap.add_argument("--wav",help="a recorded sentence, heard through blinkflow.voice.clip")
+    ap.add_argument("--press",type=float,default=4.,help="the replayed key press, in seconds of the replay")
     a=ap.parse_args()
-    print(json.dumps(run(a.out,a.until,a.attempts),indent=1))
+    print(json.dumps(run(a.out,a.until,a.attempts,a.wav,a.press),indent=1))
 
 
 if __name__=="__main__":main()
