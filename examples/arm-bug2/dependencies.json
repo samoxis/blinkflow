@@ -1,0 +1,16 @@
+{
+ "blinkflow_commit": "48216883171fb59b829a01feb3f1ef7f64a776f9",
+ "mujoco": "3.10.0",
+ "python": "3.12.3",
+ "meta_sam_parser": "0.1.0",
+ "source_repositories": "this repository (blinkflow.arm)",
+ "verification_module_sha256": {
+  "blinkflow/sam.py": "830f8c110306e2684dba0c96336705bb67081e89f1814283501990582c70f299",
+  "blinkflow/see.py": "67c0d4ae659c17c2b197f4cdb297c90736a801f534a8e91c6b6ce8e7a13f1794",
+  "blinkflow/diagnose.py": "2b7726cc7bf034f822a3963dd544a87da98131d4f9630686716dea10ffe185e3",
+  "blinkflow/fix.py": "b29e8e9e39026a650459e4aa633737049093388c76bac53babd0656a00577abe",
+  "blinkflow/prove.py": "4b29b38dd5cf5c36d0096cc555e39d45027346f7986c7fd106d91ccef7f293ba",
+  "blinkflow/twin.py": "0152765b054328ca15b46b7ea9bc83968dafc83b938f03fc3c35a2b8d78fb665",
+  "blinkflow/models.py": "e05e940654410d1469190a58fbab9a48d825d222a2294a78d3b768f8a78d5b14"
+ }
+}
