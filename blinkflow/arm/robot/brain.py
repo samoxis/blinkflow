@@ -30,7 +30,7 @@ class Brain:
     def waypoint(self, t):
         x0, z0 = START
         x1, z1 = self.target
-        lift = max(z0, z1) + self.clearance
+        lift = max(z0, z1) - self.clearance
         points = [(0., (x0,z0)), (0.5, (x0,z0)), (1.3, (x0,lift)),
                   (3.4, (x1,lift)), (4.3, (x1,z1)), (6., (x1,z1))]
         for i, ((ta,a),(tb,b)) in enumerate(zip(points,points[1:])):
