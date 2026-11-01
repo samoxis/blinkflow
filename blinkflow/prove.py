@@ -27,7 +27,10 @@ MIN_ROBOT_FRAMES = 10     # the robot must be found in at least this many frames
                           # shot sees it only near the object, ~70 of 520 frames in the incident)
 MIN_TRAVEL = 0.5          # ...and walk at least this fraction of the incident's distance
 EXTRA_S = 8.0             # the replay runs this long past the incident's end
-CONTROL_SCENES = ("low_cube", "ledge", "corner", "doorway")   # every twin scene but the box: the proof is that
+# Every twin scene but the box, each with its own obstacle as SAM 3.1 is asked for it (scenes/obstacles.json):
+# the control follows the scene's obstacle, never a name guessed from the picture unless that one is not found
+OBSTACLES = json.loads((pathlib.Path(__file__).resolve().parent / "scenes" / "obstacles.json").read_text())
+CONTROL_SCENES = tuple(OBSTACLES["scenes"])
 CONTROL_S = 20.0          # each control replay's length (the scorer's control is as long)
 CONTROL_EVERY = 3         # SAM 3.1 follows every 3rd frame of a control shot (9.5 fps): a third of the cost
 CONTROL_WORKERS = 6       # render processes per control scene (four scenes at once on 24 threads)
@@ -162,11 +165,34 @@ def every_nth(meta, n, out):
     return p
 
 
+def judge(ev, record, kind):
+    """One control scene's verdict from its evidence: clean when the proof's rules see no contact (for an
+    object) and no fall. No verdict, and not clean, when the robot was not followed or the obstacle was
+    seen in no frame: a scene where nothing was seen near the robot proves nothing, a fall check included
+    (Oct 31's low cube passed that way, its "brown step" in 0 of 220 frames)."""
+    v = verdict(ev, record, kind=kind)
+    if not ev["tracking"]["object"]["frames_with_mask"]:
+        return {**v, "valid": False, "clean": False, "why": "no verdict: object not seen"}
+    hit = v["contact"] and kind == "contact"
+    why = ("; ".join(v["problems"]) if not v["valid"] else
+           f"fell at t = {v['fell_s']:.2f} s ({v['fall_reading']})" if v["fell_s"] is not None else
+           f"touched the {ev['names']['object']} at t = {v['first_contact_s']:.2f} s" if hit else
+           "no contact, no fall" + (f"; closest gap {v['closest_gap_px']:.0f} px" if v["closest_gap_px"] is not None
+                                    else ""))
+    c = ev.get("closest")
+    if why.startswith("no contact") and c and c["gap_px"] <= see.CONTACT_PX and ev.get("base"):
+        # masks that touch on screen with the feet far from the object's base: the robot passes in front of or
+        # behind a tall object, which the proof does not call a contact (verdict, contact_of)
+        why += (f" on screen, the feet {-c['feet_depth_px']:.0f} px short of the {ev['names']['object']}'s base "
+                f"(a contact needs ≤ {see.CONTACT_PX} px at the base, within {ev['base']['feet_tolerance_px']:.0f} px)")
+    return {**v, "clean": v["valid"] and not hit and v["fell_s"] is None, "why": why}
+
+
 def control(out, brain=TARGET):
-    """The brain as it is now in every other twin scene for CONTROL_S, judged from pixels only: Glimmer
-    names what is near the robot in each shot, SAM 3.1 follows it and the robot (every CONTROL_EVERY-th
-    frame), and the scene is clean when the proof's rules see no contact and no fall. A scene where the
-    robot was not followed has no verdict and is not clean. {scene: {clean, why, names, ...}}"""
+    """The brain as it is now in every other twin scene for CONTROL_S, judged from pixels only: SAM 3.1
+    follows the robot and the scene's own obstacle (OBSTACLES; every CONTROL_EVERY-th frame), and the
+    scene is clean when judge() sees no contact and no fall. Only if the scene's obstacle is found in no
+    frame does Glimmer name what is near the robot instead (Muse Spark after it). {scene: {clean, why, ...}}"""
     out = pathlib.Path(out)
     events.emit("control.start", scenes=list(CONTROL_SCENES), seconds=CONTROL_S, every=CONTROL_EVERY)
 
@@ -180,20 +206,18 @@ def control(out, brain=TARGET):
 
     def look_one(scene, meta):
         t = time.time()
+        o, evdir = OBSTACLES["scenes"][scene], out / scene / "evidence"
+        kind, named_by = "fall" if o["is"] == "hazard" else "contact", "scene"
         try:
-            ev = see.see(meta, out / scene / "evidence", tag=f"control-{scene}")
+            ev = see.see(meta, evdir, follow=(OBSTACLES["robot"], o["noun"]), tag=f"control-{scene}")
+            if not ev["tracking"]["object"]["frames_with_mask"]:     # the scene's name found nothing: name it
+                evdir = out / scene / "evidence-named"
+                ev = see.see(meta, evdir, tag=f"control-{scene}")
+                kind, named_by = "fall" if ev["names"]["object_is"] == "hazard" else "contact", ev["names"]["named_by"]
         except RuntimeError as e:                    # nothing near the robot could be named or found
-            return {"clean": False, "valid": False, "why": f"no verdict: {e}"[:300], "names": None}
-        kind = "fall" if ev["names"]["object_is"] == "hazard" else "contact"
-        v = verdict(ev, json.loads(meta.read_text())["record"], kind=kind)
-        hit = v["contact"] and kind == "contact"
-        why = ("; ".join(v["problems"]) if not v["valid"] else
-               f"fell at t = {v['fell_s']:.2f} s ({v['fall_reading']})" if v["fell_s"] is not None else
-               f"touched the {ev['names']['object']} at t = {v['first_contact_s']:.2f} s" if hit else
-               "no contact, no fall" + (f"; closest gap {v['closest_gap_px']:.0f} px" if v["closest_gap_px"] is not None
-                                        else ""))
-        return {**v, "clean": v["valid"] and not hit and v["fell_s"] is None, "why": why,
-                "names": [ev["names"]["robot"], ev["names"]["object"]], "evidence": str(out / scene / "evidence"),
+            return {"clean": False, "valid": False, "why": f"no verdict: {e}"[:300], "names": None, "named_by": named_by}
+        return {**judge(ev, json.loads(meta.read_text())["record"], kind),
+                "names": [ev["names"]["robot"], ev["names"]["object"]], "named_by": named_by, "evidence": str(evdir),
                 "see_s": round(time.time() - t, 1)}
 
     with concurrent.futures.ThreadPoolExecutor(len(CONTROL_SCENES)) as pool:
@@ -204,7 +228,8 @@ def control(out, brain=TARGET):
     for s in CONTROL_SCENES:
         result[s] = {**looked[s], "render_s": rendered[s][1]}
         events.emit("control.scene", scene=s, **{k: result[s].get(k) for k in (
-            "clean", "valid", "why", "names", "evidence", "render_s", "see_s", "robot_frames", "closest_gap_px")})
+            "clean", "valid", "why", "names", "named_by", "evidence", "render_s", "see_s", "robot_frames",
+            "closest_gap_px")})
     (out / "control.json").write_text(json.dumps(result, indent=1))
     events.emit("control.done", clean=all(c["clean"] for c in result.values()),
                 scenes={s: c["clean"] for s, c in result.items()})

@@ -1,0 +1,103 @@
+{
+ "names": {
+  "robot": "white robot",
+  "object": "gray block",
+  "object_is": "object",
+  "named_by": "spark",
+  "attempts": [
+   {
+    "namer": "glimmer",
+    "reply": "{\"objects\": [\"white robot\", \"cyan cube\"], \"hazards\": [\"yellow pit\"], \"robot\": \"white robot\", \"nearest\": \"yellow pit\", \"nearest_is\": \"hazard\"}",
+    "rejected": null
+   },
+   {
+    "namer": "sam check",
+    "rejected": "'yellow pit': found in only 0 of 220 frames"
+   },
+   {
+    "namer": "spark",
+    "reply": "{\"objects\":[\"gray block\",\"cyan cube\",\"green object\"],\"hazards\":[\"yellow pit\"],\"robot\":\"white robot\",\"nearest\":\"gray block\",\"nearest_is\":\"object\"}",
+    "rejected": null
+   }
+  ],
+  "object_warning": null,
+  "said": null
+ },
+ "tracking": {
+  "robot": {
+   "concept": "white robot",
+   "status": "completed",
+   "frames_with_mask": 214,
+   "instances_max": 1
+  },
+  "object": {
+   "concept": "gray block",
+   "status": "completed",
+   "frames_with_mask": 220,
+   "instances_max": 2
+  }
+ },
+ "object": {
+  "box": [
+   646,
+   0,
+   871,
+   361
+  ],
+  "frames": 220,
+  "objects_named": 2,
+  "others": [
+   {
+    "box": [
+     0,
+     0,
+     391,
+     421
+    ],
+    "frames": 220
+   }
+  ]
+ },
+ "contact_px": 2,
+ "base": {
+  "method": "no distinct faces: bottom tenth of the mask",
+  "from_frame": 217,
+  "down": [
+   1.0,
+   0.0
+  ],
+  "thickness_px": 36.1,
+  "feet_tolerance_px": 3.6,
+  "robot_height_px": 111.0,
+  "reach_px": 72.2
+ },
+ "incident": "contact",
+ "fall": {
+  "pixels": null,
+  "brain_log": null,
+  "first": null
+ },
+ "contacts": {
+  "whole_mask": {
+   "frame": 201,
+   "shot_frame": 201,
+   "brain_s": 18.105,
+   "gap_px": 2.0,
+   "base_gap_px": 99.3,
+   "feet_depth_px": -102.0,
+   "robot_px": 123.9
+  },
+  "base": null,
+  "body": null
+ },
+ "closest": {
+  "frame": 213,
+  "shot_frame": 213,
+  "brain_s": 19.365,
+  "gap_px": 0.0,
+  "base_gap_px": 109.0,
+  "feet_depth_px": -109.9,
+  "robot_px": 56.0
+ },
+ "source": "examples/purple-box/fix/attempt-1/control/ledge/evidence/evidence.json at 7313d32 (run 20261031-235414), without the per-frame series"
+}

@@ -1,0 +1,76 @@
+{
+ "names": {
+  "robot": "white robot",
+  "object": "red barrier",
+  "object_is": "object",
+  "named_by": "glimmer",
+  "attempts": [
+   {
+    "namer": "glimmer",
+    "reply": "{\"objects\": [\"white robot\", \"red barrier\", \"green sphere\", \"cyan block\"], \"hazards\": [\"floor edge\", \"drop-off\"], \"robot\": \"white robot\", \"nearest\": \"red barrier\", \"nearest_is\": \"object\"}",
+    "rejected": null
+   }
+  ],
+  "object_warning": null,
+  "said": null
+ },
+ "tracking": {
+  "robot": {
+   "concept": "white robot",
+   "status": "completed",
+   "frames_with_mask": 212,
+   "instances_max": 1
+  },
+  "object": {
+   "concept": "red barrier",
+   "status": "completed",
+   "frames_with_mask": 220,
+   "instances_max": 1
+  }
+ },
+ "object": {
+  "box": [
+   287,
+   281,
+   673,
+   477
+  ],
+  "frames": 220,
+  "objects_named": 1,
+  "others": []
+ },
+ "contact_px": 2,
+ "base": {
+  "method": "lit top face + side face",
+  "from_frame": 215,
+  "down": [
+   1.0,
+   0.005
+  ],
+  "thickness_px": 16.9,
+  "feet_tolerance_px": 1.7,
+  "robot_height_px": 98.9,
+  "reach_px": 64.3
+ },
+ "incident": "contact",
+ "fall": {
+  "pixels": null,
+  "brain_log": null,
+  "first": null
+ },
+ "contacts": {
+  "whole_mask": null,
+  "base": null,
+  "body": null
+ },
+ "closest": {
+  "frame": 115,
+  "shot_frame": 115,
+  "brain_s": 9.075,
+  "gap_px": 50.5,
+  "base_gap_px": 194.4,
+  "feet_depth_px": -193.5,
+  "robot_px": 100.4
+ },
+ "source": "examples/purple-box/fix/attempt-1/control/corner/evidence/evidence.json at 7313d32 (run 20261031-235414), without the per-frame series"
+}

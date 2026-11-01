@@ -1,0 +1,61 @@
+{
+ "names": {
+  "robot": "white robot",
+  "object": "brown step",
+  "object_is": "hazard",
+  "named_by": "spark",
+  "attempts": [
+   {
+    "namer": "glimmer",
+    "reply": "{\"objects\": [\"orange cube\", \"white robot\", \"teal cube\", \"green object\"], \"hazards\": [\"floor edge\", \"floor drop-off\"], \"robot\": \"white robot\", \"nearest\": \"floor edge\", \"nearest_is\": \"hazard\"}",
+    "rejected": null
+   },
+   {
+    "namer": "sam check",
+    "rejected": "'floor edge': found in only 0 of 220 frames"
+   },
+   {
+    "namer": "spark",
+    "reply": "{\"objects\":[\"gray pillar\",\"orange cube\",\"green object\",\"teal cube\"],\"hazards\":[\"black pit\",\"brown step\"],\"robot\":\"white robot\",\"nearest\":\"brown step\",\"nearest_is\":\"hazard\"}",
+    "rejected": null
+   }
+  ],
+  "object_warning": "found in only 0 of 220 frames",
+  "said": null
+ },
+ "tracking": {
+  "robot": {
+   "concept": "white robot",
+   "status": "completed",
+   "frames_with_mask": 200,
+   "instances_max": 1
+  },
+  "object": {
+   "concept": "brown step",
+   "status": "completed",
+   "frames_with_mask": 0,
+   "instances_max": 0
+  }
+ },
+ "object": {
+  "box": null,
+  "frames": 0,
+  "objects_named": 1,
+  "others": []
+ },
+ "contact_px": 2,
+ "base": null,
+ "incident": "contact",
+ "fall": {
+  "pixels": null,
+  "brain_log": null,
+  "first": null
+ },
+ "contacts": {
+  "whole_mask": null,
+  "base": null,
+  "body": null
+ },
+ "closest": null,
+ "source": "examples/purple-box/fix/attempt-1/control/low_cube/evidence/evidence.json at 7313d32 (run 20261031-235414), without the per-frame series"
+}

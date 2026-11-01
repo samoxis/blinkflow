@@ -654,7 +654,7 @@ def all_calls(run, evdir, ledger):
     calls = []
     for role, d in [("incident", evdir), ("before", run / "before" / "evidence")] + \
             [(p.name, p / "evidence") for p in sorted(run.glob("attempt-*"))] + \
-            [(f"{p.parent.parent.parent.name} control {p.parent.name}", p) for p in sorted(run.glob("attempt-*/control/*/evidence"))]:
+            [(f"{p.parent.parent.parent.name} control {p.parent.name}", p) for p in sorted(run.glob("attempt-*/control/*/evidence*"))]:
         f = d / "models.json"
         if f.exists():
             calls += [{**c, "stage": role} for c in json.loads(f.read_text())["calls"]]
@@ -782,8 +782,9 @@ def write_report(run, snapshot, evdir, ev, diag, done, mdoc):
         out += [f"![after]({rel(run, kept['verdict']['evidence'] + '/evidence.png')})", ""]
     if done.get("control"):
         out += ["## Control: the same brain in every other scene", "",
-                "Replayed in the twin, each scene's shot followed by SAM 3.1 (every 3rd frame) with the names "
-                "Glimmer gave it; clean = no contact and no fall, from pixels only.", "",
+                "Replayed in the twin, each scene's shot followed by SAM 3.1 (every 3rd frame): the robot and the "
+                "scene's own obstacle as the scene defines it (named by Glimmer only if that is found in no frame); "
+                "clean = the obstacle seen, no contact and no fall, from pixels only.", "",
                 "| scene | named | clean | why |", "|---|---|---|---|"]
         out += [f"| {s} | {c.get('names') and ' / '.join(c['names'])} | {'yes' if c['clean'] else '**no**'} | "
                 f"{c['why']} |" for s, c in done["control"].items()]
