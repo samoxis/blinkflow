@@ -43,4 +43,4 @@ class FrozenCodePass(unittest.TestCase):
         self.assertIn("7 of the 8 bugs in this pass repeat a first-pass mutation, and the pass ran before the current gate",
                       suite.split("\n\n")[1])
         readme = (REPO / "README.md").read_text()
-        self.assertEqual(readme.count("the pass ran before the current gate"), 2)
+        self.assertEqual(readme.count("before the current gate and control rule"), 2)

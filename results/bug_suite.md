@@ -108,7 +108,7 @@ A new seed (`tools/inject_bug.py draw --set layers --force`, Oct 28 09:15), the 
 | b10 | drops (ledge) | drop margin too wide: `[drop] range_margin = 0.6` | contact 9.34 s, fall 10.25 s | `src/microduck_brain/depth.py` 309-320 (0.55) | no | 1 | fixed | yes | yes | 2/2 (restored 0/2) | 286 s | $0.62 (SAM 0.12, Wonder 0.32) |
 | b11 | drops (ledge) | drop check too short: `[drop] max_expected = 0.3` | contact 9.34 s, fall 10.25 s | `brain.toml` 60-60 (0.66) | yes | 1 | fixed | yes | yes | 1/2 (restored 0/2) | 273 s | $0.65 (SAM 0.21, Wonder 0.28) |
 
-**(a) incident gone: 8/8. (b) no regression in any scene: 8/8. (c) the change touches a mutated line: 7/8. All three: 7/8.** Wonder's cause contained a mutated line in 4/8. 2 bug(s) needed more than one Muse Code attempt; 0 loop(s) were rerun after an API error. 8/8 bugs ran. Incidents and the control are the twin's own log (scorer); the loop decides from pixels only.
+**(a) incident gone: 8/8. (b) no regression in any scene: 8/8. (c) the change touches a mutated line: 7/8. All three: 7/8.** Wonder's cause contained a mutated line in 4/8. In words: 8/8 repaired and passed the incident and control checks; Wonder's cause named a planted line in 4 of 8, the kept patch touched one in 7 of 8; pass of Oct 28, before the current gate and control rule. 2 bug(s) needed more than one Muse Code attempt; 0 loop(s) were rerun after an API error. 8/8 bugs ran. Incidents and the control are the twin's own log (scorer); the loop decides from pixels only.
 
 Wonder and Spark on the same evidence (bugs b3, b6), runs whose cause contains a mutated line: wonder 4/8, spark 0/2.
 

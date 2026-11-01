@@ -11,10 +11,10 @@ to SAM 3.1, the proof, Muse Wonder, the loop and the re-check). A test runs the 
 for `world/scene.xml` and `run.py` and an allow for `brain.py` and `brain.toml`
 ([`tests/test_arm_guards.py`](../tests/test_arm_guards.py)).
 
-The fix is accepted as the duck's is, by what the camera sees and nothing else: the incident replayed shows no
-contact, the end effector reaches the target within 20 mm, and both control scenes are clean, all measured from
-SAM 3.1's masks; otherwise the change is rolled back and Muse Code tries again (at most three attempts). No rule
-reads what the change says. The only other checks are about where and how: every changed file is inside
+The acceptance is mixed: contact and the two control scenes are measured from pixels (SAM 3.1's masks); reaching
+the target (within 20 mm) is read from the simulator's own end-effector position. All three must hold; otherwise the change is rolled back and Muse Code tries again (at most three attempts). No rule
+reads what the change says. `run.py` reads `truth.json` only as an eligibility guard on the incident (a real
+contact, and pixel and physics timing within 0.1 s) before diagnosis, not as input to the models. The only other checks are about where and how: every changed file is inside
 `robot/`, the SDK ran with shell disabled, and its tool calls pass the gate's audit.
 
 The run is in [`examples/arm/`](../examples/arm) ([before and after, side by side](../examples/arm/preview.html)).
@@ -50,7 +50,7 @@ Same inputs and same method, but not the same answers from the models. Nothing w
 | | First (2a09938) | Second (e57473c) | This run |
 |---|---|---|---|
 | What Muse Code may edit | the whole arm, harness included | `robot/` with the scene | `robot/`: `brain.py`, `brain.toml` |
-| What the loop accepts | pixels + only a positive clearance | pixels + only a positive clearance | pixels only |
+| What the loop accepts | pixels + only a positive clearance | pixels + only a positive clearance | pixels + target position, no content rule |
 | Muse Code's change | `clearance = 0.08` | `clearance = 0.12` | `clearance = 0.15` |
 | Muse Code's tool calls, time | 13, 107.8 s | 2, 35.2 s | 5 (also read `brain.py` and listed the files), 74.6 s |
 | Muse Wonder's citations | K3, K4; ticks 1.350, 2.000 s | K1, K4; ticks 0.000, 1.350, 2.000 s | K4; tick 2.000 s |
@@ -67,7 +67,7 @@ Muse Code still chose to change only the clearance; nothing made it.
 
 Five runs of this repo's loop on the arm, from the same scene, camera, box seed, gains and timing: the three
 clearance runs above, and bug 2 and the voice run below. The three published examples share one rule: a fix is
-kept by the pixels alone, and Muse Wonder's citation check is reported with the diagnosis but never stops the
+kept by the measured checks alone (no content rule), and Muse Wonder's citation check is reported with the diagnosis but never stops the
 loop, as in the duck's. (The first two clearance runs also accepted only a positive clearance.)
 
 | Run | Bug | Input | Attempts | Muse Code's change | Result | Cost |
@@ -99,7 +99,7 @@ change and required a grounded diagnosis. Those runs are not kept as examples (t
 
 | | Bug 2, first | Bug 2, here | Voice, first | Voice, here |
 |---|---|---|---|---|
-| Accepted by | content rules + pixels | pixels | content rules + pixels | pixels |
+| Accepted by | content rules + measured checks | measured checks | content rules + measured checks | measured checks |
 | Transcript | | | "…the red block. A couple of seconds ago the arm hit the red block." | "…the red block a couple of seconds ago the arm arm hit the red block" |
 | Muse Wonder's cause | `brain.py:30–35` | `brain.py:33` | `brain.toml:1–2` | `brain.toml:1–2` |
 | Citation check | grounded; K1–K4 | not grounded: categories only | grounded; K4, ticks 2.000, 2.035 s | not grounded: tick 2.035 s, no key frame, two references to nothing |
@@ -132,8 +132,8 @@ eight were paid.
   and derived the incident moment at 2 s from it and the spoken delay: a replayed press on a recorded sentence,
   not live capture. The same WAV gave a different transcript the second time. The box seed is still needed for
   the arm in all three. No physical robot.
-- In both re-runs Muse Wonder named the planted line, but its citations failed the check; nothing but the pixels
-  decided the fix. A diagnosis that named the wrong line would have reached Muse Code the same way.
+- In both re-runs Muse Wonder named the planted line, but its citations failed the check; nothing but the measured
+  checks decided the fix. A diagnosis that named the wrong line would have reached Muse Code the same way.
 - Built with Codex (GPT-6.1 Sol) on Nov 1, in a separate repo, from a written brief (`AGENTS.md` there),
   then moved here as `blinkflow/arm/`, as declared in `DEVLOG.md`. Bug 2 and the voice run were first made
   there, also with Codex, and re-run here.

@@ -16,7 +16,7 @@
 
 | Criterion | What it shows | Where |
 |---|---|---|
-| **Impact** (30%) | Say what went wrong on screen, get a proven fix in the robot's code. 8/8 bugs fixed on a frozen-code pass: new seed, code frozen. 7 of the 8 repeat first-pass mutations, 1 is new; the pass ran before the current gate. Live: contact in 5/5 runs before the fix, 0/5 after | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
+| **Impact** (30%) | Say what went wrong on screen, get a proven fix in the robot's code. Frozen-code pass (new seed, code frozen): 8/8 repaired and passed the incident and control checks; Wonder's cause named a planted line in 4 of 8, the kept patch touched one in 7 of 8. 7 of the 8 repeat first-pass mutations, 1 is new; pass of Oct 28, before the current gate and control rule. Live: contact in 5/5 runs before the fix, 0/5 after | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
 | **Use of Meta tooling** (25%) | One job per model. Muse Glimmer (open weights, on this PC) watches and names. SAM 3.1 tracks. Muse Wonder finds the cause. Muse Code fixes. Muse Voice Transcribe listens. Every call is logged | [How it works](#how-it-works), [`models.json`](examples/purple-box/models.json) |
 | **Technical depth** (20%) | Distances from SAM 3.1's masks. A diagnosis whose every citation is checked against the frames, log lines and code it was sent. An exact replay in a deterministic twin. Rollback and retry. A gate before each tool call | [`results/bug_suite.md`](results/bug_suite.md), [Safety](#safety) |
 | **Demo** (25%) | The purple-box incident from the sentence to the proof, as a page anyone can open, and the live console | [The report](https://samoxis.github.io/blinkflow/report/), [The console](#the-console) |
@@ -32,7 +32,7 @@
 
 ## Beyond the duck: the same loop on a 3-joint arm
 
-The loop is not tied to the biped. A hand-written MuJoCo arm (a 43-line scene, a 45-line controller) has a planted bug, `clearance = 0.0`, so it sweeps through a red block. The same SAM 3.1 measurement, Muse Wonder diagnosis, citation check, gated Muse Code fix and pixel proof run on it through thin adapters ([`blinkflow/arm/`](blinkflow/arm)); as with the duck, Muse Code may touch only the robot's controller ([`blinkflow/arm/robot/`](blinkflow/arm/robot)), not the world or the harness, and the fix is accepted only by what the camera sees.
+The loop is not tied to the biped. A hand-written MuJoCo arm (a 43-line scene, a 45-line controller) has a planted bug, `clearance = 0.0`, so it sweeps through a red block. The same SAM 3.1 measurement, Muse Wonder diagnosis, citation check, gated Muse Code fix and pixel proof run on it through thin adapters ([`blinkflow/arm/`](blinkflow/arm)); as with the duck, Muse Code may touch only the robot's controller ([`blinkflow/arm/robot/`](blinkflow/arm/robot)), not the world or the harness, and the fix is accepted on a mixed basis: contact and the two control scenes are measured from pixels, and reaching the target (within 20 mm) is read from the simulator's own end-effector position.
 
 | Before: contact | After: target reached |
 |---|---|
@@ -62,7 +62,7 @@ For people who write robot software and test it in a simulator: you say what wen
 
 BlinkFlow watches a robot simulator the way you do: through the screen. When the robot does something wrong, you say what you saw. BlinkFlow rewinds to that moment, works out which part of the robot's program caused it, writes the fix, and plays the same scene again to prove the problem is gone. If the fix doesn't work, it undoes it and tries again.
 
-What it films is the simulator's window on your screen, not a camera on the robot. It runs Meta's **open-weight Muse Glimmer on this PC**, so that window never leaves the machine until Glimmer raises a hand or you speak.
+What it films is the simulator's window on your screen, not a camera on the robot. It runs Meta's **open-weight Muse Glimmer on this PC**: the rolling buffer and the continuous Glimmer checks stay local; when an incident is called, the incident clip goes to SAM 3.1, and selected frames, the log and the code go to Muse Wonder.
 
 | Step | What happens | Meta model |
 |---|---|---|
@@ -81,11 +81,11 @@ What it films is the simulator's window on your screen, not a camera on the robo
 
 ## Why the Meta stack
 
-- **Muse Glimmer runs locally, with open weights.** It watches all the time, 0 tokens billed, and the frames it watches never leave the PC unless it raises a hand or you speak.
+- **Muse Glimmer runs locally, with open weights.** It watches all the time, 0 tokens billed, and the frames it watches stay on the PC; only when it raises a hand or you speak does an incident clip leave, to SAM 3.1.
 - **SAM 3.1 turns video into masks across frames,** and the distance between the masks is the measurement: no model eyeballs it.
 - **Muse Wonder reasons over frames, log and code at once; Muse Code edits, each call checked by BlinkFlow's gate.** The whole chain, from watching to the fix, is one ecosystem.
 
-**Works on any screen.** BlinkFlow only watches pixels, through GPU screen capture (DXGI Desktop Duplication + NVENC), of the window named by the sidecar's `--title`; there is no plugin in the simulator. The pixel part should apply to any simulator (Isaac Sim, Gazebo, CARLA, Unreal), but it has not been tested on them. The replay proof needs a simulator that can replay a scene deterministically.
+**Capture and measurement work on any window; the rest does not.** BlinkFlow watches pixels, through GPU screen capture (DXGI Desktop Duplication + NVENC), of the window named by the sidecar's `--title`; there is no plugin in the simulator. That capture and measurement part should apply to any simulator (Isaac Sim, Gazebo, CARLA, Unreal), but it has not been tested on them. Diagnosis needs the controller's source and logs, and the proof needs a deterministic replay adapter for the robot (two are written: Microduck and the arm).
 
 ## Where it is in the code
 
@@ -97,7 +97,7 @@ What it films is the simulator's window on your screen, not a camera on the robo
 - **The twin:** [`blinkflow/twin.py`](blinkflow/twin.py) (`Twin`, `Video`), the scenes in [`blinkflow/scenes/`](blinkflow/scenes).
 - **Proof, rollback, "Keep the fix?":** [`blinkflow/prove.py`](blinkflow/prove.py) (`replay`, `verdict`, `control`); [`blinkflow/fix.py`](blinkflow/fix.py) (`fix`, `undo`, `terminal_ask`).
 - **The arm:** [`blinkflow/arm/robot/`](blinkflow/arm/robot), the controller and Muse Code's only target (`brain.py`, `brain.toml`); outside it, [`blinkflow/arm/world/`](blinkflow/arm/world) (the scene, `scene.xml`, and the names given to SAM 3.1) and, in [`blinkflow/arm/`](blinkflow/arm), the twin (`twin.py`), the adapters to SAM 3.1's box prompt, the proof and Muse Wonder (`see.py`, `prove.py`, `diagnose.py`), the loop (`run.py`) and the offline re-check (`recheck.py`).
-- **Log replay (SIL):** [`blinkflow/sil/`](blinkflow/sil): recorded inputs replayed through two brains with Pollen's `microduck_brain.record.replay`, one Python process per brain with no site packages and sockets refused (`replay.py`, `_worker.py`), the per-case classification and summary (`suite.py`), the reports (`report.py`), the twin check (`sanity.py`) and the offline re-check (`recheck.py`).
+- **Log replay (SIL):** [`blinkflow/sil/`](blinkflow/sil): inputs recorded in the simulator, replayed through two brains with Pollen's `microduck_brain.record.replay`, one Python process per brain with no site packages and sockets refused (`replay.py`, `_worker.py`), the per-case classification and summary (`suite.py`), the reports (`report.py`), the twin check (`sanity.py`) and the offline re-check (`recheck.py`).
 
 ## Results
 
@@ -106,16 +106,16 @@ Measured during the hackathon; each number links to the file it comes from.
 | What | Result | Source |
 |---|---|---|
 | Bug suite, stratified by layer (11 mutations drawn with a sealed seed, 8 gave an incident); blind to the mutation; perception rules were revised between passes | **5/8 on the first pass, 8/8 on the third**: incidents gone, control clean in all five scenes. Changes on the mutated line: **5/8 on the first pass, 6/8 on the third** | [`results/bug_suite.md`](results/bug_suite.md) |
-| Same suite, frozen-code pass: a new seed, the code frozen, one pass, no reruns. 7 of the 8 kept bugs repeat a first-pass mutation (same value), 1 is new; the pass ran before the current gate | **8/8**: incidents gone, control clean in all five scenes. Changes on the mutated line: **7/8** | [`results/bug_suite.md`](results/bug_suite.md#frozen-code-pass-oct-28) |
+| Same suite, frozen-code pass: a new seed, the code frozen, one pass, no reruns. 7 of the 8 kept bugs repeat a first-pass mutation (same value), 1 is new; the pass ran before the current gate | **8/8 repaired and passed the incident and control checks** (incidents gone, control clean in all five scenes). Muse Wonder's cause named a planted line in **4/8**; the kept patch touched one in **7/8**. Pass of Oct 28, before the current gate and control rule | [`results/bug_suite.md`](results/bug_suite.md#frozen-code-pass-oct-28) |
 | First suite (6 bugs), blind to the mutation, one pass | 6/6 fixed; Muse Wonder's cause on the mutated line in 5/6 | [`results/bug_suite.md`](results/bug_suite.md) |
 | Live simulator, the demo incident, 20 s per run | contact in **5/5** runs without the fix, **0/5** with it (an earlier pass, with a CPU-heavy job beside it: 3/5, 0/5) | [`results/live_check.md`](results/live_check.md) |
 | Seen → fixed and verified (machine time) | **368.0 s** for the example run ([`examples/purple-box/`](examples/purple-box)); 386.6 s for the run the film shows (Oct 31). Since Oct 31 "verified" includes the control: the clock stops only after the four other scenes are replayed with the change and come out clean. The **135.8–234.0 s** over 10 purple-box loops (median 169.2 s, the spread mostly Muse Wonder, 55–120 s) come from earlier runs, before that change, when the clock stopped at the replay of the incident and the control ran after it | [`results/loop_times.md`](results/loop_times.md), [`results/quick_loop.md`](results/quick_loop.md) |
 | Control after the fix, on pixels | **5/5 scenes clean, all 5 measured** in the example run, as part of the acceptance, each control scene following its own obstacle as the scene defines it (until Nov 1 Glimmer named them, and an obstacle seen in no frame could pass as clean); earlier, the same in the 166.4 s run; the twin's log agrees | [`results/loop_times.md`](results/loop_times.md), [`results/console/`](results/console) |
 | Watcher (nobody speaks) | **0 false alarms** in 16 runs without an incident; **14/17** incidents caught. Optimistic: the suite gave Glimmer a look every 0.97 s, live beside the simulator it is ~1.45 s | [`results/watcher.md`](results/watcher.md) |
 | Voice | **5/5** TTS sentences heard, read and seen; real speech through Ray-Ban Meta glasses (F9, or a tap on their arm): transcribed, read, seen, fixed, as in [`examples/purple-box/`](examples/purple-box) | [`results/voice.md`](results/voice.md) |
-| Muse Code alone, from the sentence only (ablation) | On both bugs tried, the purple box (a setting) and b7 (a line of code), the cause was findable from the code alone (3/3 runs each); what BlinkFlow adds is the fix on the first attempt and the proof, the twin replay and the control that say which change works | [`results/ablation.md`](results/ablation.md) |
-| A second robot: a 3-joint MuJoCo arm with a planted zero clearance | contacts **1 → 0** from pixels (first contact 2.035 s on pixels, 2.010 s in MuJoCo's log), controls **2/2** clean, Muse Wonder grounded (`bad_refs=[]`), Muse Code one line on the first attempt, accepted from pixels alone; **$0.27** the loop. The arm is tracked from a box on the first frame, not from text | [`results/arm.md`](results/arm.md) |
-| Log replay (SIL), open-loop: recorded inputs through the buggy and the fixed brain | 8 suite bugs: **4** a discrete decision before impact (the fixed brain brakes 2.85–8.2 s earlier, the buggy one walks on), **4** continuous-only (inconclusive); purple box continuous-only. Decision evidence, not an outcome proof; twin recordings, not a physical robot; $0 | [`results/sil.md`](results/sil.md) |
+| Muse Code alone, from the sentence only (ablation) | On both bugs tried, the purple box (a setting) and b7 (a line of code), the cause was findable from the code alone (3/3 runs each); what BlinkFlow adds is the fix on the first attempt and the proof, the twin replay and the control that say which change works. Of 18 Muse Code turns, four failed the path audit and two returned no change; replay and controls accepted all 12 retained candidates. Muse Code's time alone: 39–597 s with the precise sentence, 105–772 s with the vague one. Re-checking the ablation offline needs the local raw run folders (not in the repo) | [`results/ablation.md`](results/ablation.md) |
+| A second robot: a 3-joint MuJoCo arm with a planted zero clearance | contacts **1 → 0** from pixels (first contact 2.035 s on pixels, 2.010 s in MuJoCo's log), controls **2/2** clean, Muse Wonder grounded (`bad_refs=[]`), Muse Code one line on the first attempt; contact and the controls measured from pixels, reaching the target read from the simulator's end-effector position; **$0.27** the loop. The arm is tracked from a box on the first frame, not from text | [`results/arm.md`](results/arm.md) |
+| Log replay (SIL), open-loop: recorded inputs through the buggy and the fixed brain | 8 suite bugs: **4** a discrete decision before impact (the fixed brain brakes 2.85–8.2 s earlier, the buggy one walks on), **4** continuous-only (inconclusive); purple box continuous-only. Decision evidence, not an outcome proof; the recordings are from the simulator (the twin), not a physical robot; $0 | [`results/sil.md`](results/sil.md) |
 | Pixel rule against ground truth | 92 saved looks re-measured: 60/64 incidents caught, false alarms 1 → 0 after one correction | [`results/control.md`](results/control.md) |
 | Cost of one loop (model calls) | **$0.95** for the example run: 30 of its 52 SAM 3.1 replies paid ($0.63), 22 from the cache ($0), Muse Wonder $0.31. The run the film shows (Oct 31): $0.38, 50 of 58 SAM 3.1 replies cached; $0.84 (run 233019, 29 of 58 SAM replies cached). Earlier: $0.88 for the profiled loop; $0.34–$1.71 over the 10 runs (measuring the four control scenes adds SAM 3.1) | [`results/quick_loop.md`](results/quick_loop.md), [`results/loop_times.md`](results/loop_times.md) |
 
@@ -195,7 +195,7 @@ BlinkFlow needs three things: a screen, a log and a folder of code. Only the det
 
 On a real robot the proof changes: the real world never repeats exactly, but the robot's recorded sensor log can be replayed through the fixed brain ("with exactly what it saw, would it turn now?"), then checked in simulation, then on the robot, and only with a person's "Keep the fix?".
 
-When there is no simulator to replay in, the same recorded sensor inputs can be replayed through the brain before and after a fix ([`blinkflow/sil/`](blinkflow/sil), built Nov 1). On 4 of the 8 suite bugs the fixed brain brakes 2.85–8.2 s before the recorded impact while the buggy one keeps walking; on the other 4 and on the purple box the result is inconclusive (the first difference is a small steering change). Open-loop decision evidence only, not an outcome proof: [`results/sil.md`](results/sil.md).
+When there is no simulator to replay in, the same recorded sensor inputs (here recorded in the simulator, not on a robot) can be replayed through the brain before and after a fix ([`blinkflow/sil/`](blinkflow/sil), built Nov 1). On 4 of the 8 suite bugs the fixed brain brakes 2.85–8.2 s before the recorded impact while the buggy one keeps walking; on the other 4 and on the purple box the result is inconclusive (the first difference is a small steering change). Open-loop decision evidence only, not an outcome proof: [`results/sil.md`](results/sil.md).
 
 ## Limits
 
@@ -209,11 +209,11 @@ When there is no simulator to replay in, the same recorded sensor inputs can be 
 > Built during the [Meta Global AI Developer Hackathon](https://cerebralvalley.ai/e/meta-ai-developer-hackathon), Oct 26 – Nov 4, 2026. Indie Developer track, theme: Push the Frontier.
 > The build log is in [`DEVLOG.md`](DEVLOG.md).
 
-**New vs pre-existing:** everything in this repo was written after the kickoff on Oct 26, 2026; the robot, its simulator and its brain existed before — see [Pre-existing vs built during the hackathon](#pre-existing-vs-built-during-the-hackathon).
+**New vs pre-existing:** BlinkFlow's implementation was built after the kickoff on Oct 26, 2026; evidence bundles include declared pre-existing target snapshots (`NOTICE` files); the robot, its simulator and its brain existed before — see [Pre-existing vs built during the hackathon](#pre-existing-vs-built-during-the-hackathon).
 
 ## Pre-existing vs built during the hackathon
 
-The rules ask entrants to separate earlier work from new work. **Everything in this repository was written after the kickoff session on Oct 26, 2026.**
+The rules ask entrants to separate earlier work from new work. **BlinkFlow's implementation was built after the kickoff session on Oct 26, 2026.** Evidence bundles include declared pre-existing target snapshots (`NOTICE` files in `examples/purple-box-sil/` and `examples/suite-sil/`).
 
 Existed before, used only as the test target, not part of this repo:
 
@@ -231,7 +231,7 @@ The log replay uses `microduck_brain.record.replay`, part of Pollen's pre-existi
 ## Honesty notes
 
 - The simulator's own contact log is never given to BlinkFlow. It is used only as ground truth to score whether a fix worked.
-- The twin loads the scene to simulate it; perception, diagnosis and the fix receive only pixels, the brain's own log and the code — never the contact log, truth.json or the scene geometry.
+- The twin loads the scene to simulate it; perception, diagnosis and the fix receive only pixels, the brain's own log and the code — never the contact log, truth.json or the scene geometry. The arm's `run.py` reads `truth.json` only as an eligibility guard on the incident (a real contact, and pixels and physics agreeing within 0.1 s) before diagnosis, not as input to the models.
 - Results are measured during the hackathon, on BlinkFlow's own fixes, including bugs injected blind into the robot's code.
 - Every incident report lists each model call: model, where it ran, tokens.
 - Speed-ups in the demo video are labelled on screen.
@@ -240,7 +240,7 @@ The log replay uses `microduck_brain.record.replay`, part of Pollen's pre-existi
 
 ## Safety
 
-Muse Code runs under `muse serve`'s default sandboxed profile, which does not stop a read or a write outside the target, so a PreToolUse hook (`muse-gate/`, `python3 -m blinkflow.gate install`) refuses any tool call that names a path outside the target before it runs. That hook is a filter that checks every Muse Code call against the target folder, not an isolation: it reads the paths a call names, so code that reaches outside without naming the path (a script that builds one as it runs, say) is not stopped by it. Every fix starts from a git commit; BlinkFlow asks "Fix it?" before Muse Code writes and "Keep the fix?" after the proof, and a no rolls the change back. How it was measured, and how to undo a kept fix: [`docs/SAFETY.md`](docs/SAFETY.md).
+Muse Code runs under `muse serve`'s default profile (not `:unrestricted`), which does not stop a read or a write outside the target, so a PreToolUse hook (`muse-gate/`, `python3 -m blinkflow.gate install`) refuses any tool call that names a path outside the target before it runs. That hook is a filter that checks every Muse Code call against the target folder, not an isolation: it reads the paths a call names, so code that reaches outside without naming the path (a script that builds one as it runs, say) is not stopped by it. Every fix starts from a git commit; BlinkFlow asks "Fix it?" before Muse Code writes and "Keep the fix?" after the proof, and a no rolls the change back. How it was measured, and how to undo a kept fix: [`docs/SAFETY.md`](docs/SAFETY.md).
 
 ## Credits and licence
 
