@@ -235,7 +235,7 @@ The log replay uses `microduck_brain.record.replay`, part of Pollen's pre-existi
 - Results are measured during the hackathon, on BlinkFlow's own fixes, including bugs injected blind into the robot's code.
 - Every incident report lists each model call: model, where it ran, tokens.
 - Speed-ups in the demo video are labelled on screen.
-- Grounded in the purple-box and arm clearance runs; not grounded in arm-bug2 and arm-voice (categories cited instead of frames/ticks), both still fixed and proven on pixels.
+- Grounded in the purple-box and arm clearance runs; not grounded in arm-bug2 and arm-voice (arm-bug2: categories cited instead of frames/ticks; arm-voice: a real tick but no key frame and two references to nothing), both still fixed and proven on pixels.
 - The arm (`blinkflow/arm/`, `examples/arm/`) was built on Nov 1 with Codex (GPT-6.1 Sol), in a separate repo from a written brief, and moved here. So was the log replay (`blinkflow/sil/`, `examples/*-sil/`).
 
 ## Safety
