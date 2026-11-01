@@ -182,7 +182,7 @@ On a real robot the proof changes: the real world never repeats exactly, but the
 - **Muse Wonder varies.** The same evidence gives different lengths of answer (4.7k–9.1k output tokens), and that alone moves the loop time by up to ~50 s; its cause is not always on the mutated line ([`results/bug_suite.md`](results/bug_suite.md)).
 - **The watcher confirms after the fact,** a median 19.5 s after the incident (13–52 s): it is a safety net, not a brake.
 - **"Stuck" has no real case.** The watcher checks for it, but no run has had a robot stuck.
-- **One real spoken run so far:** the example's sentence was said through Ray-Ban Meta glasses (Bluetooth, F9) and transcribed correctly, one word doubled. The 5-sentence accuracy table is still from TTS; how far people's "N seconds ago" lands has one data point.
+- **One real spoken run so far:** the example's sentence was said through Ray-Ban Meta glasses (Bluetooth, tap-to-talk) and transcribed correctly, one word doubled. The 5-sentence accuracy table is still from TTS; how far people's "N seconds ago" lands has one data point.
 
 > Built during the [Meta Global AI Developer Hackathon](https://cerebralvalley.ai/e/meta-ai-developer-hackathon), Oct 26 – Nov 4, 2026. Indie Developer track, theme: Push the Frontier.
 > The build log is in [`DEVLOG.md`](DEVLOG.md).

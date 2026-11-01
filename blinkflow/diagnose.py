@@ -715,7 +715,7 @@ def diagnose(evdir, model="wonder", runs=1, compare=0, control=0, target=None, c
     events.emit("diagnosis", tag=tag, **{k: doc[k] for k in ("observed", "cause", "evidence", "ruled_out", "confidence",
                                                              "fix_direction", "explanation", "cause_key")},
                 plain=doc.get("plain"),
-                grounded=doc["check"]["grounded"], ticks_cited=bool(doc["check"]["log_ticks_cited"]),
+                grounded=doc["check"]["grounded"], ticks_cited=bool(doc["check"]["log_ticks_cited"]), bad_refs=doc["check"]["bad_refs"],
                 code=snippet(files, doc["cause"]),
                 model={k: doc["model"].get(k) for k in ("model", "seconds", "cost_usd", "input_tokens",
                                                         "cached_input_tokens", "output_tokens", "reasoning_tokens")})

@@ -865,9 +865,14 @@ P.cause = () => {
   rows.forEach(([cls, label, said, ev], i) => box.append(h("div", { class: `row3 ${cls} ${fx("row3@" + cls)}`, style: `animation-delay:${i * 0.25}s` },
     h("div", { class: "say" }, h("span", { class: "no" }, i + 1), h("div", {}, h("div", { class: "lab" }, label), h("div", { class: "txt" }, said))),
     h("div", { class: "link" }), ev || h("div", { class: "ev" }))));
-  // the confidence is the number Muse Wonder gives itself; the three citations are BlinkFlow's checks above
-  const checked = [kcited.length > 0, ticks, inFile].filter(Boolean).length;
-  box.append(h("div", { class: "tech" }, `Muse Wonder's own confidence ${num(d.confidence, 2)} · citations checked ${checked}/3`,
+  // the confidence is the number Muse Wonder gives itself; the citations are counted as diagnose.check() judged
+  // them: one is good when nothing it names was rejected (a key frame not sent, a tick or a line that is not there).
+  // Streams from before Nov 1 carry no bad_refs, but "grounded" there already means none was rejected.
+  const cites = d.evidence || [], bad = d.bad_refs ?? (d.grounded ? [] : null);
+  const good = bad && cites.filter((e) => !bad.some((b) => String(e.ref).includes(b))).length;
+  const checked = bad && cites.length ? `citations checked ${good}/${cites.length}`
+    : `sources checked ${[kcited.length > 0, ticks, inFile].filter(Boolean).length}/3`;
+  box.append(h("div", { class: "tech" }, `Muse Wonder's own confidence ${num(d.confidence, 2)} · ${checked}`,
     m ? ` · Muse Wonder ${secs(m.seconds)}, ${m.input_tokens} tokens in (${m.cached_input_tokens || 0} cached), ${m.output_tokens} out, ${usd(m.cost_usd)}` : "",
     h("details", {}, h("summary", {}, "the full explanation"), d.explanation)));
   return [head("cause", aside), box];

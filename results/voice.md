@@ -96,7 +96,7 @@ Measured with 6 single taps 4 s apart, Space pressed by the other hand at each t
 two hands agree). Both taps are set back by 0.69 s (`--tap-delay`), and with the key up the microphone keeps 1.19 s instead of 0.5 s
 (0.3 s before the corrected press, plus the delay), so the first word is still there. A lost second tap ends the utterance at 59 s. Checked with
 two injected play/pause keys 6 s apart: one utterance, press and release 0.69 s before the keys, 6.6 s of
-audio, and a hook installed before the sidecar's saw neither key. Not yet used in a live run.
+audio, and a hook installed before the sidecar's saw neither key. Used live on Oct 31 for the run the film shows (`voice/20261031-235414`, below).
 
 ## With a real voice: one run (Oct 29)
 
