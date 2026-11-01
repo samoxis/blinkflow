@@ -17,7 +17,7 @@ STEP = 0.005
 SCENES = ("incident", "obstacle_moved", "target_moved")
 
 
-def replay(out, brain=ROBOT, scene="incident", seconds=6., fps=30., video=True):
+def replay(out, brain=ROBOT, scene="incident", seconds=6., fps=30., video=True, size=(960,720)):
     out, brain = pathlib.Path(out).resolve(), pathlib.Path(brain).resolve()
     out.mkdir(parents=True, exist_ok=False)
     spec = importlib.util.spec_from_file_location("arm_controller", brain/"brain.py")
@@ -35,9 +35,12 @@ def replay(out, brain=ROBOT, scene="incident", seconds=6., fps=30., video=True):
     controller = ctl.Brain(brain, model.geom_pos[gid("target")])
     data.qpos[:] = ctl.ik(*ctl.START)
     mujoco.mj_forward(model,data)
-    renderer = mujoco.Renderer(model,720,960) if video else None
+    width, height = size
+    model.vis.global_.offwidth = max(model.vis.global_.offwidth, width)
+    model.vis.global_.offheight = max(model.vis.global_.offheight, height)
+    renderer = mujoco.Renderer(model,height,width) if video else None
     encoder = subprocess.Popen(["ffmpeg","-v","error","-y","-f","rawvideo","-pix_fmt","rgb24",
-                                "-s","960x720","-r",str(fps),"-i","-","-c:v","libx264",
+                                "-s",f"{width}x{height}","-r",str(fps),"-i","-","-c:v","libx264",
                                 "-preset","fast","-crf","18","-pix_fmt","yuv420p",str(out/"shot.mp4")],
                                stdin=subprocess.PIPE) if video else None
     rows, contacts, times, episodes, active = [], [], [], [], False
@@ -101,9 +104,11 @@ def main():
     ap.add_argument("--scene",choices=SCENES,default="incident")
     ap.add_argument("--fps",type=float,default=30.)
     ap.add_argument("--out",default=str(STATE/("twin-"+time.strftime("%Y%m%d-%H%M%S"))))
+    ap.add_argument("--size",default="960x720",help="video size, WIDTHxHEIGHT; the physics and the record do not change")
     ap.add_argument("--no-video",action="store_true")
     a=ap.parse_args()
-    print(json.dumps(replay(a.out,a.brain,a.scene,a.seconds,a.fps,not a.no_video)))
+    size=tuple(int(v) for v in a.size.split("x"))
+    print(json.dumps(replay(a.out,a.brain,a.scene,a.seconds,a.fps,not a.no_video,size)))
 
 
 if __name__=="__main__":
