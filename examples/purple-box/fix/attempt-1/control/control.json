@@ -1,34 +1,36 @@
 {
  "low_cube": {
-  "kind": "contact",
+  "kind": "fall",
   "incident": false,
+  "fixed": false,
   "incident_s": null,
   "fell_s": null,
   "fall_reading": null,
   "contact": false,
   "valid": true,
   "problems": [],
-  "reading": "base",
+  "reading": "whole_mask",
   "first_contact_s": null,
   "first_contact_frame": null,
-  "whole_mask_touch_s": 10.335,
-  "closest_gap_px": 2.0,
-  "closest_s": 10.335,
+  "whole_mask_touch_s": null,
+  "closest_gap_px": null,
+  "closest_s": null,
   "robot_frames": 200,
   "travel_m": 2.446,
   "clean": true,
-  "why": "no contact, no fall; closest gap 2 px",
+  "why": "no contact, no fall",
   "names": [
    "white robot",
-   "gray pillar"
+   "brown step"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/control/low_cube/evidence",
-  "see_s": 52.2,
-  "render_s": 148.3
+  "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/low_cube/evidence",
+  "see_s": 18.2,
+  "render_s": 143.9
  },
  "ledge": {
   "kind": "contact",
   "incident": false,
+  "fixed": false,
   "incident_s": null,
   "fell_s": null,
   "fall_reading": null,
@@ -49,13 +51,14 @@
    "white robot",
    "gray block"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/control/ledge/evidence",
-  "see_s": 49.3,
-  "render_s": 167.5
+  "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/ledge/evidence",
+  "see_s": 28.4,
+  "render_s": 161.5
  },
  "corner": {
   "kind": "contact",
   "incident": false,
+  "fixed": false,
   "incident_s": null,
   "fell_s": null,
   "fall_reading": null,
@@ -76,13 +79,14 @@
    "white robot",
    "red barrier"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/control/corner/evidence",
+  "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/corner/evidence",
   "see_s": 12.2,
-  "render_s": 168.6
+  "render_s": 162.4
  },
  "doorway": {
   "kind": "contact",
   "incident": false,
+  "fixed": false,
   "incident_s": null,
   "fell_s": null,
   "fall_reading": null,
@@ -103,8 +107,8 @@
    "white robot",
    "white rectangle"
   ],
-  "evidence": "~/blinkflow-runs/voice/20261029-170922/fix/attempt-1/control/doorway/evidence",
-  "see_s": 11.0,
-  "render_s": 164.4
+  "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/attempt-1/control/doorway/evidence",
+  "see_s": 9.3,
+  "render_s": 158.8
  }
 }

@@ -4,10 +4,10 @@
    "model": "muse-glimmer",
    "where": "local",
    "purpose": "name the robot and the object or hazard nearest to it",
-   "seconds": 2.67,
+   "seconds": 2.43,
    "images": 3,
    "input_tokens": 1411,
-   "output_tokens": 60,
+   "output_tokens": 56,
    "cost_usd": 0.0
   },
   {
@@ -35,19 +35,8 @@
   {
    "model": "sam-3.1",
    "where": "cached",
-   "purpose": "track 'white robot' (frames 110-219, sent from 95)",
-   "seconds": 0.44,
-   "frames": 125,
-   "frames_returned": 105,
-   "cache_key": "58e6d0dc539cfc3a7aaff5c590d1aa287dcfdf4f20ae51f842dcbaa6a3d41872",
-   "original_seconds": 8.54,
-   "cost_usd": 0.0
-  },
-  {
-   "model": "sam-3.1",
-   "where": "cached",
    "purpose": "track 'white robot' (frames 0-109, sent from 0)",
-   "seconds": 0.51,
+   "seconds": 0.32,
    "frames": 110,
    "frames_returned": 110,
    "cache_key": "ac6cd3bd09777da8a6946511857b133a80f424d40d035df43ea92d7390e69aa0",
@@ -55,23 +44,34 @@
    "cost_usd": 0.0
   },
   {
+   "model": "sam-3.1",
+   "where": "cached",
+   "purpose": "track 'white robot' (frames 110-219, sent from 95)",
+   "seconds": 0.46,
+   "frames": 125,
+   "frames_returned": 105,
+   "cache_key": "58e6d0dc539cfc3a7aaff5c590d1aa287dcfdf4f20ae51f842dcbaa6a3d41872",
+   "original_seconds": 8.54,
+   "cost_usd": 0.0
+  },
+  {
    "model": "muse-spark-open-1026",
    "where": "Baseten",
    "purpose": "name the robot and the object or hazard nearest to it",
-   "seconds": 5.93,
+   "seconds": 7.82,
    "images": 3,
    "input_tokens": 1500,
    "cached_input_tokens": 0,
-   "output_tokens": 808,
-   "cost_usd": 0.00531
+   "output_tokens": 1239,
+   "cost_usd": 0.00714
   },
   {
    "model": "sam-3.1",
    "where": "Meta Model API",
-   "purpose": "track 'gray pillar' (frames 0-109, sent from 0)",
-   "seconds": 25.45,
+   "purpose": "track 'brown step' (frames 0-109, sent from 0)",
+   "seconds": 5.03,
    "frames": 110,
-   "frames_returned": 110,
+   "frames_returned": 0,
    "usage": {
     "input_tokens": 0,
     "input_tokens_details": {
@@ -84,16 +84,16 @@
     "total_tokens": 0,
     "video_frames_processed": 110
    },
-   "cache_key": "59bd0e016e18ef7cbb5fd1eb46f700b4c44e2673fb0ceeea3191d77012b952a8",
+   "cache_key": "599ba3ab6c8690adf645aa8754c3cbdd8ae94a499a3d6adf7dff29927e4e749d",
    "cost_usd": 0.022
   },
   {
    "model": "sam-3.1",
    "where": "Meta Model API",
-   "purpose": "track 'gray pillar' (frames 110-219, sent from 95)",
-   "seconds": 34.41,
+   "purpose": "track 'brown step' (frames 110-219, sent from 95)",
+   "seconds": 5.21,
    "frames": 125,
-   "frames_returned": 125,
+   "frames_returned": 0,
    "usage": {
     "input_tokens": 0,
     "input_tokens_details": {
@@ -106,11 +106,11 @@
     "total_tokens": 0,
     "video_frames_processed": 125
    },
-   "cache_key": "ed723eee7382203500fe8571d487f18b6a8dc9970afb177f7a691d0110a0190f",
+   "cache_key": "ef998bf508a9634c1936746d57ee63bbc4f23b4e0c209044d6795a9e07a85cd8",
    "cost_usd": 0.025
   }
  ],
- "total_cost_usd": 0.05231,
+ "total_cost_usd": 0.05414,
  "prices": {
   "sam-3.1": "$0.20 per 1000 frames",
   "muse-spark-open-1026": "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",

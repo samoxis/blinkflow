@@ -1,54 +1,55 @@
 # Diagnosis: white robot touches the purple box
 
-**Cause:** `brain.toml`, `[obstacle] side_memory_seconds`, lines 29-29. side_memory_seconds is set to 0.0, disabling the hazard memory for wall returns near the body
+**Cause:** `brain.toml`, `obstacle.side_memory_seconds`, lines 29-29. The time for remembering wall returns near the robot's side is set to zero, so side hazards are never retained once they leave the current central view.
 
-**In plain words:** The box approached at the very edge of the depth sensor's view, beside the robot rather than in the centre of its path, so the ordinary check of what lies directly ahead stayed clear and the robot kept walking. A separate safeguard exists that remembers nearby surfaces seen at the sides, but that memory was switched off in the settings, so those edge sightings left no trace and were never acted on.
+**In plain words:** The box was beside the robot rather than squarely ahead, so as the robot drew level with it the box slipped out of the sensor's central view and the way ahead looked clear. Because remembering nearby side obstacles was switched off, the robot forgot the close obstacle it had seen at its side and kept walking straight until it touched the box.
 
-**What happened:** The robot walked straight into the purple box that approached on its side, touching it at t=11.202 (frame 163) without ever slowing, steering away, braking or turning.
+**What happened:** Robot walking forward in K1-K3 with the purple box close to its side, then touching it in K4, while the brain log stays in forward with vx=0.24 throughout.
 
-**Confidence:** 0.62  ·  **Fix direction (no patch):** Give the near-body side memory a positive retention time (as in the built-in defaults) so wall returns seen in the outer columns are kept and fed into the view ahead, then re-run this recording to confirm the robot steers or stops before the box.
+**Confidence:** 0.78  ·  **Fix direction (no patch):** Restore a positive remembering time for near-body wall returns in the configuration (for example the built-in few seconds), so a side obstacle seen shortly before it leaves the view still steers or stops the robot while it passes.
 
 ## Evidence cited
 
-- *frame* `K2, t=10.702`: gap 2.0 px, feet past base edge -81.4 px. The purple box is already touching the robot on screen at its side, while its feet are still -81.4 px from the base's far edge, i.e. this is a side/edge obstacle, not a centred obstacle straight ahead.
-- *frame* `K4, t=11.202`: gap 1.0 px, feet past base edge -9.2 px. First real contact: the box is close to the robot's left side and partially in front of it, confirming contact with an object at the edge of the robot rather than in the middle of its path.
-- *log* `brain log t=10.722 to t=11.424`: state=forward, cmd=move, vx=0.24 for every tick. The brain never left forward, never braked or turned, and kept commanding vx=0.24 right through contact, so the obstacle never entered the view the forward state acts on.
-- *measurement* `full depth frame t=11.123`: column 0 = 109/105/101/70/68 cm in rows 0-4 vs column 1 = 126/124/117/116/116 cm. Just before contact the close object is only in the outermost left column (68-70 cm in rows 3-4, 101-109 cm in rows 0-2) while columns 1 onward are 101 cm or more; the central wall analysis therefore sees a clear way.
-- *measurement* `full depth frame t=11.223`: column 0 = 67/66/63/62/63 cm vs column 1 = 112/108/107/108/108 cm. At contact the same pattern holds: column 0 reads 62-67 cm while column 1 reads 107-112 cm, so the object stayed in the edge column the whole time.
-- *log* `brain log t=8.217 to t=11.424`: safe=yes on every tick, fresh frames marked '*' regularly. Depth frames kept arriving (new-frame marks throughout) and safe=yes throughout, so this was not a sensor-dropout, fall or health hold.
+- *frame* `K1 t=9.869`: gap 34.0 px, feet -166.3 px past the base edge. The purple box is already close beside the robot, not directly in its central path.
+- *frame* `K2 t=10.369`: gap 8.2 px. The box remains beside the robot's leg as it keeps walking.
+- *frame* `K4 t=10.869`: gap 2.0 px. First contact with the box beside the robot's front.
+- *log* `log t=10.775`: dt=-0.094, state=forward. Just before contact the brain is still in forward, commanding vx=0.24 and only vyaw=+0.050; it never brakes or turns away.
+- *log* `depth t=10.775`: rows 0-4, cols 1-6 all >= about 124 cm. The central wall rows contain no near obstacle: the closest central-column returns are about 1.24 m, above both the 0.70 m steering distance and 0.28 m stop distance, so the current front view alone looks clear while the box is at the side.
+- *log* `depth t=7.918`: cols 0-3 rows 0-4 approx 62-97 cm. Earlier the sensor did register close returns on one side, around 0.62-0.89 m in the left-hand columns while the opposite side reached about 2.9 m; those are the kind of near-body wall returns that side memory exists to retain.
 
 ## Ruled out
 
-- A centred wall obstacle that the forward/brake logic saw but handled too late: The brain stayed in forward with vx=0.24 on every tick from t=8.217 to t=11.424 and no brake/turn state ever appears; also the central columns in the full frames at t=11.123 and t=11.223 read over 1 m, never under the stop distance.
-- A fall, unhealthy robot, or missing depth frames causing a hold or blindness: safe=yes on every log tick and new depth frames are marked arriving throughout, up to and past contact at t=11.202.
-- A low floor-level object or a single noisy depth zone: The close return appears in the top and middle sensor rows too (rows 0-4 in column 0 at t=11.223), not only in the bottom floor rows, and it persists across frames 10.722 to 11.223 rather than flickering once.
-- The central front columns (1-6) excluding column 0, on its own: The outermost-column returns would have been eligible for the side-hazard memory (within its forward and sideways band); what removed them was the zero retention setting, not the central-column window, which is a deliberate design split between the two mechanisms.
+- Safety hold, fall detection or missing depth stopping it too late: Every log tick from t=7.918 to t=11.076 says safe=yes and stays in forward, and the robot visibly walks in K1-K3.
+- Sensor blindness or a blind-frame false clear: At t=9.873, t=10.374 and t=10.775 the central rows have many valid returns and no near central obstacle; there is no blind-frame signature, and the state never leaves forward.
+- Failure to brake after the front view reported an obstacle: At t=10.775 the central wall distances are roughly 1.24 m or more, far beyond the stop threshold, so a correctly triggered brake or turn state would have appeared in the log; none does.
+- Commanded walking speed below the stepping threshold: The log shows repeated commanded forward motion at 0.24 and the camera shows the robot actually advancing toward the box in K1-K4; this was not a stationary threshold failure.
+- Low-object or drop handling in the bottom rows as the primary failure: The contact in K4 is at the robot's side and the near hazard is absent from the central front columns in the t=10.775 frame, which matches a side obstacle lost from view rather than a low object or drop straight ahead in the bottom rows.
 
 ## Check against what was sent
 
 - file exists: True; lines in range: True; function found: True
-- key frames cited: K2, K4; log ticks cited: 8.217, 10.702, 10.722, 11.123, 11.202, 11.223, 11.424
+- key frames cited: K1, K2, K4; log ticks cited: 7.918, 9.869, 10.369, 10.775, 10.869
 - references that match nothing sent: none
-- **grounded in pixels and log: yes**
+- **grounded (file, lines and function real; key frames and log ticks cited that exist): yes**
 
 ## Key frames
 
-**K1** 1 s before contact, t = 10.20 s. Glimmer: *The robot is walking forward with its legs lifted off the ground, and the purple box is to the left of the robot in the picture, slightly below and in front of it, close to its left leg.*
+**K1** 1 s before contact, t = 9.87 s. Glimmer: *The robot is walking forward with its legs apart and its feet on the ground, and the purple box is to the left of the robot in the picture, slightly below and in front of it, close to the robot’s left side.*
 
 ![K1](keyframes/K1.jpg)
 
-**K2** 0.5 s before contact, t = 10.70 s. Glimmer: *The robot is walking forward with its legs positioned under its body, and the purple box is to the left of the robot in the picture, slightly in front of it and close to its left side.*
+**K2** 0.5 s before contact, t = 10.37 s. Glimmer: *The robot is walking forward with its legs positioned under its body, and the purple box is to the left of the robot, slightly in front of it and close to its left leg.*
 
 ![K2](keyframes/K2.jpg)
 
-**K3** just before contact, t = 11.10 s. Glimmer: *The robot is walking forward with its orange feet on the ground and its legs slightly apart, and the purple box is to the left of the robot in the picture, close to its front left side, appearing slightly in front of and to the left of the robot’s body.*
+**K3** just before contact, t = 10.77 s. Glimmer: *The robot is walking forward toward the camera with its legs lifted off the ground, and the purple box is to the left of the robot in the picture, slightly in front of it and close to its left side.*
 
 ![K3](keyframes/K3.jpg)
 
-**K4** first contact, t = 11.20 s. Glimmer: *The robot is standing facing the camera with its orange feet on the ground and its legs slightly apart, and the purple box is to the left of the robot in the picture, close to its left side and partially in front of it.*
+**K4** first contact, t = 10.87 s. Glimmer: *The robot is standing with its legs together and slightly bent, and the purple box is to the left of the robot in the picture, close to its front left side.*
 
 ![K4](keyframes/K4.jpg)
 
 ## Model
 
-muse-wonder-1.0 (Meta Model API), effort medium, 41259 input tokens (30182 cached), 9102 output (7925 reasoning), $0.232, 120 s. Every call of this incident is in `models.json`.
+muse-wonder-1.0 (Meta Model API), effort medium, 41158 input tokens (30310 cached), 7708 output (6666 reasoning), $0.204, 63 s. Every call of this incident is in `models.json`.

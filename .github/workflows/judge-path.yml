@@ -33,7 +33,7 @@ jobs:
           diff = sorted(k for k in a.keys() | b.keys() if a.get(k) != b.get(k))
           print("differs only in:", diff)
           assert diff == ["clip", "snapshot"], diff  # both paths differ: the file was written again, here
-          assert a["first_contact"]["brain_s"] == 11.202, a["first_contact"]
+          assert a["first_contact"]["brain_s"] == 10.869, a["first_contact"]
           PY
       - name: "3. The tests: verdict, control, check, wording (offline, no GPU, no keys)"
         run: |

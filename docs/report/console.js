@@ -1294,7 +1294,9 @@ function render() {
   const bar = document.getElementById("askbar");
   const open = pending();
   const a = last(open);
-  if (a && !(shown === (a.question === "Fix it?" ? "ask" : "proof"))) {
+  // shown whenever a question is open, except on "Fix it?"'s own step, where the whole panel is the question;
+  // on the proof step "Keep the fix?" sits under the replay and can fall below the window's edge
+  if (a && !(shown === "ask" && a.question === "Fix it?")) {
     bar.hidden = false;
     bar.replaceChildren(h("div", { class: "q" }, a.question),
       h("div", { class: "ctx" }, a.question === "Fix it?" ? a.cause : `with the fix: ${a.after} · before: ${a.before}`),

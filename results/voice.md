@@ -100,8 +100,8 @@ audio, and a hook installed before the sidecar's saw neither key. Not yet used i
 
 ## With a real voice: one run (Oct 29)
 
-`python3 -m blinkflow.voice live` on the purple box, run `voice/20261029-170922`, now
-[`examples/purple-box/`](../examples/purple-box). The person held F9 and spoke into the Ray-Ban Meta
+`python3 -m blinkflow.voice live` on the purple box, run `voice/20261029-170922`, the public example until
+Oct 31 ([`examples/purple-box/` at `948e88d`](https://github.com/samoxis/blinkflow/tree/948e88d/examples/purple-box)). The person held F9 and spoke into the Ray-Ban Meta
 glasses' microphone (Bluetooth); BlinkFlow's clock is the brain's.
 
 | said (Muse Voice Transcribe) | audio (s) | transcribed in (s) | read by Glimmer | key down (s) | moment said (s) | SAM 3.1 first contact (s) | moment said - seen (s) |
@@ -114,6 +114,19 @@ glasses' microphone (Bluetooth); BlinkFlow's clock is the brain's.
 - The doubled "leg" came from the transcription, as with espeak; it did not change the reading.
 - The person's "two seconds ago" landed 0.2 s before SAM 3.1's first contact. One data point, measured
   against what BlinkFlow saw, not against the simulator's contact log.
+
+## The public example: a tap on the glasses (Oct 31)
+
+Run `voice/20261031-235414`, now [`examples/purple-box/`](../examples/purple-box), with `--tap-to-talk`: a tap on
+the glasses' arm started the recording and the next one stopped it (`trigger: "glasses-tap"`).
+
+| said (Muse Voice Transcribe) | audio (s) | transcribed in (s) | read by Glimmer | key down (s) | moment said (s) | SAM 3.1 first contact (s) | moment said - seen (s) |
+|---|---|---|---|---|---|---|---|
+| a couple of seconds ago the robot hit the purple box. | 4.8 | 2.19 | 2 s ago, contact, robot / purple box (1.37 s) | 13.483 | 11.483 | 10.869 (base reading) | **+0.61** |
+
+- Fixed in attempt 1 (`side_memory_seconds` 0.0 → 3.0, kept as `93f3f41`): contacts 1 -> 0, control 5/5 as part
+  of the acceptance, 386.6 s of machine time, $0.38 (50 of 58 SAM 3.1 replies cached). Both answers yes, in
+  the console, after 3.3 s and 4.0 s.
 
 Still to run, for more than one data point:
 

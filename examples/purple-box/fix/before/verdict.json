@@ -1,6 +1,7 @@
 {
  "kind": "contact",
  "incident": true,
+ "fixed": false,
  "incident_s": 11.455,
  "fell_s": null,
  "fall_reading": null,
@@ -12,11 +13,11 @@
  "first_contact_frame": 413,
  "whole_mask_touch_s": 10.65,
  "closest_gap_px": 1.0,
- "closest_s": 10.65,
- "robot_frames": 172,
- "travel_m": 3.152,
- "meta": "./twin/20261029-171033/meta.json",
- "evidence": "~/blinkflow-runs/voice/20261029-170922/fix/before/evidence",
- "replay_s": 24.9,
- "see_s": 14.5
+ "closest_s": 10.685,
+ "robot_frames": 175,
+ "travel_m": 3.256,
+ "meta": "./twin/20261031-235525/meta.json",
+ "evidence": "~/blinkflow-runs/voice/20261031-235414/fix/before/evidence",
+ "replay_s": 30.9,
+ "see_s": 19.1
 }

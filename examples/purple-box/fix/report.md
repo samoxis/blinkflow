@@ -1,26 +1,26 @@
 # BlinkFlow: white robot touches the purple box
 
-**Fixed and verified in attempt 1 of 1.** Seen -> fixed and verified: **234 s** of machine time (the person took 7.5 s to answer "Fix it?", not counted; 454 s in all with the control and the answers).
+**Fixed and verified in attempt 1 of 1.** Seen -> fixed and verified: **387 s** of machine time (the control in every other scene included; the person took 3.3 s to answer "Fix it?", not counted; 362 s in all with the answers).
 
 ## What was seen
 
-Snapshot `../window/snapshot.json` (live run, wall clock). Named by glimmer: robot = *white robot*, object = *purple box*. First contact (base reading) at frame 163, t = 11.202 s after the brain starts, 2026-10-29T17:09:55.286+00:00.
+Snapshot `../window/snapshot.json` (live run, wall clock). Named by glimmer: robot = *white robot*, object = *purple box*. First contact (base reading) at frame 133, t = 10.869 s after the brain starts, 2026-10-31T23:54:47.076+00:00.
 
 ![incident](../window/evidence/evidence.png)
 
 ## Cause (Muse Wonder)
 
-`brain.toml`, `[obstacle] side_memory_seconds`, lines 29-29: side_memory_seconds is set to 0.0, disabling the hazard memory for wall returns near the body
+`brain.toml`, `obstacle.side_memory_seconds`, lines 29-29: The time for remembering wall returns near the robot's side is set to zero, so side hazards are never retained once they leave the current central view.
 
-In plain words: The box approached at the very edge of the depth sensor's view, beside the robot rather than in the centre of its path, so the ordinary check of what lies directly ahead stayed clear and the robot kept walking. A separate safeguard exists that remembers nearby surfaces seen at the sides, but that memory was switched off in the settings, so those edge sightings left no trace and were never acted on.
+In plain words: The box was beside the robot rather than squarely ahead, so as the robot drew level with it the box slipped out of the sensor's central view and the way ahead looked clear. Because remembering nearby side obstacles was switched off, the robot forgot the close obstacle it had seen at its side and kept walking straight until it touched the box.
 
-Confidence 0.62; grounded in key frames and log ticks: yes. Full diagnosis: `../window/evidence/diagnosis.md`.
+Confidence 0.78; grounded (the file, its lines and function real; key frames and log ticks cited that exist): yes. Full diagnosis: `../window/evidence/diagnosis.md`.
 
 ## The fix
 
-Muse Code: Changed `side_memory_seconds` in brain.toml from 0.0 to 3.0, restoring the built-in default. This re-enables the side-hazard memory so wall returns seen in the outer depth columns are retained and merged into the view ahead, letting the robot steer or stop before a side object like the purple box.
+Muse Code: I set `obstacle.side_memory_seconds` in brain.toml from 0.0 back to the built-in 3.0. With zero the robot forgot the close side wall returns as soon as the box left the central view, so it kept walking forward into it.
 
-1 file changed, 1 insertion(+), 1 deletion(-). Committed in the target as `77db417` (base `b2fe90a`).
+1 file changed, 1 insertion(+), 1 deletion(-). Committed in the target as `93f3f41` (base `b2fe90a`).
 
 ```diff
 diff --git a/brain.toml b/brain.toml
@@ -44,8 +44,8 @@ The verdict comes from SAM 3.1 masks on the rendered incident shot, following th
 
 | replay | contact | first contact (s) | masks touch on screen (s) | closest gap (px) | walked (m) |
 |---|---|---|---|---|---|
-| before (base commit) | **yes** | 11.455 | 10.650 | 1 | 3.15 |
-| attempt 1 (kept) | **no** | - | - | 106 | 2.78 |
+| before (base commit) | **yes** | 11.455 | 10.650 | 1 | 3.26 |
+| attempt 1 (kept) | **no** | - | - | 106 | 2.89 |
 
 ![before](before/evidence/evidence.png)
 
@@ -57,7 +57,7 @@ Replayed in the twin, each scene's shot followed by SAM 3.1 (every 3rd frame) wi
 
 | scene | named | clean | why |
 |---|---|---|---|
-| low_cube | white robot / gray pillar | yes | no contact, no fall; closest gap 2 px |
+| low_cube | white robot / brown step | yes | no contact, no fall |
 | ledge | white robot / gray block | yes | no contact, no fall; closest gap 0 px |
 | corner | white robot / red barrier | yes | no contact, no fall; closest gap 50 px |
 | doorway | white robot / white rectangle | yes | no contact, no fall; closest gap 36 px |
@@ -67,9 +67,10 @@ Replayed in the twin, each scene's shot followed by SAM 3.1 (every 3rd frame) wi
 ### Attempt 1: kept
 
 - diagnosis used: `../window/evidence/diagnosis.md` (cause `brain.toml::[obstacle] side_memory_seconds`)
-- Muse Code: completed, 37 s, 1 file changed, 1 insertion(+), 1 deletion(-); files: brain.toml
-- its note: Changed `side_memory_seconds` in brain.toml from 0.0 to 3.0, restoring the built-in default. This re-enables the side-hazard memory so wall returns seen in the outer depth columns are retained and merged into the view ahead, letting the robot steer or stop before a side object like the purple box.
-- replay: no contact; closest gap 106 px at t = 12.89 s
+- Muse Code: completed, 42 s, 1 file changed, 1 insertion(+), 1 deletion(-); files: brain.toml
+- its note: I set `obstacle.side_memory_seconds` in brain.toml from 0.0 back to the built-in 3.0. With zero the robot forgot the close side wall returns as soon as the box left the central view, so it kept walking forward into it.
+- control: low_cube clean; ledge clean; corner clean; doorway clean
+- replay: no contact; closest gap 106 px at t = 12.93 s
 
 ## Time
 
@@ -78,17 +79,17 @@ Stages marked background run beside the others, so the column does not add up to
 | stage | from (s) | s |
 |---|---|---|
 | Glimmer loaded and kept warm (background) | 0 | 0 |
-| Muse Wonder's prompt cache: instructions + code (background) | 0 | 2 |
-| replay before any change: twin render (background) | 0 | 25 |
-| understand (Glimmer key frames, Muse Wonder) | 2 | 130 |
-| replay before any change: SAM 3.1 + verdict (background) | 25 | 14 |
-| attempt 1: the person decides to fix | 132 | 8 |
-| wait for the replay before any change | 140 | 0 |
-| attempt 1: Muse Code edits the target | 140 | 37 |
-| attempt 1: replay and look again | 176 | 33 |
-| attempt 1: control, every other scene (pixels) | 210 | 232 |
-| attempt 1: the person decides to keep | 442 | 13 |
-| **total** | 0 | **454** |
+| Muse Wonder's prompt cache: instructions + code (background) | 0 | 3 |
+| replay before any change: twin render (background) | 0 | 31 |
+| understand (Glimmer key frames, Muse Wonder) | 3 | 74 |
+| replay before any change: SAM 3.1 + verdict (background) | 31 | 19 |
+| attempt 1: the person decides to fix | 77 | 3 |
+| wait for the replay before any change | 80 | 0 |
+| attempt 1: Muse Code edits the target | 80 | 42 |
+| attempt 1: replay and look again | 122 | 37 |
+| attempt 1: control, every other scene (pixels) | 158 | 200 |
+| attempt 1: the person decides to keep | 358 | 4 |
+| **total** | 0 | **362** |
 
 The incident's evidence and first diagnosis were made before the loop (the voice or watcher step); their time is not counted above.
 
@@ -96,86 +97,89 @@ The incident's evidence and first diagnosis were made before the loop (the voice
 
 | stage | model | where | purpose | input tokens (cached) | output tokens | cost $ | s |
 |---|---|---|---|---|---|---|---|
-| incident | muse-voice-transcribe-1.0 | Meta Model API | what the person said (push-to-talk) | - | - | 0.0003 | 4 |
-| incident | muse-glimmer | local | when it happened and what it touched, from the person's words | 241 | 29 | 0.0000 | 1 |
-| incident | muse-glimmer | local | name the robot and the object or hazard nearest to it | 1530 | 42 | 0.0000 | 2 |
-| incident | sam-3.1 | Meta Model API | track 'white robot' (frames 0-101, sent from 0) | - | - | 0.0204 | 8 |
-| incident | sam-3.1 | Meta Model API | track 'purple box' (frames 0-101, sent from 0) | - | - | 0.0204 | 10 |
-| incident | sam-3.1 | Meta Model API | track 'white robot' (frames 102-202, sent from 87) | - | - | 0.0232 | 12 |
-| incident | sam-3.1 | Meta Model API | track 'purple box' (frames 102-202, sent from 87) | - | - | 0.0232 | 13 |
-| incident | muse-glimmer | local | describe key frame K1 | 589 | 48 | 0.0000 | 2 |
-| incident | muse-glimmer | local | describe key frame K2 | 591 | 46 | 0.0000 | 3 |
-| incident | muse-glimmer | local | describe key frame K4 | 586 | 53 | 0.0000 | 5 |
-| incident | muse-glimmer | local | describe key frame K3 | 587 | 61 | 0.0000 | 7 |
-| incident | muse-wonder-1.0 | Meta Model API | diagnose (evidence, run 1) | 41259 (30182) | 9102 | 0.2324 | 120 |
-| before | sam-3.1 | cached | track 'white robot' (frames 184-275, sent from 169) | - | - | 0.0000 | 0 |
-| before | sam-3.1 | cached | track 'white robot' (frames 553-644, sent from 538) | - | - | 0.0000 | 0 |
-| before | sam-3.1 | cached | track 'white robot' (frames 0-91, sent from 0) | - | - | 0.0000 | 0 |
-| before | sam-3.1 | cached | track 'white robot' (frames 92-183, sent from 77) | - | - | 0.0000 | 0 |
-| before | sam-3.1 | cached | track 'white robot' (frames 645-736, sent from 630) | - | - | 0.0000 | 0 |
-| before | sam-3.1 | cached | track 'white robot' (frames 276-367, sent from 261) | - | - | 0.0000 | 3 |
-| before | sam-3.1 | cached | track 'white robot' (frames 461-552, sent from 446) | - | - | 0.0000 | 5 |
-| before | sam-3.1 | cached | track 'purple box' (frames 184-275, sent from 169) | - | - | 0.0000 | 5 |
-| before | sam-3.1 | cached | track 'purple box' (frames 92-183, sent from 77) | - | - | 0.0000 | 6 |
-| before | sam-3.1 | cached | track 'purple box' (frames 645-736, sent from 630) | - | - | 0.0000 | 6 |
-| before | sam-3.1 | cached | track 'purple box' (frames 553-644, sent from 538) | - | - | 0.0000 | 6 |
-| before | sam-3.1 | cached | track 'white robot' (frames 368-460, sent from 353) | - | - | 0.0000 | 7 |
-| before | sam-3.1 | cached | track 'purple box' (frames 276-367, sent from 261) | - | - | 0.0000 | 7 |
-| before | sam-3.1 | cached | track 'purple box' (frames 461-552, sent from 446) | - | - | 0.0000 | 8 |
-| before | sam-3.1 | cached | track 'purple box' (frames 368-460, sent from 353) | - | - | 0.0000 | 9 |
-| before | sam-3.1 | cached | track 'purple box' (frames 0-91, sent from 0) | - | - | 0.0000 | 10 |
-| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 92-183, sent from 77) | - | - | 0.0000 | 0 |
-| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 0-91, sent from 0) | - | - | 0.0000 | 0 |
-| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 184-275, sent from 169) | - | - | 0.0000 | 0 |
-| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 553-644, sent from 538) | - | - | 0.0000 | 0 |
-| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 276-367, sent from 261) | - | - | 0.0000 | 0 |
-| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 645-736, sent from 630) | - | - | 0.0000 | 0 |
-| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 368-460, sent from 353) | - | - | 0.0000 | 0 |
-| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 461-552, sent from 446) | - | - | 0.0000 | 1 |
-| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 0-91, sent from 0) | - | - | 0.0000 | 1 |
-| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 184-275, sent from 169) | - | - | 0.0000 | 2 |
-| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 553-644, sent from 538) | - | - | 0.0000 | 3 |
-| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 368-460, sent from 353) | - | - | 0.0000 | 5 |
-| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 645-736, sent from 630) | - | - | 0.0000 | 5 |
-| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 92-183, sent from 77) | - | - | 0.0000 | 5 |
-| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 461-552, sent from 446) | - | - | 0.0000 | 5 |
-| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 276-367, sent from 261) | - | - | 0.0000 | 6 |
-| attempt-1 control corner | muse-glimmer | local | name the robot and the object or hazard nearest to it | 1411 | 53 | 0.0000 | 2 |
+| incident | muse-voice-transcribe-1.0 | Meta Model API | what the person said (push-to-talk) | - | - | 0.0002 | 2 |
+| incident | muse-glimmer | local | when it happened and what it touched, from the person's words | 240 | 28 | 0.0000 | 1 |
+| incident | muse-glimmer | local | name the robot and the object or hazard nearest to it | 1529 | 42 | 0.0000 | 2 |
+| incident | sam-3.1 | Meta Model API | track 'purple box' (frames 0-74, sent from 0) | - | - | 0.0150 | 7 |
+| incident | sam-3.1 | Meta Model API | track 'white robot' (frames 0-74, sent from 0) | - | - | 0.0150 | 8 |
+| incident | sam-3.1 | Meta Model API | track 'white robot' (frames 151-225, sent from 136) | - | - | 0.0180 | 9 |
+| incident | sam-3.1 | Meta Model API | track 'purple box' (frames 151-225, sent from 136) | - | - | 0.0180 | 11 |
+| incident | sam-3.1 | Meta Model API | track 'white robot' (frames 75-150, sent from 60) | - | - | 0.0182 | 12 |
+| incident | sam-3.1 | Meta Model API | track 'purple box' (frames 75-150, sent from 60) | - | - | 0.0182 | 13 |
+| incident | muse-glimmer | local | describe key frame K2 | 591 | 43 | 0.0000 | 2 |
+| incident | muse-glimmer | local | describe key frame K1 | 589 | 53 | 0.0000 | 4 |
+| incident | muse-glimmer | local | describe key frame K4 | 586 | 40 | 0.0000 | 6 |
+| incident | muse-glimmer | local | describe key frame K3 | 587 | 49 | 0.0000 | 8 |
+| incident | muse-wonder-1.0 | Meta Model API | diagnose (evidence, run 1) | 41158 (30310) | 7708 | 0.2036 | 63 |
+| before | sam-3.1 | cached | track 'white robot' (frames 662-755, sent from 647) | - | - | 0.0000 | 0 |
+| before | sam-3.1 | cached | track 'white robot' (frames 94-188, sent from 79) | - | - | 0.0000 | 0 |
+| before | sam-3.1 | cached | track 'white robot' (frames 189-283, sent from 174) | - | - | 0.0000 | 0 |
+| before | sam-3.1 | cached | track 'white robot' (frames 567-661, sent from 552) | - | - | 0.0000 | 0 |
+| before | sam-3.1 | cached | track 'white robot' (frames 0-93, sent from 0) | - | - | 0.0000 | 0 |
+| before | sam-3.1 | cached | track 'white robot' (frames 284-377, sent from 269) | - | - | 0.0000 | 8 |
+| before | sam-3.1 | cached | track 'white robot' (frames 472-566, sent from 457) | - | - | 0.0000 | 12 |
+| before | sam-3.1 | cached | track 'purple box' (frames 0-93, sent from 0) | - | - | 0.0000 | 13 |
+| before | sam-3.1 | cached | track 'purple box' (frames 284-377, sent from 269) | - | - | 0.0000 | 13 |
+| before | sam-3.1 | cached | track 'purple box' (frames 94-188, sent from 79) | - | - | 0.0000 | 13 |
+| before | sam-3.1 | cached | track 'purple box' (frames 472-566, sent from 457) | - | - | 0.0000 | 13 |
+| before | sam-3.1 | cached | track 'purple box' (frames 189-283, sent from 174) | - | - | 0.0000 | 13 |
+| before | sam-3.1 | cached | track 'purple box' (frames 662-755, sent from 647) | - | - | 0.0000 | 13 |
+| before | sam-3.1 | cached | track 'white robot' (frames 378-471, sent from 363) | - | - | 0.0000 | 13 |
+| before | sam-3.1 | cached | track 'purple box' (frames 378-471, sent from 363) | - | - | 0.0000 | 13 |
+| before | sam-3.1 | cached | track 'purple box' (frames 567-661, sent from 552) | - | - | 0.0000 | 13 |
+| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 0-93, sent from 0) | - | - | 0.0000 | 0 |
+| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 189-283, sent from 174) | - | - | 0.0000 | 0 |
+| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 94-188, sent from 79) | - | - | 0.0000 | 0 |
+| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 662-755, sent from 647) | - | - | 0.0000 | 0 |
+| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 284-377, sent from 269) | - | - | 0.0000 | 0 |
+| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 567-661, sent from 552) | - | - | 0.0000 | 0 |
+| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 378-471, sent from 363) | - | - | 0.0000 | 0 |
+| attempt-1 | sam-3.1 | cached | track 'white robot' (frames 472-566, sent from 457) | - | - | 0.0000 | 1 |
+| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 189-283, sent from 174) | - | - | 0.0000 | 3 |
+| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 0-93, sent from 0) | - | - | 0.0000 | 3 |
+| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 567-661, sent from 552) | - | - | 0.0000 | 5 |
+| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 378-471, sent from 363) | - | - | 0.0000 | 5 |
+| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 284-377, sent from 269) | - | - | 0.0000 | 5 |
+| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 472-566, sent from 457) | - | - | 0.0000 | 6 |
+| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 94-188, sent from 79) | - | - | 0.0000 | 6 |
+| attempt-1 | sam-3.1 | cached | track 'purple box' (frames 662-755, sent from 647) | - | - | 0.0000 | 6 |
+| attempt-1 control corner | muse-glimmer | local | name the robot and the object or hazard nearest to it | 1411 | 53 | 0.0000 | 3 |
 | attempt-1 control corner | sam-3.1 | cached | track 'white robot' (frames 0-109, sent from 0) | - | - | 0.0000 | 0 |
-| attempt-1 control corner | sam-3.1 | cached | track 'white robot' (frames 110-219, sent from 95) | - | - | 0.0000 | 0 |
-| attempt-1 control corner | sam-3.1 | cached | track 'red barrier' (frames 110-219, sent from 95) | - | - | 0.0000 | 2 |
+| attempt-1 control corner | sam-3.1 | cached | track 'white robot' (frames 110-219, sent from 95) | - | - | 0.0000 | 1 |
+| attempt-1 control corner | sam-3.1 | cached | track 'red barrier' (frames 110-219, sent from 95) | - | - | 0.0000 | 3 |
 | attempt-1 control corner | sam-3.1 | cached | track 'red barrier' (frames 0-109, sent from 0) | - | - | 0.0000 | 4 |
 | attempt-1 control doorway | muse-glimmer | local | name the robot and the object or hazard nearest to it | 1411 | 58 | 0.0000 | 3 |
+| attempt-1 control doorway | sam-3.1 | cached | track 'white rectangle' (frames 110-219, sent from 95) | - | - | 0.0000 | 2 |
 | attempt-1 control doorway | sam-3.1 | cached | track 'white robot' (frames 110-219, sent from 95) | - | - | 0.0000 | 2 |
-| attempt-1 control doorway | sam-3.1 | cached | track 'white rectangle' (frames 0-109, sent from 0) | - | - | 0.0000 | 3 |
-| attempt-1 control doorway | sam-3.1 | cached | track 'white robot' (frames 0-109, sent from 0) | - | - | 0.0000 | 4 |
-| attempt-1 control doorway | sam-3.1 | cached | track 'white rectangle' (frames 110-219, sent from 95) | - | - | 0.0000 | 4 |
-| attempt-1 control ledge | muse-glimmer | local | name the robot and the object or hazard nearest to it | 1411 | 42 | 0.0000 | 5 |
-| attempt-1 control ledge | sam-3.1 | cached | track 'yellow pit' (frames 0-109, sent from 0) | - | - | 0.0000 | 0 |
+| attempt-1 control doorway | sam-3.1 | cached | track 'white rectangle' (frames 0-109, sent from 0) | - | - | 0.0000 | 2 |
+| attempt-1 control doorway | sam-3.1 | cached | track 'white robot' (frames 0-109, sent from 0) | - | - | 0.0000 | 2 |
+| attempt-1 control ledge | muse-glimmer | local | name the robot and the object or hazard nearest to it | 1411 | 42 | 0.0000 | 4 |
 | attempt-1 control ledge | sam-3.1 | cached | track 'yellow pit' (frames 110-219, sent from 95) | - | - | 0.0000 | 0 |
+| attempt-1 control ledge | sam-3.1 | cached | track 'yellow pit' (frames 0-109, sent from 0) | - | - | 0.0000 | 0 |
 | attempt-1 control ledge | sam-3.1 | cached | track 'white robot' (frames 0-109, sent from 0) | - | - | 0.0000 | 0 |
 | attempt-1 control ledge | sam-3.1 | cached | track 'white robot' (frames 110-219, sent from 95) | - | - | 0.0000 | 0 |
-| attempt-1 control ledge | muse-spark-open-1026 | Baseten | name the robot and the object or hazard nearest to it | 1500 (128) | 446 | 0.0036 | 23 |
-| attempt-1 control ledge | sam-3.1 | cached | track 'gray block' (frames 110-219, sent from 95) | - | - | 0.0000 | 8 |
-| attempt-1 control ledge | sam-3.1 | cached | track 'gray block' (frames 0-109, sent from 0) | - | - | 0.0000 | 13 |
-| attempt-1 control low_cube | muse-glimmer | local | name the robot and the object or hazard nearest to it | 1411 | 60 | 0.0000 | 3 |
+| attempt-1 control ledge | muse-spark-open-1026 | Baseten | name the robot and the object or hazard nearest to it | 1500 | 715 | 0.0049 | 6 |
+| attempt-1 control ledge | sam-3.1 | cached | track 'gray block' (frames 110-219, sent from 95) | - | - | 0.0000 | 6 |
+| attempt-1 control ledge | sam-3.1 | cached | track 'gray block' (frames 0-109, sent from 0) | - | - | 0.0000 | 10 |
+| attempt-1 control low_cube | muse-glimmer | local | name the robot and the object or hazard nearest to it | 1411 | 56 | 0.0000 | 2 |
 | attempt-1 control low_cube | sam-3.1 | cached | track 'floor edge' (frames 0-109, sent from 0) | - | - | 0.0000 | 0 |
 | attempt-1 control low_cube | sam-3.1 | cached | track 'floor edge' (frames 110-219, sent from 95) | - | - | 0.0000 | 0 |
+| attempt-1 control low_cube | sam-3.1 | cached | track 'white robot' (frames 0-109, sent from 0) | - | - | 0.0000 | 0 |
 | attempt-1 control low_cube | sam-3.1 | cached | track 'white robot' (frames 110-219, sent from 95) | - | - | 0.0000 | 0 |
-| attempt-1 control low_cube | sam-3.1 | cached | track 'white robot' (frames 0-109, sent from 0) | - | - | 0.0000 | 1 |
-| attempt-1 control low_cube | muse-spark-open-1026 | Baseten | name the robot and the object or hazard nearest to it | 1500 | 808 | 0.0053 | 6 |
-| attempt-1 control low_cube | sam-3.1 | Meta Model API | track 'gray pillar' (frames 0-109, sent from 0) | - | - | 0.0220 | 25 |
-| attempt-1 control low_cube | sam-3.1 | Meta Model API | track 'gray pillar' (frames 110-219, sent from 95) | - | - | 0.0250 | 34 |
-| incident | muse-wonder-1.0 | Meta Model API | warm the prompt cache (instructions + code) | 30279 | 16 | 0.1214 | 2 |
-| attempt-1 | muse-spark-1.3-contributor | Muse Code (muse serve, sandboxed) -> Meta Model API | fix attempt 1 | 174504 (127059) | 1150 | 0.0052 | 37 |
+| attempt-1 control low_cube | muse-spark-open-1026 | Baseten | name the robot and the object or hazard nearest to it | 1500 | 1239 | 0.0071 | 8 |
+| attempt-1 control low_cube | sam-3.1 | Meta Model API | track 'brown step' (frames 0-109, sent from 0) | - | - | 0.0220 | 5 |
+| attempt-1 control low_cube | sam-3.1 | Meta Model API | track 'brown step' (frames 110-219, sent from 95) | - | - | 0.0250 | 5 |
+| incident | muse-wonder-1.0 | Meta Model API | warm the prompt cache (instructions + code) | 30279 (30182) | 16 | 0.0067 | 3 |
+| attempt-1 | muse-spark-1.3-contributor | Muse Code (muse serve, default profile) -> Meta Model API | fix attempt 1 | 174896 (127187) | 1444 | 0.0053 | 42 |
 
-Total $0.502. Every call is in `models.json`; Muse Code's cost is the host's own estimate, or, when the host reports none, priced from its token counts.
+Total $0.377. Every call is in `models.json`; Muse Code's cost is the host's own estimate, or, when the host reports none, priced from its token counts.
 
 ## Guardrails
 
-- the person decided: Fix it? yes (attempt 1, 8 s); Keep the fix? yes (attempt 1, 13 s)
-- Muse Code ran under the host's default sandboxed profile (not `:unrestricted`), approval mode `promptUnmatched`; edits are approved only when every path is inside the target.
-- BlinkFlow's gate (muse-gate/, a PreToolUse hook) checked every tool call before it ran: 6 calls, blocked: 0.
+- the person decided: Fix it? yes (attempt 1, 3 s); Keep the fix? yes (attempt 1, 4 s)
+- control: every other twin scene replayed with the change and judged from pixels before anything was called fixed; a scene not clean undoes the change.
+- Muse Code ran under the host's default sandboxed profile (not `:unrestricted`; it does not stop a read or a write outside the target), approval mode `promptUnmatched`; edits are approved only when every path is inside the target.
+- BlinkFlow's gate (muse-gate/, a PreToolUse hook: a filter on the paths each call names, not an isolation) checked every tool call before it ran: 6 calls, blocked: 0.
 - approval requests that reached BlinkFlow: 0 (in-workspace reads and edits are allowed by the host's own rules and never ask).
 - every tool call was audited after each turn (file paths, paths named in shell commands); an attempt with a call outside the target, a commit of its own, or no change is undone unreplayed.
 - the simulator's contact log and the twin's record of falls are not read by BlinkFlow; the scorers (tools/live_check.py, tools/bug_suite.py) do that.

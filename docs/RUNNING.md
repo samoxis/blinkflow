@@ -59,11 +59,11 @@ sh ~/microduck/scripts/seed-policies.sh ~/.cache/duck-sim/policies
 
 **4. One loop on the purple box**
 
-Without the sidecar (any Linux, no simulator window): the recorded live clip in [`examples/purple-box/window/`](../examples/purple-box/window) plays on the clock as if it were the 60 s buffer, the key goes down at 13.00 s of the brain's time (the leg touches the box at 11.20 s), and the sentence is typed. From there on it is the same loop as live; only the proof needs the twin.
+Without the sidecar (any Linux, no simulator window): the recorded live clip in [`examples/purple-box/window/`](../examples/purple-box/window) plays on the clock as if it were the 60 s buffer, the key goes down at 13.48 s of the brain's time (the leg touches the box at 10.87 s), and the sentence is typed. From there on it is the same loop as live; only the proof needs the twin.
 
 ```bash
-python3 -m blinkflow.voice clip examples/purple-box/window/snapshot.json --press 13.00 \
-  --text "two seconds ago, the right leg hit the purple box" --brain ~/duck-target --auto
+python3 -m blinkflow.voice clip examples/purple-box/window/snapshot.json --press 13.48 \
+  --text "a couple of seconds ago the robot hit the purple box" --brain ~/duck-target --auto
 ```
 
 Live (Windows 11 + WSL2). On the Windows side: Python 3 on the PATH as `python` (the sidecar, [`sidecar/capture.py`](../sidecar/capture.py), uses only the standard library), an `ffmpeg` with `ddagrab` and NVENC on the PATH, and Google Chrome. The browser view and the camera of the simulator go into `microduck_rl`'s environment once:
