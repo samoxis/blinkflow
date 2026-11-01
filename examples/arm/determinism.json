@@ -1,13 +1,13 @@
 {
- "command": "python -m arm.twin --brain arm --seconds 6",
+ "command": "python3 -m blinkflow.arm.twin --seconds 6",
  "record_sha256": [
-  "2a4c4acc0e9cecbc19513979208d708f542aaaf33a13cd405c8396a330aabae5",
-  "2a4c4acc0e9cecbc19513979208d708f542aaaf33a13cd405c8396a330aabae5"
+  "21c0f2ae0da98c1e048e501db1bddbc7c312446f0393acc57691be70a928b011",
+  "21c0f2ae0da98c1e048e501db1bddbc7c312446f0393acc57691be70a928b011"
  ],
  "video_sha256": [
-  "7e6010ff3ff8624ff0e441cc2d49fe5341fa8e3ab471004e8b1d7c0b5aff51fe",
-  "7e6010ff3ff8624ff0e441cc2d49fe5341fa8e3ab471004e8b1d7c0b5aff51fe"
+  "6ccce3dd9555b5029e70dac0b51434986b48fe7d00bef0fbd9dab264c2b2dd3f",
+  "6ccce3dd9555b5029e70dac0b51434986b48fe7d00bef0fbd9dab264c2b2dd3f"
  ],
- "saved_after_record_sha256": "2a4c4acc0e9cecbc19513979208d708f542aaaf33a13cd405c8396a330aabae5",
+ "saved_after_record_sha256": "21c0f2ae0da98c1e048e501db1bddbc7c312446f0393acc57691be70a928b011",
  "planted_repeat_record_sha256": "291bd97ee218e2c03c8c44ef19209c7276c1c59af1954f4229808f9f4732f08a"
 }

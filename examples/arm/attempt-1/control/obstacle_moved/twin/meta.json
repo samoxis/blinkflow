@@ -1,5 +1,5 @@
 {
- "brain": "~/blinkflow-arm/arm",
+ "brain": "~/blinkflow/blinkflow/arm/robot",
  "scene": "obstacle_moved",
  "seconds": 6.0,
  "settle": 0.0,
@@ -67,6 +67,6 @@
  "brain_start_sim": 0.0,
  "fps": 9.5,
  "step": 0.005,
- "record_sha256": "2a4c4acc0e9cecbc19513979208d708f542aaaf33a13cd405c8396a330aabae5",
+ "record_sha256": "21c0f2ae0da98c1e048e501db1bddbc7c312446f0393acc57691be70a928b011",
  "wall_s": 0.69
 }

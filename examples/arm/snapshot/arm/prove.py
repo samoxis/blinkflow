@@ -7,9 +7,9 @@ import math
 import pathlib
 
 from blinkflow import prove as original, see
-from . import budget, twin, see as arm_see
+from . import HERE, ROBOT, budget, twin, see as arm_see
 
-NAMES=json.loads((twin.ROOT/"arm/obstacles.json").read_text())
+NAMES=json.loads((HERE/"obstacles.json").read_text())
 
 
 def pixels(ev):
@@ -63,7 +63,7 @@ def look(meta_path,out,reference=None,reuse=False,control=False):
     return v
 
 
-def prove(out,brain=twin.ROOT/"arm",reference=None):
+def prove(out,brain=ROBOT,reference=None):
     out=pathlib.Path(out)
     meta=twin.replay(out/"twin",brain)
     incident=look(out/"twin/meta.json",out,reference)

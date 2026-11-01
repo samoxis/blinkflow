@@ -16,7 +16,7 @@
  "closest_s": 4.8,
  "robot_frames": 180,
  "travel_m": 0.381,
- "target_error_m": 3.649259552631773e-13,
+ "target_error_m": 5.384514483351466e-13,
  "target_reached": true,
  "full_tracking": true,
  "evidence": "./evidence",

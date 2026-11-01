@@ -5,19 +5,22 @@ import pathlib
 import threading
 import time
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+from . import REPO, STATE
+
+# the spend ledger is STATE's; the public example's spend is where a new ledger starts
+PRIOR = REPO/"examples/arm/models.json"
 CAP = 3.0
 LOCK = threading.Lock()
 
 
 def book(usd, what):
-    folder = ROOT/".budget"
-    folder.mkdir(exist_ok=True)
+    folder = STATE/".budget"
+    folder.mkdir(parents=True, exist_ok=True)
     with LOCK, (folder/"lock").open("w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         p = folder/"spend.jsonl"
         if not p.exists():
-            prior=ROOT/"examples/arm/models.json"
+            prior=PRIOR
             if prior.exists():
                 with p.open("w") as fh:
                     fh.write(json.dumps({"t":time.time(),"usd":json.loads(prior.read_text())["repo_spend_usd"],
@@ -32,18 +35,18 @@ def book(usd, what):
 
 
 def total():
-    p=ROOT/".budget/spend.jsonl"
+    p=STATE/".budget/spend.jsonl"
     if p.exists():return sum(json.loads(s)["usd"] for s in p.read_text().splitlines())
-    prior=ROOT/"examples/arm/models.json"
+    prior=PRIOR
     return json.loads(prior.read_text())["repo_spend_usd"] if prior.exists() else 0.
 
 
 def configure():
     """Reuse BlinkFlow requests, parser, cache and pricing; keep all state here."""
     from blinkflow import models, sam
-    sam.CACHE=ROOT/".cache/sam"
-    models.SPEND=ROOT/".budget/sam.jsonl"
-    models.WONDER_SPEND=ROOT/".budget/wonder.jsonl"
+    sam.CACHE=STATE/".cache/sam"
+    models.SPEND=STATE/".budget/sam.jsonl"
+    models.WONDER_SPEND=STATE/".budget/wonder.jsonl"
     models.reserve=lambda path,usd,budget,knob,what: book(usd,what)
     models.settle=lambda path,reserved,actual,what: book(actual-reserved,"settle "+what)
     sam.sam_reserve=lambda frames,what: book(frames*models.SAM_PER_FRAME,what)

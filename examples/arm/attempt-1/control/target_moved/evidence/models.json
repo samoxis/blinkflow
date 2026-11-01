@@ -4,7 +4,7 @@
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'red block'",
-   "seconds": 5.37,
+   "seconds": 4.77,
    "frames": 57,
    "frames_returned": 57,
    "usage": {
@@ -19,14 +19,14 @@
     "total_tokens": 0,
     "video_frames_processed": 57
    },
-   "cache_key": "927970b6d7978736ace04e7ec12f57ec4f802b3e03c0250f841568f3ad051d48",
+   "cache_key": "e520db408b5f29ce916a60dea55eafda4d0759b426d517e8d74388941081fb93",
    "cost_usd": 0.0114
   },
   {
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'robot arm'",
-   "seconds": 8.7,
+   "seconds": 10.05,
    "frames": 57,
    "frames_returned": 57,
    "usage": {
@@ -41,7 +41,7 @@
     "total_tokens": 0,
     "video_frames_processed": 57
    },
-   "cache_key": "b0e2a024f0ec112eacb925087a7302f3cc202a4fa5482c751ada3a4b0fb93069",
+   "cache_key": "7aa71804c757116d10282e2451bcdf9e64ff65979ac945a475e591ffc92d0b2e",
    "cost_usd": 0.0114
   }
  ],

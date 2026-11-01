@@ -12,19 +12,19 @@
    "valid": true,
    "contact": false,
    "first_contact_s": null,
-   "target_error_m": 3.649259552631773e-13
+   "target_error_m": 5.384514483351466e-13
   },
   "attempt-1/control/obstacle_moved": {
    "valid": true,
    "contact": false,
    "first_contact_s": null,
-   "target_error_m": 3.649259552631773e-13
+   "target_error_m": 5.384514483351466e-13
   },
   "attempt-1/control/target_moved": {
    "valid": true,
    "contact": false,
    "first_contact_s": null,
-   "target_error_m": 6.062714087186849e-13
+   "target_error_m": 9.5799894193649e-13
   }
  },
  "diagnosis": {
@@ -34,10 +34,11 @@
   "function_ok": true,
   "lines_in_function": true,
   "frames_cited": [
-   "K3",
+   "K1",
    "K4"
   ],
   "log_ticks_cited": [
+   0.0,
    1.35,
    2.0
   ],
@@ -45,9 +46,9 @@
   "grounded": true
  },
  "fix_files": [
-  "arm/brain.toml"
+  "blinkflow/arm/robot/brain.toml"
  ],
- "repo_spend_usd": 0.387256,
+ "repo_spend_usd": 0.687952,
  "physics": {
   "determinism": {
    "before_record_sha256": "291bd97ee218e2c03c8c44ef19209c7276c1c59af1954f4229808f9f4732f08a",
@@ -55,18 +56,18 @@
   },
   "incident": {
    "contact_episodes": 0,
-   "target_error_m": 3.4430513211198717e-13,
-   "record_sha256": "2a4c4acc0e9cecbc19513979208d708f542aaaf33a13cd405c8396a330aabae5"
+   "target_error_m": 5.0808142533697e-13,
+   "record_sha256": "21c0f2ae0da98c1e048e501db1bddbc7c312446f0393acc57691be70a928b011"
   },
   "obstacle_moved": {
    "contact_episodes": 0,
-   "target_error_m": 3.4430513211198717e-13,
-   "record_sha256": "2a4c4acc0e9cecbc19513979208d708f542aaaf33a13cd405c8396a330aabae5"
+   "target_error_m": 5.0808142533697e-13,
+   "record_sha256": "21c0f2ae0da98c1e048e501db1bddbc7c312446f0393acc57691be70a928b011"
   },
   "target_moved": {
    "contact_episodes": 0,
-   "target_error_m": 5.706544726597844e-13,
-   "record_sha256": "00c94457d60aeccf75ef1ec637224cf03abf2826aa762792a7c89cc82d38c3c6"
+   "target_error_m": 9.019986260879995e-13,
+   "record_sha256": "f443028245ba68b01e4d0ec024f1c93750d6e507cd861980b42248c9f328587d"
   }
  }
 }

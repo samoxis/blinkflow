@@ -4,15 +4,15 @@
    "model": "muse-spark-1.3-contributor",
    "where": "Muse Code (muse serve, default profile) -> Meta Model API",
    "purpose": "arm clearance fix attempt 1",
-   "seconds": 107.84,
-   "input_tokens": 330735,
-   "cached_input_tokens": 284808,
-   "output_tokens": 7685,
+   "seconds": 35.19,
+   "input_tokens": 96056,
+   "cached_input_tokens": 63586,
+   "output_tokens": 811,
    "cost_note": "from the host's token counts and the model catalog's prices",
-   "cost_usd": 0.0067
+   "cost_usd": 0.00354
   }
  ],
- "total_cost_usd": 0.0067,
+ "total_cost_usd": 0.00354,
  "prices": {
   "sam-3.1": "$0.20 per 1000 frames",
   "muse-spark-open-1026": "Baseten: $1.25 / 1M input, $0.15 / 1M cached input, $4.25 / 1M output",

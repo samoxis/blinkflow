@@ -124,7 +124,7 @@ The same loop on a hand-written three-joint MuJoCo arm, [`blinkflow/arm/`](../bl
 
 - **Interpreter.** The example was made with `~/microduck_rl/.venv/bin/python` (Python 3.12.3, MuJoCo 3.10.0). That venv has neither `meta-sam-parser` nor the Muse Code SDK, which here live in `~/.local/lib/python3.12/site-packages` (`pip install --user`, the SDK from the launcher above; not vendored in this repo), so with it `PYTHONPATH` must name that folder. Since Nov 1 the system `python3` has `mujoco==3.10.0` in the same user site and runs everything below with `PYTHONPATH` unset; its replays give the example's record hashes.
 - **Rendering.** Offscreen through WSLg: `DISPLAY=:0`, `MUJOCO_GL` unset. `egl` and `osmesa` both fail in this WSL. No viewer window is opened. Replays without video need no display.
-- **State.** Runs, the SAM 3.1 cache and the spend ledger go to `~/blinkflow-runs/arm` (`BLINKFLOW_ARM_STATE` moves it), never into the repo. The ledger starts from the example's spend ($0.38726) and stops at $3.
+- **State.** Runs, the SAM 3.1 cache and the spend ledger go to `~/blinkflow-runs/arm` (`BLINKFLOW_ARM_STATE` moves it), never into the repo. The ledger starts from the example's spend ($0.68795) and stops at $3.
 
 ```bash
 # Offline: no key, network and model calls blocked
@@ -135,12 +135,12 @@ DISPLAY=:0 python3 -m blinkflow.arm.twin --brain examples/arm/brain-before --out
 DISPLAY=:0 python3 -m blinkflow.arm.twin --out ~/blinkflow-runs/arm/manual-after
 ```
 
-A new paid loop: Muse Code's target is `blinkflow/arm/` itself (the gate allows no path outside it), and the loop starts only on a clean tree. Plant the bug and commit it on a branch, then run:
+A new paid loop: Muse Code's target is the robot alone, `blinkflow/arm/robot/` (the gate refuses any path outside it, the harness included), and the loop starts only on a clean tree. Plant the bug and commit it on a branch, then run:
 
 ```bash
 git switch -c arm-loop
-cp examples/arm/brain-before/brain.toml blinkflow/arm/brain.toml && git commit -am "arm: plant clearance = 0.0"
+cp examples/arm/brain-before/brain.toml blinkflow/arm/robot/brain.toml && git commit -am "arm: plant clearance = 0.0"
 DISPLAY=:0 python3 -m blinkflow.arm.run --out ~/blinkflow-runs/arm/loop-1      # --until see | diagnose to stop early
 ```
 
-At most three attempts; a failed one restores only `blinkflow/arm/`. The fix is committed on that branch when the proof and both controls pass.
+At most three attempts; a failed one restores only `blinkflow/arm/robot/`. The fix is committed on that branch when the proof and both controls pass.

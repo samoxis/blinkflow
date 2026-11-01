@@ -11,18 +11,19 @@ import time
 import mujoco
 import numpy as np
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+from . import ROBOT, STATE
+
 STEP = 0.005
 SCENES = ("incident", "obstacle_moved", "target_moved")
 
 
-def replay(out, brain=ROOT/"arm", scene="incident", seconds=6., fps=30., video=True):
+def replay(out, brain=ROBOT, scene="incident", seconds=6., fps=30., video=True):
     out, brain = pathlib.Path(out).resolve(), pathlib.Path(brain).resolve()
     out.mkdir(parents=True, exist_ok=False)
     spec = importlib.util.spec_from_file_location("arm_controller", brain/"brain.py")
     ctl = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ctl)
-    model = mujoco.MjModel.from_xml_path(str(ROOT/"arm/scene.xml"))
+    model = mujoco.MjModel.from_xml_path(str(ROBOT/"scene.xml"))
     gid = lambda name: mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
     if scene not in SCENES:
         raise ValueError(scene)
@@ -95,11 +96,11 @@ def replay(out, brain=ROOT/"arm", scene="incident", seconds=6., fps=30., video=T
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument("--brain",default="arm")
+    ap.add_argument("--brain",default=str(ROBOT))
     ap.add_argument("--seconds",type=float,default=6.)
     ap.add_argument("--scene",choices=SCENES,default="incident")
     ap.add_argument("--fps",type=float,default=30.)
-    ap.add_argument("--out",default="runs/twin-"+time.strftime("%Y%m%d-%H%M%S"))
+    ap.add_argument("--out",default=str(STATE/("twin-"+time.strftime("%Y%m%d-%H%M%S"))))
     ap.add_argument("--no-video",action="store_true")
     a=ap.parse_args()
     print(json.dumps(replay(a.out,a.brain,a.scene,a.seconds,a.fps,not a.no_video)))

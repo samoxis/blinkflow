@@ -8,11 +8,11 @@ import subprocess
 import time
 
 from blinkflow import events, fix, models, prove as original_prove
-from . import budget, diagnose, prove, twin
+from . import REL, REPO, ROBOT, STATE, budget, diagnose, prove, twin, use_target
 
 
 def git(*args):
-    return subprocess.check_output(["git",*args],cwd=twin.ROOT,text=True)
+    return subprocess.check_output(["git",*args],cwd=REPO,text=True)
 
 
 def ledger(out,extra=None):
@@ -33,9 +33,9 @@ def change(base):
     """Inspect every repo path, but only stage the authorized arm subtree."""
     names=git("diff",base,"--name-only").splitlines()
     names+=git("ls-files","--others","--exclude-standard").splitlines()
-    if any(not n.startswith("arm/") for n in names):
-        raise RuntimeError(f"Muse Code changed paths outside arm/: {names}")
-    git("add","--","arm")
+    if any(not n.startswith(REL+"/") for n in names):
+        raise RuntimeError(f"Muse Code changed paths outside {REL}/: {names}")
+    git("add","--",REL)
     return {"diff":git("diff","--cached",base),"files":git("diff","--cached",base,"--name-only").splitlines(),
             "stat":git("diff","--cached",base,"--shortstat").strip(),
             "agent_commits":git("rev-parse","HEAD").strip()!=base}
@@ -43,10 +43,10 @@ def change(base):
 
 def rollback(base):
     """Restore only the checkpointed arm; refuse pre-existing dirty work at entry."""
-    git("restore","--source",base,"--staged","--worktree","--","arm")
-    known=set(git("ls-tree","-r","--name-only",base,"--","arm").splitlines())
-    for p in (twin.ROOT/"arm").rglob("*"):
-        if p.is_file() and str(p.relative_to(twin.ROOT)) not in known and "__pycache__" not in p.parts:
+    git("restore","--source",base,"--staged","--worktree","--",REL)
+    known=set(git("ls-tree","-r","--name-only",base,"--",REL).splitlines())
+    for p in (REPO/REL).rglob("*"):
+        if p.is_file() and str(p.relative_to(REPO)) not in known and "__pycache__" not in p.parts:
             p.unlink()
 
 
@@ -56,8 +56,9 @@ def run(out,until="done",attempts=3):
     out.mkdir(parents=True,exist_ok=True)
     os.environ[events.ENV]=str(out/"events.jsonl")
     budget.configure()
+    use_target()
     # Critical check: never allow the SDK to inherit BlinkFlow's Microduck target.
-    if fix.TARGET != (twin.ROOT/"arm").resolve():
+    if fix.TARGET != ROBOT:
         raise RuntimeError(f"wrong Muse target: {fix.TARGET}")
     manifest=out/"checkpoint.json"
     if not manifest.exists():
@@ -66,7 +67,7 @@ def run(out,until="done",attempts=3):
         base=git("rev-parse","HEAD").strip()
         (out/"brain-before").mkdir()
         for name in ("brain.py","brain.toml"):
-            shutil.copy(twin.ROOT/"arm"/name,out/"brain-before"/name)
+            shutil.copy(ROBOT/name,out/"brain-before"/name)
         manifest.write_text(json.dumps({"base":base,"started":time.time(),"spoken":
                             "a couple of seconds ago the arm hit the red block"},indent=1))
     else:
@@ -133,10 +134,10 @@ def run(out,until="done",attempts=3):
                 l.write(p/"models.json")
                 if rec["problems"]: raise RuntimeError(str(rec["problems"]))
                 changed=rec["change"]["files"]
-                if changed != ["arm/brain.toml"]: raise RuntimeError(f"unexpected fix diff: {changed}")
+                if changed != [REL+"/brain.toml"]: raise RuntimeError(f"unexpected fix diff: {changed}")
                 import tomllib
                 old=tomllib.loads((out/"brain-before/brain.toml").read_text())
-                new=tomllib.loads((twin.ROOT/"arm/brain.toml").read_text())
+                new=tomllib.loads((ROBOT/"brain.toml").read_text())
                 value=new["planner"]["clearance"]
                 new["planner"]["clearance"]=old["planner"]["clearance"]
                 if new!=old or value<=0: raise RuntimeError("fix changed more than positive clearance")
@@ -159,7 +160,7 @@ def run(out,until="done",attempts=3):
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument("--out",default="runs/arm-loop")
+    ap.add_argument("--out",default=str(STATE/"arm-loop"))
     ap.add_argument("--until",choices=("see","diagnose","done"),default="done")
     ap.add_argument("--attempts",type=int,default=3)
     a=ap.parse_args()

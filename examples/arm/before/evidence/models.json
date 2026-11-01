@@ -4,7 +4,7 @@
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'red block'",
-   "seconds": 10.8,
+   "seconds": 10.33,
    "frames": 180,
    "frames_returned": 180,
    "usage": {
@@ -26,7 +26,7 @@
    "model": "sam-3.1",
    "where": "Meta Model API",
    "purpose": "track 'robot arm'",
-   "seconds": 26.87,
+   "seconds": 26.28,
    "frames": 180,
    "frames_returned": 180,
    "usage": {
