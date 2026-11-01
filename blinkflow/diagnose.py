@@ -451,11 +451,24 @@ def file_refs(ref, files):
     return bad
 
 
+# A time a reference cites: "t=11.20", a chain after it ("t=10.40-11.45", "t=9.95/10.05 s", "t=1.0 and t=2.0"),
+# or a lone "11.20 s"; signed numbers ("dt -2.970..+0.230") are offsets, not ticks
+_NUM = r"\d+\.\d+"
+_SEP = r"\s*(?:-|–|\.\.|to|/|and|,)\s*(?:t\s*=\s*)?"
+TICK_REF = re.compile(rf"\bt\s*=\s*({_NUM}(?:\s*s\b)?(?:{_SEP}{_NUM}(?:\s*s\b)?)*)|(?<![\d.+\-−])({_NUM})\s*s\b")
+
+
+def ticks_of(ref):
+    """Every tick time a reference cites, as written."""
+    return [x for chain, lone in TICK_REF.findall(ref) for x in (re.findall(_NUM, chain) if chain else [lone])]
+
+
 def check(d, files, frames, tick_times):
     """Does the answer point at real code, and does every citation point at something real? Rejected: a
     path not in the target (whatever its file name), lines outside the named function, a key frame that
-    was not sent (even beside one that was), a log reference with no real tick, a file or line that does
-    not exist in any citation."""
+    was not sent (even beside one that was), a tick time that is not in the log (even beside one that is),
+    a file or line that does not exist in any citation, a frame, log or measurement reference that cites
+    no real key frame or tick, a code reference that cites no file."""
     c = d["cause"]
     name = resolve(c["file"], files)
     text = files.get(name, "")
@@ -463,6 +476,7 @@ def check(d, files, frames, tick_times):
     fn = norm_function(c["function"])
     a, b = c["lines"]["start"], c["lines"]["end"]
     tags = {k["tag"] for k in frames}
+    frame_times = [k["brain_s"] for k in frames if "brain_s" in k]     # a key frame's own time is real too
     frames_cited, ticks_cited, bad = set(), set(), []
     for e in d["evidence"]:
         ref = e["ref"]
@@ -470,15 +484,19 @@ def check(d, files, frames, tick_times):
         # Models label depth frames from the log as "frame" and key frames as "log" now and then: look
         # for key-frame tags and tick times in every non-code reference, whatever its label.
         if e["source"] == "code":
+            if not FILE_REF.search(ref):
+                bad.append(ref)
             continue
         named = set(re.findall(r"\bK\d+\b", ref))
         got = named & tags
         bad += sorted(named - tags)
-        hits = [t for t in map(float, re.findall(r"\d+\.\d+", ref))
-                if any(abs(t - u) <= 0.026 for u in tick_times)]
+        cited = ticks_of(ref)
+        hits = [float(t) for t in cited if any(abs(float(t) - u) <= 0.026 for u in tick_times)]
+        # as written, so the console can find the reference it came from
+        bad += [t for t in cited if float(t) not in hits and not any(abs(float(t) - u) <= 0.026 for u in frame_times)]
         frames_cited |= got
         ticks_cited |= set(hits)
-        if e["source"] in ("frame", "log") and not got and not hits:
+        if not got and not hits:
             bad.append(ref)
     file_ok = name is not None
     lines_ok = file_ok and 1 <= a <= b <= n_lines

@@ -1,7 +1,8 @@
 """diagnose.check: "grounded" only when every check holds: the file, its lines and its function are real,
 and the key frames and log ticks cited exist (audit, Oct 31); and every citation passes: no path outside the
 target, no lines outside the named function, no missing frame beside a real one, no file or line that does not
-exist (audit #3, Nov 1).
+exist (audit #3, Nov 1); every tick and key frame a reference names exists, and a measurement or code reference
+that points at nothing is a bad reference (audit #7, Nov 1).
 
     python3 -m unittest discover tests
 """
@@ -12,7 +13,7 @@ from blinkflow import diagnose
 FILES = {"src/microduck_brain/depth.py": "\n".join(["# depth"] * 300 + ["def drop_zones(frame, pose, cfg):"]
                                                    + ["    pass"] * 30),
          "brain.toml": "[obstacle]\nside_memory_seconds = 0.0 # remember wall returns\nmin_zones = 2\n"}
-FRAMES = [{"tag": "K1"}, {"tag": "K2"}]
+FRAMES = [{"tag": "K1", "brain_s": 11.40}, {"tag": "K2", "brain_s": 11.90}]
 TICKS = [11.20, 11.21]
 
 
@@ -93,6 +94,31 @@ class Check(unittest.TestCase):
                              ("code", "src/microduck_brain/depth.py:305-310, 312 and brain.toml line 2")))
         self.assertEqual(c["bad_refs"], [])
         self.assertTrue(c["grounded"])
+
+    # audit #7: a real tick beside one that is not, and references that point at nothing
+    def test_a_missing_tick_beside_a_real_one_is_a_bad_ref(self):
+        c = self.check(refs=(("frame", "K1"), ("log", "t=11.20 and t=999.00")))
+        self.assertEqual(c["bad_refs"], ["999.00"])
+        self.assertFalse(c["grounded"])
+
+    def test_every_tick_of_a_range_must_exist(self):
+        self.assertIn("13.50", self.check(refs=(("frame", "K1"), ("log", "brain log t=11.20-13.50 s")))["bad_refs"])
+        self.assertTrue(self.check(refs=(("frame", "K1"), ("log", "brain log t=11.20-11.21 s (dt -2.970..+0.230)")))["grounded"])
+
+    def test_a_key_frames_own_time_is_real(self):
+        self.assertTrue(self.check(refs=(("frame", "K2 t=11.90"), ("log", "brain log t=11.20")))["grounded"])
+
+    def test_an_invented_measurement_is_a_bad_ref(self):
+        for ref in ("measurement", "the closest gap, 12 px", "K7 at t=11.20", "gap 3 px at 50.00 s"):
+            c = self.check(refs=(("frame", "K1"), ("log", "brain log t=11.20"), ("measurement", ref)))
+            self.assertTrue(c["bad_refs"], ref)
+            self.assertFalse(c["grounded"], ref)
+
+    def test_an_invented_code_reference_is_a_bad_ref(self):
+        for ref in ("the obstacle code", "planner.py:40", "depth.py:999"):
+            c = self.check(refs=(("frame", "K1"), ("log", "brain log t=11.20"), ("code", ref)))
+            self.assertTrue(c["bad_refs"], ref)
+            self.assertFalse(c["grounded"], ref)
 
 
 if __name__ == "__main__":
