@@ -37,4 +37,4 @@ The bundled [twin sanity](twin-sanity.json) separately checks onset against the 
 
 Inputs and source revisions: [provenance.json](provenance.json). Integrity inventory: [sha256.json](sha256.json).
 
-Recheck offline from the repository root: `python -B -m sil.recheck`.
+Recheck offline from the repository root: `python3 -B -m blinkflow.sil.recheck examples/purple-box-sil`.

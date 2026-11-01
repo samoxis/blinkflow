@@ -30,4 +30,4 @@ Ticks: 400; exact command differences: 127; state differences: 145. A matches th
 
 Traces show emitted commands, not observed motion. Gaps represent `none`. Shading starts at exact divergence; later state/command markers are retained without claiming their later inputs are counterfactual reality.
 
-Offline recheck: `python -B -S -m sil.recheck examples/suite-sil`. No API, simulator, installation, key file or network is needed; cost $0.
+Offline recheck: `python3 -B -m blinkflow.sil.recheck examples/suite-sil`. No API, simulator, installation, key file or network is needed; cost $0.

@@ -52,8 +52,6 @@ ticks, but none of the later ones is evidence about the fixed robot.
 - Seven of the eight mutations repeat earlier suite mutations, so the eight are not an independent sample.
 - Impact times are cited from the saved pixel evidence, not measured again.
 - Cost: $0, no model calls.
-- The reports inside the two example folders are byte-for-byte the originals, so their own re-check line reads
-  `python -B -m sil.recheck`; in this repo the module is `blinkflow.sil.recheck`.
 - Built with Codex (GPT-6.1 Sol) on Nov 1, in a separate repo, from a written brief, then moved here as
   `blinkflow/sil/`, as declared in `DEVLOG.md`.
 

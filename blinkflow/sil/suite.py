@@ -177,7 +177,7 @@ def summary_markdown(cases, results):
               "Phase 1 purple-box remains **continuous-only (inconclusive)**: the first exact "
               "change is steering at 2.104866302 s. Its later state differences cannot undo "
               "that earlier divergence. The Phase 1 bundle is unchanged.", "",
-              "Offline: `python -B -S -m sil.recheck examples/suite-sil`. "
+              "Offline: `python3 -B -m blinkflow.sil.recheck examples/suite-sil`. "
               "Integrity and original source citations are in `sha256.json` and `suite.json`. "
               "New work is the adapter, divergence measurement, classification, report and tests. "
               "No model API calls or tuning; replay cost $0.", ""]
@@ -239,7 +239,7 @@ def report_markdown(metadata, data):
               "Traces show emitted commands, not observed motion. Gaps represent `none`. "
               "Shading starts at exact divergence; later state/command markers are retained "
               "without claiming their later inputs are counterfactual reality.", "",
-              "Offline recheck: `python -B -S -m sil.recheck examples/suite-sil`. "
+              "Offline recheck: `python3 -B -m blinkflow.sil.recheck examples/suite-sil`. "
               "No API, simulator, installation, key file or network is needed; cost $0.", ""]
     return "\n".join(lines)
 

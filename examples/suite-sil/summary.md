@@ -29,4 +29,4 @@ The impact/fall comes from each before-run's saved pixel evidence, not the score
 
 Phase 1 purple-box remains **continuous-only (inconclusive)**: the first exact change is steering at 2.104866302 s. Its later state differences cannot undo that earlier divergence. The Phase 1 bundle is unchanged.
 
-Offline: `python -B -S -m sil.recheck examples/suite-sil`. Integrity and original source citations are in `sha256.json` and `suite.json`. New work is the adapter, divergence measurement, classification, report and tests. No model API calls or tuning; replay cost $0.
+Offline: `python3 -B -m blinkflow.sil.recheck examples/suite-sil`. Integrity and original source citations are in `sha256.json` and `suite.json`. New work is the adapter, divergence measurement, classification, report and tests. No model API calls or tuning; replay cost $0.
