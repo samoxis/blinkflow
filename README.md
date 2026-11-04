@@ -6,6 +6,8 @@
 
 **Say it. Fix it. Prove it.**
 
+BlinkFlow lets you say out loud what a simulated robot did wrong; it finds the moment on video, fixes the line in the robot's code, and replays the same scene to prove the fix.
+
 **[See a real run, no install](https://samoxis.github.io/blinkflow/report/)**: the purple-box incident, from the snapshot to the proof. It is the static report of `examples/purple-box/`.
 
 **[Watch the 3-minute video](https://youtu.be/6EDwRU-f-xI)**: the same loop, said, fixed and proved, on the live simulator.
@@ -16,7 +18,7 @@
 
 | Criterion | What it shows | Where |
 |---|---|---|
-| **Impact** (30%) | Say what went wrong on screen, get a proven fix in the robot's code. Frozen-code pass (new seed, code frozen): 8/8 repaired and passed the incident and control checks; Wonder's cause named a planted line in 4 of 8, the kept patch touched one in 7 of 8. 7 of the 8 repeat first-pass mutations, 1 is new; pass of Oct 28, before the current gate and control rule. Live: contact in 5/5 runs before the fix, 0/5 after | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
+| **Impact** (30%) | For people who build robots and are not robotics engineers: say what went wrong, get a fix proven on the same scene. Planted bugs: 8/8 repaired and verified. Live simulator: contact in 5/5 runs before the fix, 0/5 after. | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
 | **Use of Meta tooling** (25%) | One job per model. Muse Glimmer (open weights, on this PC) watches and names. SAM 3.1 tracks. Muse Wonder finds the cause. Muse Code fixes. Muse Voice Transcribe listens. Every call is logged | [How it works](#how-it-works), [`models.json`](examples/purple-box/models.json) |
 | **Technical depth** (20%) | Distances from SAM 3.1's masks. A diagnosis whose every citation is checked against the frames, log lines and code it was sent. An exact replay in a deterministic twin. Rollback and retry. A gate before each tool call | [`results/bug_suite.md`](results/bug_suite.md), [Safety](#safety) |
 | **Demo** (25%) | The purple-box incident from the sentence to the proof, as a page anyone can open, and the live console | [The report](https://samoxis.github.io/blinkflow/report/), [The console](#the-console) |
@@ -28,7 +30,7 @@
 
 - **It watches pixels, not the simulator's insides.** BlinkFlow looks at the window, as the developer does. Plain measurements come first: SAM 3.1's masks become distances and a first contact. Only then does Muse Wonder look, and its answer is checked against what it was sent.
 - **The proof is the same scene, played again.** A deterministic twin replays it exactly, and it is measured again on pixels. A fix that fails is undone and tried again. Then the person answers "Keep the fix?".
-- **A referee the agent never sees, and a gate.** Results are scored from contact logs that BlinkFlow never gets. The gate is a filter, not an isolation: it checks every Muse Code call against the target folder and refuses, before it runs, one that names a path outside it.
+- **A referee the agent never sees, and a gate.** Results are scored from contact logs that BlinkFlow never gets. The gate is a filter, not an isolation: it checks every Muse Code call against the target folder and refuses, before it runs, one that names a path outside it in a form it recognises.
 
 ## Beyond the duck: the same loop on a 3-joint arm
 
@@ -240,7 +242,7 @@ The log replay uses `microduck_brain.record.replay`, part of Pollen's pre-existi
 
 ## Safety
 
-Muse Code runs under `muse serve`'s default profile (not `:unrestricted`), which does not stop a read or a write outside the target, so a PreToolUse hook (`muse-gate/`, `python3 -m blinkflow.gate install`) refuses any tool call that names a path outside the target before it runs. That hook is a filter that checks every Muse Code call against the target folder, not an isolation: it reads the paths a call names, so code that reaches outside without naming the path (a script that builds one as it runs, say) is not stopped by it. Every fix starts from a git commit; BlinkFlow asks "Fix it?" before Muse Code writes and "Keep the fix?" after the proof, and a no rolls the change back. How it was measured, and how to undo a kept fix: [`docs/SAFETY.md`](docs/SAFETY.md).
+Muse Code runs under `muse serve`'s default profile (not `:unrestricted`), which does not stop a read or a write outside the target, so a PreToolUse hook (`muse-gate/`, `python3 -m blinkflow.gate install`) refuses any tool call that names a path outside the target before it runs. That hook is a filter that checks every Muse Code call against the target folder, not an isolation: it reads the paths a call names, so code that reaches outside without naming the path (a script that builds one as it runs, say) is not stopped by it. Known gaps, found in a final audit and not fixed before the deadline: a relative path after a change of directory (`cd ~ && cat ...`), paths through `/proc/self/root`, and writes inside the target's own `.git` folder are not caught. Every fix starts from a git commit; BlinkFlow asks "Fix it?" before Muse Code writes and "Keep the fix?" after the proof, and a no rolls the change back. How it was measured, and how to undo a kept fix: [`docs/SAFETY.md`](docs/SAFETY.md).
 
 ## Credits and licence
 
