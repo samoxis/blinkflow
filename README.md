@@ -18,7 +18,7 @@ BlinkFlow lets you say out loud what a simulated robot did wrong; it finds the m
 
 | Criterion | What it shows | Where |
 |---|---|---|
-| **Impact** (30%) | For people who build robots and are not robotics engineers: say what went wrong, get a fix proven on the same scene. Planted bugs: 8/8 repaired and verified. Live simulator: contact in 5/5 runs before the fix, 0/5 after. | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
+| **Impact** (30%) | For people who build robots and are not robotics engineers: say what went wrong, get a fix proven on the same scene. Planted bugs: 8/8 repaired and verified (pass of Oct 28, before the current gate and control rule). Live simulator: contact in 5/5 runs before the fix, 0/5 after. | [Results](#results), [Where this could go](#where-this-could-go-not-built-or-tested-yet) |
 | **Use of Meta tooling** (25%) | One job per model. Muse Glimmer (open weights, on this PC) watches and names. SAM 3.1 tracks. Muse Wonder finds the cause. Muse Code fixes. Muse Voice Transcribe listens. Every call is logged | [How it works](#how-it-works), [`models.json`](examples/purple-box/models.json) |
 | **Technical depth** (20%) | Distances from SAM 3.1's masks. A diagnosis whose every citation is checked against the frames, log lines and code it was sent. An exact replay in a deterministic twin. Rollback and retry. A gate before each tool call | [`results/bug_suite.md`](results/bug_suite.md), [Safety](#safety) |
 | **Demo** (25%) | The purple-box incident from the sentence to the proof, as a page anyone can open, and the live console | [The report](https://samoxis.github.io/blinkflow/report/), [The console](#the-console) |
