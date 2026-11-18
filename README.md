@@ -14,6 +14,10 @@ BlinkFlow lets you say out loud what a simulated robot did wrong; it finds the m
 
 <p align="center"><img src="docs/blinkflow.gif" width="640" alt="The example run's two replays in the twin, each at its own moment: before the fix the robot touches the purple box (1 contact at 11.46 s); with the fix it stops 107 px away; contacts 1 to 0"></p>
 
+## New: the brain on QNX 8.0
+
+Since Nov 18 the robot's brain can run on **QNX 8.0** (a QEMU/KVM target; a board by address) while the simulator and BlinkFlow stay on the host: `python3 -m blinkflow.qnx` builds and starts the target, deploys the brain, drives the simulated robot from it through a byte-for-byte socket bridge, and checks that a recording gives the same decisions on QNX as on the host (the purple-box recording: identical with the brain that made it; with the fix, same decisions, 5 of 289 ticks one unit in the last place apart). `--target qnx` runs the whole loop that way. Setup, commands and measurements: [`docs/QNX.md`](docs/QNX.md).
+
 ## For the judges (5 minutes)
 
 | Criterion | What it shows | Where |
