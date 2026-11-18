@@ -61,7 +61,7 @@ One fix outside the loop was needed: `muse` had updated itself to 1.4.23 during 
 ## Measured on Nov 18, 2026 (QEMU/KVM VM, QNX 8.0.0, Python 3.13.7 on the target, 3.12.3 on the host)
 
 - `walk`: 15 s of the demo scene driven from QNX, 295 brain ticks recorded and fetched back.
-- `sim --target qnx`, filmed: the buggy brain (`~/duck-target` at `b2fe90a`) on QNX for 14 s, 275 ticks, 480 frames captured; the robot walks along the purple box and its right leg reaches it at the end, as with the brain on the host. Seen on the frames; not yet measured with SAM 3.1.
+- `sim --target qnx`, filmed: the buggy brain (`~/duck-target` at `b2fe90a`) on QNX for 14 s, 275 ticks, 480 frames captured; the robot walks along the purple box and its right leg reaches it at the end, as with the brain on the host. Seen on the frames; SAM 3.1 measured the same scene in the whole-loop run above (contact at 12.175 s).
 - `replay` of the purple-box incident recording (`examples/purple-box-sil/run.jsonl.gz`, 289 ticks, live simulator):
   - with the brain that made it (`brain-before`): 0 commands differ from the recording on QNX or on the host; **identical**, same SHA-256 on both;
   - with the fixed brain (`brain-after`): 235 commands differ from the recording on both, first at 2.506 s; QNX vs host **same decisions**: 5 ticks apart (from tick 97), at most 1.1e-16 (one unit in the last place), no command kind or state different.
@@ -95,11 +95,12 @@ Python version is not separated here (the host has no Python 3.13 installed).
 
 5. With the Microduck simulator installed (see [RUNNING.md](RUNNING.md)): `python3 -m blinkflow.qnx walk`.
 
-A board instead of the VM: set `BLINKFLOW_QNX_HOST`, `BLINKFLOW_QNX_PORT` and
-`BLINKFLOW_QNX_GATEWAY` (the host's address as the board sees it), with Python 3.11+ and SSH on the
-board, and run `expose` with `--bind` on an address the board can reach.
+A board instead of the VM: set `BLINKFLOW_QNX_HOST`, `BLINKFLOW_QNX_PORT`,
+`BLINKFLOW_QNX_GATEWAY` (the host's address as the board sees it) and `BLINKFLOW_QNX_BIND` (the host
+address the bridge listens on, one the board can reach; default 127.0.0.1, enough for the VM), with
+Python 3.11+ and SSH on the board. Not yet tried on a board.
 
-Tests (host only): `python3 -m unittest tests.test_qnx_bridge tests.test_qnx_probe -v`.
+Tests (host only): `python3 -m unittest tests.test_qnx_bridge tests.test_qnx_probe tests.test_qnx_target -v`.
 
 ## Limits
 

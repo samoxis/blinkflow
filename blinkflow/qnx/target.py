@@ -1,7 +1,7 @@
 """A QNX 8.0 target reached over SSH: the brain is deployed to it, runs on it at a real-time priority,
 and drives the simulator on the host through the bridge (blinkflow.qnx.bridge).
 
-    t = Target()                        # BLINKFLOW_QNX_HOST / _PORT / _GATEWAY, default the QEMU VM
+    t = Target()                        # BLINKFLOW_QNX_HOST / _PORT / _GATEWAY / _BIND, default the QEMU VM
     t.deploy(~/duck-target)             # src/ + brain.toml + bridge.py, nothing else
     run = t.launch(20, record)          # Popen-like: poll / wait / interrupt; record fetched on wait
     t.replay(record)                    # the target's brain replays a recording made anywhere (probe.py)
@@ -37,10 +37,13 @@ LAUNCH = 'import sys; from microduck_brain.cli import main; sys.argv[0] = "micro
 
 
 class Target:
-    def __init__(self, host=None, port=None, user="root", gateway=None, priority=PRIORITY):
+    def __init__(self, host=None, port=None, user="root", gateway=None, bind=None, priority=PRIORITY):
         self.host = host or os.environ.get("BLINKFLOW_QNX_HOST", "127.0.0.1")
         self.port = int(port or os.environ.get("BLINKFLOW_QNX_PORT", 2222))
         self.gateway = gateway or os.environ.get("BLINKFLOW_QNX_GATEWAY", "10.0.2.2")   # the host, from the target
+        # where the host's half of the bridge listens: loopback is enough for QEMU user networking
+        # (10.0.2.2 lands on the host's 127.0.0.1); a board needs a host address it can reach
+        self.bind = bind or os.environ.get("BLINKFLOW_QNX_BIND", "127.0.0.1")
         self.user, self.priority = user, priority
 
     def _ssh(self):
@@ -104,15 +107,26 @@ class Target:
         try:
             for _ in range(pings):
                 t0 = time.time()
-                p.stdin.write("\n")
-                p.stdin.flush()
-                mono = float(p.stdout.readline())
+                try:
+                    p.stdin.write("\n")
+                    p.stdin.flush()
+                    line = p.stdout.readline()
+                except BrokenPipeError:
+                    line = ""
+                if not line:
+                    raise RuntimeError(f"the target {self.user}@{self.host}:{self.port} did not answer the clock "
+                                       "echo (SSH down, or no python3 on it)")
+                mono = float(line)
                 t1 = time.time()
                 if best is None or t1 - t0 < best[1]:
                     best = ((t0 + t1) / 2 - mono, t1 - t0)
         finally:
-            p.stdin.close()
+            try:
+                p.stdin.close()
+            except OSError:
+                pass
             p.wait(10)
+            p.stdout.close()
         return best
 
     def launch(self, seconds, record):
@@ -142,7 +156,7 @@ class QnxBrain:
     def __init__(self, target, seconds, record):
         self.target, self.record = target, record
         self.epoch_offset, self.rtt = target.clock()
-        self.listeners = bridge.expose([f"{port}={path}" for port, path in SIM_SOCKETS.items()], "127.0.0.1")
+        self.listeners = bridge.expose([f"{port}={path}" for port, path in SIM_SOCKETS.items()], target.bind)
         maps = " ".join(f"--map {TARGET_SOCKETS[port]}={target.gateway}:{port}" for port in SIM_SOCKETS)
         script = f"""cd {REMOTE} || exit 2
 rm -f run.jsonl.gz brain.pid
