@@ -45,6 +45,19 @@ lands on the host clock that the video and SAM 3.1's contact time use.
 - **same decisions**: every command kind and state equal; the numbers differ, by at most `max_abs`;
 - **different decisions**: a command kind or a state differs (exit code 1).
 
+## The whole loop with the brain on QNX (Nov 18, 2026)
+
+`python3 -m blinkflow.watch live --target qnx --loop` on a copy of the buggy brain (`~/duck-target` at `b2fe90a`, branch `qnx-incident` in `~/duck-target-qnx`):
+
+1. **Watch.** The brain runs on QNX and drives the filmed simulator. Muse Glimmer (local) raises a hand twice; SAM 3.1 confirms a contact between the *white robot* and the *purple box* at 12.175 s brain time ($0.15 of SAM).
+2. **Diagnose.** Muse Wonder on the key frames, the brain's log from QNX and the code. The first diagnosis named `heading.yaw_sign` (confidence 0.72). Muse Code flipped it in all three attempts, the robot left the camera in the twin's replay, and BlinkFlow refused to call that fixed (verdict invalid: robot found in 0 frames). A second diagnosis on the same SAM evidence named `obstacle.side_memory_seconds = 0.0`.
+3. **Fix and prove.** Muse Code changed that one line. The twin's replay of the same scene: contact 1 → 0, closest 106 px; control in every other scene clean. Kept as commit `cc31fc1`.
+4. **Back on QNX.** The fixed brain deployed to QNX, the filmed scene again for 20 s: SAM 3.1 finds no contact (closest 28 px, at 15.8 s). `replay` of the QNX incident recording (389 ticks): the buggy brain reproduces it (0 differing) and the fixed brain answers differently from 1.734 s on (355 of 389 commands); QNX vs host **identical** for both.
+
+Paid model calls for the whole session: about $2.40 (SAM 3.1, Muse Wonder, Muse Code contributor lane), including the failed first loop.
+
+One fix outside the loop was needed: `muse` had updated itself to 1.4.23 during the session and `muse-code-sdk` 1.4.14 refused the host (`MuseHostMismatchError`); `requirements.txt` now pins the SDK and MSP at 1.4.23.
+
 ## Measured on Nov 18, 2026 (QEMU/KVM VM, QNX 8.0.0, Python 3.13.7 on the target, 3.12.3 on the host)
 
 - `walk`: 15 s of the demo scene driven from QNX, 295 brain ticks recorded and fetched back.
