@@ -19,7 +19,7 @@ takes the newest frame whenever it is free; frames that arrive meanwhile are dro
 The calls use the context size of every other Glimmer call, so the copy already in VRAM serves them
 (another num_ctx would make Ollama load a second one).
 
-    python3 -m blinkflow.watch live [--brain DIR] [--seconds 20] [--loop]   # simulator + sidecar
+    python3 -m blinkflow.watch live [--brain DIR] [--seconds 20] [--loop] [--target qnx]   # simulator + sidecar
     python3 -m blinkflow.watch clip <twin meta.json | sidecar clip .json> [--loop]
 
 A clip is played on the wall clock as if it were the buffer: watching starts when its brain starts
@@ -35,7 +35,6 @@ import gzip
 import json
 import os
 import pathlib
-import signal
 import statistics
 import subprocess
 import sys
@@ -420,10 +419,10 @@ def vram(samples, stop):
         stop.wait(1.0)
 
 
-def finish_live(found, feed, record):
+def finish_live(found, feed, record, epoch_offset=None):
     """With the brain stopped and its log closed: the window gets the true brain start and the log
     (cut at the window's end), and see's measurements are redone on the same SAM replies."""
-    start = sim.brain_start(record)
+    start = sim.brain_start(record, epoch_offset)
     snap = pathlib.Path(found["snapshot"])
     m = json.loads(snap.read_text())
     m.update(brain_start=start, seconds=round(m["t1_epoch"] - start, 3))
@@ -439,7 +438,7 @@ def finish_live(found, feed, record):
     return start
 
 
-def live(brain, seconds, cam, out, with_loop, port=8090, settle=10):
+def live(brain, seconds, cam, out, with_loop, port=8090, settle=10, target=None):
     env = sim.sim_env(cam, port)
     out.mkdir(parents=True)
     events.begin(out, "watch", feed="live", brain=str(brain))
@@ -456,30 +455,28 @@ def live(brain, seconds, cam, out, with_loop, port=8090, settle=10):
         events.emit("feed", kind="live", clock="epoch", sidecar=cap.base, buffer_s=60)
         time.sleep(settle)                       # scene loaded, duck standing
         launched = time.time()
-        proc = subprocess.Popen(["uv", "run", "-q", "microduck-brain", "--duration", str(seconds), "--record",
-                                 str(record)], cwd=brain, env=env, stdout=subprocess.DEVNULL,
-                                stderr=subprocess.DEVNULL, start_new_session=True)
-        events.emit("brain.start", at=launched, seconds=seconds)
+        proc = sim.launch(brain, seconds, record, env, target)
+        events.emit("brain.start", at=launched, seconds=seconds, on=target or "host")
         feed = LiveFeed(cap, brain, proc, launched)
         w = Watcher(feed, out)
         found = w.run()
         stopped_at = time.time()
         if proc.poll() is None:                  # an incident: the robot is stopped, as a person would
-            os.killpg(proc.pid, signal.SIGINT)
+            proc.interrupt()
         proc.wait(30)
         whole = cap.snapshot(time.time() - launched + 1.0, out / "whole")
     finally:
         if proc and proc.poll() is None:
-            os.killpg(proc.pid, signal.SIGTERM)
+            proc.terminate()
         cap.stop(close_window=True)
         subprocess.run([str(sim.SIM / "scripts" / "duck-sim"), "down"], cwd=sim.SIM, env=env,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         stop.set()
-    start = sim.brain_start(record)
+    start = sim.brain_start(record, proc.epoch_offset)
     if found:
-        finish_live(found, feed, record)
+        finish_live(found, feed, record, proc.epoch_offset)
     span = whole["t1_epoch"] - whole["t0_epoch"]
-    extra = {"feed": "live", "brain": str(brain), "record": str(record), "brain_start": start,
+    extra = {"feed": "live", "brain": str(brain), "brain_on": target or "host", "record": str(record), "brain_start": start,
              "glimmer_warm_s": round(t_warm, 2), "incident": found,
              "stopped_brain_s": found and round(stopped_at - start, 3),
              "frame_lag_s": feed.lags and {"median": round(statistics.median(feed.lags), 3),
@@ -516,6 +513,7 @@ def main():
     a_live.add_argument("--brain", default=str(TARGET))
     a_live.add_argument("--seconds", type=float, default=20)
     a_live.add_argument("--cam", default=f"{sim.CAM_DIR}/shots_incident.json")
+    a_live.add_argument("--target", choices=["host", "qnx"], default="host", help="where the brain runs")
     a_clip = sub.add_parser("clip", help="a recorded clip played back as the buffer")
     a_clip.add_argument("snapshot")
     a_clip.add_argument("--lag", type=float, default=LAG)
@@ -525,7 +523,8 @@ def main():
     a = ap.parse_args()
     out = pathlib.Path(a.out).expanduser() if a.out else RUNS / time.strftime("%Y%m%d-%H%M%S")
     if a.cmd == "live":
-        doc = live(pathlib.Path(a.brain).expanduser(), a.seconds, a.cam, out, a.loop)
+        doc = live(pathlib.Path(a.brain).expanduser(), a.seconds, a.cam, out, a.loop,
+                   target=None if a.target == "host" else a.target)
     else:
         doc = clip(a.snapshot, out, a.loop, a.lag)
     print(json.dumps({"out": str(out), "incident": doc["incident"] and {k: doc["incident"][k] for k in (

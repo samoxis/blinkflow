@@ -3,13 +3,17 @@
 The brain is a pure function of its inputs, so the same scenario run twice should look the same.
 The snapshot of the whole scenario is taken from the capture buffer right after the brain stops.
 
-    python -m blinkflow.sim --brain ~/duck-target --seconds 12
+    python -m blinkflow.sim --brain ~/duck-target --seconds 12 [--target qnx]
+
+With --target qnx the brain runs on a QNX 8.0 target (blinkflow.qnx) and drives this simulator
+through the bridge; everything else is the same.
 """
 import argparse
 import gzip
 import json
 import os
 import pathlib
+import signal
 import subprocess
 import time
 
@@ -40,15 +44,48 @@ def open_viser(port, size=(1100, 700)):
                     f"Start-Process '{CHROME}' -ArgumentList {arglist}"], check=True)
 
 
-def brain_start(record):
-    """Epoch (WSL clock) of the brain's first tick, from its monotonic timestamp."""
+class HostBrain:
+    """The brain as a subprocess on this machine (its own process group, so it can be interrupted)."""
+    epoch_offset = None
+
+    def __init__(self, brain, seconds, record, env):
+        self.proc = subprocess.Popen(["uv", "run", "-q", "microduck-brain", "--duration", str(seconds),
+                                      "--record", str(record)], cwd=brain, env=env, stdout=subprocess.DEVNULL,
+                                     stderr=subprocess.DEVNULL, start_new_session=True)
+
+    def poll(self):
+        return self.proc.poll()
+
+    def wait(self, timeout=None):
+        return self.proc.wait(timeout)
+
+    def interrupt(self):
+        os.killpg(self.proc.pid, signal.SIGINT)
+
+    def terminate(self):
+        os.killpg(self.proc.pid, signal.SIGTERM)
+
+
+def launch(brain, seconds, record, env, target=None):
+    """Start the brain for `seconds`, recording to `record`: here, or on a QNX target (target="qnx")."""
+    if target == "qnx":
+        from .qnx.target import Target
+        t = Target()
+        t.deploy(brain)
+        return t.launch(seconds, record)
+    return HostBrain(brain, seconds, record, env)
+
+
+def brain_start(record, epoch_offset=None):
+    """Epoch (WSL clock) of the brain's first tick, from its monotonic timestamp. A brain on another
+    machine gives the offset between this epoch and its monotonic clock (QnxBrain.epoch_offset)."""
     with gzip.open(record, "rt") as f:
         next(f)
         t = json.loads(next(f))["t"]
-    return t + (time.time() - time.monotonic())
+    return t + (epoch_offset if epoch_offset is not None else time.time() - time.monotonic())
 
 
-def run(brain, seconds, cam_script, out_dir, port=8090, settle=10):
+def run(brain, seconds, cam_script, out_dir, port=8090, settle=10, target=None):
     env = sim_env(cam_script, port)
     stamp = time.strftime("%Y%m%d-%H%M%S")
     record = RUNS / f"run-{stamp}.jsonl.gz"
@@ -60,17 +97,18 @@ def run(brain, seconds, cam_script, out_dir, port=8090, settle=10):
         open_viser(port)
         cap.start()
         time.sleep(settle)                      # scene loaded, duck standing
-        subprocess.run(["uv", "run", "-q", "microduck-brain", "--duration", str(seconds),
-                        "--record", str(record)], cwd=brain, env=env, check=True,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        t_start = brain_start(record)
+        b = launch(brain, seconds, record, env, target)
+        rc = b.wait()
+        if rc != 0:
+            raise RuntimeError(f"the brain exited with {rc}")
+        t_start = brain_start(record, b.epoch_offset)
         meta = cap.snapshot(time.time() - t_start + 1.5, out_dir)
     finally:
         cap.stop(close_window=True)
         subprocess.run([str(SIM / "scripts" / "duck-sim"), "down"], cwd=SIM, env=env,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     meta.update(brain=str(brain), record=str(record), brain_start=t_start, seconds=seconds,
-                cam_script=cam_script)
+                cam_script=cam_script, brain_on=target or "host")
     pathlib.Path(out_dir, f"{meta['id']}.json").write_text(json.dumps(meta))
     return meta
 
@@ -81,8 +119,10 @@ def main():
     ap.add_argument("--seconds", type=float, default=12)
     ap.add_argument("--cam", default=f"{CAM_DIR}/shots_incident.json")
     ap.add_argument("--out", default=str(RUNS / "clips"))
+    ap.add_argument("--target", choices=["host", "qnx"], default="host", help="where the brain runs")
     a = ap.parse_args()
-    meta = run(pathlib.Path(a.brain).expanduser(), a.seconds, a.cam, a.out)
+    meta = run(pathlib.Path(a.brain).expanduser(), a.seconds, a.cam, a.out,
+               target=None if a.target == "host" else a.target)
     print(json.dumps({k: meta[k] for k in ("path", "t0_epoch", "brain_start", "frames", "record")}))
 
 

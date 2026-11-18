@@ -3,7 +3,7 @@ while the simulator stays on the host.
 
     host:    python3 bridge.py expose --map 7701=~/.cache/duck-sim/duck-a.sock --map 7702=~/.cache/duck-sim/duck-a-tof.sock
     target:  python3 bridge.py offer  --map /tmp/robotd.sock=10.0.2.2:7701 --map /tmp/tof.sock=10.0.2.2:7702
-    target:  python3 -m microduck_brain --robot-socket /tmp/robotd.sock --tof-socket /tmp/tof.sock
+    target:  microduck-brain --robot-socket /tmp/robotd.sock --tof-socket /tmp/tof.sock
 
 10.0.2.2 is the host as QEMU's user network shows it to the guest. `expose` binds 127.0.0.1 by default.
 Bytes pass through untouched (the brain speaks NDJSON JSON-RPC); the bridge never parses them.
@@ -59,7 +59,10 @@ def _unix(path: str) -> socket.socket:
 
 def _serve(listener: socket.socket, dial, name: str) -> None:
     while True:
-        client, _ = listener.accept()
+        try:
+            client, _ = listener.accept()
+        except OSError:                      # the listener was closed (stop)
+            return
         if client.family != socket.AF_UNIX:
             client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         try:
@@ -71,23 +74,31 @@ def _serve(listener: socket.socket, dial, name: str) -> None:
         threading.Thread(target=_join, args=(client, far), daemon=True).start()
 
 
-def expose(maps: list[str], bind: str) -> list[threading.Thread]:
-    """Host side: TCP port -> existing UNIX socket."""
-    threads = []
+def stop(listener: socket.socket) -> None:
+    """Stop accepting (connections already joined run on until their ends close)."""
+    try:
+        listener.shutdown(socket.SHUT_RDWR)
+    except OSError:
+        pass
+    listener.close()
+
+
+def expose(maps: list[str], bind: str) -> list[socket.socket]:
+    """Host side: TCP port -> existing UNIX socket. Returns the listeners (see stop)."""
+    listeners = []
     for m in maps:
         port, path = m.split("=", 1)
         path = os.path.expanduser(path)
         ls = socket.create_server((bind, int(port)), reuse_port=False)
         print(f"bridge: tcp {bind}:{port} -> unix {path}", flush=True)
-        t = threading.Thread(target=_serve, args=(ls, lambda p=path: _unix(p), port), daemon=True)
-        t.start()
-        threads.append(t)
-    return threads
+        threading.Thread(target=_serve, args=(ls, lambda p=path: _unix(p), port), daemon=True).start()
+        listeners.append(ls)
+    return listeners
 
 
-def offer(maps: list[str]) -> list[threading.Thread]:
-    """Target side: new local UNIX socket -> TCP port on the host."""
-    threads = []
+def offer(maps: list[str]) -> list[socket.socket]:
+    """Target side: new local UNIX socket -> TCP port on the host. Returns the listeners (see stop)."""
+    listeners = []
     for m in maps:
         path, addr = m.split("=", 1)
         host, port = addr.rsplit(":", 1)
@@ -97,10 +108,9 @@ def offer(maps: list[str]) -> list[threading.Thread]:
         ls.bind(path)
         ls.listen(8)
         print(f"bridge: unix {path} -> tcp {host}:{port}", flush=True)
-        t = threading.Thread(target=_serve, args=(ls, lambda h=host, p=int(port): _tcp(h, p), path), daemon=True)
-        t.start()
-        threads.append(t)
-    return threads
+        threading.Thread(target=_serve, args=(ls, lambda h=host, p=int(port): _tcp(h, p), path), daemon=True).start()
+        listeners.append(ls)
+    return listeners
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -112,12 +122,13 @@ def main(argv: list[str] | None = None) -> int:
     o = sub.add_parser("offer", help="target: new UNIX socket -> host TCP port")
     o.add_argument("--map", action="append", required=True, metavar="UNIX_PATH=HOST:PORT")
     a = ap.parse_args(argv)
-    threads = expose(a.map, a.bind) if a.mode == "expose" else offer(a.map)
+    listeners = expose(a.map, a.bind) if a.mode == "expose" else offer(a.map)
     try:
-        for t in threads:
-            t.join()
+        threading.Event().wait()
     except KeyboardInterrupt:
         pass
+    for ls in listeners:
+        stop(ls)
     return 0
 
 
