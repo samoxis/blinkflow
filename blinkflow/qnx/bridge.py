@@ -90,7 +90,7 @@ def expose(maps: list[str], bind: str) -> list[socket.socket]:
         port, path = m.split("=", 1)
         path = os.path.expanduser(path)
         ls = socket.create_server((bind, int(port)), reuse_port=False)
-        print(f"bridge: tcp {bind}:{port} -> unix {path}", flush=True)
+        print(f"bridge: tcp {bind}:{port} -> unix {path}", file=sys.stderr, flush=True)
         threading.Thread(target=_serve, args=(ls, lambda p=path: _unix(p), port), daemon=True).start()
         listeners.append(ls)
     return listeners
@@ -107,7 +107,7 @@ def offer(maps: list[str]) -> list[socket.socket]:
         ls = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         ls.bind(path)
         ls.listen(8)
-        print(f"bridge: unix {path} -> tcp {host}:{port}", flush=True)
+        print(f"bridge: unix {path} -> tcp {host}:{port}", file=sys.stderr, flush=True)
         threading.Thread(target=_serve, args=(ls, lambda h=host, p=int(port): _tcp(h, p), path), daemon=True).start()
         listeners.append(ls)
     return listeners
